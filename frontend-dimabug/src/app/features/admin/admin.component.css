@@ -1,0 +1,180 @@
+.admin {
+  max-width: 1120px;
+}
+
+.hero {
+  margin-bottom: 18px;
+  padding: 22px 24px;
+  border-radius: 20px;
+  background: linear-gradient(135deg, #0b1b4d 0%, #16348a 100%);
+  color: #fff;
+  box-shadow: 0 16px 36px rgba(11, 27, 77, 0.16);
+}
+
+.hero p {
+  margin: 0 0 6px;
+  color: #b7c4ea;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.hero h1 {
+  margin: 0 0 6px;
+  font-size: 26px;
+}
+
+.hero span {
+  color: #d5def5;
+  font-size: 14px;
+}
+
+.tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+  padding: 6px;
+  background: #fff;
+  border: 1px solid #e7e9f0;
+  border-radius: 14px;
+}
+
+.tabs button {
+  border: 0;
+  border-radius: 10px;
+  padding: 9px 14px;
+  background: transparent;
+  color: #475569;
+  font: inherit;
+  font-weight: 650;
+  cursor: pointer;
+}
+
+.tabs button.on {
+  background: #1e4fd6;
+  color: #fff;
+}
+
+.tabla-wrap {
+  background: #fff;
+  border: 1px solid #e7e9f0;
+  border-radius: 16px;
+  overflow: auto;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.04);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th,
+td {
+  padding: 13px 14px;
+  border-bottom: 1px solid #eef2f7;
+  text-align: left;
+  font-size: 14px;
+  vertical-align: middle;
+}
+
+th {
+  background: #f8faff;
+  color: #64748b;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+tr:last-child td {
+  border-bottom: 0;
+}
+
+tbody tr:hover td {
+  background: #f8faff;
+}
+
+.col-acciones {
+  width: 210px;
+}
+
+.num {
+  width: 100px;
+  text-align: right;
+  color: #1e4fd6;
+  font-weight: 750;
+}
+
+th.num {
+  color: #64748b;
+}
+
+strong {
+  color: #0f172a;
+}
+
+.acts {
+  display: flex;
+  gap: 8px;
+}
+
+.acts a {
+  padding: 7px 10px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-size: 12.5px;
+  font-weight: 750;
+  white-space: nowrap;
+}
+
+.acts .add {
+  background: #1e4fd6;
+  color: #fff;
+}
+
+.acts .mod {
+  background: #eef2ff;
+  color: #1e3a8a;
+}
+
+.empty {
+  text-align: center;
+  color: #94a3b8;
+  padding: 28px !important;
+}
+
+@media (max-width: 720px) {
+  .col-acciones {
+    width: auto;
+  }
+}
+
+:host-context(.tema-oscuro) .tabs,
+:host-context(.tema-oscuro) .tabla-wrap {
+  background: #111827;
+  border-color: #1f2937;
+}
+
+:host-context(.tema-oscuro) .tabs button {
+  color: #cbd5e1;
+}
+
+:host-context(.tema-oscuro) th {
+  background: #0f172a;
+  color: #94a3b8;
+}
+
+:host-context(.tema-oscuro) th,
+:host-context(.tema-oscuro) td {
+  border-color: #1f2937;
+}
+
+:host-context(.tema-oscuro) tbody tr:hover td {
+  background: #1f2937;
+}
+
+:host-context(.tema-oscuro) strong {
+  color: #f8fafc;
+}

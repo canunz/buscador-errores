@@ -1,0 +1,257 @@
+.kb {
+  max-width: 1120px;
+}
+
+.franja {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 0 0 20px;
+  padding: 20px 22px;
+  border-radius: 22px;
+  background:
+    radial-gradient(circle at 92% 18%, rgba(255, 255, 255, 0.16), transparent 30%),
+    linear-gradient(135deg, #08143d 0%, #0b1b4d 48%, #1e4fd6 160%);
+  color: #fff;
+  box-shadow: 0 16px 36px rgba(11, 27, 77, 0.16);
+}
+
+.franja p {
+  margin: 0 0 8px;
+  color: #b7c4ea;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.franja h1 {
+  margin: 0 0 6px;
+  font-size: 28px;
+  letter-spacing: -0.03em;
+}
+
+.franja span {
+  color: #d5def5;
+  font-size: 14px;
+}
+
+.search {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+  padding: 6px 6px 6px 14px;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+}
+
+.search svg {
+  width: 18px;
+  height: 18px;
+  color: #94a3b8;
+  flex-shrink: 0;
+}
+
+.search input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  outline: none;
+  padding: 10px 0;
+  background: transparent;
+  font-size: 14px;
+}
+
+.search button {
+  border: 0;
+  border-radius: 12px;
+  padding: 10px 18px;
+  background: #1e4fd6;
+  color: #fff;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.filters {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.filters label,
+.meta label {
+  display: grid;
+  gap: 6px;
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 650;
+}
+
+.filters select,
+.meta select {
+  height: 40px;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 0 10px;
+  background: #fff;
+  color: #0f172a;
+  font: inherit;
+  font-weight: 500;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+  color: #64748b;
+  font-size: 13px;
+}
+
+.chips button {
+  border: 1px solid #dbeafe;
+  border-radius: 999px;
+  padding: 5px 10px;
+  background: #eff6ff;
+  color: #1e3a8a;
+  font-size: 12px;
+  font-weight: 650;
+  cursor: pointer;
+}
+
+.chips .clear {
+  border: 0;
+  background: none;
+  color: #1e4fd6;
+}
+
+.meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.meta p {
+  margin: 0;
+  color: #64748b;
+  font-size: 13px;
+}
+
+.meta label {
+  grid-template-columns: auto 160px;
+  align-items: center;
+}
+
+.tabla-wrap {
+  background: #fff;
+  border: 1px solid #e7e9f0;
+  border-radius: 16px;
+  overflow: auto;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.04);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th,
+td {
+  padding: 13px 14px;
+  border-bottom: 1px solid #eef2f7;
+  text-align: left;
+  font-size: 13.5px;
+  vertical-align: middle;
+}
+
+th {
+  background: #f8faff;
+  color: #64748b;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.col-acciones {
+  width: 150px;
+}
+
+td strong {
+  display: block;
+  color: #0f172a;
+}
+
+td em {
+  display: block;
+  margin-top: 3px;
+  color: #667085;
+  font-size: 12px;
+  font-style: normal;
+}
+
+.acts {
+  display: flex;
+  gap: 8px;
+}
+
+.act {
+  border: 0;
+  border-radius: 10px;
+  padding: 8px 12px;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 750;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.act.ver {
+  background: #1e4fd6;
+  color: #fff;
+}
+
+.act.star {
+  background: #f8fafc;
+  color: #94a3b8;
+}
+
+.act.star.on {
+  background: #fffbeb;
+  color: #d97706;
+}
+
+.empty {
+  text-align: center;
+  color: #94a3b8;
+  padding: 28px !important;
+}
+
+@media (max-width: 860px) {
+  .filters {
+    grid-template-columns: 1fr;
+  }
+}
+
+:host-context(.tema-oscuro) td strong {
+  color: #f8fafc;
+}
+
+:host-context(.tema-oscuro) .search,
+:host-context(.tema-oscuro) .filters select,
+:host-context(.tema-oscuro) .meta select,
+:host-context(.tema-oscuro) .tabla-wrap {
+  background: #111827;
+  border-color: #1f2937;
+  color: #e5e7eb;
+}
+
+:host-context(.tema-oscuro) th {
+  background: #0f172a;
+}

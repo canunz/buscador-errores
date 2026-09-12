@@ -1,0 +1,104 @@
+<section class="cat-page">
+  <div class="franja">
+    <div>
+      <p>Catálogos</p>
+      <h1>Departamentos</h1>
+      <span>{{ items.length }} departamento{{ items.length === 1 ? '' : 's' }}</span>
+    </div>
+    <button type="button" class="btn-crear" (click)="openCreate()">Añadir departamento</button>
+  </div>
+
+  <app-catalogo-tabs />
+
+  <div class="tabla-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th class="col-acciones">Acciones</th>
+          <th>Departamento</th>
+          <th>Contactos</th>
+          <th>Responsables</th>
+          <th>Estado</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (item of items; track item.id) {
+          <tr>
+            <td>
+              <div class="acciones" style="justify-content:flex-start">
+                <button type="button" class="act edit" (click)="openEdit(item)">Editar</button>
+                <button type="button" class="act del" (click)="eliminar(item)">Eliminar</button>
+              </div>
+            </td>
+            <td><strong>{{ item.nombre }}</strong></td>
+            <td>
+              @for (c of item.contactos; track c.numero) {
+                @if (c.activo) {
+                  <span class="chip">{{ c.tipo }}: {{ c.numero }}</span>
+                }
+              } @empty {
+                <span class="muted">Sin contactos</span>
+              }
+            </td>
+            <td>
+              @for (r of item.responsables; track r) {
+                <span class="chip">{{ r }}</span>
+              } @empty {
+                <span class="muted">Sin responsables</span>
+              }
+            </td>
+            <td>
+              <span class="estado" [class.activo]="item.activo" [class.inactivo]="!item.activo">
+                {{ item.activo ? 'Activo' : 'Inactivo' }}
+              </span>
+            </td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="5" class="vacio">No hay departamentos registrados.</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</section>
+
+@if (modalOpen) {
+  <div class="modal" role="dialog" aria-modal="true">
+    <div class="modal-backdrop" (click)="modalOpen = false"></div>
+    <div class="modal-dialog modal-pro">
+      <header class="modal-head">
+        <span class="modal-icon">+</span>
+        <div>
+          <p>Catálogo</p>
+          <h2>{{ editId ? 'Editar departamento' : 'Nuevo departamento' }}</h2>
+        </div>
+      </header>
+      <form [formGroup]="form" (ngSubmit)="save()" class="form-grid">
+        <label class="full">
+          Departamento
+          <input type="text" formControlName="nombre" />
+        </label>
+        <label class="full">
+          Contactos
+          <input type="text" formControlName="contactos" placeholder="Anexo: 2100, Celular: +56 9..." />
+        </label>
+        <label class="full">
+          Responsables
+          <input type="text" formControlName="responsables" placeholder="Separados por coma" />
+        </label>
+        <label class="switch-row full">
+          <span>
+            <strong>Departamento activo</strong>
+            <em>Los inactivos no aparecen en los formularios operativos.</em>
+          </span>
+          <input type="checkbox" formControlName="activo" />
+        </label>
+        <div class="form-actions full">
+          <button type="button" class="btn-sec" (click)="modalOpen = false">Cancelar</button>
+          <button type="submit" class="btn-crear">Guardar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+}

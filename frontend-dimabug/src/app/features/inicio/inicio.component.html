@@ -1,0 +1,117 @@
+<div class="inicio">
+  <div class="saludo">
+    <h1>¡Hola, {{ primerNombre() }}!</h1>
+    <p>Estamos aquí para ayudarte a resolver más rápido.</p>
+  </div>
+
+  <section class="hero" aria-labelledby="hero-title">
+    <h2 id="hero-title">¿Qué necesitas resolver?</h2>
+    <form class="buscador" [formGroup]="searchForm" (ngSubmit)="buscar()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+        <circle cx="11" cy="11" r="8" />
+        <line x1="21" y1="21" x2="16.65" y2="16.65" />
+      </svg>
+      <input
+        type="search"
+        formControlName="q"
+        placeholder="Ej.: Impresora fuera de línea, Jadima, POS no imprime…"
+        aria-label="Buscar incidencia"
+      />
+      <button type="submit" class="btn-buscar">Buscar</button>
+    </form>
+    <p class="hero-hint">Busca por síntoma, sistema, hardware o palabra clave en el conocimiento.</p>
+    <img class="mascota-hero" src="assets/img/iniciologo.png" alt="" width="200" height="200" decoding="async" />
+  </section>
+
+  <div class="grid-accesos">
+    <button type="button" class="card-acceso" (click)="ir('/conocimiento')">
+      <span class="icono-cuadrado" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M4 19.5A2.5 2.5 0 016.5 17H20" />
+          <path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z" />
+        </svg>
+      </span>
+      <span class="card-acceso-texto">
+        <h3>Conocimiento</h3>
+        <p>Explora soluciones a problemas frecuentes y el aprendizaje del equipo.</p>
+      </span>
+      <svg class="flecha" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+        <polyline points="9 18 15 12 9 6" />
+      </svg>
+    </button>
+
+    <button type="button" class="card-acceso verde" (click)="ir('/procedimientos')">
+      <span class="icono-cuadrado" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2" />
+          <rect x="9" y="3" width="6" height="4" rx="1" />
+          <path d="M9 14l2 2 4-4" />
+        </svg>
+      </span>
+      <span class="card-acceso-texto">
+        <h3>Procedimientos</h3>
+        <p>Sigue pasos ordenados para realizar tareas de forma estandarizada.</p>
+      </span>
+      <svg class="flecha" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+        <polyline points="9 18 15 12 9 6" />
+      </svg>
+    </button>
+  </div>
+
+  <section class="frecuentes">
+    <div class="seccion-titulo">
+      <h2>Procedimientos frecuentes</h2>
+      <button type="button" class="link" (click)="ir('/procedimientos')">Ver todo</button>
+    </div>
+
+    @if (error) {
+      <p class="estado-vacio">{{ error }}</p>
+    } @else if (!dashboard) {
+      <p class="estado-vacio">Cargando catálogo operativo…</p>
+    } @else if (dashboard.frecuentes.length === 0) {
+      <p class="estado-vacio">Aún no hay procedimientos ni temas frecuentes publicados.</p>
+    } @else {
+      <div class="grid-procedimientos">
+        @for (item of dashboard.frecuentes; track item.tipo + item.id) {
+          <button type="button" class="proc-card" (click)="irFrecuente(item)">
+            <span class="proc-icono" [attr.data-tipo]="item.tipo" aria-hidden="true">
+              @switch (item.tipo) {
+                @case ('HARDWARE') {
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="4" width="18" height="12" rx="2" />
+                    <path d="M8 20h8M12 16v4" />
+                  </svg>
+                }
+                @case ('CATEGORIA') {
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M4 19.5A2.5 2.5 0 016.5 17H20" />
+                    <path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z" />
+                  </svg>
+                }
+                @default {
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2" />
+                    <rect x="9" y="3" width="6" height="4" rx="1" />
+                  </svg>
+                }
+              }
+            </span>
+            <h4>{{ item.titulo }}</h4>
+            <p class="proc-categoria">{{ item.subtitulo }}</p>
+            @if (item.pasos != null) {
+              <p class="proc-pasos">{{ item.pasos }} paso{{ item.pasos === 1 ? '' : 's' }}</p>
+            }
+          </button>
+        }
+      </div>
+    }
+  </section>
+
+  <p class="pie">
+    @if (dashboard?.ultimaActualizacion) {
+      Última actualización de conocimiento: {{ dashboard?.ultimaActualizacion }}
+    } @else {
+      Soporte TI · Holding Dimarsa
+    }
+  </p>
+</div>

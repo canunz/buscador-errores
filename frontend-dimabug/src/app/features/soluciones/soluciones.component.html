@@ -1,0 +1,95 @@
+<section class="cat-page">
+  <div class="franja">
+    <div>
+      <p>Catálogos</p>
+      <h1>Soluciones</h1>
+      <span>{{ items.length }} resultado{{ items.length === 1 ? '' : 's' }}</span>
+    </div>
+    <button type="button" class="btn-crear" (click)="openCreate()">Añadir solución</button>
+  </div>
+
+  <app-catalogo-tabs />
+
+  <div class="buscador">
+    <input type="search" [(ngModel)]="q" placeholder="Buscar por solución, pasos, anexos o responsable" />
+  </div>
+
+  <div class="tabla-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th class="col-acciones">Acciones</th>
+          <th>Solución</th>
+          <th>Pasos</th>
+          <th>Asignaciones</th>
+          <th>Anexos</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (item of items; track item.id) {
+          <tr>
+            <td>
+              <div class="acciones" style="justify-content:flex-start">
+                <button type="button" class="act edit" (click)="openEdit(item)">Editar</button>
+                <button type="button" class="act del" (click)="eliminar(item)">Eliminar</button>
+              </div>
+            </td>
+            <td><strong>{{ item.nombre }}</strong></td>
+            <td>{{ recortar(item.pasos) }}</td>
+            <td>
+              @for (a of item.asignaciones; track a) {
+                <span class="chip">{{ a }}</span>
+              } @empty {
+                <span class="muted">—</span>
+              }
+            </td>
+            <td>{{ recortar(item.anexos, 80) }}</td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="5" class="vacio">
+              {{ q ? 'No se encontraron soluciones con ese criterio.' : 'No hay soluciones registradas.' }}
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</section>
+
+@if (modalOpen) {
+  <div class="modal" role="dialog" aria-modal="true">
+    <div class="modal-backdrop" (click)="modalOpen = false"></div>
+    <div class="modal-dialog modal-pro">
+      <header class="modal-head">
+        <span class="modal-icon">+</span>
+        <div>
+          <p>Catálogo</p>
+          <h2>{{ editId ? 'Editar solución' : 'Nueva solución' }}</h2>
+        </div>
+      </header>
+      <form [formGroup]="form" (ngSubmit)="save()" class="form-grid">
+        <label class="full">
+          Título
+          <input type="text" formControlName="nombre" />
+        </label>
+        <label class="full">
+          Pasos
+          <textarea rows="5" formControlName="pasos"></textarea>
+        </label>
+        <label class="full">
+          Encargados / departamentos
+          <input type="text" formControlName="asignaciones" placeholder="Separados por coma" />
+        </label>
+        <label class="full">
+          Anexos
+          <textarea rows="3" formControlName="anexos"></textarea>
+        </label>
+        <div class="form-actions full">
+          <button type="button" class="btn-sec" (click)="modalOpen = false">Cancelar</button>
+          <button type="submit" class="btn-crear">Guardar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+}

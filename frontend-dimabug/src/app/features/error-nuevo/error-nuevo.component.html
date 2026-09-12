@@ -1,0 +1,153 @@
+<section class="cat-page">
+  @if (vista === 'lista') {
+    <div class="franja">
+      <div>
+        <p>Incidencias</p>
+        <h1>Errores</h1>
+        <span>{{ errores.length }} incidencia{{ errores.length === 1 ? '' : 's' }} registrada{{ errores.length === 1 ? '' : 's' }}</span>
+      </div>
+      <button type="button" class="btn-crear" (click)="abrirNuevo()">Añadir error</button>
+    </div>
+
+    <app-catalogo-tabs />
+
+    <div class="tabla-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th class="col-acciones">Acciones</th>
+            <th>Descripción</th>
+            <th>Hardware</th>
+            <th>Sistema</th>
+            <th>Frecuencia</th>
+            <th>Soluciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (item of errores; track item.id) {
+            <tr>
+              <td>
+                <div class="acciones">
+                  <button type="button" class="act edit" (click)="abrirEditar(item)">Editar</button>
+                  <button type="button" class="act del" (click)="eliminar(item)">Eliminar</button>
+                </div>
+              </td>
+              <td><strong>{{ item.descripcion }}</strong></td>
+              <td>{{ nombreHardware(item.hardwareId) }}</td>
+              <td>{{ item.sistema || '—' }}</td>
+              <td>{{ item.frecuencia || '—' }}</td>
+              <td>{{ nombresSoluciones(item.solucionIds) }}</td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="6" class="vacio">Aún no hay errores. Usa Añadir error para registrar el primero.</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  } @else {
+    <div class="franja">
+      <div>
+        <p>Incidencias</p>
+        <h1>{{ editId ? 'Editar error' : 'Nuevo error' }}</h1>
+        <span>Registra una incidencia con su contexto, soluciones y pruebas.</span>
+      </div>
+      <button type="button" class="btn-sec" (click)="volver()">Volver</button>
+    </div>
+
+    <app-catalogo-tabs />
+
+    <form class="sheet" [formGroup]="form" (ngSubmit)="save()">
+      <div class="sheet-body">
+        <label class="full">
+          Descripción *
+          <textarea rows="3" formControlName="descripcion" placeholder="¿Qué está fallando?"></textarea>
+        </label>
+
+        <label>
+          Hardware
+          <select formControlName="hardwareId">
+            <option [value]="0">Sin hardware</option>
+            @for (h of hardware; track h.id) {
+              <option [value]="h.id">{{ h.nombre }}</option>
+            }
+          </select>
+        </label>
+
+        <label>
+          Sistema
+          <select formControlName="sistema">
+            <option value="">Sin sistema</option>
+            @for (s of sistemas; track s) {
+              <option [value]="s">{{ s }}</option>
+            }
+          </select>
+        </label>
+
+        <label>
+          Módulo
+          <input type="text" formControlName="modulo" placeholder="Caja, reportes, inventario..." />
+        </label>
+
+        <label>
+          Frecuencia
+          <select formControlName="frecuencia">
+            <option value="">Sin frecuencia</option>
+            @for (f of frecuencias; track f) {
+              <option [value]="f">{{ f }}</option>
+            }
+          </select>
+        </label>
+
+        <label class="full">
+          Usuario (contexto)
+          <input type="text" formControlName="usuarioContexto" placeholder="Quién reporta o en qué cuenta ocurre" />
+        </label>
+
+        <label class="full">
+          Causa del problema
+          <textarea rows="3" formControlName="causa" placeholder="Qué lo provoca, si ya se conoce"></textarea>
+        </label>
+
+        <div>
+          <p class="grupo">Soluciones</p>
+          <div class="lista">
+            @for (s of soluciones; track s.id) {
+              <button type="button" class="fila" [class.on]="isChecked('solucionIds', s.id)" (click)="toggleId('solucionIds', s.id, !isChecked('solucionIds', s.id))">
+                <i></i>
+                {{ s.nombre }}
+              </button>
+            } @empty {
+              <span class="muted">No hay soluciones. Créalas en el catálogo.</span>
+            }
+          </div>
+        </div>
+
+        <div>
+          <p class="grupo">Pruebas</p>
+          <div class="lista">
+            @for (p of pruebas; track p.id) {
+              <button type="button" class="fila" [class.on]="isChecked('pruebaIds', p.id)" (click)="toggleId('pruebaIds', p.id, !isChecked('pruebaIds', p.id))">
+                <i></i>
+                {{ p.descripcion }}
+              </button>
+            } @empty {
+              <span class="muted">No hay pruebas activas.</span>
+            }
+          </div>
+        </div>
+
+        <label class="full">
+          Comentarios
+          <textarea rows="3" formControlName="comentarios" placeholder="Observaciones del técnico o del usuario"></textarea>
+        </label>
+      </div>
+
+      <footer class="sheet-foot">
+        <button type="button" class="btn-sec" (click)="volver()">Cancelar</button>
+        <button type="submit" class="btn-crear">Guardar error</button>
+      </footer>
+    </form>
+  }
+</section>

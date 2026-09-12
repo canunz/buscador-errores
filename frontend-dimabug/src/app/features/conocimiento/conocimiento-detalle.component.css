@@ -1,0 +1,414 @@
+.detail {
+  max-width: 1100px;
+}
+
+.crumb {
+  margin: 0 0 14px;
+  color: #94a3b8;
+  font-size: 13px;
+}
+
+.crumb a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.crumb a:hover {
+  color: #1e4fd6;
+}
+
+.crumb span {
+  margin: 0 6px;
+}
+
+.hero {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 20px;
+  padding: 22px 24px;
+  border-radius: 20px;
+  background: linear-gradient(135deg, #0b1b4d 0%, #16348a 100%);
+  color: #fff;
+  box-shadow: 0 16px 36px rgba(11, 27, 77, 0.18);
+}
+
+.kind {
+  margin: 0 0 8px;
+  color: #b7c4ea;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.hero h1 {
+  margin: 0 0 8px;
+  font-size: 26px;
+  line-height: 1.25;
+}
+
+.lead {
+  margin: 0 0 14px;
+  max-width: 740px;
+  color: #d5def5;
+  font-size: 14.5px;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.chips span {
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #e8edff;
+  font-size: 12px;
+}
+
+.star {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 0;
+  border-radius: 12px;
+  padding: 10px 12px;
+  background: rgba(255, 255, 255, 0.12);
+  color: #e2e8f0;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.star em {
+  font-style: normal;
+  font-size: 13px;
+}
+
+.star.on {
+  background: #fff;
+  color: #b45309;
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 300px;
+  gap: 18px;
+}
+
+.block,
+.panel {
+  margin-bottom: 12px;
+  padding: 18px 18px 16px;
+  background: #fff;
+  border: 1px solid #e7e9f0;
+  border-radius: 16px;
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.04);
+}
+
+.block {
+  border-left: 4px solid #1e4fd6;
+}
+
+.block.warn {
+  border-left-color: #f59e0b;
+  background: #fffdf8;
+}
+
+.block.ok {
+  border-left-color: #16a34a;
+  background: #f7fdf8;
+}
+
+.block h2,
+.panel h3 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 14px;
+  font-size: 15px;
+  color: #0f172a;
+}
+
+.block h2 span {
+  width: 24px;
+  height: 24px;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  background: #eaf0fe;
+  color: #1e4fd6;
+  font-size: 12px;
+}
+
+.block.warn h2 span {
+  background: #fff7ed;
+  color: #c2410c;
+}
+
+.block.ok h2 span {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.checks {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 8px;
+}
+
+.checks li {
+  position: relative;
+  padding: 10px 12px 10px 34px;
+  border-radius: 12px;
+  background: #f8faff;
+  color: #334155;
+  font-size: 14px;
+}
+
+.checks li::before {
+  content: '';
+  position: absolute;
+  left: 12px;
+  top: 14px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #1e4fd6;
+}
+
+.block p {
+  margin: 0;
+  color: #334155;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.steps {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 8px;
+}
+
+.steps li {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: #fff;
+  border: 1px solid #eef2f7;
+}
+
+.steps b {
+  width: 24px;
+  height: 24px;
+  display: grid;
+  place-items: center;
+  border-radius: 8px;
+  background: #eaf0fe;
+  color: #1e4fd6;
+  font-size: 12px;
+  flex-shrink: 0;
+}
+
+.steps span {
+  color: #334155;
+  font-size: 14px;
+  line-height: 1.5;
+  padding-top: 2px;
+}
+
+.files {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+
+.files li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border: 1px solid #e7e9f0;
+  border-radius: 12px;
+}
+
+.file-icon {
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  border-radius: 10px;
+  background: #fee2e2;
+  color: #b91c1c;
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.files strong {
+  display: block;
+  color: #1e3a8a;
+  font-size: 13.5px;
+}
+
+.files em {
+  color: #94a3b8;
+  font-style: normal;
+  font-size: 12px;
+}
+
+.feedback p {
+  margin: 0 0 12px;
+  color: #64748b;
+  font-size: 13px;
+}
+
+.votes {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.votes button,
+.ghost {
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 10px 12px;
+  background: #fff;
+  color: #0f172a;
+  font-weight: 650;
+  cursor: pointer;
+}
+
+.votes button.on {
+  border-color: #16a34a;
+  background: #dcfce7;
+  color: #166534;
+}
+
+.votes button.no.on {
+  border-color: #dc2626;
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.panel dl {
+  margin: 0;
+  display: grid;
+  gap: 10px;
+}
+
+.panel dt {
+  color: #94a3b8;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.panel dd {
+  margin: 2px 0 0;
+  font-size: 13.5px;
+}
+
+.pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.pills span {
+  padding: 5px 9px;
+  border-radius: 999px;
+  background: #eef2ff;
+  color: #1e3a8a;
+  font-size: 12px;
+  font-weight: 650;
+}
+
+.ghost {
+  display: block;
+  width: 100%;
+  margin-bottom: 8px;
+  text-align: left;
+}
+
+.nav-art {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 8px;
+}
+
+.nav-art a {
+  flex: 1;
+  max-width: 48%;
+  padding: 14px 16px;
+  border: 1px solid #e7e9f0;
+  border-radius: 14px;
+  background: #fff;
+  color: #0f172a;
+  text-decoration: none;
+  font-weight: 650;
+}
+
+.nav-art a.next {
+  text-align: right;
+}
+
+.nav-art small {
+  display: block;
+  margin-bottom: 4px;
+  color: #1e4fd6;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.missing {
+  color: #64748b;
+}
+
+@media (max-width: 860px) {
+  .layout,
+  .hero {
+    grid-template-columns: 1fr;
+    display: grid;
+  }
+
+  .nav-art a {
+    max-width: none;
+  }
+}
+
+:host-context(.tema-oscuro) .block h2,
+:host-context(.tema-oscuro) .panel h3,
+:host-context(.tema-oscuro) .panel dd,
+:host-context(.tema-oscuro) .steps span,
+:host-context(.tema-oscuro) .checks li,
+:host-context(.tema-oscuro) .block p {
+  color: #e5e7eb;
+}
+
+:host-context(.tema-oscuro) .block,
+:host-context(.tema-oscuro) .panel,
+:host-context(.tema-oscuro) .nav-art a {
+  background: #111827;
+  border-color: #1f2937;
+}
+
+:host-context(.tema-oscuro) .checks li,
+:host-context(.tema-oscuro) .steps li {
+  background: #1f2937;
+  border-color: #334155;
+}

@@ -1,0 +1,305 @@
+.inicio {
+  max-width: 1100px;
+}
+
+.saludo h1 {
+  margin: 0 0 4px;
+  font-size: 26px;
+  font-weight: 700;
+  color: #1d2433;
+}
+
+.saludo p {
+  margin: 0 0 22px;
+  color: #667085;
+  font-size: 15px;
+}
+
+.hero {
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 22px;
+  padding: 26px 32px;
+  border-radius: 20px;
+  background: linear-gradient(135deg, #0b1b4d 0%, #0e2266 100%);
+  color: #fff;
+}
+
+.hero h2 {
+  margin: 0 0 16px;
+  max-width: 62%;
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.buscador {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  max-width: 640px;
+  padding: 6px;
+  background: #fff;
+  border-radius: 12px;
+}
+
+.buscador svg {
+  width: 20px;
+  height: 20px;
+  margin-left: 12px;
+  color: #9aa3b2;
+  flex-shrink: 0;
+}
+
+.buscador input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  outline: none;
+  padding: 10px 0;
+  font-size: 14.5px;
+  color: #1d2433;
+  background: transparent;
+}
+
+.btn-buscar {
+  border: 0;
+  border-radius: 8px;
+  padding: 12px 22px;
+  background: #1e4fd6;
+  color: #fff;
+  font-size: 14.5px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.hero-hint {
+  margin: 12px 0 0;
+  max-width: 64%;
+  color: #aeb9e0;
+  font-size: 13px;
+}
+
+.mascota-hero {
+  position: absolute;
+  right: 18px;
+  top: 50%;
+  width: 168px;
+  height: auto;
+  transform: translateY(-50%);
+  object-fit: contain;
+  pointer-events: none;
+}
+
+.grid-accesos {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+.card-acceso {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px 22px;
+  border: 0;
+  border-radius: 16px;
+  background: #eaf0fe;
+  text-align: left;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+}
+
+.card-acceso.verde {
+  background: #e7f7ee;
+}
+
+.card-acceso:hover {
+  transform: translateY(-2px);
+}
+
+.icono-cuadrado {
+  flex: 0 0 48px;
+  width: 48px;
+  height: 48px;
+  display: grid;
+  place-items: center;
+  border-radius: 14px;
+  background: #1e4fd6;
+  color: #fff;
+}
+
+.card-acceso.verde .icono-cuadrado {
+  background: #16a34a;
+}
+
+.icono-cuadrado svg,
+.flecha {
+  width: 22px;
+  height: 22px;
+}
+
+.card-acceso-texto {
+  min-width: 0;
+}
+
+.card-acceso-texto h3 {
+  margin: 0 0 4px;
+  font-size: 16px;
+  color: #1d2433;
+}
+
+.card-acceso-texto p {
+  margin: 0;
+  color: #667085;
+  font-size: 13.5px;
+  line-height: 1.4;
+}
+
+.flecha {
+  margin-left: auto;
+  color: #667085;
+  flex-shrink: 0;
+}
+
+.seccion-titulo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.seccion-titulo h2 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.link {
+  border: 0;
+  background: none;
+  color: #1e4fd6;
+  font: inherit;
+  font-weight: 650;
+  cursor: pointer;
+}
+
+.grid-procedimientos {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.proc-card {
+  display: block;
+  padding: 16px;
+  border: 1px solid #e7e9f0;
+  border-radius: 14px;
+  background: #fff;
+  text-align: left;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+}
+
+.proc-card:hover {
+  border-color: #c7d2fe;
+}
+
+.proc-icono {
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  margin-bottom: 12px;
+  border-radius: 10px;
+  background: #e8eefe;
+  color: #1e4fd6;
+}
+
+.proc-icono svg {
+  width: 20px;
+  height: 20px;
+}
+
+.proc-card h4 {
+  margin: 0 0 6px;
+  font-size: 14.5px;
+  line-height: 1.35;
+}
+
+.proc-categoria,
+.proc-pasos {
+  margin: 0;
+  color: #667085;
+  font-size: 12.5px;
+}
+
+.proc-pasos {
+  margin-top: 8px;
+}
+
+.estado-vacio {
+  margin: 0;
+  padding: 28px 16px;
+  border: 1px dashed #e7e9f0;
+  border-radius: 14px;
+  background: #fff;
+  color: #667085;
+  text-align: center;
+}
+
+.pie {
+  margin: 32px 0 0;
+  color: #667085;
+  font-size: 13px;
+  text-align: center;
+}
+
+@media (max-width: 900px) {
+  .grid-procedimientos,
+  .grid-accesos {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .mascota-hero {
+    width: 120px;
+  }
+}
+
+@media (max-width: 680px) {
+  .hero h2,
+  .hero-hint {
+    max-width: 100%;
+  }
+
+  .mascota-hero {
+    display: none;
+  }
+
+  .grid-procedimientos,
+  .grid-accesos {
+    grid-template-columns: 1fr;
+  }
+}
+
+:host-context(.tema-oscuro) .saludo h1,
+:host-context(.tema-oscuro) .seccion-titulo h2,
+:host-context(.tema-oscuro) .card-acceso-texto h3,
+:host-context(.tema-oscuro) .proc-card h4 {
+  color: #f8fafc;
+}
+
+:host-context(.tema-oscuro) .proc-card,
+:host-context(.tema-oscuro) .estado-vacio {
+  background: #111827;
+  border-color: #1f2937;
+}
+
+:host-context(.tema-oscuro) .card-acceso {
+  background: #172554;
+}
+
+:host-context(.tema-oscuro) .card-acceso.verde {
+  background: #14532d;
+}

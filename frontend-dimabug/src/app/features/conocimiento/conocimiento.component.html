@@ -1,0 +1,123 @@
+<section class="kb">
+  <div class="franja">
+    <p>Conocimiento / Buscar</p>
+    <h1>Buscar conocimiento</h1>
+    <span>Encuentra soluciones y procedimientos del equipo de Soporte TI.</span>
+  </div>
+
+  <form class="search" (submit)="$event.preventDefault()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+      <circle cx="11" cy="11" r="8" />
+      <line x1="21" y1="21" x2="16.65" y2="16.65" />
+    </svg>
+    <input type="search" [(ngModel)]="q" name="q" placeholder="Impresora fuera de línea" />
+    <button type="submit">Buscar</button>
+  </form>
+
+  <div class="filters">
+    <label>
+      Sistema
+      <select [(ngModel)]="sistema" name="sistema">
+        <option value="">Todos los sistemas</option>
+        @for (item of sistemas; track item) {
+          <option [value]="item">{{ item }}</option>
+        }
+      </select>
+    </label>
+    <label>
+      Hardware
+      <select [(ngModel)]="hardware" name="hardware">
+        <option value="">Todo el hardware</option>
+        @for (item of hardwares; track item) {
+          <option [value]="item">{{ item }}</option>
+        }
+      </select>
+    </label>
+    <label>
+      Categoría
+      <select [(ngModel)]="categoria" name="categoria">
+        <option value="">Todas las categorías</option>
+        @for (item of categorias; track item) {
+          <option [value]="item">{{ item }}</option>
+        }
+      </select>
+    </label>
+    <label>
+      Tipo de contenido
+      <select [(ngModel)]="tipo" name="tipo">
+        <option value="">Todos</option>
+        <option value="Conocimiento">Conocimiento</option>
+        <option value="Procedimiento">Procedimiento</option>
+      </select>
+    </label>
+  </div>
+
+  @if (chips.length) {
+    <div class="chips">
+      <span>Filtros activos:</span>
+      @for (chip of chips; track chip.key) {
+        <button type="button" (click)="quitar(chip.key)">{{ chip.label }}: {{ chip.value }} ×</button>
+      }
+      <button type="button" class="clear" (click)="limpiarFiltros()">Limpiar filtros</button>
+    </div>
+  }
+
+  <div class="meta">
+    <p>{{ resultados.length }} resultado{{ resultados.length === 1 ? '' : 's' }} encontrado{{ resultados.length === 1 ? '' : 's' }}</p>
+    <label>
+      Ordenar por:
+      <select [(ngModel)]="orden" name="orden">
+        <option value="relevante">Más relevante</option>
+        <option value="reciente">Más reciente</option>
+      </select>
+    </label>
+  </div>
+
+  <div class="tabla-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th class="col-acciones">Acciones</th>
+          <th>Tipo</th>
+          <th>Conocimiento</th>
+          <th>Sistema</th>
+          <th>Hardware</th>
+          <th>Categoría</th>
+          <th>Actualizado</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (item of resultados; track item.id) {
+          <tr>
+            <td>
+              <div class="acts">
+                <a class="act ver" [routerLink]="['/conocimiento', item.id]">Ver</a>
+                <button
+                  type="button"
+                  class="act star"
+                  [class.on]="esFavorito(item.id)"
+                  (click)="toggleFavorito(item.id, $event)"
+                >
+                  {{ esFavorito(item.id) ? '★' : '☆' }}
+                </button>
+              </div>
+            </td>
+            <td>{{ item.tipo }}</td>
+            <td>
+              <strong>{{ item.titulo }}</strong>
+              <em>{{ item.descripcion }}</em>
+            </td>
+            <td>{{ item.sistema }}</td>
+            <td>{{ item.hardware }}</td>
+            <td>{{ item.categoria }}</td>
+            <td>{{ item.fecha | date: 'dd/MM/yyyy' }}</td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="7" class="empty">No se encontraron resultados para esta búsqueda.</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</section>

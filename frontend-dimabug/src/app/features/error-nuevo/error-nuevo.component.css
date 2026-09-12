@@ -1,0 +1,145 @@
+.sheet {
+  max-width: 880px;
+  background: #fff;
+  border: 1px solid #e7e9f0;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
+}
+
+.sheet-body {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px 18px;
+  padding: 24px;
+}
+
+.sheet-body .full {
+  grid-column: 1 / -1;
+}
+
+.sheet-body label {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  margin: 0;
+  font-size: 13px;
+  font-weight: 700;
+  color: #334155;
+}
+
+.sheet-body input,
+.sheet-body select,
+.sheet-body textarea {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid #d8dee8;
+  border-radius: 12px;
+  padding: 11px 12px;
+  font: inherit;
+  font-weight: 500;
+  color: #0f172a;
+  background: #f8faff;
+}
+
+.sheet-body textarea {
+  resize: vertical;
+  min-height: 88px;
+}
+
+.sheet-body input:focus,
+.sheet-body select:focus,
+.sheet-body textarea:focus {
+  outline: none;
+  border-color: #1e4fd6;
+  background: #fff;
+  box-shadow: 0 0 0 4px rgba(30, 79, 214, 0.12);
+}
+
+.grupo {
+  margin: 0 0 8px;
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.lista {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.fila {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  border: 1px solid #e7e9f0;
+  border-radius: 12px;
+  padding: 11px 12px;
+  background: #fff;
+  color: #0f172a;
+  font: inherit;
+  font-size: 13.5px;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+}
+
+.fila i {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 5px;
+  background: #fff;
+}
+
+.fila.on {
+  border-color: #1e4fd6;
+  background: #eef3ff;
+  color: #1e3a8a;
+}
+
+.fila.on i {
+  border-color: #1e4fd6;
+  background: #1e4fd6;
+  box-shadow: inset 0 0 0 3px #fff;
+}
+
+.sheet-foot {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 16px 24px;
+  border-top: 1px solid #eef2f7;
+  background: #f8faff;
+}
+
+@media (max-width: 700px) {
+  .sheet-body {
+    grid-template-columns: 1fr;
+  }
+}
+
+:host-context(.tema-oscuro) .sheet,
+:host-context(.tema-oscuro) .sheet-foot,
+:host-context(.tema-oscuro) .fila {
+  background: #111827;
+  border-color: #1f2937;
+}
+
+:host-context(.tema-oscuro) .sheet-body input,
+:host-context(.tema-oscuro) .sheet-body select,
+:host-context(.tema-oscuro) .sheet-body textarea {
+  background: #1f2937;
+  border-color: #334155;
+  color: #e5e7eb;
+}
+
+:host-context(.tema-oscuro) .fila,
+:host-context(.tema-oscuro) .sheet-body label {
+  color: #e5e7eb;
+}

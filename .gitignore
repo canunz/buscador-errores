@@ -1,0 +1,29 @@
+# Node / Angular
+node_modules/
+.angular/
+dist/
+out-tsc/
+
+# Maven / Java
+**/target/
+**/.mvn/wrapper/maven-wrapper.jar
+
+# IDE
+.idea/
+*.iml
+*.iws
+*.ipr
+.vscode/
+.classpath
+.project
+.settings
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Secrets
+.env
+.env.*
+!.env.example
+dima-bug-backend/src/main/resources/application.properties
