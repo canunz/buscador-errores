@@ -10,6 +10,7 @@ import { DepartamentosComponent } from './features/departamentos/departamentos.c
 import { PruebasComponent } from './features/pruebas/pruebas.component';
 import { SolucionesComponent } from './features/soluciones/soluciones.component';
 import { ConocimientoComponent } from './features/conocimiento/conocimiento.component';
+import { ConocimientoFormComponent } from './features/conocimiento/conocimiento-form.component';
 import { ConocimientoDetalleComponent } from './features/conocimiento/conocimiento-detalle.component';
 import { ErrorNuevoComponent } from './features/error-nuevo/error-nuevo.component';
 import { AdminComponent } from './features/admin/admin.component';
@@ -34,6 +35,8 @@ export const routes: Routes = [
       { path: 'procedimientos', component: PruebasComponent },
       { path: 'soluciones', component: SolucionesComponent },
       { path: 'conocimiento', component: ConocimientoComponent },
+      { path: 'conocimiento/nuevo', component: ConocimientoFormComponent },
+      { path: 'conocimiento/:id/editar', component: ConocimientoFormComponent },
       { path: 'conocimiento/:id', component: ConocimientoDetalleComponent },
       { path: 'ejecuciones', component: EjecucionesComponent },
       { path: 'favoritos', component: FavoritosComponent },

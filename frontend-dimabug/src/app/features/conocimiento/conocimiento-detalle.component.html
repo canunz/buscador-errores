@@ -1,116 +1,109 @@
-@if (item(); as kb) {
+@if (loading) {
+  <p class="missing">Cargando conocimiento…</p>
+} @else if (error && !item) {
+  <p class="missing">{{ error }} <a routerLink="/conocimiento">Volver al listado</a></p>
+} @else if (item) {
+  @let kb = item;
   <article class="detail">
     <p class="crumb">
       <a routerLink="/conocimiento">Conocimiento</a>
       <span>/</span>
-      <a routerLink="/conocimiento">Resultados</a>
-      <span>/</span>
       Detalle
     </p>
 
+    @if (error) {
+      <p class="missing">{{ error }}</p>
+    }
+
     <header class="hero">
       <div>
-        <p class="kind">{{ kb.tipo }} · {{ kb.codigo }}</p>
+        <p class="kind">
+          <span class="badge" [class.publicado]="kb.estado === 'PUBLICADO'" [class.borrador]="kb.estado === 'BORRADOR'">
+            {{ kb.estado === 'PUBLICADO' ? 'Publicado' : 'Borrador' }}
+          </span>
+        </p>
         <h1>{{ kb.titulo }}</h1>
-        <p class="lead">{{ kb.descripcion }}</p>
+        <p class="lead">{{ kb.descripcion || 'Sin descripción' }}</p>
         <div class="chips">
-          <span>Sistema: {{ kb.sistema }}</span>
-          <span>Hardware: {{ kb.hardware }}</span>
-          <span>Categoría: {{ kb.categoria }}</span>
-          <span>Actualizado: {{ kb.fecha | date: 'dd/MM/yyyy' }}</span>
+          <span>Hardware: {{ kb.hardwareNombre || '—' }}</span>
+          <span>Sistema: {{ kb.sistemaNombre || '—' }}</span>
+          <span>Módulo: {{ kb.moduloNombre || '—' }}</span>
+          <span>Frecuencia: {{ kb.frecuenciaNombre || '—' }}</span>
         </div>
       </div>
-      <button type="button" class="star" [class.on]="favorito()" (click)="toggleFavorito()">
-        ★
-        <em>{{ favorito() ? 'En favoritos' : 'Guardar' }}</em>
-      </button>
+      <div class="hero-actions">
+        <button type="button" class="star" [class.on]="favorito" (click)="toggleFavorito()">
+          ★
+          <em>{{ favorito ? 'En favoritos' : 'Guardar' }}</em>
+        </button>
+      </div>
     </header>
 
     <div class="layout">
       <div class="main-col">
         <section class="block">
-          <h2><span>1</span> Síntomas</h2>
-          <ul class="checks">
-            @for (s of kb.sintomas; track s) {
-              <li>{{ s }}</li>
-            }
-          </ul>
+          <h2>Conocimiento</h2>
+          <dl class="facts">
+            <div><dt>Título</dt><dd>{{ kb.titulo }}</dd></div>
+            <div><dt>Descripción</dt><dd>{{ kb.descripcion || '—' }}</dd></div>
+            <div><dt>Hardware</dt><dd>{{ kb.hardwareNombre || '—' }}</dd></div>
+            <div><dt>Sistema</dt><dd>{{ kb.sistemaNombre || '—' }}</dd></div>
+            <div><dt>Módulo</dt><dd>{{ kb.moduloNombre || '—' }}</dd></div>
+            <div><dt>Frecuencia</dt><dd>{{ kb.frecuenciaNombre || '—' }}</dd></div>
+            <div><dt>Comentario</dt><dd>{{ kb.comentario || '—' }}</dd></div>
+            <div>
+              <dt>Estado</dt>
+              <dd>
+                <span class="badge" [class.publicado]="kb.estado === 'PUBLICADO'" [class.borrador]="kb.estado === 'BORRADOR'">
+                  {{ kb.estado === 'PUBLICADO' ? 'Publicado' : 'Borrador' }}
+                </span>
+              </dd>
+            </div>
+          </dl>
         </section>
 
-        <section class="block">
-          <h2><span>2</span> Pruebas</h2>
-          <ol class="steps">
-            @for (p of kb.pruebas; track p; let i = $index) {
-              <li><b>{{ i + 1 }}</b><span>{{ p }}</span></li>
-            }
-          </ol>
+        <section class="block soon">
+          <h2>Síntomas</h2>
+          <p>Se incorporará cuando el API esté disponible.</p>
         </section>
-
-        <section class="block warn">
-          <h2><span>3</span> Causa</h2>
-          <p>{{ kb.causa }}</p>
+        <section class="block soon">
+          <h2>Causas</h2>
+          <p>Se incorporará cuando el API esté disponible.</p>
         </section>
-
-        <section class="block ok">
-          <h2><span>4</span> Solución</h2>
-          <ol class="steps">
-            @for (paso of kb.solucionPasos; track paso; let i = $index) {
-              <li><b>{{ i + 1 }}</b><span>{{ paso }}</span></li>
-            }
-          </ol>
+        <section class="block soon">
+          <h2>Pruebas asociadas</h2>
+          <p>Se incorporará cuando el API esté disponible.</p>
         </section>
-
-        <section class="block">
-          <h2><span>5</span> Material de apoyo</h2>
-          <ul class="files">
-            @for (m of kb.materiales; track m.nombre) {
-              <li>
-                <span class="file-icon">{{ m.nombre.toLowerCase().endsWith('.pdf') ? 'PDF' : 'DOC' }}</span>
-                <div>
-                  <strong>{{ m.nombre }}</strong>
-                  <em>{{ m.tamano }}</em>
-                </div>
-              </li>
-            }
-          </ul>
+        <section class="block soon">
+          <h2>Soluciones</h2>
+          <p>Se incorporará cuando el API esté disponible. Incluirá responsable y departamento.</p>
+        </section>
+        <section class="block soon">
+          <h2>Material de apoyo</h2>
+          <p>Se incorporará cuando el API esté disponible.</p>
         </section>
       </div>
 
       <aside class="side">
-        <section class="panel feedback">
-          <h3>¿Funcionó la solución?</h3>
-          <p>Tu respuesta ayuda a mejorar el conocimiento.</p>
-          <div class="votes">
-            <button type="button" [class.on]="utilidad === 'si'" (click)="marcarUtil('si')">Funcionó</button>
-            <button type="button" class="no" [class.on]="utilidad === 'no'" (click)="marcarUtil('no')">No funcionó</button>
-          </div>
-        </section>
-
         <section class="panel">
           <h3>Información adicional</h3>
           <dl>
-            <div><dt>ID del conocimiento</dt><dd>{{ kb.codigo }}</dd></div>
-            <div><dt>Creado por</dt><dd>{{ kb.creador }}</dd></div>
-            <div><dt>Fecha de creación</dt><dd>{{ kb.fechaCreacion | date: 'dd/MM/yyyy' }}</dd></div>
-            <div><dt>Última actualización</dt><dd>{{ kb.fecha | date: 'dd/MM/yyyy' }}</dd></div>
-            <div><dt>Visualizaciones</dt><dd>{{ kb.visualizaciones }}</dd></div>
-            <div><dt>Veces útil</dt><dd>{{ kb.vecesUtil }}</dd></div>
+            <div><dt>Creado por</dt><dd>{{ kb.creadoPor || '—' }}</dd></div>
+            <div><dt>Fecha de creación</dt><dd>{{ kb.fechaCreacion ? (kb.fechaCreacion | date: 'dd/MM/yyyy HH:mm') : '—' }}</dd></div>
+            <div><dt>Última modificación</dt><dd>{{ kb.fechaModificacion ? (kb.fechaModificacion | date: 'dd/MM/yyyy HH:mm') : '—' }}</dd></div>
           </dl>
         </section>
 
         <section class="panel">
-          <h3>Etiquetas</h3>
-          <div class="pills">
-            @for (e of kb.etiquetas; track e) {
-              <span>{{ e }}</span>
-            }
-          </div>
-        </section>
-
-        <section class="panel">
           <h3>Acciones</h3>
+          <button type="button" class="ghost" (click)="editar()">Editar</button>
+          @if (kb.estado === 'BORRADOR') {
+            <button type="button" class="ghost publish" (click)="publicar()" [disabled]="publishing">
+              {{ publishing ? 'Publicando…' : 'Publicar' }}
+            </button>
+          }
           <button type="button" class="ghost" (click)="toggleFavorito()">
-            {{ favorito() ? 'Quitar de favoritos' : 'Agregar a favoritos' }}
+            {{ favorito ? 'Quitar de favoritos' : 'Agregar a favoritos' }}
           </button>
           <button type="button" class="ghost" (click)="compartir()">
             {{ copiado ? 'Enlace copiado' : 'Compartir' }}
@@ -118,24 +111,5 @@
         </section>
       </aside>
     </div>
-
-    <footer class="nav-art">
-      @if (vecinos().anterior; as prev) {
-        <a [routerLink]="['/conocimiento', prev.id]">
-          <small>Anterior</small>
-          {{ prev.titulo }}
-        </a>
-      } @else {
-        <span></span>
-      }
-      @if (vecinos().siguiente; as next) {
-        <a class="next" [routerLink]="['/conocimiento', next.id]">
-          <small>Siguiente</small>
-          {{ next.titulo }}
-        </a>
-      }
-    </footer>
   </article>
-} @else {
-  <p class="missing">No encontramos ese conocimiento. <a routerLink="/conocimiento">Volver a la búsqueda</a></p>
 }

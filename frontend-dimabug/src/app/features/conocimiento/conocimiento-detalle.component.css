@@ -379,6 +379,66 @@
   color: #64748b;
 }
 
+.hero-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.badge {
+  display: inline-flex;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.badge.borrador {
+  background: #fff7ed;
+  color: #c2410c;
+}
+
+.badge.publicado {
+  background: #ecfdf5;
+  color: #047857;
+}
+
+.kind .badge {
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.facts {
+  margin: 0;
+}
+
+.facts > div {
+  margin-bottom: 12px;
+}
+
+.facts dt {
+  margin-bottom: 4px;
+  color: #64748b;
+  font-size: 12px;
+  text-transform: uppercase;
+}
+
+.facts dd {
+  margin: 0;
+  color: #0f172a;
+}
+
+.soon p {
+  margin: 0;
+  color: #94a3b8;
+}
+
+.ghost.publish {
+  background: #ecfdf5;
+  color: #047857;
+  border-color: #a7f3d0;
+}
+
 @media (max-width: 860px) {
   .layout,
   .hero {

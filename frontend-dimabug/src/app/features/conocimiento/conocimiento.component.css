@@ -2,6 +2,40 @@
   max-width: 1120px;
 }
 
+.btn-nuevo {
+  align-self: center;
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: #fff;
+  color: #0b1b4d;
+  font-weight: 700;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.badge {
+  display: inline-flex;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.badge.borrador {
+  background: #fff7ed;
+  color: #c2410c;
+}
+
+.badge.publicado {
+  background: #ecfdf5;
+  color: #047857;
+}
+
+.empty-msg {
+  color: #b42318;
+  font-size: 14px;
+}
+
 .franja {
   display: flex;
   justify-content: space-between;

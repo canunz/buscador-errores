@@ -1,78 +1,94 @@
-import { DatePipe } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { CatalogoService } from '../../core/services/catalogo.service';
+import { Conocimiento } from '../../core/models/conocimiento.model';
+import { ConocimientoService } from '../../core/services/conocimiento.service';
 import { FavoritosService } from '../../core/services/favoritos.service';
-import { ConocimientoBusqueda } from '../../core/models/catalogo.model';
 
 @Component({
   selector: 'app-conocimiento',
   standalone: true,
-  imports: [FormsModule, DatePipe, RouterLink],
+  imports: [FormsModule, RouterLink],
   templateUrl: './conocimiento.component.html',
   styleUrl: './conocimiento.component.css',
 })
-export class ConocimientoComponent {
-  private readonly catalogo = inject(CatalogoService);
+export class ConocimientoComponent implements OnInit {
+  private readonly conocimientosApi = inject(ConocimientoService);
   private readonly favoritosService = inject(FavoritosService);
   private readonly route = inject(ActivatedRoute);
 
+  items: Conocimiento[] = [];
+  loading = false;
+  error = '';
   q = this.route.snapshot.queryParamMap.get('q') || '';
   sistema = '';
   hardware = '';
-  categoria = '';
-  tipo = '';
+  estado = '';
   orden: 'relevante' | 'reciente' = 'relevante';
 
   get sistemas(): string[] {
-    return this.unicos((item) => item.sistema);
+    return this.unicos((item) => item.sistemaNombre);
   }
 
   get hardwares(): string[] {
-    return this.unicos((item) => item.hardware);
+    return this.unicos((item) => item.hardwareNombre);
   }
 
-  get categorias(): string[] {
-    return this.unicos((item) => item.categoria);
-  }
-
-  get chips(): { key: 'sistema' | 'hardware' | 'categoria' | 'tipo'; label: string; value: string }[] {
-    const chips: { key: 'sistema' | 'hardware' | 'categoria' | 'tipo'; label: string; value: string }[] = [];
+  get chips(): { key: 'sistema' | 'hardware' | 'estado'; label: string; value: string }[] {
+    const chips: { key: 'sistema' | 'hardware' | 'estado'; label: string; value: string }[] = [];
     if (this.sistema) chips.push({ key: 'sistema', label: 'Sistema', value: this.sistema });
     if (this.hardware) chips.push({ key: 'hardware', label: 'Hardware', value: this.hardware });
-    if (this.categoria) chips.push({ key: 'categoria', label: 'Categoría', value: this.categoria });
-    if (this.tipo) chips.push({ key: 'tipo', label: 'Tipo', value: this.tipo });
+    if (this.estado) chips.push({ key: 'estado', label: 'Estado', value: this.estado });
     return chips;
   }
 
-  get resultados(): ConocimientoBusqueda[] {
+  get resultados(): Conocimiento[] {
     const term = this.q.trim().toLowerCase();
-    const list = this.catalogo.conocimientos().filter((item) => {
-      const texto = `${item.titulo} ${item.descripcion} ${item.sistema} ${item.hardware} ${item.categoria}`.toLowerCase();
-      const matchQ = !term || texto.includes(term);
+    const list = this.items.filter((item) => {
+      const texto = `${item.titulo} ${item.descripcion} ${item.sistemaNombre} ${item.hardwareNombre}`.toLowerCase();
       return (
-        matchQ &&
-        (!this.sistema || item.sistema === this.sistema) &&
-        (!this.hardware || item.hardware === this.hardware) &&
-        (!this.categoria || item.categoria === this.categoria) &&
-        (!this.tipo || item.tipo === this.tipo)
+        (!term || texto.includes(term)) &&
+        (!this.sistema || item.sistemaNombre === this.sistema) &&
+        (!this.hardware || item.hardwareNombre === this.hardware) &&
+        (!this.estado || item.estado === this.estado)
       );
     });
     if (this.orden === 'reciente') {
-      return [...list].sort((a, b) => b.fecha.localeCompare(a.fecha));
+      return [...list].sort((a, b) =>
+        String(b.fechaModificacion || b.fechaCreacion || '').localeCompare(
+          String(a.fechaModificacion || a.fechaCreacion || ''),
+        ),
+      );
     }
     return list;
+  }
+
+  ngOnInit(): void {
+    this.cargar();
+  }
+
+  cargar(): void {
+    this.loading = true;
+    this.error = '';
+    this.conocimientosApi.listar().subscribe({
+      next: (items) => {
+        this.items = items;
+        this.loading = false;
+      },
+      error: (err: Error) => {
+        this.error = err.message;
+        this.loading = false;
+      },
+    });
   }
 
   limpiarFiltros(): void {
     this.sistema = '';
     this.hardware = '';
-    this.categoria = '';
-    this.tipo = '';
+    this.estado = '';
   }
 
-  quitar(key: 'sistema' | 'hardware' | 'categoria' | 'tipo'): void {
+  quitar(key: 'sistema' | 'hardware' | 'estado'): void {
     this[key] = '';
   }
 
@@ -85,7 +101,7 @@ export class ConocimientoComponent {
     this.favoritosService.toggle(id);
   }
 
-  private unicos(pick: (item: ConocimientoBusqueda) => string): string[] {
-    return [...new Set(this.catalogo.conocimientos().map(pick))].sort((a, b) => a.localeCompare(b, 'es'));
+  private unicos(pick: (item: Conocimiento) => string): string[] {
+    return [...new Set(this.items.map(pick).filter(Boolean))].sort((a, b) => a.localeCompare(b, 'es'));
   }
 }

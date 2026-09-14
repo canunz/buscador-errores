@@ -1,6 +1,7 @@
-import { Component, computed, inject } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { CatalogoService } from '../../core/services/catalogo.service';
+import { Conocimiento } from '../../core/models/conocimiento.model';
+import { ConocimientoService } from '../../core/services/conocimiento.service';
 import { FavoritosService } from '../../core/services/favoritos.service';
 
 @Component({
@@ -24,12 +25,11 @@ import { FavoritosService } from '../../core/services/favoritos.service';
             <tr>
               <th class="col-acciones">Acciones</th>
               <th>Conocimiento</th>
-              <th>Tipo</th>
-              <th>Categoría</th>
+              <th>Estado</th>
             </tr>
           </thead>
           <tbody>
-            @for (item of items(); track item.id) {
+            @for (item of items; track item.id) {
               <tr>
                 <td>
                   <div class="acciones">
@@ -37,12 +37,11 @@ import { FavoritosService } from '../../core/services/favoritos.service';
                   </div>
                 </td>
                 <td><strong>{{ item.titulo }}</strong></td>
-                <td>{{ item.tipo }}</td>
-                <td>{{ item.categoria }}</td>
+                <td>{{ item.estado === 'PUBLICADO' ? 'Publicado' : 'Borrador' }}</td>
               </tr>
             } @empty {
               <tr>
-                <td colspan="4" class="vacio">Aún no tienes favoritos. Márcalos con la estrella desde Conocimiento.</td>
+                <td colspan="3" class="vacio">Aún no tienes favoritos. Márcalos con la estrella desde Conocimiento.</td>
               </tr>
             }
           </tbody>
@@ -52,12 +51,17 @@ import { FavoritosService } from '../../core/services/favoritos.service';
   `,
   styleUrl: '../../shared/ui/catalogo-page.css',
 })
-export class FavoritosComponent {
-  private readonly catalogo = inject(CatalogoService);
+export class FavoritosComponent implements OnInit {
+  private readonly conocimientosApi = inject(ConocimientoService);
   private readonly favoritos = inject(FavoritosService);
+  items: Conocimiento[] = [];
 
-  readonly items = computed(() => {
-    const ids = this.favoritos.ids();
-    return this.catalogo.conocimientos().filter((item) => ids.includes(item.id));
-  });
+  ngOnInit(): void {
+    this.conocimientosApi.listar().subscribe({
+      next: (list) => {
+        const ids = this.favoritos.ids();
+        this.items = list.filter((item) => ids.includes(item.id));
+      },
+    });
+  }
 }
