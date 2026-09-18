@@ -42,7 +42,7 @@ public class SecurityConfig {
 
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/sistemas/**", "/api/hardware/**", "/api/conocimientos/**",
-                                "/api/frecuencias/**", "/api/departamentos/**")
+                                "/api/frecuencias/**", "/api/departamentos/**", "/api/pruebas/**")
                         .hasAnyRole("ADMINISTRADOR", "TECNICO")
                         .requestMatchers("/api/usuarios/**", "/api/roles/**")
                         .hasRole("ADMINISTRADOR")

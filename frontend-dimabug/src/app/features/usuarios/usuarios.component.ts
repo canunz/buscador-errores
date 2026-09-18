@@ -44,17 +44,21 @@ export class UsuariosComponent implements OnInit {
     return this.auth.usuario()?.usuarioId;
   }
 
-  cargar(): void {
-    this.loading = true;
+  cargar(force = false): void {
+    this.loading = !this.usuarios.length;
     this.error = '';
-    this.usuariosApi.listar().subscribe({
+    let first = true;
+    this.usuariosApi.listar(force).subscribe({
       next: (list) => {
         this.usuarios = list;
-        this.loading = false;
+        if (first) {
+          first = false;
+          this.loading = false;
+        }
       },
-      error: () => {
+      error: (err: Error) => {
         this.loading = false;
-        this.error = 'No se pudieron cargar los usuarios. Intente nuevamente.';
+        this.error = err.message || 'No se pudieron cargar los usuarios. Intente nuevamente.';
       },
     });
     this.usuariosApi.listarRoles().subscribe({
@@ -138,7 +142,7 @@ export class UsuariosComponent implements OnInit {
         this.saving = false;
         this.modalOpen = false;
         this.success = this.editId ? 'Usuario actualizado.' : 'Usuario creado.';
-        this.cargar();
+        this.cargar(true);
       },
       error: (err) => {
         this.saving = false;
@@ -175,7 +179,7 @@ export class UsuariosComponent implements OnInit {
     this.usuariosApi.cambiarEstado(u.usuarioId, next).subscribe({
       next: () => {
         this.success = next ? `${u.usuarioNombre} quedó activo.` : `${u.usuarioNombre} quedó inactivo.`;
-        this.cargar();
+        this.cargar(true);
       },
       error: () => {
         fallbackPut().subscribe({
@@ -183,7 +187,7 @@ export class UsuariosComponent implements OnInit {
             this.success = next
               ? `${u.usuarioNombre} quedó activo.`
               : `${u.usuarioNombre} quedó inactivo.`;
-            this.cargar();
+            this.cargar(true);
           },
           error: () => (this.error = 'No se pudo cambiar el estado.'),
         });
@@ -201,7 +205,7 @@ export class UsuariosComponent implements OnInit {
     this.usuariosApi.eliminar(u.usuarioId).subscribe({
       next: () => {
         this.success = `Usuario ${u.usuarioNombre} eliminado.`;
-        this.cargar();
+        this.cargar(true);
       },
       error: () => (this.error = 'No se pudo eliminar el usuario.'),
     });

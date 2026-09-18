@@ -1,25 +1,29 @@
 <div class="inicio">
-  <div class="saludo">
+  <header class="saludo">
+    <p class="eyebrow">Inicio</p>
     <h1>¡Hola, {{ primerNombre() }}!</h1>
-    <p>Estamos aquí para ayudarte a resolver más rápido.</p>
-  </div>
+    <p class="lead">Estamos aquí para ayudarte a resolver más rápido.</p>
+  </header>
 
   <section class="hero" aria-labelledby="hero-title">
-    <h2 id="hero-title">¿Qué necesitas resolver?</h2>
-    <form class="buscador" [formGroup]="searchForm" (ngSubmit)="buscar()">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-        <circle cx="11" cy="11" r="8" />
-        <line x1="21" y1="21" x2="16.65" y2="16.65" />
-      </svg>
-      <input
-        type="search"
-        formControlName="q"
-        placeholder="Ej.: Impresora fuera de línea, Jadima, POS no imprime…"
-        aria-label="Buscar incidencia"
-      />
-      <button type="submit" class="btn-buscar">Buscar</button>
-    </form>
-    <p class="hero-hint">Busca por síntoma, sistema, hardware o palabra clave en el conocimiento.</p>
+    <div class="hero-copy">
+      <h2 id="hero-title">¿Qué necesitas resolver?</h2>
+      <form class="buscador" [formGroup]="searchForm" (ngSubmit)="buscar()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <circle cx="11" cy="11" r="8" />
+          <line x1="21" y1="21" x2="16.65" y2="16.65" />
+        </svg>
+        <input
+          type="search"
+          formControlName="q"
+          placeholder="Ej.: Impresora fuera de línea, Jadima, POS no imprime…"
+          aria-label="Buscar incidencia"
+          (keydown.enter)="$event.preventDefault(); buscar()"
+        />
+        <button type="submit" class="btn-buscar" (click)="$event.stopPropagation()">Buscar</button>
+      </form>
+      <p class="hero-hint">Busca por síntoma, sistema, hardware o palabra clave en el conocimiento.</p>
+    </div>
     <img class="mascota-hero" src="assets/img/iniciologo.png" alt="" width="200" height="200" decoding="async" />
   </section>
 
@@ -35,9 +39,11 @@
         <h3>Conocimiento</h3>
         <p>Explora soluciones a problemas frecuentes y el aprendizaje del equipo.</p>
       </span>
-      <svg class="flecha" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-        <polyline points="9 18 15 12 9 6" />
-      </svg>
+      <span class="flecha-wrap" aria-hidden="true">
+        <svg class="flecha" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="9 18 15 12 9 6" />
+        </svg>
+      </span>
     </button>
 
     <button type="button" class="card-acceso verde" (click)="ir('/procedimientos')">
@@ -52,16 +58,21 @@
         <h3>Procedimientos</h3>
         <p>Sigue pasos ordenados para realizar tareas de forma estandarizada.</p>
       </span>
-      <svg class="flecha" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-        <polyline points="9 18 15 12 9 6" />
-      </svg>
+      <span class="flecha-wrap" aria-hidden="true">
+        <svg class="flecha" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="9 18 15 12 9 6" />
+        </svg>
+      </span>
     </button>
   </div>
 
   <section class="frecuentes">
     <div class="seccion-titulo">
-      <h2>Procedimientos frecuentes</h2>
-      <button type="button" class="link" (click)="ir('/procedimientos')">Ver todo</button>
+      <div>
+        <p class="eyebrow dark">Atajos</p>
+        <h2>Procedimientos frecuentes</h2>
+      </div>
+      <button type="button" class="link" (click)="ir('/procedimientos')">Ver todo →</button>
     </div>
 
     @if (error) {
@@ -99,7 +110,7 @@
             <h4>{{ item.titulo }}</h4>
             <p class="proc-categoria">{{ item.subtitulo }}</p>
             @if (item.pasos != null) {
-              <p class="proc-pasos">{{ item.pasos }} paso{{ item.pasos === 1 ? '' : 's' }}</p>
+              <span class="proc-pasos">{{ item.pasos }} paso{{ item.pasos === 1 ? '' : 's' }}</span>
             }
           </button>
         }

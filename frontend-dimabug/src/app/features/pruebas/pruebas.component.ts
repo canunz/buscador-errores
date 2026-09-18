@@ -1,73 +1,49 @@
-import { Component, inject } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Component, DestroyRef, OnInit, inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
-import { CatalogoService } from '../../core/services/catalogo.service';
+import { OrganizacionService } from '../../core/services/organizacion.service';
 import { PruebaItem } from '../../core/models/catalogo.model';
 import { CatalogoTabsComponent } from '../../shared/ui/catalogo-tabs.component';
 
 @Component({
   selector: 'app-pruebas',
   standalone: true,
-  imports: [ReactiveFormsModule, CatalogoTabsComponent],
+  imports: [CatalogoTabsComponent],
   templateUrl: './pruebas.component.html',
-  styleUrl: '../../shared/ui/catalogo-page.css',
+  styleUrls: ['../../shared/ui/catalogo-page.css', './pruebas.component.css'],
 })
-export class PruebasComponent {
-  private readonly catalogo = inject(CatalogoService);
-  private readonly fb = inject(FormBuilder);
+export class PruebasComponent implements OnInit {
+  private readonly organizacion = inject(OrganizacionService);
   private readonly router = inject(Router);
+  private readonly destroyRef = inject(DestroyRef);
+
+  items: PruebaItem[] = [];
+  loading = false;
+  error = '';
 
   get titulo(): string {
     return this.router.url.includes('procedimientos') ? 'Procedimientos' : 'Pruebas';
   }
 
-  modalOpen = false;
-  editId: number | null = null;
-
-  form = this.fb.nonNullable.group({
-    descripcion: ['', Validators.required],
-    resultadoEsperado: [''],
-    activo: [true],
-  });
-
-  get items(): PruebaItem[] {
-    return this.catalogo.pruebas();
+  ngOnInit(): void {
+    this.cargar();
   }
 
-  openCreate(): void {
-    this.editId = null;
-    this.form.reset({ descripcion: '', resultadoEsperado: '', activo: true });
-    this.modalOpen = true;
-  }
-
-  openEdit(item: PruebaItem): void {
-    this.editId = item.id;
-    this.form.reset({
-      descripcion: item.descripcion,
-      resultadoEsperado: item.resultadoEsperado,
-      activo: item.activo,
-    });
-    this.modalOpen = true;
-  }
-
-  save(): void {
-    if (this.form.invalid) {
-      this.form.markAllAsTouched();
-      return;
-    }
-    const raw = this.form.getRawValue();
-    this.catalogo.guardarPrueba({
-      id: this.editId ?? undefined,
-      descripcion: raw.descripcion.trim(),
-      resultadoEsperado: raw.resultadoEsperado.trim(),
-      activo: raw.activo,
-    });
-    this.modalOpen = false;
-  }
-
-  eliminar(item: PruebaItem): void {
-    if (confirm(`¿Eliminar la prueba "${item.descripcion}"?`)) {
-      this.catalogo.eliminarPrueba(item.id);
-    }
+  cargar(): void {
+    this.loading = !this.items.length;
+    this.error = '';
+    this.organizacion
+      .listarPruebasDetalle()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (items) => {
+          this.items = items;
+          this.loading = false;
+        },
+        error: (err: Error) => {
+          this.error = err.message;
+          this.loading = false;
+        },
+      });
   }
 }

@@ -13,7 +13,11 @@ export interface CatalogoTab {
   template: `
     <nav class="tabs" aria-label="Catálogos">
       @for (item of tabs; track item.ruta) {
-        <a [routerLink]="item.ruta" [class.on]="activo(item.ruta)">{{ item.label }}</a>
+        <a
+          [routerLink]="item.ruta"
+          [queryParams]="{}"
+          [class.on]="activo(item.ruta)"
+        >{{ item.label }}</a>
       }
     </nav>
   `,

@@ -1,31 +1,105 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { Observable, catchError, map, throwError } from 'rxjs';
+import {
+  Observable,
+  catchError,
+  concat,
+  from,
+  map,
+  mergeMap,
+  of,
+  scan,
+  shareReplay,
+  switchMap,
+  take,
+  tap,
+  throwError,
+  toArray,
+} from 'rxjs';
 import { apiUrl } from '../config/api';
 import { mensajeApiError } from '../http/api-error';
 import {
+  AsignacionRequest,
+  AsignacionSolucion,
+  AsociarPruebaRequest,
   Conocimiento,
   ConocimientoEstado,
   ConocimientoRequest,
+  ItemOrdenado,
+  MaterialApoyo,
+  MaterialRequest,
+  OrdenPruebaRequest,
+  OrdenRequest,
+  PruebaAsociada,
+  Solucion,
+  SolucionRequest,
+  TipoMaterial,
+  TipoSolucion,
 } from '../models/conocimiento.model';
+
+export type SolucionCatalogoItem = {
+  id: number;
+  nombre: string;
+  pasos: string;
+  anexos: string;
+  asignaciones: string[];
+  conocimientoId: number;
+  conocimientoTitulo: string;
+};
 
 @Injectable({ providedIn: 'root' })
 export class ConocimientoService {
   private readonly http = inject(HttpClient);
   private readonly base = apiUrl('/conocimientos');
+  private readonly listaStorageKey = 'dimabug.conocimientos.lista.v1';
+  private readonly solucionesCatalogoKey = 'dimabug.soluciones.catalogo.v1';
 
-  listar(): Observable<Conocimiento[]> {
-    return this.http.get<unknown>(this.base).pipe(
+  private listaCache$: Observable<Conocimiento[]> | null = null;
+  private detalleCache = new Map<number, Conocimiento>();
+  private seccionCache = new Map<string, unknown>();
+  private solucionesCatalogoCache$: Observable<SolucionCatalogoItem[]> | null = null;
+
+  /** Emite caché de sesión al instante y refresca en segundo plano (sin tocar el backend). */
+  listar(force = false): Observable<Conocimiento[]> {
+    if (!force && this.listaCache$) {
+      return this.listaCache$;
+    }
+
+    const stale = !force ? this.readListaSession() : null;
+    if (stale?.length) {
+      for (const item of stale) {
+        this.detalleCache.set(item.id, item);
+      }
+    }
+
+    const network$ = this.http.get<unknown>(this.base).pipe(
       map((res) => this.asLista(res)),
-      catchError((err: HttpErrorResponse) =>
-        throwError(() => new Error(mensajeApiError(err, 'No fue posible cargar los conocimientos.'))),
-      ),
+      tap((items) => {
+        this.writeListaSession(items);
+        for (const item of items) {
+          this.detalleCache.set(item.id, item);
+        }
+      }),
+      catchError((err: HttpErrorResponse) => {
+        if (stale?.length) {
+          return of(stale);
+        }
+        this.listaCache$ = null;
+        return throwError(() => new Error(mensajeApiError(err, 'No fue posible cargar los conocimientos.')));
+      }),
     );
+
+    this.listaCache$ = (stale?.length ? concat(of(stale), network$) : network$).pipe(shareReplay(1));
+    return this.listaCache$;
   }
 
-  obtenerPorId(id: number): Observable<Conocimiento> {
+  obtenerPorId(id: number, force = false): Observable<Conocimiento> {
+    if (!force && this.detalleCache.has(id)) {
+      return of(this.detalleCache.get(id)!);
+    }
     return this.http.get<unknown>(`${this.base}/${id}`).pipe(
       map((res) => this.normalize(res)),
+      tap((item) => this.detalleCache.set(item.id, item)),
       catchError((err: HttpErrorResponse) =>
         throwError(() => new Error(mensajeApiError(err, 'No se encontró el conocimiento.'))),
       ),
@@ -35,6 +109,7 @@ export class ConocimientoService {
   crear(request: ConocimientoRequest): Observable<Conocimiento> {
     return this.http.post<unknown>(this.base, request).pipe(
       map((res) => this.normalize(res)),
+      tap((item) => this.invalidateAfterWrite(item)),
       catchError((err: HttpErrorResponse) =>
         throwError(() => new Error(mensajeApiError(err, 'No fue posible guardar el conocimiento.'))),
       ),
@@ -44,6 +119,7 @@ export class ConocimientoService {
   modificar(id: number, request: ConocimientoRequest): Observable<Conocimiento> {
     return this.http.put<unknown>(`${this.base}/${id}`, request).pipe(
       map((res) => this.normalize(res)),
+      tap((item) => this.invalidateAfterWrite(item)),
       catchError((err: HttpErrorResponse) =>
         throwError(() => new Error(mensajeApiError(err, 'No fue posible actualizar el conocimiento.'))),
       ),
@@ -53,15 +129,412 @@ export class ConocimientoService {
   cambiarEstado(id: number, estado: ConocimientoEstado): Observable<Conocimiento> {
     return this.http.patch<unknown>(`${this.base}/${id}/estado`, { estado }).pipe(
       map((res) => this.normalize(res)),
+      tap((item) => this.invalidateAfterWrite(item)),
       catchError((err: HttpErrorResponse) =>
         throwError(() => new Error(mensajeApiError(err, 'No fue posible cambiar el estado.'))),
       ),
     );
   }
 
+  listarSintomas(conocimientoId: number, force = false): Observable<ItemOrdenado[]> {
+    return this.getCached(
+      `sintomas:${conocimientoId}`,
+      () => this.getOrdenados(`${this.base}/${conocimientoId}/sintomas`, 'No fue posible cargar los síntomas.'),
+      force,
+    );
+  }
+
+  crearSintoma(conocimientoId: number, request: OrdenRequest): Observable<ItemOrdenado> {
+    return this.postOrdenado(
+      `${this.base}/${conocimientoId}/sintomas`,
+      request,
+      'No fue posible crear el síntoma.',
+    ).pipe(tap(() => this.clearSeccion(`sintomas:${conocimientoId}`)));
+  }
+
+  modificarSintoma(conocimientoId: number, sintomaId: number, request: OrdenRequest): Observable<ItemOrdenado> {
+    return this.putOrdenado(
+      `${this.base}/${conocimientoId}/sintomas/${sintomaId}`,
+      request,
+      'No fue posible actualizar el síntoma.',
+    ).pipe(tap(() => this.clearSeccion(`sintomas:${conocimientoId}`)));
+  }
+
+  listarCausas(conocimientoId: number, force = false): Observable<ItemOrdenado[]> {
+    return this.getCached(
+      `causas:${conocimientoId}`,
+      () => this.getOrdenados(`${this.base}/${conocimientoId}/causas`, 'No fue posible cargar las causas.'),
+      force,
+    );
+  }
+
+  crearCausa(conocimientoId: number, request: OrdenRequest): Observable<ItemOrdenado> {
+    return this.postOrdenado(
+      `${this.base}/${conocimientoId}/causas`,
+      request,
+      'No fue posible crear la causa.',
+    ).pipe(tap(() => this.clearSeccion(`causas:${conocimientoId}`)));
+  }
+
+  modificarCausa(conocimientoId: number, causaId: number, request: OrdenRequest): Observable<ItemOrdenado> {
+    return this.putOrdenado(
+      `${this.base}/${conocimientoId}/causas/${causaId}`,
+      request,
+      'No fue posible actualizar la causa.',
+    ).pipe(tap(() => this.clearSeccion(`causas:${conocimientoId}`)));
+  }
+
+  listarPruebas(conocimientoId: number, force = false): Observable<PruebaAsociada[]> {
+    return this.getCached(
+      `pruebas:${conocimientoId}`,
+      () =>
+        this.http.get<unknown>(`${this.base}/${conocimientoId}/pruebas`).pipe(
+          map((res) =>
+            this.asArray(res)
+              .map((item) => this.normalizePrueba(item))
+              .sort((a, b) => a.orden - b.orden),
+          ),
+          catchError((err: HttpErrorResponse) =>
+            throwError(() => new Error(mensajeApiError(err, 'No fue posible cargar las pruebas asociadas.'))),
+          ),
+        ),
+      force,
+    );
+  }
+
+  asociarPrueba(conocimientoId: number, request: AsociarPruebaRequest): Observable<PruebaAsociada> {
+    return this.http.post<unknown>(`${this.base}/${conocimientoId}/pruebas`, request).pipe(
+      map((res) => this.normalizePrueba(res)),
+      tap(() => this.clearSeccion(`pruebas:${conocimientoId}`)),
+      catchError((err: HttpErrorResponse) =>
+        throwError(() => new Error(mensajeApiError(err, 'No fue posible asociar la prueba.'))),
+      ),
+    );
+  }
+
+  modificarPrueba(
+    conocimientoId: number,
+    pruebaId: number,
+    request: OrdenPruebaRequest,
+  ): Observable<PruebaAsociada> {
+    return this.http.put<unknown>(`${this.base}/${conocimientoId}/pruebas/${pruebaId}`, request).pipe(
+      map((res) => this.normalizePrueba(res)),
+      tap(() => this.clearSeccion(`pruebas:${conocimientoId}`)),
+      catchError((err: HttpErrorResponse) =>
+        throwError(() => new Error(mensajeApiError(err, 'No fue posible actualizar la prueba asociada.'))),
+      ),
+    );
+  }
+
+  listarSoluciones(conocimientoId: number, force = false): Observable<Solucion[]> {
+    return this.getCached(
+      `soluciones:${conocimientoId}`,
+      () =>
+        this.http.get<unknown>(`${this.base}/${conocimientoId}/soluciones`).pipe(
+          map((res) =>
+            this.asArray(res)
+              .map((item) => this.normalizeSolucion(item))
+              .sort((a, b) => a.orden - b.orden),
+          ),
+          catchError((err: HttpErrorResponse) =>
+            throwError(() => new Error(mensajeApiError(err, 'No fue posible cargar las soluciones.'))),
+          ),
+        ),
+      force,
+    );
+  }
+
+  /**
+   * Agrega soluciones de todos los conocimientos (no existe /api/soluciones global).
+   * Caché de sesión al instante; en frío acumula por lotes sin esperar el total.
+   */
+  listarSolucionesCatalogo(force = false): Observable<SolucionCatalogoItem[]> {
+    if (!force && this.solucionesCatalogoCache$) {
+      return this.solucionesCatalogoCache$;
+    }
+
+    const stale = !force ? this.readSolucionesSession() : null;
+
+    const mapSoluciones = (c: Conocimiento) =>
+      this.listarSoluciones(c.id).pipe(
+        map((sols) =>
+          sols.map((s) => ({
+            id: s.id,
+            nombre: s.descripcion,
+            pasos: s.tipo === 'DERIVACION' ? 'Derivación' : 'Pasos a seguir',
+            anexos: c.titulo,
+            asignaciones: [] as string[],
+            conocimientoId: c.id,
+            conocimientoTitulo: c.titulo,
+          })),
+        ),
+        catchError(() => of([] as SolucionCatalogoItem[])),
+      );
+
+    const fromConocimientos = (conocimientos: Conocimiento[], progressive: boolean) => {
+      if (!conocimientos.length) {
+        return of([] as SolucionCatalogoItem[]);
+      }
+      const batches$ = from(conocimientos).pipe(mergeMap((c) => mapSoluciones(c), 4));
+      if (progressive) {
+        return batches$.pipe(scan((acc, batch) => acc.concat(batch), [] as SolucionCatalogoItem[]));
+      }
+      return batches$.pipe(
+        toArray(),
+        map((groups) => groups.flat()),
+      );
+    };
+
+    const network$ = this.listar().pipe(
+      take(1),
+      switchMap((conocimientos) => fromConocimientos(conocimientos, !stale?.length)),
+      catchError((err: HttpErrorResponse | Error) => {
+        if (stale?.length) {
+          return of(stale);
+        }
+        this.solucionesCatalogoCache$ = null;
+        const message =
+          err instanceof Error ? err.message : mensajeApiError(err, 'No fue posible cargar las soluciones.');
+        return throwError(() => new Error(message));
+      }),
+    );
+
+    this.solucionesCatalogoCache$ = (stale?.length ? concat(of(stale), network$) : network$).pipe(
+      tap((items) => this.writeSolucionesSession(items)),
+      shareReplay(1),
+    );
+
+    return this.solucionesCatalogoCache$;
+  }
+
+  crearSolucion(conocimientoId: number, request: SolucionRequest): Observable<Solucion> {
+    return this.http.post<unknown>(`${this.base}/${conocimientoId}/soluciones`, request).pipe(
+      map((res) => this.normalizeSolucion(res)),
+      tap(() => {
+        this.clearSeccion(`soluciones:${conocimientoId}`);
+        this.solucionesCatalogoCache$ = null;
+        sessionStorage.removeItem(this.solucionesCatalogoKey);
+      }),
+      catchError((err: HttpErrorResponse) =>
+        throwError(() => new Error(mensajeApiError(err, 'No fue posible crear la solución.'))),
+      ),
+    );
+  }
+
+  modificarSolucion(
+    conocimientoId: number,
+    solucionId: number,
+    request: SolucionRequest,
+  ): Observable<Solucion> {
+    return this.http.put<unknown>(`${this.base}/${conocimientoId}/soluciones/${solucionId}`, request).pipe(
+      map((res) => this.normalizeSolucion(res)),
+      tap(() => {
+        this.clearSeccion(`soluciones:${conocimientoId}`);
+        this.solucionesCatalogoCache$ = null;
+        sessionStorage.removeItem(this.solucionesCatalogoKey);
+      }),
+      catchError((err: HttpErrorResponse) =>
+        throwError(() => new Error(mensajeApiError(err, 'No fue posible actualizar la solución.'))),
+      ),
+    );
+  }
+
+  listarAsignaciones(conocimientoId: number, solucionId: number, force = false): Observable<AsignacionSolucion[]> {
+    return this.getCached(
+      `asignaciones:${conocimientoId}:${solucionId}`,
+      () =>
+        this.http.get<unknown>(`${this.base}/${conocimientoId}/soluciones/${solucionId}/asignaciones`).pipe(
+          map((res) => this.asArray(res).map((item) => this.normalizeAsignacion(item))),
+          catchError((err: HttpErrorResponse) =>
+            throwError(() => new Error(mensajeApiError(err, 'No fue posible cargar las asignaciones.'))),
+          ),
+        ),
+      force,
+    );
+  }
+
+  crearAsignacion(
+    conocimientoId: number,
+    solucionId: number,
+    request: AsignacionRequest,
+  ): Observable<AsignacionSolucion> {
+    return this.http
+      .post<unknown>(`${this.base}/${conocimientoId}/soluciones/${solucionId}/asignaciones`, request)
+      .pipe(
+        map((res) => this.normalizeAsignacion(res)),
+        tap(() => this.clearSeccion(`asignaciones:${conocimientoId}:${solucionId}`)),
+        catchError((err: HttpErrorResponse) =>
+          throwError(() => new Error(mensajeApiError(err, 'No fue posible crear la asignación.'))),
+        ),
+      );
+  }
+
+  modificarAsignacion(
+    conocimientoId: number,
+    solucionId: number,
+    asignacionId: number,
+    request: AsignacionRequest,
+  ): Observable<AsignacionSolucion> {
+    return this.http
+      .put<unknown>(
+        `${this.base}/${conocimientoId}/soluciones/${solucionId}/asignaciones/${asignacionId}`,
+        request,
+      )
+      .pipe(
+        map((res) => this.normalizeAsignacion(res)),
+        tap(() => this.clearSeccion(`asignaciones:${conocimientoId}:${solucionId}`)),
+        catchError((err: HttpErrorResponse) =>
+          throwError(() => new Error(mensajeApiError(err, 'No fue posible actualizar la asignación.'))),
+        ),
+      );
+  }
+
+  listarMateriales(conocimientoId: number, force = false): Observable<MaterialApoyo[]> {
+    return this.getCached(
+      `materiales:${conocimientoId}`,
+      () =>
+        this.http.get<unknown>(`${this.base}/${conocimientoId}/materiales`).pipe(
+          map((res) => this.asArray(res).map((item) => this.normalizeMaterial(item))),
+          catchError((err: HttpErrorResponse) =>
+            throwError(() => new Error(mensajeApiError(err, 'No fue posible cargar el material de apoyo.'))),
+          ),
+        ),
+      force,
+    );
+  }
+
+  crearMaterial(conocimientoId: number, request: MaterialRequest): Observable<MaterialApoyo> {
+    return this.http.post<unknown>(`${this.base}/${conocimientoId}/materiales`, request).pipe(
+      map((res) => this.normalizeMaterial(res)),
+      tap(() => this.clearSeccion(`materiales:${conocimientoId}`)),
+      catchError((err: HttpErrorResponse) =>
+        throwError(() => new Error(mensajeApiError(err, 'No fue posible crear el material.'))),
+      ),
+    );
+  }
+
+  modificarMaterial(
+    conocimientoId: number,
+    materialId: number,
+    request: MaterialRequest,
+  ): Observable<MaterialApoyo> {
+    return this.http.put<unknown>(`${this.base}/${conocimientoId}/materiales/${materialId}`, request).pipe(
+      map((res) => this.normalizeMaterial(res)),
+      tap(() => this.clearSeccion(`materiales:${conocimientoId}`)),
+      catchError((err: HttpErrorResponse) =>
+        throwError(() => new Error(mensajeApiError(err, 'No fue posible actualizar el material.'))),
+      ),
+    );
+  }
+
+  private getCached<T>(key: string, factory: () => Observable<T>, force: boolean): Observable<T> {
+    if (!force && this.seccionCache.has(key)) {
+      return of(this.seccionCache.get(key) as T);
+    }
+    return factory().pipe(
+      tap((value) => this.seccionCache.set(key, value)),
+      shareReplay(1),
+    );
+  }
+
+  private clearSeccion(key: string): void {
+    this.seccionCache.delete(key);
+  }
+
+  private invalidateAfterWrite(item: Conocimiento): void {
+    this.listaCache$ = null;
+    this.detalleCache.set(item.id, item);
+    const list = this.readListaSession() ?? [];
+    const idx = list.findIndex((x) => x.id === item.id);
+    if (idx >= 0) {
+      list[idx] = item;
+    } else {
+      list.unshift(item);
+    }
+    this.writeListaSession(list);
+    for (const key of [...this.seccionCache.keys()]) {
+      if (key.includes(`:${item.id}`) || key.endsWith(`:${item.id}`)) {
+        this.seccionCache.delete(key);
+      }
+    }
+  }
+
+  private readListaSession(): Conocimiento[] | null {
+    try {
+      const raw = sessionStorage.getItem(this.listaStorageKey);
+      if (!raw) {
+        return null;
+      }
+      const parsed = JSON.parse(raw) as unknown;
+      if (!Array.isArray(parsed)) {
+        return null;
+      }
+      return parsed.map((item) => this.normalize(item));
+    } catch {
+      return null;
+    }
+  }
+
+  private writeListaSession(items: Conocimiento[]): void {
+    try {
+      sessionStorage.setItem(this.listaStorageKey, JSON.stringify(items));
+    } catch {
+      // quota / private mode: ignore
+    }
+  }
+
+  private readSolucionesSession(): SolucionCatalogoItem[] | null {
+    try {
+      const raw = sessionStorage.getItem(this.solucionesCatalogoKey);
+      if (!raw) {
+        return null;
+      }
+      const parsed = JSON.parse(raw) as SolucionCatalogoItem[];
+      return Array.isArray(parsed) ? parsed : null;
+    } catch {
+      return null;
+    }
+  }
+
+  private writeSolucionesSession(items: SolucionCatalogoItem[]): void {
+    try {
+      sessionStorage.setItem(this.solucionesCatalogoKey, JSON.stringify(items));
+    } catch {
+      // ignore
+    }
+  }
+
+  private getOrdenados(url: string, fallback: string): Observable<ItemOrdenado[]> {
+    return this.http.get<unknown>(url).pipe(
+      map((res) =>
+        this.asArray(res)
+          .map((item) => this.normalizeOrdenado(item))
+          .sort((a, b) => a.orden - b.orden),
+      ),
+      catchError((err: HttpErrorResponse) => throwError(() => new Error(mensajeApiError(err, fallback)))),
+    );
+  }
+
+  private postOrdenado(url: string, request: OrdenRequest, fallback: string): Observable<ItemOrdenado> {
+    return this.http.post<unknown>(url, request).pipe(
+      map((res) => this.normalizeOrdenado(res)),
+      catchError((err: HttpErrorResponse) => throwError(() => new Error(mensajeApiError(err, fallback)))),
+    );
+  }
+
+  private putOrdenado(url: string, request: OrdenRequest, fallback: string): Observable<ItemOrdenado> {
+    return this.http.put<unknown>(url, request).pipe(
+      map((res) => this.normalizeOrdenado(res)),
+      catchError((err: HttpErrorResponse) => throwError(() => new Error(mensajeApiError(err, fallback)))),
+    );
+  }
+
   private asLista(res: unknown): Conocimiento[] {
-    const list = Array.isArray(res) ? res : (res as { content?: unknown[] })?.content ?? [];
-    return list.map((item) => this.normalize(item));
+    return this.asArray(res).map((item) => this.normalize(item));
+  }
+
+  private asArray(res: unknown): unknown[] {
+    return Array.isArray(res) ? res : (res as { content?: unknown[] })?.content ?? [];
   }
 
   private normalize(raw: unknown): Conocimiento {
@@ -95,6 +568,62 @@ export class ConocimientoService {
           : r['fechaActualizacion'] != null
             ? String(r['fechaActualizacion'])
             : null,
+    };
+  }
+
+  private normalizeOrdenado(raw: unknown): ItemOrdenado {
+    const r = (raw ?? {}) as Record<string, unknown>;
+    return {
+      id: Number(r['id'] ?? 0),
+      descripcion: String(r['descripcion'] ?? ''),
+      orden: Number(r['orden'] ?? 0),
+    };
+  }
+
+  private normalizePrueba(raw: unknown): PruebaAsociada {
+    const r = (raw ?? {}) as Record<string, unknown>;
+    return {
+      id: Number(r['id'] ?? r['pruebaId'] ?? 0),
+      descripcion: String(r['descripcion'] ?? ''),
+      resultadoEsperado: String(r['resultadoEsperado'] ?? ''),
+      orden: Number(r['orden'] ?? 0),
+    };
+  }
+
+  private normalizeSolucion(raw: unknown): Solucion {
+    const r = (raw ?? {}) as Record<string, unknown>;
+    const tipo = String(r['tipo'] ?? 'PASOS').toUpperCase() as TipoSolucion;
+    return {
+      id: Number(r['id'] ?? 0),
+      descripcion: String(r['descripcion'] ?? ''),
+      tipo: tipo === 'DERIVACION' ? 'DERIVACION' : 'PASOS',
+      orden: Number(r['orden'] ?? 0),
+    };
+  }
+
+  private normalizeAsignacion(raw: unknown): AsignacionSolucion {
+    const r = (raw ?? {}) as Record<string, unknown>;
+    const depId = Number(r['departamentoId'] ?? 0);
+    const respId = Number(r['responsableId'] ?? 0);
+    return {
+      id: Number(r['id'] ?? 0),
+      responsableId: respId > 0 ? respId : null,
+      responsableNombre: r['responsableNombre'] != null ? String(r['responsableNombre']) : null,
+      departamentoId: depId > 0 ? depId : null,
+      departamentoNombre: r['departamentoNombre'] != null ? String(r['departamentoNombre']) : null,
+      principal: Boolean(r['principal']),
+    };
+  }
+
+  private normalizeMaterial(raw: unknown): MaterialApoyo {
+    const r = (raw ?? {}) as Record<string, unknown>;
+    const tipo = String(r['tipo'] ?? 'ENLACE').toUpperCase() as TipoMaterial;
+    const tipos: TipoMaterial[] = ['IMAGEN', 'PDF', 'VIDEO', 'ENLACE'];
+    return {
+      id: Number(r['id'] ?? 0),
+      nombre: String(r['nombre'] ?? ''),
+      tipo: tipos.includes(tipo) ? tipo : 'ENLACE',
+      url: String(r['url'] ?? ''),
     };
   }
 

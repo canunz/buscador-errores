@@ -49,21 +49,19 @@
   align-items: center;
   gap: 16px;
   margin: 0 0 20px;
-  padding: 20px 22px;
-  border-radius: 22px;
-  background:
-    radial-gradient(circle at 92% 18%, rgba(255, 255, 255, 0.16), transparent 30%),
-    linear-gradient(135deg, #08143d 0%, #0b1b4d 48%, #1e4fd6 160%);
+  padding: 22px 24px;
+  border-radius: 18px;
+  background: linear-gradient(105deg, #071336 0%, #0b1b4d 42%, #1638a8 78%, #1e4fd6 100%);
   color: #fff;
-  box-shadow: 0 16px 36px rgba(11, 27, 77, 0.16);
+  box-shadow: 0 16px 36px rgba(7, 19, 54, 0.2);
 }
 
 .franja p {
   margin: 0 0 6px;
-  color: #b7c4ea;
+  color: #9eb6f5;
   font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.05em;
+  font-weight: 800;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
 }
 
@@ -75,18 +73,18 @@
 
 .franja span,
 .franja .lead {
-  color: #d5def5;
+  color: #d5e0ff;
   font-size: 14px;
 }
 
 .franja .btn-sec,
 .franja .btn-crear {
-  height: 34px;
-  padding: 0 14px;
+  height: 36px;
+  padding: 0 16px;
   border: 0;
-  border-radius: 9px;
+  border-radius: 999px;
   font-size: 13px;
-  font-weight: 700;
+  font-weight: 800;
   line-height: 1;
   display: inline-flex;
   align-items: center;
@@ -94,7 +92,7 @@
   flex-shrink: 0;
   white-space: nowrap;
   text-decoration: none;
-  box-shadow: none;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
 }
 
 .franja .btn-sec {
@@ -104,7 +102,7 @@
 
 .franja .btn-crear {
   background: #fff;
-  color: #1e4fd6;
+  color: #0b1b4d;
 }
 
 .col-acciones {
@@ -113,19 +111,20 @@
 
 .act {
   border: 0;
-  border-radius: 8px;
-  padding: 7px 11px;
+  border-radius: 999px;
+  padding: 8px 12px;
   font: inherit;
   font-size: 12.5px;
-  font-weight: 750;
+  font-weight: 800;
   cursor: pointer;
   text-decoration: none;
   display: inline-flex;
+  align-items: center;
 }
 
 .act.edit {
-  background: #eef2ff;
-  color: #1e3a8a;
+  background: #eaf0fe;
+  color: #0e2266;
 }
 
 .act.del {
@@ -274,11 +273,16 @@ td {
 }
 
 th {
-  font-size: 12px;
+  font-size: 11.5px;
   text-transform: uppercase;
-  letter-spacing: 0.04em;
-  color: #667085;
-  background: #f8fafc;
+  letter-spacing: 0.05em;
+  color: #475569;
+  background: #eef3fb;
+  font-weight: 800;
+}
+
+td strong {
+  color: #0b1b4d;
 }
 
 .acciones {
@@ -301,12 +305,14 @@ th {
 .chip {
   display: inline-flex;
   margin: 0 6px 6px 0;
-  padding: 4px 8px;
+  padding: 5px 10px;
   border-radius: 999px;
   background: #f1f5f9;
   border: 1px solid #e2e8f0;
   font-size: 12px;
-  font-weight: 650;
+  font-weight: 700;
+  color: #0f172a;
+  white-space: nowrap;
 }
 
 .estado {

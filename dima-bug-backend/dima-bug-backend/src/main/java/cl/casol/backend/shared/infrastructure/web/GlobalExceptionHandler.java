@@ -2,7 +2,16 @@ package cl.casol.backend.shared.infrastructure.web;
 
 import cl.casol.backend.catalogo.domain.exception.CatalogoNoEncontradoException;
 import cl.casol.backend.conocimiento.domain.exception.ClasificacionInvalidaException;
+import cl.casol.backend.conocimiento.domain.exception.CausaNoEncontradaException;
+import cl.casol.backend.conocimiento.domain.exception.AsociacionPruebaNoEncontradaException;
+import cl.casol.backend.conocimiento.domain.exception.PruebaNoEncontradaException;
+import cl.casol.backend.conocimiento.domain.exception.PruebaYaAsociadaException;
+import cl.casol.backend.conocimiento.domain.exception.SolucionNoEncontradaException;
+import cl.casol.backend.conocimiento.domain.exception.AsignacionSolucionNoEncontradaException;
+import cl.casol.backend.conocimiento.domain.exception.AsignacionSolucionInvalidaException;
+import cl.casol.backend.conocimiento.domain.exception.MaterialApoyoNoEncontradoException;
 import cl.casol.backend.conocimiento.domain.exception.ConocimientoNoEncontradoException;
+import cl.casol.backend.conocimiento.domain.exception.SintomaNoEncontradoException;
 import cl.casol.backend.identidad.domain.exception.CredencialesInvalidasException;
 import cl.casol.backend.identidad.domain.exception.UsuarioInactivoException;
 import cl.casol.backend.identidad.domain.exception.AutoDesactivacionException;
@@ -11,6 +20,7 @@ import cl.casol.backend.identidad.domain.exception.RolInactivoException;
 import cl.casol.backend.identidad.domain.exception.RolNoEncontradoException;
 import cl.casol.backend.identidad.domain.exception.UsuarioNoEncontradoException;
 import cl.casol.backend.identidad.domain.exception.DepartamentoNoEncontradoException;
+import cl.casol.backend.identidad.domain.exception.ResponsableNoEncontradoException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -26,13 +36,17 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler({UsuarioNoEncontradoException.class, RolNoEncontradoException.class,
             CatalogoNoEncontradoException.class, ConocimientoNoEncontradoException.class,
-            DepartamentoNoEncontradoException.class})
+            DepartamentoNoEncontradoException.class, SintomaNoEncontradoException.class,
+            CausaNoEncontradaException.class, PruebaNoEncontradaException.class,
+            AsociacionPruebaNoEncontradaException.class, SolucionNoEncontradaException.class,
+            AsignacionSolucionNoEncontradaException.class, ResponsableNoEncontradoException.class,
+            MaterialApoyoNoEncontradoException.class})
     public ResponseEntity<Map<String, String>> handleNoEncontrado(RuntimeException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", ex.getMessage()));
     }
 
-    @ExceptionHandler(EmailDuplicadoException.class)
-    public ResponseEntity<Map<String, String>> handleEmailDuplicado(EmailDuplicadoException ex) {
+    @ExceptionHandler({EmailDuplicadoException.class, PruebaYaAsociadaException.class})
+    public ResponseEntity<Map<String, String>> handleConflicto(RuntimeException ex) {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("message", ex.getMessage()));
     }
 
@@ -43,7 +57,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler({RolInactivoException.class, AutoDesactivacionException.class,
-            ClasificacionInvalidaException.class})
+            ClasificacionInvalidaException.class, AsignacionSolucionInvalidaException.class})
     public ResponseEntity<Map<String, String>> handleReglaNegocio(RuntimeException ex) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", ex.getMessage()));
     }

@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CatalogoService } from '../../core/services/catalogo.service';
 import { ErrorItem, FRECUENCIAS } from '../../core/models/catalogo.model';
@@ -11,13 +11,15 @@ import { CatalogoTabsComponent } from '../../shared/ui/catalogo-tabs.component';
   templateUrl: './error-nuevo.component.html',
   styleUrls: ['../../shared/ui/catalogo-page.css', './error-nuevo.component.css'],
 })
-export class ErrorNuevoComponent {
+export class ErrorNuevoComponent implements OnInit {
   private readonly catalogo = inject(CatalogoService);
   private readonly fb = inject(FormBuilder);
 
   readonly frecuencias = FRECUENCIAS;
-  vista: 'lista' | 'form' = 'lista';
+  modalOpen = false;
   editId: number | null = null;
+  success = '';
+  lista: ErrorItem[] = [];
 
   form = this.fb.nonNullable.group({
     descripcion: ['', Validators.required],
@@ -32,8 +34,8 @@ export class ErrorNuevoComponent {
     pruebaIds: this.fb.nonNullable.control<number[]>([]),
   });
 
-  get errores(): ErrorItem[] {
-    return [...this.catalogo.errores()].reverse();
+  ngOnInit(): void {
+    this.refrescarLista();
   }
 
   get hardware() {
@@ -45,25 +47,20 @@ export class ErrorNuevoComponent {
     return this.catalogo.sistemasDeHardware(id);
   }
 
-  get soluciones() {
-    return this.catalogo.soluciones();
-  }
-
-  get pruebas() {
-    return this.catalogo.pruebas().filter((p) => p.activo);
-  }
-
   nombreHardware(id: number | null): string {
     return this.hardware.find((item) => item.id === id)?.nombre || 'Sin hardware';
   }
 
-  nombresSoluciones(ids: number[]): string {
-    const names = this.soluciones.filter((item) => ids.includes(item.id)).map((item) => item.nombre);
-    return names.join(', ') || 'Sin soluciones';
+  nombresSoluciones(ids: number[]): string[] {
+    return this.catalogo
+      .soluciones()
+      .filter((item) => ids.includes(item.id))
+      .map((item) => item.nombre);
   }
 
   abrirNuevo(): void {
     this.editId = null;
+    this.success = '';
     this.form.reset({
       descripcion: '',
       hardwareId: 0,
@@ -76,11 +73,12 @@ export class ErrorNuevoComponent {
       solucionIds: [],
       pruebaIds: [],
     });
-    this.vista = 'form';
+    this.modalOpen = true;
   }
 
   abrirEditar(item: ErrorItem): void {
     this.editId = item.id;
+    this.success = '';
     this.form.reset({
       descripcion: item.descripcion,
       hardwareId: item.hardwareId || 0,
@@ -93,27 +91,19 @@ export class ErrorNuevoComponent {
       solucionIds: [...item.solucionIds],
       pruebaIds: [...item.pruebaIds],
     });
-    this.vista = 'form';
+    this.modalOpen = true;
   }
 
-  volver(): void {
-    this.vista = 'lista';
+  cerrarModal(): void {
+    this.modalOpen = false;
+    this.editId = null;
   }
 
   eliminar(item: ErrorItem): void {
     if (confirm(`¿Eliminar el error "${item.descripcion}"?`)) {
       this.catalogo.eliminarError(item.id);
+      this.refrescarLista();
     }
-  }
-
-  toggleId(control: 'solucionIds' | 'pruebaIds', id: number, checked: boolean): void {
-    const current = this.form.controls[control].value;
-    const next = checked ? [...new Set([...current, id])] : current.filter((item) => item !== id);
-    this.form.controls[control].setValue(next);
-  }
-
-  isChecked(control: 'solucionIds' | 'pruebaIds', id: number): boolean {
-    return this.form.controls[control].value.includes(id);
   }
 
   save(): void {
@@ -122,19 +112,27 @@ export class ErrorNuevoComponent {
       return;
     }
     const raw = this.form.getRawValue();
+    const esEdicion = this.editId != null;
     this.catalogo.guardarError({
       id: this.editId ?? undefined,
       descripcion: raw.descripcion.trim(),
-      hardwareId: raw.hardwareId || null,
-      sistema: raw.sistema,
+      hardwareId: Number(raw.hardwareId) || null,
+      sistema: String(raw.sistema || ''),
       modulo: raw.modulo.trim(),
-      frecuencia: raw.frecuencia,
+      frecuencia: String(raw.frecuencia || ''),
       usuarioContexto: raw.usuarioContexto.trim(),
       causa: raw.causa.trim(),
       comentarios: raw.comentarios.trim(),
-      solucionIds: raw.solucionIds,
-      pruebaIds: raw.pruebaIds,
+      solucionIds: [...raw.solucionIds],
+      pruebaIds: [...raw.pruebaIds],
     });
-    this.vista = 'lista';
+    this.refrescarLista();
+    this.modalOpen = false;
+    this.editId = null;
+    this.success = esEdicion ? 'Incidencia actualizada.' : 'Incidencia registrada correctamente.';
+  }
+
+  private refrescarLista(): void {
+    this.lista = [...this.catalogo.errores()].sort((a, b) => b.id - a.id);
   }
 }

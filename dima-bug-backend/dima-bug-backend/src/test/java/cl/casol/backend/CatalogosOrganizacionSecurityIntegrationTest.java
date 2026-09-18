@@ -97,12 +97,50 @@ class CatalogosOrganizacionSecurityIntegrationTest {
     }
 
     @Test
+    void contactosDepartamentoValidoDevuelve200ConDtoSinCamposInternos() throws Exception {
+        autenticarComo("jwt-tecnico", "TECNICO");
+        when(organizacionService.listarContactos(1)).thenReturn(List.of(
+                new DepartamentoContacto(1, 1, "Anexo", "618", true),
+                new DepartamentoContacto(2, 1, "Teléfono", "652292618", true)));
+        mockMvc.perform(get("/api/departamentos/1/contactos")
+                        .header("Authorization", "Bearer jwt-tecnico"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id").value(1))
+                .andExpect(jsonPath("$[0].tipo").value("Anexo"))
+                .andExpect(jsonPath("$[0].valor").value("618"))
+                .andExpect(jsonPath("$[0].departamentoId").doesNotExist())
+                .andExpect(jsonPath("$[0].activo").doesNotExist());
+    }
+
+    @Test void departamentoValidoSinContactosDevuelve200YListaVacia() throws Exception {
+        autenticarComo("jwt-admin", "ADMINISTRADOR");
+        when(organizacionService.listarContactos(1)).thenReturn(List.of());
+        mockMvc.perform(get("/api/departamentos/1/contactos")
+                        .header("Authorization", "Bearer jwt-admin"))
+                .andExpect(status().isOk()).andExpect(content().json("[]"));
+    }
+
+    @Test void contactosDeDepartamentoInexistenteOInactivoDevuelve404() throws Exception {
+        autenticarComo("jwt-tecnico", "TECNICO");
+        when(organizacionService.listarContactos(99)).thenThrow(new DepartamentoNoEncontradoException(99));
+        mockMvc.perform(get("/api/departamentos/99/contactos")
+                        .header("Authorization", "Bearer jwt-tecnico"))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test void contactosSinJwtDevuelve401() throws Exception {
+        mockMvc.perform(get("/api/departamentos/1/contactos")).andExpect(status().isUnauthorized());
+    }
+
+    @Test
     void rolNoAutorizadoDevuelve403EnLosTresRecursos() throws Exception {
         autenticarComo("jwt-auditor", "AUDITOR");
         String authorization = "Bearer jwt-auditor";
         mockMvc.perform(get("/api/frecuencias").header("Authorization", authorization)).andExpect(status().isForbidden());
         mockMvc.perform(get("/api/departamentos").header("Authorization", authorization)).andExpect(status().isForbidden());
         mockMvc.perform(get("/api/departamentos/1/responsables").header("Authorization", authorization))
+                .andExpect(status().isForbidden());
+        mockMvc.perform(get("/api/departamentos/1/contactos").header("Authorization", authorization))
                 .andExpect(status().isForbidden());
     }
 

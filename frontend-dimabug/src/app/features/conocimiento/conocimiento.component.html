@@ -1,124 +1,114 @@
 <section class="kb">
-  <div class="franja">
+  <header class="franja">
     <div>
-      <p>Conocimiento</p>
-      <h1>Gestión de conocimiento</h1>
-      <span>Consulta, crea y publica el núcleo de conocimiento contra la API.</span>
+      <p class="kicker">Soporte</p>
+      <h1>Conocimiento</h1>
+      <p>Consulta y gestiona las guías de diagnóstico y solución.</p>
     </div>
-    <a routerLink="/conocimiento/nuevo" class="btn-nuevo">Nuevo conocimiento</a>
-  </div>
+    <a routerLink="/conocimiento/nuevo" class="btn-crear">+ Nuevo</a>
+  </header>
 
-  <form class="search" (submit)="$event.preventDefault()">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-      <circle cx="11" cy="11" r="8" />
-      <line x1="21" y1="21" x2="16.65" y2="16.65" />
-    </svg>
-    <input type="search" [(ngModel)]="q" name="q" placeholder="Buscar por título o descripción" />
-    <button type="submit">Buscar</button>
-  </form>
-
-  <div class="filters">
-    <label>
-      Hardware
-      <select [(ngModel)]="hardware" name="hardware">
-        <option value="">Todo el hardware</option>
-        @for (item of hardwares; track item) {
-          <option [value]="item">{{ item }}</option>
-        }
-      </select>
-    </label>
-    <label>
-      Sistema
-      <select [(ngModel)]="sistema" name="sistema">
-        <option value="">Todos los sistemas</option>
-        @for (item of sistemas; track item) {
-          <option [value]="item">{{ item }}</option>
-        }
-      </select>
-    </label>
-    <label>
-      Estado
-      <select [(ngModel)]="estado" name="estado">
-        <option value="">Todos</option>
-        <option value="BORRADOR">Borrador</option>
-        <option value="PUBLICADO">Publicado</option>
-      </select>
-    </label>
-    <label>
-      Ordenar
-      <select [(ngModel)]="orden" name="orden">
-        <option value="relevante">Más relevante</option>
-        <option value="reciente">Más reciente</option>
-      </select>
-    </label>
-  </div>
-
-  @if (chips.length) {
-    <div class="chips">
-      <span>Filtros activos:</span>
-      @for (chip of chips; track chip.key) {
-        <button type="button" (click)="quitar(chip.key)">{{ chip.label }}: {{ chip.value }} ×</button>
+  <div class="filtros">
+    <input
+      type="search"
+      [(ngModel)]="q"
+      (ngModelChange)="onBuscarChange()"
+      name="q"
+      placeholder="Buscar por título o descripción…"
+      autocomplete="off"
+    />
+    <select [(ngModel)]="hardware" name="hardware" aria-label="Hardware">
+      <option value="">Todo el hardware</option>
+      @for (item of hardwares; track item) {
+        <option [value]="item">{{ item }}</option>
       }
-      <button type="button" class="clear" (click)="limpiarFiltros()">Limpiar filtros</button>
-    </div>
-  }
+    </select>
+    <select [(ngModel)]="sistema" name="sistema" aria-label="Sistema">
+      <option value="">Todos los sistemas</option>
+      @for (item of sistemas; track item) {
+        <option [value]="item">{{ item }}</option>
+      }
+    </select>
+    <select [(ngModel)]="estado" name="estado" aria-label="Estado">
+      <option value="">Todos</option>
+      <option value="BORRADOR">Borrador</option>
+      <option value="PUBLICADO">Publicado</option>
+    </select>
+    <select [(ngModel)]="orden" name="orden" aria-label="Orden">
+      <option value="relevante">Más relevante</option>
+      <option value="reciente">Más reciente</option>
+    </select>
+  </div>
 
   @if (error) {
-    <p class="empty-msg">{{ error }}</p>
+    <p class="alert">{{ error }}</p>
   }
 
   <div class="meta">
-    <p>{{ resultados.length }} resultado{{ resultados.length === 1 ? '' : 's' }}</p>
+    <h2>Listado de conocimiento</h2>
+    @if (loading && !items.length) {
+      <span>Cargando…</span>
+    } @else if (refreshing) {
+      <span>Actualizando… · {{ resultados.length }}</span>
+    } @else {
+      <span>{{ resultados.length }} registro{{ resultados.length === 1 ? '' : 's' }}</span>
+    }
   </div>
 
   <div class="tabla-wrap">
-    @if (loading) {
-      <p class="empty-msg">Cargando…</p>
+    @if (loading && !items.length) {
+      <p class="muted">Cargando…</p>
     } @else {
       <table>
         <thead>
           <tr>
             <th class="col-acciones">Acciones</th>
+            <th>#</th>
             <th>Título</th>
             <th>Hardware</th>
             <th>Sistema</th>
             <th>Módulo</th>
-            <th>Frecuencia</th>
             <th>Estado</th>
           </tr>
         </thead>
         <tbody>
           @for (item of resultados; track item.id) {
-            <tr>
-              <td>
-                <div class="acts">
-                  <a class="act ver" [routerLink]="['/conocimiento', item.id]">Ver</a>
+            <tr class="clickable" (click)="abrir(item)">
+              <td (click)="$event.stopPropagation()">
+                <div class="acciones">
+                  <button type="button" class="btn-accion ver" title="Abrir guía" (click)="abrir(item)">
+                    Abrir
+                  </button>
                   <button
                     type="button"
-                    class="act star"
+                    class="btn-accion fav"
                     [class.on]="esFavorito(item.id)"
+                    [title]="esFavorito(item.id) ? 'Quitar favorito' : 'Agregar a favoritos'"
                     (click)="toggleFavorito(item.id, $event)"
                   >
                     {{ esFavorito(item.id) ? '★' : '☆' }}
                   </button>
                 </div>
               </td>
+              <td class="id">{{ item.id }}</td>
               <td>
                 <strong>{{ item.titulo }}</strong>
+                @if (item.descripcion) {
+                  <span class="desc">{{ item.descripcion }}</span>
+                }
               </td>
               <td>{{ item.hardwareNombre || '—' }}</td>
               <td>{{ item.sistemaNombre || '—' }}</td>
               <td>{{ item.moduloNombre || '—' }}</td>
-              <td>{{ item.frecuenciaNombre || '—' }}</td>
               <td>
-                <span class="badge" [class.publicado]="item.estado === 'PUBLICADO'" [class.borrador]="item.estado === 'BORRADOR'">
+                <span class="estado" [class.publicado]="item.estado === 'PUBLICADO'" [class.borrador]="item.estado === 'BORRADOR'">
                   {{ item.estado === 'PUBLICADO' ? 'Publicado' : 'Borrador' }}
                 </span>
               </td>
             </tr>
           } @empty {
             <tr>
-              <td colspan="7" class="empty">No hay conocimientos para mostrar.</td>
+              <td colspan="7" class="vacio">No hay conocimientos para mostrar.</td>
             </tr>
           }
         </tbody>

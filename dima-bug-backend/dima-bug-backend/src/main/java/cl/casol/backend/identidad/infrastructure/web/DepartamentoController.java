@@ -2,6 +2,7 @@ package cl.casol.backend.identidad.infrastructure.web;
 
 import cl.casol.backend.identidad.application.service.ConsultarOrganizacionService;
 import cl.casol.backend.identidad.infrastructure.web.dto.DepartamentoResponse;
+import cl.casol.backend.identidad.infrastructure.web.dto.DepartamentoContactoResponse;
 import cl.casol.backend.identidad.infrastructure.web.dto.ResponsableResponse;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
@@ -20,5 +21,10 @@ public class DepartamentoController {
     @GetMapping("/{id}/responsables")
     public List<ResponsableResponse> listarResponsables(@PathVariable Integer id) {
         return service.listarResponsables(id).stream().map(ResponsableResponse::from).toList();
+    }
+
+    @GetMapping("/{id}/contactos")
+    public List<DepartamentoContactoResponse> listarContactos(@PathVariable Integer id) {
+        return service.listarContactos(id).stream().map(DepartamentoContactoResponse::from).toList();
     }
 }

@@ -32,6 +32,9 @@ export interface SolucionItem {
   pasos: string;
   anexos: string;
   asignaciones: string[];
+  /** Presente cuando viene agregada desde un conocimiento de la API. */
+  conocimientoId?: number;
+  conocimientoTitulo?: string;
 }
 
 export interface ErrorItem {

@@ -13,6 +13,9 @@ export function mensajeApiError(err: HttpErrorResponse, fallback: string): strin
   if (err.status === 404) {
     return fallback || 'No se encontró el recurso solicitado.';
   }
+  if (err.status === 409) {
+    return mensajeSeguro(err, 'La asociación ya existe o hay un conflicto con los datos enviados.');
+  }
   if (err.status === 0) {
     return 'No se pudo conectar con el servidor. Intente más tarde.';
   }

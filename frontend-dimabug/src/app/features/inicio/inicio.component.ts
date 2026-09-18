@@ -31,13 +31,19 @@ export class InicioComponent implements OnInit {
   ngOnInit(): void {
     this.inicioApi.dashboard().subscribe({
       next: (data) => (this.dashboard = data),
-      error: () => (this.error = 'No se pudo cargar el panel operativo.'),
+      error: () => {
+        if (!this.dashboard) {
+          this.error = 'No se pudo cargar el panel operativo.';
+        }
+      },
     });
   }
 
   buscar(): void {
     const q = this.searchForm.controls.q.value.trim();
-    this.router.navigate(['/conocimiento'], { queryParams: q ? { q } : {} });
+    void this.router.navigate(['/conocimiento'], {
+      queryParams: q ? { q } : {},
+    });
   }
 
   ir(url: string): void {

@@ -1,7 +1,12 @@
-import { Component, HostListener, computed, inject } from '@angular/core';
+import { Component, HostListener, OnInit, computed, inject } from '@angular/core';
 import { NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { filter } from 'rxjs';
 import { AuthService } from '../../core/services/auth.service';
+import { ClasificacionService } from '../../core/services/clasificacion.service';
+import { ConocimientoService } from '../../core/services/conocimiento.service';
+import { InicioService } from '../../core/services/inicio.service';
+import { OrganizacionService } from '../../core/services/organizacion.service';
+import { UsuarioService } from '../../core/services/usuario.service';
 import { esAdministrador, iniciales, loginUsername } from '../../core/models/usuario.model';
 
 @Component({
@@ -11,9 +16,14 @@ import { esAdministrador, iniciales, loginUsername } from '../../core/models/usu
   templateUrl: './shell-layout.component.html',
   styleUrl: './shell-layout.component.css',
 })
-export class ShellLayoutComponent {
+export class ShellLayoutComponent implements OnInit {
   private readonly auth = inject(AuthService);
   private readonly router = inject(Router);
+  private readonly conocimientos = inject(ConocimientoService);
+  private readonly clasificacion = inject(ClasificacionService);
+  private readonly organizacion = inject(OrganizacionService);
+  private readonly usuariosApi = inject(UsuarioService);
+  private readonly inicioApi = inject(InicioService);
 
   readonly usuario = this.auth.usuario;
   readonly isAdmin = computed(() => esAdministrador(this.usuario()));
@@ -43,6 +53,23 @@ export class ShellLayoutComponent {
         });
       });
     });
+  }
+
+  ngOnInit(): void {
+    // Precarga en segundo plano: las secciones abren casi al instante después.
+    const ignore = { error: () => undefined };
+    this.conocimientos.listar().subscribe({
+      next: () => this.conocimientos.listarSolucionesCatalogo().subscribe(ignore),
+      error: () => undefined,
+    });
+    this.clasificacion.listarHardwareDetalle().subscribe(ignore);
+    this.organizacion.listarDepartamentosDetalle().subscribe(ignore);
+    this.organizacion.listarPruebas().subscribe(ignore);
+    this.inicioApi.dashboard().subscribe(ignore);
+    if (this.isAdmin()) {
+      this.usuariosApi.listar().subscribe(ignore);
+      this.usuariosApi.listarRoles().subscribe(ignore);
+    }
   }
 
   toggleTema(): void {
