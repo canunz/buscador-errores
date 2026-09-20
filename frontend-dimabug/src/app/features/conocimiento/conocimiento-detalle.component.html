@@ -1,3 +1,5 @@
+<app-loading-modal [visible]="mostrandoCarga" mensaje="Cargando, por favor…" />
+
 @if (loading && !item) {
   <div class="detail">
     <div class="hero skeleton-hero">
@@ -106,11 +108,11 @@
           @if (formAbierto.sintomas) {
             <form class="editor" [formGroup]="sintomaForm" (ngSubmit)="guardarSintoma()">
               <label>
-                Descripción del síntoma
+                <span>Descripción del síntoma <span class="req">*</span></span>
                 <input type="text" formControlName="descripcion" placeholder="Ej: aparece mensaje WINDOW al abrir Bodega" />
               </label>
               <label class="orden">
-                Orden
+                <span>Orden <span class="req">*</span></span>
                 <input type="number" formControlName="orden" min="1" />
               </label>
               <div class="editor-actions">
@@ -152,11 +154,11 @@
           @if (formAbierto.causas) {
             <form class="editor" [formGroup]="causaForm" (ngSubmit)="guardarCausa()">
               <label>
-                Descripción de la causa
+                <span>Descripción de la causa <span class="req">*</span></span>
                 <input type="text" formControlName="descripcion" placeholder="Ej: archivo WINDOW desactualizado" />
               </label>
               <label class="orden">
-                Orden
+                <span>Orden <span class="req">*</span></span>
                 <input type="number" formControlName="orden" min="1" />
               </label>
               <div class="editor-actions">
@@ -202,7 +204,7 @@
             <form class="editor" [formGroup]="pruebaForm" (ngSubmit)="guardarPrueba()">
               @if (!editPruebaId) {
                 <label>
-                  Prueba del catálogo
+                  <span>Prueba del catálogo <span class="req">*</span></span>
                   <select formControlName="pruebaId">
                     <option [ngValue]="null">Seleccione una prueba existente</option>
                     @for (p of pruebasCatalogo; track p.id) {
@@ -212,7 +214,7 @@
                 </label>
               }
               <label class="orden">
-                Orden
+                <span>Orden <span class="req">*</span></span>
                 <input type="number" formControlName="orden" min="1" />
               </label>
               <div class="editor-actions">
@@ -325,7 +327,7 @@
           @if (formAbierto.soluciones) {
             <form class="editor" [formGroup]="solucionForm" (ngSubmit)="guardarSolucion()">
               <label>
-                Qué debe hacer el técnico
+                <span>Qué debe hacer el técnico <span class="req">*</span></span>
                 <input type="text" formControlName="descripcion" placeholder="Ej: reinstalar componente WINDOW y validar Bodega" />
               </label>
               <label>
@@ -337,7 +339,7 @@
                 </select>
               </label>
               <label class="orden">
-                Orden
+                <span>Orden <span class="req">*</span></span>
                 <input type="number" formControlName="orden" min="1" />
               </label>
               <div class="editor-actions">
@@ -393,7 +395,7 @@
           @if (formAbierto.materiales) {
             <form class="editor" [formGroup]="materialForm" (ngSubmit)="guardarMaterial()">
               <label>
-                Nombre
+                <span>Nombre <span class="req">*</span></span>
                 <input type="text" formControlName="nombre" placeholder="Manual o documento de apoyo" />
               </label>
               <label>
@@ -405,7 +407,7 @@
                 </select>
               </label>
               <label class="full">
-                URL o ruta
+                <span>URL o ruta <span class="req">*</span></span>
                 <input type="text" formControlName="url" placeholder="https://..." />
               </label>
               <div class="editor-actions">

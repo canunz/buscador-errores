@@ -1,4 +1,6 @@
 <section class="kb form-page">
+  <app-loading-modal [visible]="saving" mensaje="Cargando, por favor…" />
+
   <div class="franja">
     <div>
       <p>Conocimiento</p>
@@ -17,19 +19,19 @@
   } @else {
     <form class="kb-form" [formGroup]="form" (ngSubmit)="guardar()">
       <label class="full">
-        Título *
+        <span>Título <span class="req" aria-hidden="true">*</span></span>
         <input type="text" formControlName="titulo" placeholder="Error WINDOW al ingresar a Bodega" />
       </label>
 
       <label class="full">
-        Descripción
+        <span>Descripción <span class="req" aria-hidden="true">*</span></span>
         <textarea formControlName="descripcion" rows="4" placeholder="Describa el problema o el contexto."></textarea>
       </label>
 
       <label>
         Hardware
         <select formControlName="hardwareId">
-          <option [ngValue]="null">Sin hardware</option>
+          <option [ngValue]="null">Seleccione hardware</option>
           @for (item of hardwares; track item.id) {
             <option [ngValue]="item.id">{{ item.nombre }}</option>
           }
@@ -39,7 +41,7 @@
       <label>
         Sistema
         <select formControlName="sistemaId" [disabled]="!form.controls.hardwareId.value">
-          <option [ngValue]="null">Sin sistema</option>
+          <option [ngValue]="null">Seleccione sistema</option>
           @for (item of sistemas; track item.id) {
             <option [ngValue]="item.id">{{ item.nombre }}</option>
           }
@@ -49,7 +51,15 @@
       <label>
         Módulo
         <select formControlName="moduloId" [disabled]="!form.controls.sistemaId.value">
-          <option [ngValue]="null">Sin módulo</option>
+          <option [ngValue]="null">
+            {{
+              !form.controls.sistemaId.value
+                ? 'Seleccione módulo'
+                : modulos.length
+                  ? 'Seleccione módulo'
+                  : 'Sin módulos para este sistema'
+            }}
+          </option>
           @for (item of modulos; track item.id) {
             <option [ngValue]="item.id">{{ item.nombre }}</option>
           }
@@ -59,14 +69,13 @@
       <label>
         Frecuencia
         <select formControlName="frecuenciaId" [disabled]="!frecuenciasDisponibles">
-          <option [ngValue]="null">{{ frecuenciasDisponibles ? 'Sin frecuencia' : 'No disponible' }}</option>
+          <option [ngValue]="null">
+            {{ frecuenciasDisponibles ? 'Seleccione frecuencia' : 'No disponible' }}
+          </option>
           @for (item of frecuencias; track item.id) {
             <option [ngValue]="item.id">{{ item.nombre }}</option>
           }
         </select>
-        @if (!frecuenciasDisponibles) {
-          <small>El selector de frecuencias se habilitará cuando el API lo exponga.</small>
-        }
       </label>
 
       <label class="full">

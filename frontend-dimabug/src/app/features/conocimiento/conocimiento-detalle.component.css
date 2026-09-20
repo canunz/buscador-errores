@@ -540,6 +540,11 @@
   text-transform: uppercase;
 }
 
+.editor .req {
+  color: #dc2626;
+  font-weight: 900;
+}
+
 .editor .full,
 .editor small,
 .editor .editor-actions,

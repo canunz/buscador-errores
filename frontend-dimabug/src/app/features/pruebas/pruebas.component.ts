@@ -26,6 +26,16 @@ export class PruebasComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    // Pintar de inmediato lo que ya esté en sesión.
+    const cached = this.organizacion.snapshotPruebas();
+    if (cached.length) {
+      this.items = cached.map((p) => ({
+        id: p.id,
+        descripcion: p.descripcion,
+        resultadoEsperado: p.resultadoEsperado,
+        activo: true,
+      }));
+    }
     this.cargar();
   }
 
@@ -33,7 +43,7 @@ export class PruebasComponent implements OnInit {
     this.loading = !this.items.length;
     this.error = '';
     this.organizacion
-      .listarPruebasDetalle()
+      .listarPruebasDetalle(false)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (items) => {

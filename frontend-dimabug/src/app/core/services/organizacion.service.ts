@@ -24,23 +24,36 @@ import { CatalogoRef, PruebaCatalogo, ResponsableRef } from '../models/conocimie
 export class OrganizacionService {
   private readonly http = inject(HttpClient);
   private readonly departamentosDetalleKey = 'dimabug.departamentos.detalle.v1';
+  private readonly pruebasKey = 'dimabug.pruebas.lista.v1';
   private pruebasCache$: Observable<PruebaCatalogo[]> | null = null;
   private departamentosCache$: Observable<CatalogoRef[]> | null = null;
   private departamentosDetalleCache$: Observable<DepartamentoItem[]> | null = null;
   private responsablesCache = new Map<number, ResponsableRef[]>();
 
+  snapshotPruebas(): PruebaCatalogo[] {
+    return this.readPruebasSession() ?? [];
+  }
+
   listarPruebas(force = false): Observable<PruebaCatalogo[]> {
     if (!force && this.pruebasCache$) {
       return this.pruebasCache$;
     }
-    this.pruebasCache$ = this.http.get<unknown>(apiUrl('/pruebas')).pipe(
+
+    const stale = !force ? this.readPruebasSession() : null;
+
+    const network$ = this.http.get<unknown>(apiUrl('/pruebas')).pipe(
       map((res) => this.asPruebaLista(res)),
+      tap((items) => this.writePruebasSession(items)),
       catchError((err: HttpErrorResponse) => {
+        if (stale?.length) {
+          return of(stale);
+        }
         this.pruebasCache$ = null;
         return throwError(() => new Error(mensajeApiError(err, 'No fue posible cargar el catálogo de pruebas.')));
       }),
-      shareReplay(1),
     );
+
+    this.pruebasCache$ = (stale?.length ? concat(of(stale), network$) : network$).pipe(shareReplay(1));
     return this.pruebasCache$;
   }
 
@@ -241,6 +254,27 @@ export class OrganizacionService {
   private writeDepartamentosSession(items: DepartamentoItem[]): void {
     try {
       sessionStorage.setItem(this.departamentosDetalleKey, JSON.stringify(items));
+    } catch {
+      // ignore
+    }
+  }
+
+  private readPruebasSession(): PruebaCatalogo[] | null {
+    try {
+      const raw = sessionStorage.getItem(this.pruebasKey);
+      if (!raw) {
+        return null;
+      }
+      const parsed = JSON.parse(raw) as PruebaCatalogo[];
+      return Array.isArray(parsed) ? parsed : null;
+    } catch {
+      return null;
+    }
+  }
+
+  private writePruebasSession(items: PruebaCatalogo[]): void {
+    try {
+      sessionStorage.setItem(this.pruebasKey, JSON.stringify(items));
     } catch {
       // ignore
     }

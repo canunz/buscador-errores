@@ -106,6 +106,11 @@ export class ConocimientoService {
     );
   }
 
+  /** Lectura síncrona de la ficha si ya está en memoria (listado / visita previa). */
+  peekDetalle(id: number): Conocimiento | null {
+    return this.detalleCache.get(id) ?? null;
+  }
+
   crear(request: ConocimientoRequest): Observable<Conocimiento> {
     return this.http.post<unknown>(this.base, request).pipe(
       map((res) => this.normalize(res)),
@@ -429,16 +434,64 @@ export class ConocimientoService {
 
   private getCached<T>(key: string, factory: () => Observable<T>, force: boolean): Observable<T> {
     if (!force && this.seccionCache.has(key)) {
-      return of(this.seccionCache.get(key) as T);
+      const cached = this.seccionCache.get(key) as T;
+      // Refresco en segundo plano sin bloquear la UI.
+      factory()
+        .pipe(
+          tap((value) => this.seccionCache.set(key, value)),
+          catchError(() => of(cached)),
+        )
+        .subscribe();
+      return of(cached);
     }
+
+    const sessionKey = `dimabug.seccion.${key}`;
+    if (!force) {
+      try {
+        const raw = sessionStorage.getItem(sessionKey);
+        if (raw) {
+          const stale = JSON.parse(raw) as T;
+          this.seccionCache.set(key, stale);
+          factory()
+            .pipe(
+              tap((value) => {
+                this.seccionCache.set(key, value);
+                try {
+                  sessionStorage.setItem(sessionKey, JSON.stringify(value));
+                } catch {
+                  // ignore
+                }
+              }),
+              catchError(() => of(stale)),
+            )
+            .subscribe();
+          return of(stale);
+        }
+      } catch {
+        // ignore
+      }
+    }
+
     return factory().pipe(
-      tap((value) => this.seccionCache.set(key, value)),
+      tap((value) => {
+        this.seccionCache.set(key, value);
+        try {
+          sessionStorage.setItem(sessionKey, JSON.stringify(value));
+        } catch {
+          // ignore
+        }
+      }),
       shareReplay(1),
     );
   }
 
   private clearSeccion(key: string): void {
     this.seccionCache.delete(key);
+    try {
+      sessionStorage.removeItem(`dimabug.seccion.${key}`);
+    } catch {
+      // ignore
+    }
   }
 
   private invalidateAfterWrite(item: Conocimiento): void {

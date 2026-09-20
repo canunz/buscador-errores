@@ -18,13 +18,14 @@ import {
 import { ConocimientoService } from '../../core/services/conocimiento.service';
 import { FavoritosService } from '../../core/services/favoritos.service';
 import { OrganizacionService } from '../../core/services/organizacion.service';
+import { LoadingModalComponent } from '../../shared/ui/loading-modal.component';
 
 type Seccion = 'sintomas' | 'causas' | 'pruebas' | 'soluciones' | 'materiales' | 'asignaciones';
 
 @Component({
   selector: 'app-conocimiento-detalle',
   standalone: true,
-  imports: [DatePipe, NgClass, RouterLink, ReactiveFormsModule],
+  imports: [DatePipe, NgClass, RouterLink, ReactiveFormsModule, LoadingModalComponent],
   templateUrl: './conocimiento-detalle.component.html',
   styleUrl: './conocimiento-detalle.component.css',
 })
@@ -122,6 +123,10 @@ export class ConocimientoDetalleComponent implements OnInit {
     return this.item?.id ?? null;
   }
 
+  get mostrandoCarga(): boolean {
+    return this.saving != null || this.publishing;
+  }
+
   ngOnInit(): void {
     this.asignacionForm.controls.departamentoId.valueChanges.subscribe((departamentoId) => {
       this.asignacionForm.controls.responsableId.setValue(null, { emitEvent: false });
@@ -144,17 +149,9 @@ export class ConocimientoDetalleComponent implements OnInit {
 
   cargar(id: number): void {
     this.currentId = id;
-    this.loading = true;
     this.error = '';
     this.sectionError = '';
     this.sectionSuccess = '';
-    this.item = null;
-    this.sintomas = [];
-    this.causas = [];
-    this.pruebas = [];
-    this.soluciones = [];
-    this.materiales = [];
-    this.asignacionesPorSolucion = {};
     this.formAbierto = {
       sintomas: false,
       causas: false,
@@ -163,7 +160,15 @@ export class ConocimientoDetalleComponent implements OnInit {
       materiales: false,
     };
 
-    // Cabecera al instante (usa caché del listado si ya se visitó).
+    const cached = this.conocimientosApi.peekDetalle(id);
+    if (cached) {
+      this.item = cached;
+      this.loading = false;
+    } else {
+      this.loading = true;
+      this.item = null;
+    }
+
     this.conocimientosApi.obtenerPorId(id).subscribe({
       next: (item) => {
         if (this.currentId !== id) return;
@@ -177,7 +182,6 @@ export class ConocimientoDetalleComponent implements OnInit {
       },
     });
 
-    // Secciones en paralelo: cada una pinta apenas responde.
     this.cargarSeccionProgresiva(id);
   }
 
@@ -234,7 +238,12 @@ export class ConocimientoDetalleComponent implements OnInit {
         this.soluciones = items;
         this.solucionForm.controls.orden.setValue(this.nextOrden(items));
         this.loadingSoluciones = false;
-        this.cargarAsignaciones(id, items);
+        // Diferir asignaciones para no competir con la primera pintura.
+        window.setTimeout(() => {
+          if (this.currentId === id) {
+            this.cargarAsignaciones(id, items);
+          }
+        }, 0);
       },
       error: (err: Error) => {
         if (this.currentId !== id) return;
@@ -478,6 +487,10 @@ export class ConocimientoDetalleComponent implements OnInit {
 
   abrirAsignacion(solucionId: number, asignacion?: AsignacionSolucion): void {
     this.ensureDepartamentos();
+    const conocimientoId = this.conocimientoId;
+    if (conocimientoId && !this.asignacionesPorSolucion[solucionId]) {
+      this.reloadAsignaciones(conocimientoId, solucionId);
+    }
     this.solucionAsignacionId = solucionId;
     this.editAsignacionId = asignacion?.id ?? null;
     this.asignacionForm.reset({
@@ -539,6 +552,7 @@ export class ConocimientoDetalleComponent implements OnInit {
     const id = this.conocimientoId;
     if (!id || this.materialForm.invalid) {
       this.materialForm.markAllAsTouched();
+      this.sectionError = 'Complete nombre y URL del material.';
       return;
     }
     const request = this.materialForm.getRawValue();

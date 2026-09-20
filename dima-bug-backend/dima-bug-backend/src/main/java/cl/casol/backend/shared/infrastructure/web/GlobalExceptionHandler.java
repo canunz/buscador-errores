@@ -85,6 +85,11 @@ public class GlobalExceptionHandler {
                 .body(Map.of("message", "Request inválido"));
     }
 
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<Map<String, String>> handleIllegalArgument(IllegalArgumentException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", ex.getMessage()));
+    }
+
     @ExceptionHandler(CredencialesInvalidasException.class)
     public ResponseEntity<Map<String, String>> handleCredencialesInvalidas(
             CredencialesInvalidasException ex

@@ -56,19 +56,14 @@ export class ShellLayoutComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // Precarga en segundo plano: las secciones abren casi al instante después.
+    // Precarga liviana: lo pesado se completa en segundo plano sin bloquear la UI.
     const ignore = { error: () => undefined };
-    this.conocimientos.listar().subscribe({
-      next: () => this.conocimientos.listarSolucionesCatalogo().subscribe(ignore),
-      error: () => undefined,
-    });
-    this.clasificacion.listarHardwareDetalle().subscribe(ignore);
-    this.organizacion.listarDepartamentosDetalle().subscribe(ignore);
+    this.clasificacion.precargarClasificacion();
     this.organizacion.listarPruebas().subscribe(ignore);
+    this.conocimientos.listar().subscribe(ignore);
     this.inicioApi.dashboard().subscribe(ignore);
     if (this.isAdmin()) {
       this.usuariosApi.listar().subscribe(ignore);
-      this.usuariosApi.listarRoles().subscribe(ignore);
     }
   }
 

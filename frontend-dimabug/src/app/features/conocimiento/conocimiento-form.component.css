@@ -45,6 +45,12 @@
   text-transform: uppercase;
 }
 
+.kb-form .req {
+  color: #dc2626;
+  font-weight: 800;
+  margin-left: 2px;
+}
+
 .kb-form .full {
   grid-column: 1 / -1;
 }
