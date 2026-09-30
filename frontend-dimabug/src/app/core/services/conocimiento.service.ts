@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
 import {
   Observable,
   catchError,
@@ -22,15 +22,20 @@ import {
   AsignacionRequest,
   AsignacionSolucion,
   AsociarPruebaRequest,
+  BusquedaConocimientoFiltro,
   Conocimiento,
   ConocimientoEstado,
   ConocimientoRequest,
+  ResultadoBusquedaConocimiento,
   ItemOrdenado,
+  EfectividadSolucion,
   MaterialApoyo,
   MaterialRequest,
   OrdenPruebaRequest,
   OrdenRequest,
   PruebaAsociada,
+  RegistrarResultadoRequest,
+  ResultadoSolucion,
   Solucion,
   SolucionRequest,
   TipoMaterial,
@@ -45,6 +50,8 @@ export type SolucionCatalogoItem = {
   asignaciones: string[];
   conocimientoId: number;
   conocimientoTitulo: string;
+  orden: number;
+  tipo: 'PASOS' | 'DERIVACION';
 };
 
 @Injectable({ providedIn: 'root' })
@@ -56,6 +63,8 @@ export class ConocimientoService {
 
   private listaCache$: Observable<Conocimiento[]> | null = null;
   private detalleCache = new Map<number, Conocimiento>();
+  /** Ids eliminados en esta sesión, para que un listado ya en curso no los vuelva a pintar. */
+  private readonly retirados = new Set<number>();
   private seccionCache = new Map<string, unknown>();
   private solucionesCatalogoCache$: Observable<SolucionCatalogoItem[]> | null = null;
 
@@ -73,7 +82,7 @@ export class ConocimientoService {
     }
 
     const network$ = this.http.get<unknown>(this.base).pipe(
-      map((res) => this.asLista(res)),
+      map((res) => this.sinRetirados(this.asLista(res))),
       tap((items) => {
         this.writeListaSession(items);
         for (const item of items) {
@@ -93,6 +102,29 @@ export class ConocimientoService {
     return this.listaCache$;
   }
 
+  /**
+   * Búsqueda FULLTEXT y filtros en backend.
+   * Solo envía los parámetros que tienen valor.
+   */
+  buscar(filtro: BusquedaConocimientoFiltro): Observable<ResultadoBusquedaConocimiento[]> {
+    let params = new HttpParams();
+    const texto = filtro.texto?.trim();
+    if (texto) {
+      params = params.set('texto', texto);
+    }
+    params = this.paramId(params, 'hardwareId', filtro.hardwareId);
+    params = this.paramId(params, 'sistemaId', filtro.sistemaId);
+    params = this.paramId(params, 'moduloId', filtro.moduloId);
+    params = this.paramId(params, 'frecuenciaId', filtro.frecuenciaId);
+
+    return this.http.get<unknown>(`${this.base}/buscar`, { params }).pipe(
+      map((res) => this.asArray(res).map((item) => this.normalizeBusqueda(item))),
+      catchError((err: HttpErrorResponse) =>
+        throwError(() => new Error(mensajeApiError(err, 'No fue posible buscar conocimientos.'))),
+      ),
+    );
+  }
+
   obtenerPorId(id: number, force = false): Observable<Conocimiento> {
     if (!force && this.detalleCache.has(id)) {
       return of(this.detalleCache.get(id)!);
@@ -100,9 +132,13 @@ export class ConocimientoService {
     return this.http.get<unknown>(`${this.base}/${id}`).pipe(
       map((res) => this.normalize(res)),
       tap((item) => this.detalleCache.set(item.id, item)),
-      catchError((err: HttpErrorResponse) =>
-        throwError(() => new Error(mensajeApiError(err, 'No se encontró el conocimiento.'))),
-      ),
+      catchError((err: HttpErrorResponse) => {
+        if (err.status === 404) {
+          this.retirarDeCache(id);
+          return throwError(() => new Error('El conocimiento no está disponible.'));
+        }
+        return throwError(() => new Error(mensajeApiError(err, 'No se encontró el conocimiento.')));
+      }),
     );
   }
 
@@ -131,7 +167,19 @@ export class ConocimientoService {
     );
   }
 
-  cambiarEstado(id: number, estado: ConocimientoEstado): Observable<Conocimiento> {
+  /**
+   * Baja lógica. El backend conserva síntomas, causas, pruebas, soluciones,
+   * asignaciones y materiales, y responde 204 sin cuerpo.
+   */
+  eliminar(id: number): Observable<void> {
+    return this.http.delete(`${this.base}/${id}`, { responseType: 'text' }).pipe(
+      map(() => void 0),
+      tap(() => this.retirarDeCache(id)),
+      catchError((err: HttpErrorResponse) => throwError(() => new Error(this.mensajeEliminar(err)))),
+    );
+  }
+
+  cambiarEstado(id: number, estado: Exclude<ConocimientoEstado, 'ELIMINADO'>): Observable<Conocimiento> {
     return this.http.patch<unknown>(`${this.base}/${id}/estado`, { estado }).pipe(
       map((res) => this.normalize(res)),
       tap((item) => this.invalidateAfterWrite(item)),
@@ -271,6 +319,8 @@ export class ConocimientoService {
             asignaciones: [] as string[],
             conocimientoId: c.id,
             conocimientoTitulo: c.titulo,
+            orden: s.orden,
+            tipo: s.tipo,
           })),
         ),
         catchError(() => of([] as SolucionCatalogoItem[])),
@@ -341,6 +391,37 @@ export class ConocimientoService {
       catchError((err: HttpErrorResponse) =>
         throwError(() => new Error(mensajeApiError(err, 'No fue posible actualizar la solución.'))),
       ),
+    );
+  }
+
+  registrarResultado(
+    conocimientoId: number,
+    solucionId: number,
+    request: RegistrarResultadoRequest,
+  ): Observable<ResultadoSolucion> {
+    const comentario = request.comentario?.trim() ? request.comentario.trim() : null;
+    return this.http
+      .post<unknown>(`${this.base}/${conocimientoId}/soluciones/${solucionId}/resultados`, {
+        funciono: request.funciono,
+        comentario,
+      })
+      .pipe(
+        map((res) => this.normalizeResultado(res)),
+        catchError((err: HttpErrorResponse) => throwError(() => new Error(this.mensajeResultado(err)))),
+      );
+  }
+
+  obtenerResultados(conocimientoId: number, solucionId: number): Observable<ResultadoSolucion[]> {
+    return this.http.get<unknown>(`${this.base}/${conocimientoId}/soluciones/${solucionId}/resultados`).pipe(
+      map((res) => this.asArray(res).map((item) => this.normalizeResultado(item))),
+      catchError((err: HttpErrorResponse) => throwError(() => new Error(this.mensajeResultado(err)))),
+    );
+  }
+
+  obtenerEfectividad(conocimientoId: number, solucionId: number): Observable<EfectividadSolucion> {
+    return this.http.get<unknown>(`${this.base}/${conocimientoId}/soluciones/${solucionId}/efectividad`).pipe(
+      map((res) => this.normalizeEfectividad(res, solucionId)),
+      catchError((err: HttpErrorResponse) => throwError(() => new Error(this.mensajeResultado(err)))),
     );
   }
 
@@ -494,6 +575,125 @@ export class ConocimientoService {
     }
   }
 
+  private mensajeResultado(err: HttpErrorResponse): string {
+    if (err.status === 403) {
+      return 'No tienes permisos para realizar esta acción.';
+    }
+    if (err.status === 404) {
+      return 'El conocimiento o solución no está disponible.';
+    }
+    if (err.status === 401) {
+      return mensajeApiError(err, 'Su sesión no es válida. Inicie sesión nuevamente.');
+    }
+    if (err.status === 0 || err.status >= 500) {
+      return 'Ocurrió un error inesperado. Intente más tarde.';
+    }
+    return mensajeApiError(err, 'No fue posible registrar el resultado.');
+  }
+
+  private normalizeResultado(raw: unknown): ResultadoSolucion {
+    const r = (raw ?? {}) as Record<string, unknown>;
+    const usuario = (r['usuario'] ?? {}) as Record<string, unknown>;
+    return {
+      id: Number(r['id'] ?? 0),
+      funciono: r['funciono'] === true,
+      comentario: r['comentario'] != null && String(r['comentario']).trim() ? String(r['comentario']) : null,
+      fecha: r['fecha'] != null ? String(r['fecha']) : '',
+      usuario: {
+        id: Number(usuario['id'] ?? 0),
+        nombre: String(usuario['nombre'] ?? ''),
+        email: String(usuario['email'] ?? ''),
+      },
+    };
+  }
+
+  private normalizeEfectividad(raw: unknown, solucionId: number): EfectividadSolucion {
+    const r = (raw ?? {}) as Record<string, unknown>;
+    const porcentaje = r['porcentajeEfectividad'];
+    return {
+      solucionId: Number(r['solucionId'] ?? solucionId),
+      totalAplicaciones: Number(r['totalAplicaciones'] ?? 0),
+      totalFunciono: Number(r['totalFunciono'] ?? 0),
+      totalNoFunciono: Number(r['totalNoFunciono'] ?? 0),
+      porcentajeEfectividad: porcentaje == null || porcentaje === '' ? null : Number(porcentaje),
+    };
+  }
+
+  private mensajeEliminar(err: HttpErrorResponse): string {
+    if (err.status === 403) {
+      return 'No tienes permisos para eliminar este conocimiento.';
+    }
+    if (err.status === 404) {
+      return 'El conocimiento no está disponible.';
+    }
+    if (err.status === 401) {
+      return mensajeApiError(err, 'Su sesión no es válida. Inicie sesión nuevamente.');
+    }
+    if (err.status === 0 || err.status >= 500) {
+      return 'Ocurrió un error inesperado. Intente más tarde.';
+    }
+    return mensajeApiError(err, 'No fue posible eliminar el conocimiento.');
+  }
+
+  private retirarDeCache(id: number): void {
+    this.retirados.add(id);
+    this.listaCache$ = null;
+    this.solucionesCatalogoCache$ = null;
+    this.detalleCache.delete(id);
+
+    const list = this.readListaSession();
+    if (list) {
+      this.writeListaSession(list.filter((item) => item.id !== id));
+    }
+
+    const soluciones = this.readSolucionesSession();
+    if (soluciones) {
+      this.writeSolucionesSession(soluciones.filter((item) => item.conocimientoId !== id));
+    }
+
+    for (const seccion of ['sintomas', 'causas', 'pruebas', 'soluciones', 'materiales']) {
+      this.clearSeccion(`${seccion}:${id}`);
+    }
+    for (const key of [...this.seccionCache.keys()]) {
+      if (key.startsWith(`asignaciones:${id}:`)) {
+        this.clearSeccion(key);
+      }
+    }
+    this.limpiarAsignacionesSesion(id);
+  }
+
+  private limpiarAsignacionesSesion(id: number): void {
+    const prefix = `dimabug.seccion.asignaciones:${id}:`;
+    try {
+      const keys: string[] = [];
+      for (let i = 0; i < sessionStorage.length; i += 1) {
+        const key = sessionStorage.key(i);
+        if (key?.startsWith(prefix)) {
+          keys.push(key);
+        }
+      }
+      for (const key of keys) {
+        sessionStorage.removeItem(key);
+      }
+    } catch {
+      // ignore
+    }
+  }
+
+  private sinRetirados(items: Conocimiento[]): Conocimiento[] {
+    if (!this.retirados.size) {
+      return items;
+    }
+    return items.filter((item) => !this.retirados.has(item.id));
+  }
+
+  private estadoConocimiento(raw: string): ConocimientoEstado {
+    if (raw === 'PUBLICADO' || raw === 'ELIMINADO' || raw === 'BORRADOR') {
+      return raw;
+    }
+    return 'BORRADOR';
+  }
+
   private invalidateAfterWrite(item: Conocimiento): void {
     this.listaCache$ = null;
     this.detalleCache.set(item.id, item);
@@ -582,6 +782,46 @@ export class ConocimientoService {
     );
   }
 
+  private paramId(params: HttpParams, nombre: string, valor: number | null | undefined): HttpParams {
+    if (valor == null || Number.isNaN(Number(valor)) || Number(valor) <= 0) {
+      return params;
+    }
+    return params.set(nombre, String(valor));
+  }
+
+  private normalizeBusqueda(raw: unknown): ResultadoBusquedaConocimiento {
+    const r = (raw ?? {}) as Record<string, unknown>;
+    const id = (valor: unknown): number | null => {
+      if (valor == null || valor === '') {
+        return null;
+      }
+      const n = Number(valor);
+      return Number.isFinite(n) && n > 0 ? n : null;
+    };
+    const texto = (valor: unknown): string | null => {
+      if (valor == null) {
+        return null;
+      }
+      const s = String(valor).trim();
+      return s ? s : null;
+    };
+    const relevancia = r['relevancia'];
+    const relevanciaNum = relevancia == null || relevancia === '' ? null : Number(relevancia);
+    return {
+      id: Number(r['id'] ?? 0),
+      titulo: String(r['titulo'] ?? ''),
+      hardwareId: id(r['hardwareId']),
+      hardwareNombre: texto(r['hardwareNombre']),
+      sistemaId: id(r['sistemaId']),
+      sistemaNombre: texto(r['sistemaNombre']),
+      moduloId: id(r['moduloId']),
+      moduloNombre: texto(r['moduloNombre']),
+      frecuenciaId: id(r['frecuenciaId']),
+      frecuenciaNombre: texto(r['frecuenciaNombre']),
+      relevancia: relevanciaNum != null && Number.isFinite(relevanciaNum) ? relevanciaNum : null,
+    };
+  }
+
   private asLista(res: unknown): Conocimiento[] {
     return this.asArray(res).map((item) => this.normalize(item));
   }
@@ -604,7 +844,7 @@ export class ConocimientoService {
       titulo: String(r['titulo'] ?? ''),
       descripcion: String(r['descripcion'] ?? ''),
       comentario: r['comentario'] != null ? String(r['comentario']) : null,
-      estado: estadoRaw === 'PUBLICADO' ? 'PUBLICADO' : 'BORRADOR',
+      estado: this.estadoConocimiento(estadoRaw),
       hardwareId: hardware.id,
       sistemaId: sistema.id,
       moduloId: modulo.id,

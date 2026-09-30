@@ -27,16 +27,23 @@ export interface UsuarioPayload {
   usuarioPassword?: string;
 }
 
+function nombreRol(usuario: Usuario | null | undefined): string {
+  return (usuario?.rol?.rolNombre || usuario?.rolNombre || '').trim().toLowerCase();
+}
+
 export function esAdministrador(usuario: Usuario | null | undefined): boolean {
-  if (!usuario) {
-    return false;
-  }
-  const nombre = (
-    usuario.rol?.rolNombre ||
-    usuario.rolNombre ||
-    ''
-  ).toLowerCase();
-  return ['administrador', 'admin', 'ti', 'soporte ti'].includes(nombre);
+  const nombre = nombreRol(usuario);
+  return nombre === 'administrador' || nombre === 'admin';
+}
+
+export function esSoporte(usuario: Usuario | null | undefined): boolean {
+  const nombre = nombreRol(usuario);
+  return nombre === 'tecnico' || nombre === 'técnico' || nombre === 'soporte' || nombre === 'soporte ti' || nombre === 'ti';
+}
+
+/** Administrador o soporte: gestionan catálogos, conocimiento y procedimientos. */
+export function esStaff(usuario: Usuario | null | undefined): boolean {
+  return esAdministrador(usuario) || esSoporte(usuario);
 }
 
 export function iniciales(nombre: string | undefined): string {

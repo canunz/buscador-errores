@@ -20,6 +20,7 @@ export class InicioComponent implements OnInit {
 
   readonly primerNombre = computed(() => primerNombre(this.auth.usuario()?.usuarioNombre));
   readonly isAdmin = this.auth.isAdmin;
+  readonly isStaff = this.auth.isStaff;
 
   dashboard: InicioDashboard | null = null;
   error = '';
@@ -29,6 +30,10 @@ export class InicioComponent implements OnInit {
   });
 
   ngOnInit(): void {
+    if (!this.isStaff()) {
+      this.dashboard = { conocimientos: 0, procedimientos: 0, ultimaActualizacion: null, frecuentes: [] };
+      return;
+    }
     this.inicioApi.dashboard().subscribe({
       next: (data) => (this.dashboard = data),
       error: () => {

@@ -3,7 +3,7 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Observable, catchError, map, tap, throwError } from 'rxjs';
 import { apiUrl } from '../config/api';
-import { AuthSession, Usuario, esAdministrador } from '../models/usuario.model';
+import { AuthSession, Usuario, esAdministrador, esSoporte, esStaff } from '../models/usuario.model';
 
 const STORAGE_KEY = 'dimabug.auth';
 
@@ -34,6 +34,8 @@ export class AuthService {
     return !!session?.token && !!session.usuario;
   });
   readonly isAdmin = computed(() => esAdministrador(this.sessionSignal()?.usuario));
+  readonly isSoporte = computed(() => esSoporte(this.sessionSignal()?.usuario));
+  readonly isStaff = computed(() => esStaff(this.sessionSignal()?.usuario));
 
   login(email: string, password: string): Observable<AuthSession> {
     return this.http
@@ -60,6 +62,18 @@ export class AuthService {
     localStorage.removeItem(STORAGE_KEY);
     this.sessionSignal.set(null);
     this.router.navigateByUrl('/login');
+  }
+
+  /** Actualiza los datos visibles de la sesión sin tocar el token. */
+  actualizarSesion(parcial: Partial<Usuario>): void {
+    const session = this.sessionSignal();
+    if (!session) {
+      return;
+    }
+    this.persist({
+      ...session,
+      usuario: { ...session.usuario, ...parcial },
+    });
   }
 
   token(): string | undefined {

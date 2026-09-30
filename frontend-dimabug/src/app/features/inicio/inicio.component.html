@@ -2,7 +2,13 @@
   <header class="saludo">
     <p class="eyebrow">Inicio</p>
     <h1>¡Hola, {{ primerNombre() }}!</h1>
-    <p class="lead">Estamos aquí para ayudarte a resolver más rápido.</p>
+    <p class="lead">
+      @if (isStaff()) {
+        Estamos aquí para ayudarte a resolver más rápido.
+      } @else {
+        Busca un caso parecido al tuyo, márcalo como favorito o registra un error nuevo.
+      }
+    </p>
   </header>
 
   <section class="hero" aria-labelledby="hero-title">
@@ -36,8 +42,8 @@
         </svg>
       </span>
       <span class="card-acceso-texto">
-        <h3>Conocimiento</h3>
-        <p>Explora soluciones a problemas frecuentes y el aprendizaje del equipo.</p>
+        <h3>Buscar conocimiento</h3>
+        <p>Encuentra una guía parecida al problema que estás viendo.</p>
       </span>
       <span class="flecha-wrap" aria-hidden="true">
         <svg class="flecha" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -46,17 +52,16 @@
       </span>
     </button>
 
-    <button type="button" class="card-acceso verde" (click)="ir('/procedimientos')">
+    <button type="button" class="card-acceso verde" (click)="ir('/error/nuevo')">
       <span class="icono-cuadrado" aria-hidden="true">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2" />
-          <rect x="9" y="3" width="6" height="4" rx="1" />
-          <path d="M9 14l2 2 4-4" />
+          <circle cx="12" cy="12" r="9" />
+          <path d="M12 8v8M8 12h8" />
         </svg>
       </span>
       <span class="card-acceso-texto">
-        <h3>Procedimientos</h3>
-        <p>Sigue pasos ordenados para realizar tareas de forma estandarizada.</p>
+        <h3>Nuevo error</h3>
+        <p>Registra lo que está fallando si no encuentras un caso igual.</p>
       </span>
       <span class="flecha-wrap" aria-hidden="true">
         <svg class="flecha" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -64,8 +69,66 @@
         </svg>
       </span>
     </button>
+
+    @if (!isStaff()) {
+      <button type="button" class="card-acceso" (click)="ir('/favoritos')">
+        <span class="icono-cuadrado" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 3.6l2.35 4.76 5.25.76-3.8 3.7.9 5.24L12 15.7l-4.7 2.46.9-5.24-3.8-3.7 5.25-.76L12 3.6z" />
+          </svg>
+        </span>
+        <span class="card-acceso-texto">
+          <h3>Favoritos</h3>
+          <p>Vuelve a las guías que ya marcaste con estrella.</p>
+        </span>
+        <span class="flecha-wrap" aria-hidden="true">
+          <svg class="flecha" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="9 18 15 12 9 6" />
+          </svg>
+        </span>
+      </button>
+    } @else {
+      <button type="button" class="card-acceso" (click)="ir('/procedimientos')">
+        <span class="icono-cuadrado" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2" />
+            <rect x="9" y="3" width="6" height="4" rx="1" />
+            <path d="M9 14l2 2 4-4" />
+          </svg>
+        </span>
+        <span class="card-acceso-texto">
+          <h3>Procedimientos</h3>
+          <p>Sigue pasos ordenados para realizar tareas de forma estandarizada.</p>
+        </span>
+        <span class="flecha-wrap" aria-hidden="true">
+          <svg class="flecha" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="9 18 15 12 9 6" />
+          </svg>
+        </span>
+      </button>
+      @if (isAdmin()) {
+        <button type="button" class="card-acceso" (click)="ir('/admin')">
+          <span class="icono-cuadrado" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 3l8 4v6c0 5-3.5 8.5-8 9-4.5-.5-8-4-8-9V7l8-4z" />
+              <path d="M9 12l2 2 4-4" />
+            </svg>
+          </span>
+          <span class="card-acceso-texto">
+            <h3>Administración</h3>
+            <p>Usuarios, roles y catálogos del sistema.</p>
+          </span>
+          <span class="flecha-wrap" aria-hidden="true">
+            <svg class="flecha" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="9 18 15 12 9 6" />
+            </svg>
+          </span>
+        </button>
+      }
+    }
   </div>
 
+  @if (isStaff()) {
   <section class="frecuentes">
     <div class="seccion-titulo">
       <div>
@@ -117,6 +180,7 @@
       </div>
     }
   </section>
+  }
 
   <p class="pie">
     @if (dashboard?.ultimaActualizacion) {

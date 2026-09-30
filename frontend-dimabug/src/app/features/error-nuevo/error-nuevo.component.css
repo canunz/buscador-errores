@@ -405,3 +405,13 @@
   background: #111827;
   border-bottom-color: #1f2937;
 }
+
+.usuario-form {
+  max-width: 760px;
+}
+
+.usuario-form .form-actions .btn-crear {
+  height: 44px;
+  padding: 0 18px;
+  font-size: 15px;
+}

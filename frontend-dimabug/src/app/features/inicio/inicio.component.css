@@ -1,5 +1,5 @@
 .inicio {
-  max-width: 1100px;
+  max-width: none;
 }
 
 .eyebrow {
@@ -21,7 +21,7 @@
 
 .saludo h1 {
   margin: 0 0 6px;
-  font-size: 30px;
+  font-size: 34px;
   font-weight: 800;
   letter-spacing: -0.03em;
   color: #1d2433;
@@ -30,7 +30,7 @@
 .saludo .lead {
   margin: 0;
   color: #667085;
-  font-size: 15.5px;
+  font-size: 17px;
   line-height: 1.45;
 }
 
@@ -55,7 +55,7 @@
 
 .hero h2 {
   margin: 0 0 16px;
-  font-size: 24px;
+  font-size: 28px;
   font-weight: 800;
   letter-spacing: -0.02em;
 }
@@ -84,8 +84,8 @@
   border: 0;
   outline: none;
   padding: 11px 0;
-  font-size: 14.5px;
-  color: #1d2433;
+  font-size: 16px;
+  color: #0f172a;
   background: transparent;
 }
 
@@ -127,7 +127,7 @@
 
 .grid-accesos {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 16px;
   margin-bottom: 30px;
 }
@@ -197,7 +197,7 @@
 
 .card-acceso-texto h3 {
   margin: 0 0 5px;
-  font-size: 17px;
+  font-size: 18px;
   font-weight: 800;
   letter-spacing: -0.02em;
   color: #1d2433;
@@ -205,8 +205,8 @@
 
 .card-acceso-texto p {
   margin: 0;
-  color: #667085;
-  font-size: 13.5px;
+  color: #475569;
+  font-size: 15px;
   line-height: 1.45;
 }
 

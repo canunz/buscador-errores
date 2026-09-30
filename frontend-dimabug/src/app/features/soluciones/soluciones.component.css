@@ -3,6 +3,20 @@
   margin: 0 0 14px;
 }
 
+.modal-alert {
+  margin: 16px 22px 0;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: #fef2f2;
+  color: #b42318;
+  font-size: 13px;
+}
+
+.sol-page .form-grid textarea {
+  resize: vertical;
+  min-height: 96px;
+}
+
 .sol-page .search {
   display: block;
 }
@@ -61,8 +75,15 @@
   background: #f8faff;
 }
 
-.sol-page .col-acciones {
-  width: 180px;
+.sol-page .guia-acciones {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.sol-page .guia-acciones .btn-sec {
+  height: 36px;
 }
 
 .sol-page .acciones {

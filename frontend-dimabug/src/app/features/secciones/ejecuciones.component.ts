@@ -1,57 +1,53 @@
-import { Component } from '@angular/core';
+import { DatePipe } from '@angular/common';
+import { Component, OnInit, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { forkJoin } from 'rxjs';
+import { Ejecucion } from '../../core/models/ejecucion.model';
+import { EjecucionService } from '../../core/services/ejecucion.service';
 
 @Component({
   selector: 'app-ejecuciones',
   standalone: true,
-  imports: [RouterLink],
-  template: `
-    <section class="cat-page">
-      <div class="franja">
-        <div>
-          <p>Operaciones</p>
-          <h1>Mis ejecuciones</h1>
-          <span>Historial de procedimientos que has iniciado o completado.</span>
-        </div>
-        <a routerLink="/procedimientos" class="btn-crear">Ver procedimientos</a>
-      </div>
-
-      <div class="tabla-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th class="col-acciones">Acciones</th>
-              <th>Procedimiento</th>
-              <th>Estado</th>
-              <th>Inicio</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>
-                <div class="acciones">
-                  <a class="act ver" routerLink="/procedimientos">Abrir</a>
-                </div>
-              </td>
-              <td><strong>Activar plan B en sucursal</strong></td>
-              <td><span class="estado activo">Completada</span></td>
-              <td>05/02/2026 09:14</td>
-            </tr>
-            <tr>
-              <td>
-                <div class="acciones">
-                  <a class="act ver" routerLink="/procedimientos">Abrir</a>
-                </div>
-              </td>
-              <td><strong>Reinstalar impresora</strong></td>
-              <td><span class="estado warn">En curso</span></td>
-              <td>12/02/2026 18:02</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </section>
-  `,
+  imports: [DatePipe, RouterLink],
+  templateUrl: './ejecuciones.component.html',
   styleUrl: '../../shared/ui/catalogo-page.css',
 })
-export class EjecucionesComponent {}
+export class EjecucionesComponent implements OnInit {
+  private readonly ejecuciones = inject(EjecucionService);
+
+  items: Ejecucion[] = [];
+  nombres: Record<number, string> = {};
+  loading = true;
+  error = '';
+
+  ngOnInit(): void {
+    forkJoin({
+      ejecuciones: this.ejecuciones.listar(),
+      procedimientos: this.ejecuciones.listarProcedimientos(),
+    }).subscribe({
+      next: ({ ejecuciones, procedimientos }) => {
+        this.items = ejecuciones;
+        this.nombres = Object.fromEntries(procedimientos.map((item) => [item.id, item.nombre]));
+        this.loading = false;
+      },
+      error: (err: Error) => {
+        this.error = err.message;
+        this.loading = false;
+      },
+    });
+  }
+
+  nombre(procedimientoId: number): string {
+    return this.nombres[procedimientoId] || `Procedimiento ${procedimientoId}`;
+  }
+
+  etiqueta(estado: string): string {
+    if (estado === 'COMPLETADA') {
+      return 'Completada';
+    }
+    if (estado === 'CANCELADA') {
+      return 'Cancelada';
+    }
+    return 'En curso';
+  }
+}

@@ -1,5 +1,5 @@
 .kb {
-  max-width: 1100px;
+  max-width: none;
 }
 
 .franja {
@@ -26,16 +26,17 @@
 
 .franja h1 {
   margin: 0 0 8px;
-  font-size: 28px;
+  font-size: 32px;
   letter-spacing: -0.02em;
+  line-height: 1.15;
 }
 
 .franja p {
   margin: 0;
-  max-width: 480px;
-  font-size: 14px;
-  color: #d5e0ff;
-  line-height: 1.45;
+  max-width: 640px;
+  font-size: 16px;
+  color: #e4ecff;
+  line-height: 1.5;
 }
 
 .btn-crear {
@@ -60,21 +61,60 @@
 
 .filtros {
   display: grid;
-  grid-template-columns: minmax(0, 1.8fr) repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 10px;
   margin-bottom: 16px;
 }
 
 .filtros input,
+.filtros-acciones {
+  grid-column: 1 / -1;
+}
+
+.filtros-acciones {
+  display: flex;
+  gap: 8px;
+}
+
+.btn-buscar,
+.btn-limpiar {
+  height: 46px;
+  border-radius: 11px;
+  padding: 0 16px;
+  font: inherit;
+  font-size: 15px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.btn-buscar {
+  border: 0;
+  background: #1e4fd6;
+  color: #fff;
+}
+
+.btn-limpiar {
+  border: 1px solid #d8deea;
+  background: #fff;
+  color: #0b1b4d;
+}
+
+.btn-buscar:disabled,
+.btn-limpiar:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.filtros input,
 .filtros select {
-  height: 42px;
+  height: 46px;
   border: 1px solid #d8deea;
   border-radius: 11px;
-  padding: 0 12px;
+  padding: 0 14px;
   background: #fff;
   color: #0f172a;
   font: inherit;
-  font-size: 13.5px;
+  font-size: 16px;
   box-shadow: 0 1px 2px rgba(15, 23, 42, 0.03);
 }
 
@@ -91,6 +131,11 @@
   background: #fef2f2;
   color: #b42318;
   font-size: 13px;
+}
+
+.alert.ok {
+  background: #ecfdf5;
+  color: #047857;
 }
 
 .meta {
@@ -133,16 +178,17 @@ table {
 
 th,
 td {
-  padding: 13px 14px;
+  padding: 16px;
   border-bottom: 1px solid #e7e9f0;
   text-align: left;
-  font-size: 14px;
+  font-size: 15.5px;
+  line-height: 1.45;
   vertical-align: middle;
   color: #334155;
 }
 
 th {
-  font-size: 11.5px;
+  font-size: 12.5px;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   color: #475569;
@@ -168,7 +214,7 @@ tr.clickable:hover td {
 td strong {
   display: block;
   color: #0b1b4d;
-  font-size: 14px;
+  font-size: 16px;
 }
 
 .id {
@@ -196,15 +242,15 @@ td strong {
 }
 
 .btn-accion {
-  height: 34px;
-  border-radius: 9px;
+  height: 40px;
+  border-radius: 10px;
   border: 1px solid transparent;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   font: inherit;
-  font-size: 12.5px;
+  font-size: 14px;
   font-weight: 800;
   transition: transform 0.12s ease, box-shadow 0.12s ease;
 }
@@ -225,12 +271,41 @@ td strong {
   background: #1638a8;
 }
 
+.btn-accion.editar {
+  padding: 0 12px;
+  background: #eaf0fe;
+  border-color: #c9d6f8;
+  color: #0e2266;
+}
+
+.btn-accion.editar:hover {
+  background: #dbe4fb;
+}
+
+.btn-accion.eliminar {
+  margin-left: 10px;
+  padding: 0 12px;
+  background: #fff;
+  border-color: #f3b4b4;
+  color: #b42318;
+}
+
+.btn-accion.eliminar:hover:not(:disabled) {
+  background: #fef2f2;
+}
+
+.btn-accion:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
 .btn-accion.fav {
-  width: 34px;
+  padding: 0 12px;
   background: #fff7ed;
   border-color: #fdba74;
   color: #c2410c;
-  font-size: 16px;
+  font-size: 14px;
 }
 
 .btn-accion.fav.on {
@@ -259,6 +334,88 @@ td strong {
   color: #fff;
 }
 
+.estado.eliminado {
+  background: #64748b;
+  color: #fff;
+}
+
+.confirm-capa {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+}
+
+.confirm-fondo {
+  position: absolute;
+  inset: 0;
+  background: rgba(11, 27, 77, 0.45);
+}
+
+.confirm-dialog {
+  position: relative;
+  z-index: 1;
+  width: min(440px, 100%);
+  padding: 28px 28px 22px;
+  border-radius: 20px;
+  background: #fff;
+  text-align: center;
+  box-shadow: 0 24px 60px rgba(11, 27, 77, 0.28);
+}
+
+.confirm-dialog h2 {
+  margin: 0 0 8px;
+  font-size: 20px;
+  color: #0b1b4d;
+}
+
+.confirm-dialog p {
+  margin: 0;
+  color: #334155;
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.confirm-acciones {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 22px;
+}
+
+.btn-cancelar,
+.btn-peligro {
+  border-radius: 12px;
+  padding: 12px 18px;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.btn-cancelar {
+  border: 1px solid #e7e9f0;
+  background: #fff;
+  color: #334155;
+}
+
+.btn-peligro {
+  border: 0;
+  background: #dc2626;
+  color: #fff;
+}
+
+.btn-peligro:hover:not(:disabled) {
+  background: #b91c1c;
+}
+
+.btn-cancelar:disabled,
+.btn-peligro:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 .vacio {
   text-align: center;
   color: #667085;
@@ -275,9 +432,16 @@ td strong {
     grid-template-columns: 1fr 1fr;
   }
 
-  .filtros input {
+  .filtros input,
+  .filtros-acciones {
     grid-column: 1 / -1;
   }
+}
+
+:host-context(.tema-oscuro) .btn-limpiar {
+  background: #111827;
+  border-color: #1f2937;
+  color: #e5e7eb;
 }
 
 :host-context(.tema-oscuro) .filtros input,

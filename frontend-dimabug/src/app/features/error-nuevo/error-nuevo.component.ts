@@ -1,5 +1,6 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { AuthService } from '../../core/services/auth.service';
 import { CatalogoService } from '../../core/services/catalogo.service';
 import { ErrorItem, FRECUENCIAS } from '../../core/models/catalogo.model';
 import { CatalogoTabsComponent } from '../../shared/ui/catalogo-tabs.component';
@@ -13,7 +14,10 @@ import { CatalogoTabsComponent } from '../../shared/ui/catalogo-tabs.component';
 })
 export class ErrorNuevoComponent implements OnInit {
   private readonly catalogo = inject(CatalogoService);
+  private readonly auth = inject(AuthService);
   private readonly fb = inject(FormBuilder);
+
+  readonly puedeGestionar = this.auth.isStaff;
 
   readonly frecuencias = FRECUENCIAS;
   modalOpen = false;
@@ -130,6 +134,20 @@ export class ErrorNuevoComponent implements OnInit {
     this.modalOpen = false;
     this.editId = null;
     this.success = esEdicion ? 'Incidencia actualizada.' : 'Incidencia registrada correctamente.';
+    if (!this.puedeGestionar()) {
+      this.form.reset({
+        descripcion: '',
+        hardwareId: 0,
+        sistema: '',
+        modulo: '',
+        frecuencia: '',
+        usuarioContexto: '',
+        causa: '',
+        comentarios: '',
+        solucionIds: [],
+        pruebaIds: [],
+      });
+    }
   }
 
   private refrescarLista(): void {

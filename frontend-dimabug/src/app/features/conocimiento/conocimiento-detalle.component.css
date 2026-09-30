@@ -1,5 +1,5 @@
 .detail {
-  max-width: 1120px;
+  max-width: none;
 }
 
 .crumb {
@@ -75,6 +75,11 @@
   color: #fff;
 }
 
+.badge.eliminado {
+  background: #64748b;
+  color: #fff;
+}
+
 .freq {
   padding: 4px 10px;
   border-radius: 999px;
@@ -87,16 +92,16 @@
 
 .hero h1 {
   margin: 0 0 10px;
-  font-size: 30px;
+  font-size: 34px;
   line-height: 1.2;
   letter-spacing: -0.03em;
 }
 
 .lead {
   margin: 0 0 18px;
-  max-width: 720px;
-  color: #d7e2ff;
-  font-size: 15.5px;
+  max-width: 760px;
+  color: #eef3ff;
+  font-size: 17px;
   line-height: 1.55;
 }
 
@@ -119,7 +124,7 @@
 .meta-grid dd {
   margin: 0;
   color: #fff;
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 650;
 }
 
@@ -162,6 +167,19 @@
 .hero-btn.publish {
   background: #059669;
   color: #fff;
+}
+
+.hero-btn.eliminar {
+  margin-top: 12px;
+  background: transparent;
+  color: #fecaca;
+  border: 1px solid rgba(254, 202, 202, 0.75);
+  box-shadow: none;
+}
+
+.hero-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .nota {
@@ -255,8 +273,9 @@
 
 .hint {
   margin: 0;
-  color: #64748b;
-  font-size: 13.5px;
+  color: #475569;
+  font-size: 15.5px;
+  line-height: 1.45;
 }
 
 .add-btn,
@@ -340,16 +359,17 @@
 .solution strong {
   margin: 0;
   color: #0f172a;
-  font-size: 14.5px;
-  line-height: 1.45;
+  font-size: 16.5px;
+  line-height: 1.55;
 }
 
 .empty-state,
 .empty-inline,
 .muted {
   margin: 0;
-  color: #94a3b8;
-  font-size: 14px;
+  color: #475569;
+  font-size: 15.5px;
+  line-height: 1.45;
 }
 
 .tests li {
@@ -976,6 +996,89 @@
 
 .missing {
   color: #64748b;
+}
+
+.missing a {
+  margin-left: 8px;
+  color: #1e4fd6;
+  font-weight: 700;
+}
+
+.confirm-capa {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+}
+
+.confirm-fondo {
+  position: absolute;
+  inset: 0;
+  background: rgba(11, 27, 77, 0.45);
+}
+
+.confirm-dialog {
+  position: relative;
+  z-index: 1;
+  width: min(440px, 100%);
+  padding: 28px 28px 22px;
+  border-radius: 20px;
+  background: #fff;
+  text-align: center;
+  box-shadow: 0 24px 60px rgba(11, 27, 77, 0.28);
+}
+
+.confirm-dialog h2 {
+  margin: 0 0 8px;
+  font-size: 20px;
+  color: #0b1b4d;
+}
+
+.confirm-dialog p {
+  margin: 0;
+  color: #334155;
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.confirm-acciones {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 22px;
+}
+
+.btn-cancelar,
+.btn-peligro {
+  border-radius: 12px;
+  padding: 12px 18px;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.btn-cancelar {
+  border: 1px solid #e7e9f0;
+  background: #fff;
+  color: #334155;
+}
+
+.btn-peligro {
+  border: 0;
+  background: #dc2626;
+  color: #fff;
+}
+
+.btn-peligro:hover:not(:disabled) {
+  background: #b91c1c;
+}
+
+.btn-cancelar:disabled,
+.btn-peligro:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .skeleton-stack {

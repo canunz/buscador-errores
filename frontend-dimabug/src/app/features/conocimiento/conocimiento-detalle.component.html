@@ -1,4 +1,4 @@
-<app-loading-modal [visible]="mostrandoCarga" mensaje="Cargando, por favor…" />
+<app-loading-modal [visible]="mostrandoCarga" [mensaje]="mensajeCarga" />
 
 @if (loading && !item) {
   <div class="detail">
@@ -10,7 +10,11 @@
     <div class="skeleton-stack page"><div class="sk tall"></div><div class="sk tall"></div></div>
   </div>
 } @else if (error && !item) {
-  <p class="missing">{{ error }} <a routerLink="/conocimiento">Volver al listado</a></p>
+  <p class="missing">
+    {{ error }}
+    <a routerLink="/conocimiento">Volver al listado</a>
+    <a routerLink="/inicio">Ir al buscador</a>
+  </p>
 } @else if (item) {
   @let kb = item;
   <article class="detail">
@@ -33,8 +37,13 @@
     <header class="hero">
       <div class="hero-main">
         <div class="hero-top">
-          <span class="badge" [class.publicado]="kb.estado === 'PUBLICADO'" [class.borrador]="kb.estado === 'BORRADOR'">
-            {{ kb.estado === 'PUBLICADO' ? 'Publicado' : 'Borrador' }}
+          <span
+            class="badge"
+            [class.publicado]="kb.estado === 'PUBLICADO'"
+            [class.borrador]="kb.estado === 'BORRADOR'"
+            [class.eliminado]="kb.estado === 'ELIMINADO'"
+          >
+            {{ etiquetaEstado(kb.estado) }}
           </span>
           @if (kb.frecuenciaNombre) {
             <span class="freq">{{ kb.frecuenciaNombre }}</span>
@@ -59,18 +68,29 @@
       </div>
       <div class="hero-actions">
         <button type="button" class="star" [class.on]="favorito" (click)="toggleFavorito()">
-          {{ favorito ? '★ En favoritos' : '☆ Guardar' }}
+          {{ favorito ? '★ En favoritos' : '☆ Guardar favorito' }}
         </button>
-        <button type="button" class="hero-btn" (click)="editar()">Editar ficha</button>
-        @if (kb.estado === 'BORRADOR') {
-          <button type="button" class="hero-btn publish" (click)="publicar()" [disabled]="publishing">
-            {{ publishing ? 'Publicando…' : 'Publicar' }}
+        @if (puedeGestionar()) {
+          <button type="button" class="hero-btn" (click)="editar()">Editar ficha</button>
+          @if (kb.estado === 'BORRADOR') {
+            <button type="button" class="hero-btn publish" (click)="cambiarEstado('PUBLICADO')" [disabled]="publishing">
+              {{ publishing ? 'Publicando…' : 'Publicar' }}
+            </button>
+          } @else if (kb.estado === 'PUBLICADO') {
+            <button type="button" class="hero-btn" (click)="cambiarEstado('BORRADOR')" [disabled]="publishing">
+              {{ publishing ? 'Guardando…' : 'Volver a borrador' }}
+            </button>
+          }
+        }
+        @if (esAdministrador()) {
+          <button type="button" class="hero-btn eliminar" (click)="pedirEliminar()" [disabled]="eliminando">
+            Eliminar
           </button>
         }
       </div>
     </header>
 
-    @if (kb.comentario) {
+    @if (puedeGestionar() && kb.comentario) {
       <aside class="nota">
         <strong>Nota del equipo</strong>
         <p>{{ kb.comentario }}</p>
@@ -86,7 +106,9 @@
               <h2>Qué está viendo el usuario</h2>
               <p class="hint">Confirme estos síntomas antes de continuar.</p>
             </div>
-            <button type="button" class="add-btn" (click)="abrirFormulario('sintomas')">+ Síntoma</button>
+            @if (puedeGestionar()) {
+              <button type="button" class="add-btn" (click)="abrirFormulario('sintomas')">+ Síntoma</button>
+            }
           </header>
 
           @if (loadingSintomas) {
@@ -97,15 +119,19 @@
                 <li>
                   <span class="num">{{ s.orden }}</span>
                   <p>{{ s.descripcion }}</p>
-                  <button type="button" class="edit-btn" (click)="editarSintoma(s)">Editar</button>
+                  @if (puedeGestionar()) {
+                    <button type="button" class="edit-btn" (click)="editarSintoma(s)">Editar</button>
+                  }
                 </li>
               }
             </ol>
           } @else {
-            <p class="empty-state">Todavía no hay síntomas. Agréguelos para que el técnico sepa qué validar en terreno.</p>
+            <p class="empty-state">
+              {{ puedeGestionar() ? 'Todavía no hay síntomas. Agréguelos para que el técnico sepa qué validar en terreno.' : 'Todavía no hay síntomas registrados para este caso.' }}
+            </p>
           }
 
-          @if (formAbierto.sintomas) {
+          @if (puedeGestionar() && formAbierto.sintomas) {
             <form class="editor" [formGroup]="sintomaForm" (ngSubmit)="guardarSintoma()">
               <label>
                 <span>Descripción del síntoma <span class="req">*</span></span>
@@ -132,7 +158,9 @@
               <h2>Causas probables</h2>
               <p class="hint">Revise en este orden para acotar el origen del problema.</p>
             </div>
-            <button type="button" class="add-btn" (click)="abrirFormulario('causas')">+ Causa</button>
+            @if (puedeGestionar()) {
+              <button type="button" class="add-btn" (click)="abrirFormulario('causas')">+ Causa</button>
+            }
           </header>
 
           @if (loadingCausas) {
@@ -143,15 +171,19 @@
                 <li>
                   <span class="num">{{ c.orden }}</span>
                   <p>{{ c.descripcion }}</p>
-                  <button type="button" class="edit-btn" (click)="editarCausa(c)">Editar</button>
+                  @if (puedeGestionar()) {
+                    <button type="button" class="edit-btn" (click)="editarCausa(c)">Editar</button>
+                  }
                 </li>
               }
             </ol>
           } @else {
-            <p class="empty-state">Sin causas registradas. Documente aquí las hipótesis más frecuentes.</p>
+            <p class="empty-state">
+              {{ puedeGestionar() ? 'Sin causas registradas. Documente aquí las hipótesis más frecuentes.' : 'Sin causas registradas para este caso.' }}
+            </p>
           }
 
-          @if (formAbierto.causas) {
+          @if (puedeGestionar() && formAbierto.causas) {
             <form class="editor" [formGroup]="causaForm" (ngSubmit)="guardarCausa()">
               <label>
                 <span>Descripción de la causa <span class="req">*</span></span>
@@ -178,7 +210,9 @@
               <h2>Pruebas recomendadas</h2>
               <p class="hint">Ejecute estas pruebas y compare con el resultado esperado.</p>
             </div>
-            <button type="button" class="add-btn" (click)="abrirFormulario('pruebas')">+ Asociar prueba</button>
+            @if (puedeGestionar()) {
+              <button type="button" class="add-btn" (click)="abrirFormulario('pruebas')">+ Asociar prueba</button>
+            }
           </header>
 
           @if (loadingPruebas) {
@@ -190,17 +224,21 @@
                   <div class="test-top">
                     <span class="num">{{ p.orden }}</span>
                     <strong>{{ p.descripcion }}</strong>
-                    <button type="button" class="edit-btn" (click)="editarPrueba(p)">Orden</button>
+                    @if (puedeGestionar()) {
+                      <button type="button" class="edit-btn" (click)="editarPrueba(p)">Orden</button>
+                    }
                   </div>
                   <p class="expected"><span>Resultado esperado</span>{{ p.resultadoEsperado || 'No indicado' }}</p>
                 </li>
               }
             </ol>
           } @else {
-            <p class="empty-state">No hay pruebas asociadas. Vincule pruebas del catálogo para guiar la verificación.</p>
+            <p class="empty-state">
+              {{ puedeGestionar() ? 'No hay pruebas asociadas. Vincule pruebas del catálogo para guiar la verificación.' : 'No hay pruebas asociadas a este caso.' }}
+            </p>
           }
 
-          @if (formAbierto.pruebas) {
+          @if (puedeGestionar() && formAbierto.pruebas) {
             <form class="editor" [formGroup]="pruebaForm" (ngSubmit)="guardarPrueba()">
               @if (!editPruebaId) {
                 <label>
@@ -235,7 +273,9 @@
               <h2>Solución</h2>
               <p class="hint">Siga estos pasos o derive al área indicada.</p>
             </div>
-            <button type="button" class="add-btn" (click)="abrirFormulario('soluciones')">+ Solución</button>
+            @if (puedeGestionar()) {
+              <button type="button" class="add-btn" (click)="abrirFormulario('soluciones')">+ Solución</button>
+            }
           </header>
 
           @if (loadingSoluciones) {
@@ -251,10 +291,12 @@
                       {{ s.tipo === 'DERIVACION' ? 'Derivación' : 'Pasos a seguir' }}
                     </span>
                   </div>
-                  <div class="solution-actions">
-                    <button type="button" class="edit-btn" (click)="editarSolucion(s)">Editar</button>
-                    <button type="button" class="edit-btn" (click)="abrirAsignacion(s.id)">Asignar área</button>
-                  </div>
+                  @if (puedeGestionar()) {
+                    <div class="solution-actions">
+                      <button type="button" class="edit-btn" (click)="editarSolucion(s)">Editar</button>
+                      <button type="button" class="edit-btn" (click)="abrirAsignacion(s.id)">Asignar área</button>
+                    </div>
+                  }
                 </div>
 
                 @if (asignacionesDe(s.id).length) {
@@ -263,21 +305,31 @@
                     @for (a of asignacionesDe(s.id); track a.id) {
                       <div class="owner">
                         <div>
-                          <strong>{{ a.departamentoNombre || 'Área no indicada' }}</strong>
-                          <span>{{ a.responsableNombre || 'Responsable no asignado' }}</span>
+                          @if (a.departamentoNombre) {
+                            <strong>{{ a.departamentoNombre }}</strong>
+                          }
+                          @if (a.responsableNombre) {
+                            <span>{{ a.responsableNombre }}</span>
+                          }
                         </div>
                         @if (a.principal) {
                           <em>Principal</em>
                         }
-                        <button type="button" class="edit-btn" (click)="abrirAsignacion(s.id, a)">Editar</button>
+                        @if (puedeGestionar()) {
+                          <button type="button" class="edit-btn" (click)="abrirAsignacion(s.id, a)">Editar</button>
+                        }
                       </div>
                     }
                   </div>
-                } @else {
+                } @else if (puedeGestionar()) {
                   <p class="empty-inline">Sin área asignada aún.</p>
                 }
 
-                @if (solucionAsignacionId === s.id) {
+                @if (puedeGestionar() && kb.estado === 'PUBLICADO') {
+                  <app-solucion-efectividad [conocimientoId]="kb.id" [solucionId]="s.id" />
+                }
+
+                @if (puedeGestionar() && solucionAsignacionId === s.id) {
                   <form class="editor nested assign-form" [formGroup]="asignacionForm" (ngSubmit)="guardarAsignacion()">
                     <div class="assign-head full">
                       <div>
@@ -321,10 +373,12 @@
               </article>
             }
           } @else {
-            <p class="empty-state">Sin soluciones. Agregue el procedimiento o la derivación recomendada.</p>
+            <p class="empty-state">
+              {{ puedeGestionar() ? 'Sin soluciones. Agregue el procedimiento o la derivación recomendada.' : 'Sin solución registrada para este caso.' }}
+            </p>
           }
 
-          @if (formAbierto.soluciones) {
+          @if (puedeGestionar() && formAbierto.soluciones) {
             <form class="editor" [formGroup]="solucionForm" (ngSubmit)="guardarSolucion()">
               <label>
                 <span>Qué debe hacer el técnico <span class="req">*</span></span>
@@ -359,7 +413,9 @@
               <h2>Material de apoyo</h2>
               <p class="hint">Manuales, capturas o enlaces útiles para resolver el caso.</p>
             </div>
-            <button type="button" class="add-btn" (click)="abrirFormulario('materiales')">+ Material</button>
+            @if (puedeGestionar()) {
+              <button type="button" class="add-btn" (click)="abrirFormulario('materiales')">+ Material</button>
+            }
           </header>
 
           @if (loadingMateriales) {
@@ -379,7 +435,9 @@
                     <p class="material-url" [title]="m.url">{{ m.url }}</p>
                     <div class="material-actions">
                       <a class="open-btn" [href]="m.url" target="_blank" rel="noopener noreferrer">Abrir recurso</a>
-                      <button type="button" class="edit-btn" (click)="editarMaterial(m)">Editar</button>
+                      @if (puedeGestionar()) {
+                        <button type="button" class="edit-btn" (click)="editarMaterial(m)">Editar</button>
+                      }
                     </div>
                   </div>
                 </li>
@@ -388,11 +446,11 @@
           } @else {
             <div class="empty-material">
               <strong>Sin material de apoyo</strong>
-              <p>Agregue enlaces a manuales, capturas o documentos relacionados.</p>
+              <p>{{ puedeGestionar() ? 'Agregue enlaces a manuales, capturas o documentos relacionados.' : 'No hay manuales ni enlaces para este caso.' }}</p>
             </div>
           }
 
-          @if (formAbierto.materiales) {
+          @if (puedeGestionar() && formAbierto.materiales) {
             <form class="editor" [formGroup]="materialForm" (ngSubmit)="guardarMaterial()">
               <label>
                 <span>Nombre <span class="req">*</span></span>
@@ -454,4 +512,20 @@
       </aside>
     </div>
   </article>
+}
+
+@if (confirmarEliminacion) {
+  <div class="confirm-capa">
+    <div class="confirm-fondo" (click)="cancelarEliminar()"></div>
+    <div class="confirm-dialog" role="alertdialog" aria-modal="true" aria-labelledby="eliminar-titulo">
+      <h2 id="eliminar-titulo">¿Eliminar este conocimiento?</h2>
+      <p>El conocimiento dejará de estar disponible para consulta y búsqueda.</p>
+      <div class="confirm-acciones">
+        <button type="button" class="btn-cancelar" (click)="cancelarEliminar()" [disabled]="eliminando">Cancelar</button>
+        <button type="button" class="btn-peligro" (click)="confirmarEliminar()" [disabled]="eliminando">
+          {{ eliminando ? 'Eliminando…' : 'Eliminar' }}
+        </button>
+      </div>
+    </div>
+  </div>
 }

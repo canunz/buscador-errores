@@ -24,6 +24,7 @@ export class ConocimientoFormComponent implements OnInit {
   editId: number | null = null;
   loading = false;
   saving = false;
+  noDisponible = false;
   error = '';
   frecuenciasDisponibles = false;
 
@@ -106,7 +107,7 @@ export class ConocimientoFormComponent implements OnInit {
       return;
     }
 
-    this.conocimientos.obtenerPorId(this.editId).subscribe({
+    this.conocimientos.obtenerPorId(this.editId, true).subscribe({
       next: (actual) => {
         this.form.patchValue(
           {
@@ -125,6 +126,7 @@ export class ConocimientoFormComponent implements OnInit {
       error: (err: Error) => {
         this.loading = false;
         this.error = err.message;
+        this.noDisponible = err.message === 'El conocimiento no está disponible.';
       },
     });
   }

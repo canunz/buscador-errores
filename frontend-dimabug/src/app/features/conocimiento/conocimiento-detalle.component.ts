@@ -14,28 +14,36 @@ import {
   Solucion,
   TipoMaterial,
   TipoSolucion,
+  etiquetaEstadoConocimiento,
 } from '../../core/models/conocimiento.model';
+import { AuthService } from '../../core/services/auth.service';
 import { ConocimientoService } from '../../core/services/conocimiento.service';
 import { FavoritosService } from '../../core/services/favoritos.service';
 import { OrganizacionService } from '../../core/services/organizacion.service';
 import { LoadingModalComponent } from '../../shared/ui/loading-modal.component';
+import { SolucionEfectividadComponent } from './solucion-efectividad.component';
 
 type Seccion = 'sintomas' | 'causas' | 'pruebas' | 'soluciones' | 'materiales' | 'asignaciones';
 
 @Component({
   selector: 'app-conocimiento-detalle',
   standalone: true,
-  imports: [DatePipe, NgClass, RouterLink, ReactiveFormsModule, LoadingModalComponent],
+  imports: [DatePipe, NgClass, RouterLink, ReactiveFormsModule, LoadingModalComponent, SolucionEfectividadComponent],
   templateUrl: './conocimiento-detalle.component.html',
   styleUrl: './conocimiento-detalle.component.css',
 })
 export class ConocimientoDetalleComponent implements OnInit {
   private readonly conocimientosApi = inject(ConocimientoService);
+  private readonly auth = inject(AuthService);
   private readonly organizacion = inject(OrganizacionService);
   private readonly favoritosService = inject(FavoritosService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly fb = inject(FormBuilder);
+
+  readonly esAdministrador = this.auth.isAdmin;
+  readonly puedeGestionar = this.auth.isStaff;
+  readonly etiquetaEstado = etiquetaEstadoConocimiento;
 
   item: Conocimiento | null = null;
   sintomas: ItemOrdenado[] = [];
@@ -59,6 +67,8 @@ export class ConocimientoDetalleComponent implements OnInit {
   sectionError = '';
   sectionSuccess = '';
   publishing = false;
+  eliminando = false;
+  confirmarEliminacion = false;
   saving: Seccion | null = null;
   copiado = false;
   private currentId: number | null = null;
@@ -124,7 +134,11 @@ export class ConocimientoDetalleComponent implements OnInit {
   }
 
   get mostrandoCarga(): boolean {
-    return this.saving != null || this.publishing;
+    return this.saving != null || this.publishing || this.eliminando;
+  }
+
+  get mensajeCarga(): string {
+    return this.eliminando ? 'Eliminando, por favor…' : 'Cargando, por favor…';
   }
 
   ngOnInit(): void {
@@ -169,7 +183,7 @@ export class ConocimientoDetalleComponent implements OnInit {
       this.item = null;
     }
 
-    this.conocimientosApi.obtenerPorId(id).subscribe({
+    this.conocimientosApi.obtenerPorId(id, true).subscribe({
       next: (item) => {
         if (this.currentId !== id) return;
         this.item = item;
@@ -179,6 +193,9 @@ export class ConocimientoDetalleComponent implements OnInit {
         if (this.currentId !== id) return;
         this.error = err.message;
         this.loading = false;
+        if (err.message === 'El conocimiento no está disponible.') {
+          this.item = null;
+        }
       },
     });
 
@@ -287,17 +304,17 @@ export class ConocimientoDetalleComponent implements OnInit {
 
   toggleFavorito(): void {
     if (this.item) {
-      this.favoritosService.toggle(this.item.id);
+      this.favoritosService.toggle(this.item.id, this.item.titulo);
     }
   }
 
-  publicar(): void {
-    if (!this.item || this.item.estado === 'PUBLICADO') {
+  cambiarEstado(estado: 'PUBLICADO' | 'BORRADOR'): void {
+    if (!this.item || this.item.estado === estado) {
       return;
     }
     this.publishing = true;
     this.error = '';
-    this.conocimientosApi.cambiarEstado(this.item.id, 'PUBLICADO').subscribe({
+    this.conocimientosApi.cambiarEstado(this.item.id, estado).subscribe({
       next: (item) => {
         this.item = item;
         this.publishing = false;
@@ -313,6 +330,44 @@ export class ConocimientoDetalleComponent implements OnInit {
     if (this.item) {
       void this.router.navigate(['/conocimiento', this.item.id, 'editar']);
     }
+  }
+
+  pedirEliminar(): void {
+    if (!this.item || this.eliminando) {
+      return;
+    }
+    this.confirmarEliminacion = true;
+  }
+
+  cancelarEliminar(): void {
+    if (this.eliminando) {
+      return;
+    }
+    this.confirmarEliminacion = false;
+  }
+
+  confirmarEliminar(): void {
+    if (!this.item || this.eliminando) {
+      return;
+    }
+    const id = this.item.id;
+    this.eliminando = true;
+    this.error = '';
+    this.conocimientosApi.eliminar(id).subscribe({
+      next: () => {
+        this.eliminando = false;
+        this.confirmarEliminacion = false;
+        void this.router.navigate(['/conocimiento'], { state: { conocimientoEliminado: true } });
+      },
+      error: (err: Error) => {
+        this.eliminando = false;
+        this.confirmarEliminacion = false;
+        this.error = err.message;
+        if (err.message === 'El conocimiento no está disponible.') {
+          this.item = null;
+        }
+      },
+    });
   }
 
   compartir(): void {

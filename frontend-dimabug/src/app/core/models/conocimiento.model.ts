@@ -1,4 +1,14 @@
-export type ConocimientoEstado = 'BORRADOR' | 'PUBLICADO';
+export type ConocimientoEstado = 'BORRADOR' | 'PUBLICADO' | 'ELIMINADO';
+
+export function etiquetaEstadoConocimiento(estado: ConocimientoEstado): string {
+  if (estado === 'PUBLICADO') {
+    return 'Publicado';
+  }
+  if (estado === 'ELIMINADO') {
+    return 'Eliminado';
+  }
+  return 'Borrador';
+}
 
 export interface CatalogoRef {
   id: number;
@@ -22,6 +32,29 @@ export interface Conocimiento {
   creadoPor: string;
   fechaCreacion: string | null;
   fechaModificacion: string | null;
+}
+
+/** Respuesta de GET /api/conocimientos/buscar. No incluye estado ni descripción. */
+export interface ResultadoBusquedaConocimiento {
+  id: number;
+  titulo: string;
+  hardwareId: number | null;
+  hardwareNombre: string | null;
+  sistemaId: number | null;
+  sistemaNombre: string | null;
+  moduloId: number | null;
+  moduloNombre: string | null;
+  frecuenciaId: number | null;
+  frecuenciaNombre: string | null;
+  relevancia: number | null;
+}
+
+export interface BusquedaConocimientoFiltro {
+  texto?: string | null;
+  hardwareId?: number | null;
+  sistemaId?: number | null;
+  moduloId?: number | null;
+  frecuenciaId?: number | null;
 }
 
 export interface ConocimientoRequest {
@@ -85,6 +118,33 @@ export interface SolucionRequest {
   descripcion: string;
   tipo: TipoSolucion;
   orden: number;
+}
+
+export interface UsuarioResultado {
+  id: number;
+  nombre: string;
+  email: string;
+}
+
+export interface ResultadoSolucion {
+  id: number;
+  funciono: boolean;
+  comentario: string | null;
+  fecha: string;
+  usuario: UsuarioResultado;
+}
+
+export interface EfectividadSolucion {
+  solucionId: number;
+  totalAplicaciones: number;
+  totalFunciono: number;
+  totalNoFunciono: number;
+  porcentajeEfectividad: number | null;
+}
+
+export interface RegistrarResultadoRequest {
+  funciono: boolean;
+  comentario?: string | null;
 }
 
 export interface AsignacionSolucion {

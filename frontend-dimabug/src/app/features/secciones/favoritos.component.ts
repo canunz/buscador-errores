@@ -1,8 +1,12 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { Conocimiento } from '../../core/models/conocimiento.model';
+import { ConocimientoEstado, etiquetaEstadoConocimiento } from '../../core/models/conocimiento.model';
 import { ConocimientoService } from '../../core/services/conocimiento.service';
-import { FavoritosService } from '../../core/services/favoritos.service';
+import { FavoritoItem, FavoritosService } from '../../core/services/favoritos.service';
+
+interface FavoritoVista extends FavoritoItem {
+  estado?: ConocimientoEstado;
+}
 
 @Component({
   selector: 'app-favoritos',
@@ -14,9 +18,9 @@ import { FavoritosService } from '../../core/services/favoritos.service';
         <div>
           <p>Biblioteca</p>
           <h1>Favoritos</h1>
-          <span>Accesos rápidos a los conocimientos que marcas con estrella.</span>
+          <span>Los conocimientos que marcas con estrella quedan guardados aquí.</span>
         </div>
-        <a routerLink="/conocimiento" class="btn-crear">Ir a conocimiento</a>
+        <a routerLink="/conocimiento" class="btn-crear">Buscar conocimiento</a>
       </div>
 
       <div class="tabla-wrap">
@@ -37,11 +41,11 @@ import { FavoritosService } from '../../core/services/favoritos.service';
                   </div>
                 </td>
                 <td><strong>{{ item.titulo }}</strong></td>
-                <td>{{ item.estado === 'PUBLICADO' ? 'Publicado' : 'Borrador' }}</td>
+                <td>{{ etiqueta(item.estado) }}</td>
               </tr>
             } @empty {
               <tr>
-                <td colspan="3" class="vacio">Aún no tienes favoritos. Márcalos con la estrella desde Conocimiento.</td>
+                <td colspan="3" class="vacio">Aún no tienes favoritos. Márcalos con la estrella al buscar un conocimiento.</td>
               </tr>
             }
           </tbody>
@@ -54,13 +58,27 @@ import { FavoritosService } from '../../core/services/favoritos.service';
 export class FavoritosComponent implements OnInit {
   private readonly conocimientosApi = inject(ConocimientoService);
   private readonly favoritos = inject(FavoritosService);
-  items: Conocimiento[] = [];
+  readonly etiquetaEstado = etiquetaEstadoConocimiento;
+
+  etiqueta(estado?: ConocimientoEstado): string {
+    return estado ? this.etiquetaEstado(estado) : 'Guardado';
+  }
+  items: FavoritoVista[] = [];
 
   ngOnInit(): void {
+    this.items = this.favoritos.items();
     this.conocimientosApi.listar().subscribe({
       next: (list) => {
-        const ids = this.favoritos.ids();
-        this.items = list.filter((item) => ids.includes(item.id));
+        const ids = new Set(this.favoritos.ids());
+        const encontrados = list.filter((item) => ids.has(item.id));
+        if (!encontrados.length) {
+          return;
+        }
+        this.items = encontrados.map((item) => ({
+          id: item.id,
+          titulo: item.titulo,
+          estado: item.estado,
+        }));
       },
     });
   }

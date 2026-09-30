@@ -16,7 +16,7 @@
 
   @if (loading) {
     <p class="muted">Cargando…</p>
-  } @else {
+  } @else if (!noDisponible) {
     <form class="kb-form" [formGroup]="form" (ngSubmit)="guardar()">
       <label class="full">
         <span>Título <span class="req" aria-hidden="true">*</span></span>

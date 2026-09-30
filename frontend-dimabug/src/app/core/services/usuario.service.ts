@@ -5,6 +5,21 @@ import { apiUrl } from '../config/api';
 import { mensajeApiError } from '../http/api-error';
 import { Rol, Usuario, UsuarioPayload } from '../models/usuario.model';
 
+function fechaApi(value: unknown): string | undefined {
+  if (value == null || value === '') {
+    return undefined;
+  }
+  if (Array.isArray(value)) {
+    const [year, month, day, hour = 0, minute = 0, second = 0] = value.map((part) => Number(part));
+    const pad = (part: number) => String(part).padStart(2, '0');
+    if (!year || !month || !day) {
+      return undefined;
+    }
+    return `${year}-${pad(month)}-${pad(day)}T${pad(hour)}:${pad(minute)}:${pad(second)}`;
+  }
+  return String(value);
+}
+
 @Injectable({ providedIn: 'root' })
 export class UsuarioService {
   private readonly http = inject(HttpClient);
@@ -58,12 +73,8 @@ export class UsuarioService {
     );
   }
 
-  eliminar(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.base}/${id}`).pipe(tap(() => this.removeLocal(id)));
-  }
-
   cambiarEstado(id: number, activo: boolean): Observable<Usuario> {
-    return this.http.patch<unknown>(`${this.base}/${id}/estado`, { usuarioEstado: activo }).pipe(
+    return this.http.patch<unknown>(`${this.base}/${id}/estado`, { activo }).pipe(
       map((res) => this.normalizeUsuario(res)),
       tap((item) => this.upsertLocal(item)),
     );
@@ -108,21 +119,13 @@ export class UsuarioService {
     this.writeUsuariosSession(list);
   }
 
-  private removeLocal(id: number): void {
-    this.invalidateLista();
-    const list = (this.readUsuariosSession() ?? []).filter((u) => u.usuarioId !== id);
-    this.writeUsuariosSession(list);
-  }
-
   private toApiBody(payload: UsuarioPayload): Record<string, unknown> {
     const body: Record<string, unknown> = {
-      usuarioNombre: payload.usuarioNombre,
-      usuarioEmail: payload.usuarioEmail,
+      nombre: payload.usuarioNombre,
+      email: payload.usuarioEmail,
       rolId: payload.rolId,
-      usuarioEstado: payload.usuarioEstado,
     };
     if (payload.usuarioPassword) {
-      body['usuarioPassword'] = payload.usuarioPassword;
       body['password'] = payload.usuarioPassword;
     }
     return body;
@@ -163,7 +166,7 @@ export class UsuarioService {
       usuarioNombre: String(u['usuarioNombre'] ?? u['nombre'] ?? ''),
       usuarioEmail: String(u['usuarioEmail'] ?? u['email'] ?? ''),
       usuarioEstado: Boolean(u['usuarioEstado'] ?? u['activo'] ?? true),
-      usuarioFechaCreacion: u['usuarioFechaCreacion'] ? String(u['usuarioFechaCreacion']) : undefined,
+      usuarioFechaCreacion: fechaApi(u['usuarioFechaCreacion'] ?? u['fechaCreacion']),
       rolId: rol?.rolId ?? (u['rolId'] != null ? Number(u['rolId']) : undefined),
       rol,
       rolNombre: rol?.rolNombre ?? (u['rolNombre'] ? String(u['rolNombre']) : undefined),

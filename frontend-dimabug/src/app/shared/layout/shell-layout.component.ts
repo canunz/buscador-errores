@@ -27,6 +27,7 @@ export class ShellLayoutComponent implements OnInit {
 
   readonly usuario = this.auth.usuario;
   readonly isAdmin = computed(() => esAdministrador(this.usuario()));
+  readonly isStaff = this.auth.isStaff;
   readonly iniciales = computed(() => iniciales(this.usuario()?.usuarioNombre));
   readonly rolNombre = computed(
     () => this.usuario()?.rol?.rolNombre || this.usuario()?.rolNombre || 'Usuario',
@@ -58,10 +59,12 @@ export class ShellLayoutComponent implements OnInit {
   ngOnInit(): void {
     // Precarga liviana: lo pesado se completa en segundo plano sin bloquear la UI.
     const ignore = { error: () => undefined };
-    this.clasificacion.precargarClasificacion();
-    this.organizacion.listarPruebas().subscribe(ignore);
-    this.conocimientos.listar().subscribe(ignore);
-    this.inicioApi.dashboard().subscribe(ignore);
+    if (this.isStaff()) {
+      this.clasificacion.precargarClasificacion();
+      this.organizacion.listarPruebas().subscribe(ignore);
+      this.conocimientos.listar().subscribe(ignore);
+      this.inicioApi.dashboard().subscribe(ignore);
+    }
     if (this.isAdmin()) {
       this.usuariosApi.listar().subscribe(ignore);
     }

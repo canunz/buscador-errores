@@ -1,3 +1,54 @@
+@if (!puedeGestionar()) {
+  <section class="cat-page err-page usuario-error">
+    <div class="franja">
+      <div>
+        <p>Incidencias</p>
+        <h1>Nuevo error</h1>
+        <span>Cuéntanos qué está fallando. Soporte lo revisará junto con los casos parecidos.</span>
+      </div>
+    </div>
+
+    @if (success) {
+      <p class="ok">{{ success }}</p>
+    }
+
+    <form class="form-card usuario-form" [formGroup]="form" (ngSubmit)="save()">
+      <div class="form-grid">
+        <label class="full">
+          Qué está fallando *
+          <textarea rows="4" formControlName="descripcion" placeholder="Describe el error con tus palabras"></textarea>
+          @if (form.controls.descripcion.touched && form.controls.descripcion.invalid) {
+            <small class="err">La descripción es obligatoria.</small>
+          }
+        </label>
+        <label>
+          Dónde ocurre
+          <input type="text" formControlName="modulo" placeholder="Caja, bodega, reportes..." />
+        </label>
+        <label>
+          Cada cuánto pasa
+          <select formControlName="frecuencia">
+            <option value="">No estoy seguro</option>
+            @for (f of frecuencias; track f) {
+              <option [value]="f">{{ f }}</option>
+            }
+          </select>
+        </label>
+        <label class="full">
+          Quién lo está viendo
+          <input type="text" formControlName="usuarioContexto" placeholder="Tu nombre, sucursal o usuario" />
+        </label>
+        <label class="full">
+          Qué más notaste
+          <textarea rows="3" formControlName="comentarios" placeholder="Mensaje en pantalla, hora, si ya lo intentaste de nuevo"></textarea>
+        </label>
+      </div>
+      <div class="form-actions">
+        <button type="submit" class="btn-crear">Enviar error</button>
+      </div>
+    </form>
+  </section>
+} @else {
 <section class="cat-page err-page">
   <div class="franja">
     <div>
@@ -162,4 +213,5 @@
       </form>
     </div>
   </div>
+}
 }

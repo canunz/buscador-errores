@@ -35,6 +35,8 @@ export interface SolucionItem {
   /** Presente cuando viene agregada desde un conocimiento de la API. */
   conocimientoId?: number;
   conocimientoTitulo?: string;
+  orden?: number;
+  tipo?: 'PASOS' | 'DERIVACION';
 }
 
 export interface ErrorItem {
