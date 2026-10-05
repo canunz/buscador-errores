@@ -19,7 +19,7 @@
           Busca el caso, aplica el procedimiento y registra si la solución funcionó.
         }
         @default {
-          Busca un caso parecido al tuyo, márcalo como favorito o registra un error nuevo.
+          Busca un caso parecido al tuyo, consulta el procedimiento y márcalo como favorito.
         }
       }
     </p>
@@ -57,7 +57,7 @@
             Si el problema ya ocurrió, ábrelo. El mismo caso se reutiliza: no hace falta un conocimiento nuevo.
           }
           @default {
-            Si el problema ya ocurrió, búscalo. Si no aparece, registra un error para que soporte lo tome.
+            Si el problema ya ocurrió, búscalo. Revisa el procedimiento, la solución y tus reportes.
           }
         }
       </p>
@@ -240,16 +240,16 @@
             <p>Encuentra un caso publicado parecido al tuyo.</p>
           </span>
         </button>
-        <button type="button" class="card-acceso verde" (click)="ir('/error/nuevo')">
+        <button type="button" class="card-acceso verde" (click)="ir('/procedimientos')">
           <span class="icono-cuadrado" aria-hidden="true">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <circle cx="12" cy="12" r="9" />
-              <path d="M12 8v8M8 12h8" />
+              <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2" />
+              <rect x="9" y="3" width="6" height="4" rx="1" />
             </svg>
           </span>
           <span class="card-acceso-texto">
-            <h3>Registrar error</h3>
-            <p>Avisa a soporte si no encuentras la solución.</p>
+            <h3>Procedimientos</h3>
+            <p>Consulta los pasos publicados para resolver el caso.</p>
           </span>
         </button>
         <button type="button" class="card-acceso" (click)="ir('/favoritos')">
@@ -267,6 +267,18 @@
                 Tienes {{ favoritosCount() }} guías guardadas.
               }
             </p>
+          </span>
+        </button>
+        <button type="button" class="card-acceso verde" (click)="ir('/reportes')">
+          <span class="icono-cuadrado" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M4 19V5M4 19h16" />
+              <path d="M8 16v-5M12 16V8M16 16v-3" />
+            </svg>
+          </span>
+          <span class="card-acceso-texto">
+            <h3>Reportes</h3>
+            <p>Revisa el uso de la base de conocimiento.</p>
           </span>
         </button>
       }

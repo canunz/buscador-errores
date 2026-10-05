@@ -10,6 +10,12 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class MaterialApoyoRepositoryAdapterTest {
+    @Test void eliminaPorId() {
+        MaterialApoyoJpaRepository repository=mock(MaterialApoyoJpaRepository.class);
+        new MaterialApoyoRepositoryAdapter(repository).eliminar(3);
+        verify(repository).deleteById(3);
+        verify(repository, never()).flush();
+    }
     @Test void consultaExcluyeMaterialesDePaso() {
         MaterialApoyoJpaRepository repository=mock(MaterialApoyoJpaRepository.class);
         when(repository.findByConocimientoIdAndPasoIdIsNullOrderByIdAsc(4)).thenReturn(List.of());

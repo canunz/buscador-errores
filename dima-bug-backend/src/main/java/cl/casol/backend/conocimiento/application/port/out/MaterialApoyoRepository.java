@@ -9,4 +9,5 @@ public interface MaterialApoyoRepository {
     List<MaterialApoyo> buscarPorPaso(Integer pasoId);
     Optional<MaterialApoyo> buscarPorId(Integer id);
     MaterialApoyo guardar(MaterialApoyo material);
+    void eliminar(Integer id);
 }

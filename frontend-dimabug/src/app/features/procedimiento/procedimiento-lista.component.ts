@@ -17,6 +17,7 @@ export class ProcedimientoListaComponent implements OnInit {
   private readonly auth = inject(AuthService);
 
   readonly esAdministrador = this.auth.isAdmin;
+  readonly puedeGestionar = this.auth.isStaff;
   items: Procedimiento[] = [];
   loading = true;
   error = '';
@@ -48,7 +49,9 @@ export class ProcedimientoListaComponent implements OnInit {
     this.loading = this.items.length === 0;
     this.procedimientos.listar().subscribe({
       next: (items) => {
-        this.items = items;
+        this.items = this.puedeGestionar()
+          ? items
+          : items.filter((item) => item.estado === 'PUBLICADO');
         this.loading = false;
       },
       error: (err: Error) => {

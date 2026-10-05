@@ -28,6 +28,7 @@ class AlmacenamientoArchivoFilesystemAdapterTest {
         var adapter = new AlmacenamientoArchivoFilesystemAdapter(directorio.toString());
         assertThrows(ArchivoException.class, () -> adapter.leer(ref));
         assertThrows(ArchivoException.class, () -> adapter.compensar(ref));
+        assertThrows(ArchivoException.class, () -> adapter.eliminar(ref));
     }
     @Test void noSobrescribeArchivos() {
         var adapter = new AlmacenamientoArchivoFilesystemAdapter(directorio.toString());

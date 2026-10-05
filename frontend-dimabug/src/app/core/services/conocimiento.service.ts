@@ -549,6 +549,16 @@ export class ConocimientoService {
     );
   }
 
+  eliminarMaterial(conocimientoId: number, materialId: number): Observable<void> {
+    return this.http.delete(`${this.base}/${conocimientoId}/materiales/${materialId}`, { responseType: 'text' }).pipe(
+      map(() => undefined),
+      tap(() => this.clearSeccion(`materiales:${conocimientoId}`)),
+      catchError((err: HttpErrorResponse) =>
+        throwError(() => new Error(mensajeApiError(err, 'No fue posible eliminar el material.'))),
+      ),
+    );
+  }
+
   modificarMaterial(
     conocimientoId: number,
     materialId: number,

@@ -45,6 +45,44 @@ class MaterialArchivoSecurityIntegrationTest {
     @MockitoBean UsuarioRepository usuarios;
 
     @ParameterizedTest @ValueSource(strings={"ADMINISTRADOR","TECNICO"})
+    void eliminaAmbosDestinos204(String rol) throws Exception {
+        auth(rol);
+        for(String base : new String[]{CONOCIMIENTO,PASO})
+            mvc.perform(delete(base+"/3").header("Authorization","Bearer t"))
+                    .andExpect(status().isNoContent()).andExpect(content().string(""));
+        verify(conocimiento).eliminar(1,3); verify(paso).eliminar(1,2,3);
+    }
+    @Test void eliminarSinJwt401() throws Exception {
+        for(String base : new String[]{CONOCIMIENTO,PASO}) mvc.perform(delete(base+"/3")).andExpect(status().isUnauthorized());
+        verifyNoInteractions(conocimiento,paso);
+    }
+    @Test void eliminarRolAjeno403() throws Exception {
+        auth("AUDITOR");
+        for(String base : new String[]{CONOCIMIENTO,PASO})
+            mvc.perform(delete(base+"/3").header("Authorization","Bearer t")).andExpect(status().isForbidden());
+        verifyNoInteractions(conocimiento,paso);
+    }
+    @Test void falloFisicoEliminacion500() throws Exception {
+        auth("TECNICO");
+        var ex=new ArchivoException(ArchivoException.Motivo.ALMACENAMIENTO,"Se requiere limpieza operativa");
+        doThrow(ex).when(conocimiento).eliminar(1,3); doThrow(ex).when(paso).eliminar(1,2,3);
+        for(String base : new String[]{CONOCIMIENTO,PASO})
+            mvc.perform(delete(base+"/3").header("Authorization","Bearer t")).andExpect(status().isInternalServerError());
+    }
+    @Test void eliminarMaterialInexistente404() throws Exception {
+        auth("TECNICO");
+        var ex=new cl.casol.backend.conocimiento.domain.exception.MaterialApoyoNoEncontradoException(3);
+        doThrow(ex).when(conocimiento).eliminar(1,3); doThrow(ex).when(paso).eliminar(1,2,3);
+        for(String base : new String[]{CONOCIMIENTO,PASO})
+            mvc.perform(delete(base+"/3").header("Authorization","Bearer t")).andExpect(status().isNotFound());
+    }
+    @Test void eliminarReferenciaInvalida400() throws Exception {
+        auth("TECNICO");
+        doThrow(new ArchivoException(ArchivoException.Motivo.INVALIDO,"Referencia inválida")).when(conocimiento).eliminar(1,3);
+        mvc.perform(delete(CONOCIMIENTO+"/3").header("Authorization","Bearer t")).andExpect(status().isBadRequest());
+    }
+
+    @ParameterizedTest @ValueSource(strings={"ADMINISTRADOR","TECNICO"})
     void ambosRolesSubenYDescarganAmbosDestinos(String rol) throws Exception {
         auth(rol);
         when(conocimiento.subir(eq(1),eq("Manual"),eq(TipoMaterial.PDF),any())).thenReturn(new MaterialApoyo(3,1,null,"Manual",TipoMaterial.PDF,REF));

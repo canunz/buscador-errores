@@ -26,6 +26,14 @@ public class MaterialPasoArchivoService {
         verificar(procedimientoId, pasoId);
         return archivos.crear(nombre, tipo, archivo, referencia -> mantener.crear(procedimientoId, pasoId, nombre, tipo, referencia));
     }
+    public void eliminar(Integer procedimientoId, Integer pasoId, Integer materialId) {
+        archivos.eliminar(() -> {
+            verificar(procedimientoId, pasoId);
+            return materiales.buscarPorId(materialId)
+                    .filter(m -> m.conocimientoId() == null && pasoId.equals(m.pasoId()))
+                    .orElseThrow(() -> new MaterialApoyoNoEncontradoException(materialId));
+        }, material -> materiales.eliminar(material.id()));
+    }
     public ArchivoDescarga descargar(Integer procedimientoId, Integer pasoId, Integer materialId) {
         verificar(procedimientoId, pasoId);
         MaterialApoyo material = materiales.buscarPorId(materialId)

@@ -518,6 +518,15 @@
                           </svg>
                         </button>
                       }
+                      @if (puedeGestionar()) {
+                        <button type="button" class="icon-btn peligro" title="Eliminar" aria-label="Eliminar material" (click)="pedirEliminarMaterial(m)">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                            <path d="M4 7h16" />
+                            <path d="M9 7V5h6v2" />
+                            <path d="M7 7l1 12h8l1-12" />
+                          </svg>
+                        </button>
+                      }
                     </div>
                   </div>
                 </li>
@@ -641,6 +650,25 @@
       <div class="confirm-acciones">
         <button type="button" class="btn-cancelar" (click)="cancelarQuitarFavorito()">Cancelar</button>
         <button type="button" class="btn-peligro" (click)="aceptarQuitarFavorito()">Quitar</button>
+      </div>
+    </div>
+  </div>
+}
+
+@if (materialAEliminar) {
+  <div class="confirm-capa">
+    <div class="confirm-fondo" (click)="cancelarEliminarMaterial()"></div>
+    <div class="confirm-dialog" role="alertdialog" aria-modal="true" aria-labelledby="eliminar-material-titulo">
+      <h2 id="eliminar-material-titulo">¿Eliminar este material?</h2>
+      <p>Se quitará «{{ materialAEliminar.nombre }}» de este conocimiento.</p>
+      @if (sectionError) {
+        <p class="alert error">{{ sectionError }}</p>
+      }
+      <div class="confirm-acciones">
+        <button type="button" class="btn-cancelar" (click)="cancelarEliminarMaterial()" [disabled]="saving === 'materiales'">Cancelar</button>
+        <button type="button" class="btn-peligro" (click)="confirmarEliminarMaterial()" [disabled]="saving === 'materiales'">
+          {{ saving === 'materiales' ? 'Eliminando…' : 'Eliminar' }}
+        </button>
       </div>
     </div>
   </div>

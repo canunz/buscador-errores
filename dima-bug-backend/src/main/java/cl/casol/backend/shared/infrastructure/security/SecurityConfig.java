@@ -55,7 +55,9 @@ public class SecurityConfig {
                                 "/api/sistemas",
                                 "/api/sistemas/**",
                                 "/api/frecuencias",
-                                "/api/frecuencias/**")
+                                "/api/frecuencias/**",
+                                "/api/procedimientos",
+                                "/api/procedimientos/**")
                         .hasAnyRole("ADMINISTRADOR", "TECNICO", "SOPORTE", "USUARIO")
                         .requestMatchers("/api/sistemas/**", "/api/hardware/**", "/api/conocimientos/**",
                                 "/api/frecuencias/**", "/api/departamentos/**", "/api/pruebas/**",
@@ -65,6 +67,7 @@ public class SecurityConfig {
                         .hasRole("ADMINISTRADOR")
                         .requestMatchers(HttpMethod.GET, "/").permitAll()
                         .requestMatchers(
+                                "/error",
                                 "/api/health",
                                 "/api/auth/login"
                         ).permitAll()

@@ -9,12 +9,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.*;
 import java.util.UUID;
-import java.util.regex.Pattern;
 import static cl.casol.backend.shared.application.archivo.ArchivoException.Motivo.*;
 
 @Component
 public class AlmacenamientoArchivoFilesystemAdapter implements AlmacenamientoArchivoPort {
-    private static final Pattern CLAVE = Pattern.compile("[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}");
     private final Path directorio;
 
     public AlmacenamientoArchivoFilesystemAdapter(
@@ -61,16 +59,20 @@ public class AlmacenamientoArchivoFilesystemAdapter implements AlmacenamientoArc
     }
 
     @Override
+    public void eliminar(String referencia) {
+        Path archivo = resolver(referencia);
+        try { Files.deleteIfExists(archivo); }
+        catch (IOException ex) { throw new ArchivoException(ALMACENAMIENTO, "No fue posible eliminar el archivo", ex); }
+    }
+
+    @Override
     public void compensar(String referencia) {
         try { Files.deleteIfExists(resolver(referencia)); }
         catch (IOException ex) { throw new ArchivoException(ALMACENAMIENTO, "No fue posible compensar el archivo", ex); }
     }
 
     private Path resolver(String referencia) {
-        if (referencia == null || !referencia.startsWith(FormatoArchivo.PREFIJO))
-            throw new ArchivoException(INVALIDO, "Referencia de archivo inválida");
-        String clave = referencia.substring(FormatoArchivo.PREFIJO.length());
-        if (!CLAVE.matcher(clave).matches()) throw new ArchivoException(INVALIDO, "Referencia de archivo inválida");
+        String clave = FormatoArchivo.clave(referencia);
         Path resultado = directorio.resolve(clave).normalize();
         if (!resultado.getParent().equals(directorio)) throw new ArchivoException(INVALIDO, "Referencia de archivo inválida");
         return resultado;

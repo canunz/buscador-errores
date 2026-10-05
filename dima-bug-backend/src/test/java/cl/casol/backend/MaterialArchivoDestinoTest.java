@@ -22,7 +22,7 @@ class MaterialArchivoDestinoTest {
     final ArchivoMaterialService archivos = mock(ArchivoMaterialService.class);
     final MantenerMaterialApoyoService mantenerConocimiento = mock(MantenerMaterialApoyoService.class);
     final MantenerMaterialPasoService mantenerPaso = mock(MantenerMaterialPasoService.class);
-    final MaterialConocimientoArchivoService conocimiento = new MaterialConocimientoArchivoService(conocimientos,materiales,mantenerConocimiento,archivos);
+    final MaterialConocimientoArchivoService conocimiento = new MaterialConocimientoArchivoService(conocimientos,materiales,mantenerConocimiento,archivos,mock(IndexarConocimientoService.class));
     final MaterialPasoArchivoService paso = new MaterialPasoArchivoService(procedimientos,pasos,materiales,mantenerPaso,archivos);
     @Test void subidaConocimientoPersisteReferenciaEnDestinoCorrecto() {
         existeConocimiento(); String ref = "file:materiales/9d50c602-4bf2-438a-82c3-e197c9153250";

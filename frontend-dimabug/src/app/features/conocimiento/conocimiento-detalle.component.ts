@@ -96,6 +96,7 @@ export class ConocimientoDetalleComponent implements OnInit {
   editCausaId: number | null = null;
   editSolucionId: number | null = null;
   editMaterialId: number | null = null;
+  materialAEliminar: MaterialApoyo | null = null;
   editAsignacionId: number | null = null;
   solucionAsignacionId: number | null = null;
 
@@ -162,11 +163,16 @@ export class ConocimientoDetalleComponent implements OnInit {
   }
 
   get mostrandoCarga(): boolean {
-    return (this.loading && !this.item) || this.saving != null || this.publishing || this.eliminando;
+    return (
+      (this.loading && !this.item) ||
+      (this.saving != null && this.materialAEliminar == null) ||
+      this.publishing ||
+      this.eliminando
+    );
   }
 
   get mensajeCarga(): string {
-    return this.eliminando ? 'Eliminando' : 'Cargando';
+    return this.eliminando || this.saving === 'materiales' ? 'Eliminando' : 'Cargando';
   }
 
   ngOnInit(): void {
@@ -818,6 +824,36 @@ export class ConocimientoDetalleComponent implements OnInit {
 
   cancelarMaterial(): void {
     this.resetMaterialFormulario();
+  }
+
+  pedirEliminarMaterial(item: MaterialApoyo): void {
+    this.sectionError = '';
+    this.materialAEliminar = item;
+  }
+
+  cancelarEliminarMaterial(): void {
+    if (this.saving === 'materiales') {
+      return;
+    }
+    this.materialAEliminar = null;
+  }
+
+  confirmarEliminarMaterial(): void {
+    const id = this.conocimientoId;
+    const material = this.materialAEliminar;
+    if (!id || !material || this.saving === 'materiales') {
+      return;
+    }
+    this.saving = 'materiales';
+    this.materialAEliminar = null;
+    this.sectionError = '';
+    this.conocimientosApi.eliminarMaterial(id, material.id).subscribe({
+      next: () => {
+        this.materiales = this.materiales.filter((item) => item.id !== material.id);
+        this.ok('Material eliminado.');
+      },
+      error: (err: Error) => this.fail(err),
+    });
   }
 
   private resetMaterialFormulario(): void {

@@ -12,11 +12,24 @@ public class MaterialConocimientoArchivoService {
     private final MaterialApoyoRepository materiales;
     private final MantenerMaterialApoyoService mantener;
     private final ArchivoMaterialService archivos;
+    private final IndexarConocimientoService indexador;
 
     public MaterialConocimientoArchivoService(ConocimientoRepository conocimientos, MaterialApoyoRepository materiales,
-            MantenerMaterialApoyoService mantener, ArchivoMaterialService archivos) {
+            MantenerMaterialApoyoService mantener, ArchivoMaterialService archivos, IndexarConocimientoService indexador) {
         this.conocimientos = conocimientos; this.materiales = materiales;
         this.mantener = mantener; this.archivos = archivos;
+        this.indexador = indexador;
+    }
+    public void eliminar(Integer conocimientoId, Integer materialId) {
+        archivos.eliminar(() -> {
+            verificar(conocimientoId);
+            return materiales.buscarPorId(materialId)
+                    .filter(m -> conocimientoId.equals(m.conocimientoId()) && m.pasoId() == null)
+                    .orElseThrow(() -> new MaterialApoyoNoEncontradoException(materialId));
+        }, material -> {
+            materiales.eliminar(material.id());
+            indexador.indexar(conocimientoId);
+        });
     }
     public MaterialApoyo subir(Integer conocimientoId, String nombre, TipoMaterial tipo, ArchivoSubido archivo) {
         verificar(conocimientoId);

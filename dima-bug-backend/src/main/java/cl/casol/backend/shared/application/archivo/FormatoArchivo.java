@@ -4,9 +4,20 @@ import java.nio.charset.StandardCharsets;
 
 /** Identificación de firma; no sustituye un análisis antivirus o validación completa del formato. */
 public final class FormatoArchivo {
+    private static final java.util.regex.Pattern CLAVE = java.util.regex.Pattern.compile(
+            "[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}");
     public static final int MAX_BYTES = 10 * 1024 * 1024;
     public static final String PREFIJO = "file:materiales/";
     private FormatoArchivo() { }
+
+    public static String clave(String referencia) {
+        if (referencia == null || !referencia.startsWith(PREFIJO))
+            throw new ArchivoException(ArchivoException.Motivo.INVALIDO, "Referencia de archivo inválida");
+        String clave = referencia.substring(PREFIJO.length());
+        if (!CLAVE.matcher(clave).matches())
+            throw new ArchivoException(ArchivoException.Motivo.INVALIDO, "Referencia de archivo inválida");
+        return clave;
+    }
 
     public static String mime(byte[] contenido) {
         if (empieza(contenido, new byte[]{37, 80, 68, 70, 45})) return "application/pdf";

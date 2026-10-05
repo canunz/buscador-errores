@@ -10,6 +10,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.*;
 import java.util.function.Function;
+import java.util.function.Supplier;
+import java.util.function.Consumer;
+import org.springframework.transaction.TransactionDefinition;
 import static cl.casol.backend.shared.application.archivo.ArchivoException.Motivo.*;
 
 @Service
@@ -17,10 +20,35 @@ public class ArchivoMaterialService {
     private static final Logger log = LoggerFactory.getLogger(ArchivoMaterialService.class);
     private final AlmacenamientoArchivoPort almacenamiento;
     private final TransactionTemplate transaccion;
+    private final TransactionTemplate transaccionEliminacion;
 
     public ArchivoMaterialService(AlmacenamientoArchivoPort almacenamiento, PlatformTransactionManager manager) {
         this.almacenamiento = almacenamiento;
         this.transaccion = new TransactionTemplate(manager);
+        this.transaccionEliminacion = new TransactionTemplate(manager);
+        this.transaccionEliminacion.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
+    }
+
+    /** Confirma BD antes de borrar bytes. No usar afterCommit: sus errores no deben quedar ocultos. */
+    public void eliminar(Supplier<MaterialApoyo> buscar, Consumer<MaterialApoyo> eliminarRegistro) {
+        MaterialApoyo material = transaccionEliminacion.execute(status -> {
+            MaterialApoyo actual = buscar.get();
+            if (esReferenciaLocal(actual.url())) FormatoArchivo.clave(actual.url());
+            eliminarRegistro.accept(actual);
+            return actual;
+        });
+        if (esReferenciaLocal(material.url())) {
+            try { almacenamiento.eliminar(material.url()); }
+            catch (RuntimeException ex) {
+                log.error("BD confirmada; limpieza de material {} pendiente, referencia {}", material.id(), material.url(), ex);
+                throw new ArchivoException(ALMACENAMIENTO,
+                        "El registro fue eliminado, pero no se pudo eliminar su archivo; se requiere limpieza operativa", ex);
+            }
+        }
+    }
+
+    private boolean esReferenciaLocal(String referencia) {
+        return referencia != null && referencia.startsWith("file:");
     }
 
     public MaterialApoyo crear(String nombre, TipoMaterial tipo, ArchivoSubido archivo,

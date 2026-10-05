@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { Observable, catchError, map, throwError } from 'rxjs';
+import { Observable, catchError, map, tap, throwError } from 'rxjs';
 import { apiUrl } from '../config/api';
 import { mensajeApiError } from '../http/api-error';
 import { crearFormDataMaterial, descargarMaterialAutenticado } from '../material/material-archivo';
@@ -20,10 +20,26 @@ import {
 export class ProcedimientoService {
   private readonly http = inject(HttpClient);
   private readonly base = apiUrl('/procedimientos');
+  private readonly cacheProcedimientos = new Map<number, Procedimiento>();
+  private readonly cachePasos = new Map<number, PasoProcedimiento[]>();
+  private readonly cacheMateriales = new Map<number, MaterialPaso[]>();
+
+  procedimientoEnCache(id: number): Procedimiento | null {
+    return this.cacheProcedimientos.get(id) ?? null;
+  }
+
+  pasosEnCache(procedimientoId: number): PasoProcedimiento[] | null {
+    return this.cachePasos.get(procedimientoId) ?? null;
+  }
+
+  materialesEnCache(pasoId: number): MaterialPaso[] | null {
+    return this.cacheMateriales.get(pasoId) ?? null;
+  }
 
   listar(): Observable<Procedimiento[]> {
     return this.http.get<unknown>(this.base).pipe(
       map((res) => this.asArray(res).map((item) => this.normalizeProcedimiento(item))),
+      tap((items) => items.forEach((item) => this.cacheProcedimientos.set(item.id, item))),
       catchError((err: HttpErrorResponse) => throwError(() => new Error(this.mensaje(err)))),
     );
   }
@@ -31,6 +47,7 @@ export class ProcedimientoService {
   obtenerPorId(id: number): Observable<Procedimiento> {
     return this.http.get<unknown>(`${this.base}/${id}`).pipe(
       map((res) => this.normalizeProcedimiento(res)),
+      tap((item) => this.cacheProcedimientos.set(item.id, item)),
       catchError((err: HttpErrorResponse) => throwError(() => new Error(this.mensaje(err)))),
     );
   }
@@ -45,6 +62,7 @@ export class ProcedimientoService {
   actualizar(id: number, request: GuardarProcedimientoRequest): Observable<Procedimiento> {
     return this.http.put<unknown>(`${this.base}/${id}`, this.cuerpoProcedimiento(request)).pipe(
       map((res) => this.normalizeProcedimiento(res)),
+      tap((item) => this.cacheProcedimientos.set(item.id, item)),
       catchError((err: HttpErrorResponse) => throwError(() => new Error(this.mensaje(err)))),
     );
   }
@@ -52,6 +70,7 @@ export class ProcedimientoService {
   cambiarEstado(id: number, estado: EstadoProcedimiento): Observable<Procedimiento> {
     return this.http.patch<unknown>(`${this.base}/${id}/estado`, { estado }).pipe(
       map((res) => this.normalizeProcedimiento(res)),
+      tap((item) => this.cacheProcedimientos.set(item.id, item)),
       catchError((err: HttpErrorResponse) => throwError(() => new Error(this.mensaje(err)))),
     );
   }
@@ -59,6 +78,7 @@ export class ProcedimientoService {
   listarPasos(procedimientoId: number): Observable<PasoProcedimiento[]> {
     return this.http.get<unknown>(`${this.base}/${procedimientoId}/pasos`).pipe(
       map((res) => this.asArray(res).map((item) => this.normalizePaso(item))),
+      tap((pasos) => this.cachePasos.set(procedimientoId, pasos)),
       catchError((err: HttpErrorResponse) => throwError(() => new Error(this.mensaje(err)))),
     );
   }
@@ -84,6 +104,7 @@ export class ProcedimientoService {
   listarMateriales(procedimientoId: number, pasoId: number): Observable<MaterialPaso[]> {
     return this.http.get<unknown>(`${this.base}/${procedimientoId}/pasos/${pasoId}/materiales`).pipe(
       map((res) => this.asArray(res).map((item) => this.normalizeMaterial(item))),
+      tap((items) => this.cacheMateriales.set(pasoId, items)),
       catchError((err: HttpErrorResponse) => throwError(() => new Error(this.mensaje(err)))),
     );
   }
@@ -125,6 +146,19 @@ export class ProcedimientoService {
         throwError(() => (err instanceof HttpErrorResponse ? new Error(this.mensaje(err)) : err)),
       ),
     );
+  }
+
+  eliminarMaterial(procedimientoId: number, pasoId: number, materialId: number): Observable<void> {
+    return this.http
+      .delete(`${this.base}/${procedimientoId}/pasos/${pasoId}/materiales/${materialId}`, { responseType: 'text' })
+      .pipe(
+        map(() => undefined),
+        tap(() => {
+          const actuales = this.cacheMateriales.get(pasoId);
+          if (actuales) this.cacheMateriales.set(pasoId, actuales.filter((m) => m.id !== materialId));
+        }),
+        catchError((err: HttpErrorResponse) => throwError(() => new Error(this.mensaje(err)))),
+      );
   }
 
   actualizarMaterial(

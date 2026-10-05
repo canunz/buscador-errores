@@ -1,7 +1,6 @@
 import { Component, OnInit, ViewChild, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { forkJoin } from 'rxjs';
 import {
   MaterialPaso,
   PasoProcedimiento,
@@ -35,11 +34,14 @@ export class ProcedimientoDetalleComponent implements OnInit {
   @ViewChild(MaterialApoyoFormComponent) materialEditor?: MaterialApoyoFormComponent;
 
   readonly esAdministrador = this.auth.isAdmin;
+  readonly puedeGestionar = this.auth.isStaff;
   readonly tipos: TipoMaterialProcedimiento[] = ['IMAGEN', 'PDF', 'VIDEO', 'ENLACE'];
 
   item: Procedimiento | null = null;
   pasos: PasoProcedimiento[] = [];
   materiales: Record<number, MaterialPaso[]> = {};
+  pasoIndex = 0;
+  cargandoPasos = false;
   loading = true;
   error = '';
   iniciando = false;
@@ -56,6 +58,9 @@ export class ProcedimientoDetalleComponent implements OnInit {
   materialNombre = '';
   materialTipo: TipoMaterialProcedimiento = 'PDF';
   materialUrl = '';
+  materialAEliminar: { pasoId: number; material: MaterialPaso } | null = null;
+  eliminandoMaterial = false;
+  aviso = '';
 
   ngOnInit(): void {
     const id = Number(this.route.snapshot.paramMap.get('id'));
@@ -78,11 +83,32 @@ export class ProcedimientoDetalleComponent implements OnInit {
     return 'Enlace';
   }
 
-  iconoTipo(tipo: TipoMaterialProcedimiento): string {
-    if (tipo === 'IMAGEN') return '🖼';
-    if (tipo === 'PDF') return '📄';
-    if (tipo === 'VIDEO') return '🎥';
-    return '🔗';
+  tipoCorto(tipo: TipoMaterialProcedimiento): string {
+    if (tipo === 'IMAGEN') return 'IMG';
+    if (tipo === 'PDF') return 'PDF';
+    if (tipo === 'VIDEO') return 'VID';
+    return 'URL';
+  }
+
+  tipoClase(tipo: TipoMaterialProcedimiento): string {
+    return `tipo-${tipo.toLowerCase()}`;
+  }
+
+  get pasoActual(): PasoProcedimiento | null {
+    return this.pasos[this.pasoIndex] ?? null;
+  }
+
+  irPaso(indice: number): void {
+    if (indice < 0 || indice >= this.pasos.length) return;
+    this.pasoIndex = indice;
+  }
+
+  get pasosCriticos(): number {
+    return this.pasos.filter((paso) => paso.esCritico).length;
+  }
+
+  get totalMateriales(): number {
+    return Object.values(this.materiales).reduce((total, items) => total + items.length, 0);
   }
 
   abrirPaso(paso?: PasoProcedimiento): void {
@@ -112,6 +138,7 @@ export class ProcedimientoDetalleComponent implements OnInit {
     };
     this.guardandoPaso = true;
     this.error = '';
+    const esNuevo = !this.editPasoId;
     const llamada = this.editPasoId
       ? this.procedimientos.actualizarPaso(this.item.id, this.editPasoId, request)
       : this.procedimientos.crearPaso(this.item.id, request);
@@ -119,7 +146,7 @@ export class ProcedimientoDetalleComponent implements OnInit {
       next: () => {
         this.guardandoPaso = false;
         this.cerrarPaso();
-        this.recargarPasos();
+        this.recargarPasos(esNuevo);
       },
       error: (err: Error) => {
         this.guardandoPaso = false;
@@ -156,6 +183,43 @@ export class ProcedimientoDetalleComponent implements OnInit {
         url: this.materialUrl,
       }),
     );
+  }
+
+  pedirEliminarMaterial(pasoId: number, material: MaterialPaso): void {
+    this.error = '';
+    this.aviso = '';
+    this.materialAEliminar = { pasoId, material };
+  }
+
+  cancelarEliminarMaterial(): void {
+    if (this.eliminandoMaterial) {
+      return;
+    }
+    this.materialAEliminar = null;
+  }
+
+  confirmarEliminarMaterial(): void {
+    if (!this.item || !this.materialAEliminar || this.eliminandoMaterial) {
+      return;
+    }
+    const { pasoId, material } = this.materialAEliminar;
+    this.eliminandoMaterial = true;
+    this.materialAEliminar = null;
+    this.error = '';
+    this.procedimientos.eliminarMaterial(this.item.id, pasoId, material.id).subscribe({
+      next: () => {
+        this.materiales = {
+          ...this.materiales,
+          [pasoId]: this.materialesDe(pasoId).filter((item) => item.id !== material.id),
+        };
+        this.eliminandoMaterial = false;
+        this.aviso = 'Material eliminado.';
+      },
+      error: (err: Error) => {
+        this.eliminandoMaterial = false;
+        this.error = err.message;
+      },
+    });
   }
 
   cerrarMaterial(): void {
@@ -232,57 +296,77 @@ export class ProcedimientoDetalleComponent implements OnInit {
   }
 
   private cargar(id: number): void {
-    this.loading = true;
+    const enCache = this.procedimientos.procedimientoEnCache(id);
+    if (enCache) {
+      this.mostrarProcedimiento(enCache);
+    }
+    const pasosCache = this.procedimientos.pasosEnCache(id);
+    if (pasosCache) {
+      this.aplicarPasos(id, pasosCache, true);
+    }
+    this.loading = !enCache;
+    this.cargandoPasos = !pasosCache;
+
     this.procedimientos.obtenerPorId(id).subscribe({
       next: (item) => {
-        this.item = item;
-        this.procedimientos.listarPasos(id).subscribe({
-          next: (pasos) => {
-            this.pasos = pasos;
-            this.cargarTodosLosMateriales();
-          },
-          error: (err: Error) => {
-            this.error = err.message;
-            this.loading = false;
-          },
-        });
+        this.mostrarProcedimiento(item);
+        this.loading = false;
       },
       error: (err: Error) => {
         this.error = err.message;
         this.loading = false;
       },
     });
-  }
-
-  private recargarPasos(): void {
-    if (!this.item) return;
-    this.procedimientos.listarPasos(this.item.id).subscribe({
+    this.procedimientos.listarPasos(id).subscribe({
       next: (pasos) => {
-        this.pasos = pasos;
-        this.cargarTodosLosMateriales();
+        this.aplicarPasos(id, pasos, false);
+        this.cargandoPasos = false;
       },
-      error: (err: Error) => (this.error = err.message),
+      error: (err: Error) => {
+        this.error = err.message;
+        this.cargandoPasos = false;
+      },
     });
   }
 
-  private cargarTodosLosMateriales(): void {
-    if (!this.item || !this.pasos.length) {
-      this.materiales = {};
-      this.loading = false;
+  private mostrarProcedimiento(item: Procedimiento): void {
+    if (!this.puedeGestionar() && item.estado !== 'PUBLICADO') {
+      this.item = null;
+      this.error = 'Este procedimiento no está publicado.';
       return;
     }
+    this.item = item;
+  }
+
+  private aplicarPasos(procedimientoId: number, pasos: PasoProcedimiento[], soloCache: boolean): void {
+    this.pasos = pasos;
+    if (this.pasoIndex >= pasos.length) {
+      this.pasoIndex = Math.max(0, pasos.length - 1);
+    }
+    const materiales: Record<number, MaterialPaso[]> = {};
+    for (const paso of pasos) {
+      const cache = this.procedimientos.materialesEnCache(paso.id);
+      materiales[paso.id] = cache ?? this.materiales[paso.id] ?? [];
+    }
+    this.materiales = materiales;
+    if (soloCache) return;
+    for (const paso of pasos) {
+      this.procedimientos.listarMateriales(procedimientoId, paso.id).subscribe({
+        next: (items) => (this.materiales = { ...this.materiales, [paso.id]: items }),
+        error: (err: Error) => (this.error = err.message),
+      });
+    }
+  }
+
+  private recargarPasos(irAlUltimo = false): void {
+    if (!this.item) return;
     const id = this.item.id;
-    forkJoin(
-      Object.fromEntries(this.pasos.map((paso) => [paso.id, this.procedimientos.listarMateriales(id, paso.id)])),
-    ).subscribe({
-      next: (mapa) => {
-        this.materiales = mapa;
-        this.loading = false;
+    this.procedimientos.listarPasos(id).subscribe({
+      next: (pasos) => {
+        this.aplicarPasos(id, pasos, false);
+        if (irAlUltimo) this.pasoIndex = Math.max(0, pasos.length - 1);
       },
-      error: (err: Error) => {
-        this.error = err.message;
-        this.loading = false;
-      },
+      error: (err: Error) => (this.error = err.message),
     });
   }
 
