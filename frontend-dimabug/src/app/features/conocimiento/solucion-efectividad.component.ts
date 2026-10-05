@@ -4,11 +4,12 @@ import { FormsModule } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { EfectividadSolucion, ResultadoSolucion } from '../../core/models/conocimiento.model';
 import { ConocimientoService } from '../../core/services/conocimiento.service';
+import { LoadingModalComponent } from '../../shared/ui/loading-modal.component';
 
 @Component({
   selector: 'app-solucion-efectividad',
   standalone: true,
-  imports: [DatePipe, FormsModule],
+  imports: [DatePipe, FormsModule, LoadingModalComponent],
   templateUrl: './solucion-efectividad.component.html',
   styleUrl: './solucion-efectividad.component.css',
 })

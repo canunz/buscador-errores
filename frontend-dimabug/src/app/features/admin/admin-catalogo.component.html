@@ -17,14 +17,11 @@
     </div>
   </div>
 
-  <app-catalogo-tabs />
-
   <div class="tabla-wrap">
     <table>
       <thead>
         <tr>
           <th class="col-acciones">Acciones</th>
-          <th>#</th>
           <th>{{ meta().titulo }}</th>
           @if (meta().extra) {
             <th>{{ meta().extra }}</th>
@@ -38,31 +35,58 @@
         @for (item of items(); track item.id; let i = $index) {
           <tr>
             <td>
-              <div class="acts">
-                <button type="button" class="act edit" (click)="openEdit(item.id, item.nombre, item.extra, item.activo !== false)">
-                  Editar
+              <div class="acciones">
+                <button type="button" class="btn-accion ver" title="Ver detalle" aria-label="Ver detalle" (click)="ver(item)">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                    <circle cx="12" cy="12" r="3" />
+                  </svg>
                 </button>
-                <button type="button" class="act del" (click)="eliminar(item.id, item.nombre)">
-                  Eliminar
+                <button type="button" class="btn-accion editar" title="Editar" aria-label="Editar" (click)="openEdit(item.id, item.nombre, item.extra, item.activo !== false)">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                    <path d="M12 20h9" />
+                    <path d="M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4 12.5-12.5z" />
+                  </svg>
+                </button>
+                <button type="button" class="btn-accion eliminar" title="Eliminar" aria-label="Eliminar" (click)="eliminar(item.id, item.nombre)">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                    <path d="M4 7h16" />
+                    <path d="M9.5 7V5.5A1.5 1.5 0 0111 4h2a1.5 1.5 0 011.5 1.5V7" />
+                    <path d="M6.5 7l.8 12.2A1.5 1.5 0 008.8 20.5h6.4a1.5 1.5 0 001.5-1.3L17.5 7" />
+                  </svg>
                 </button>
               </div>
             </td>
-            <td class="id">{{ i + 1 }}</td>
             <td><strong>{{ item.nombre }}</strong></td>
             @if (meta().extra) {
               <td>{{ item.extra || '—' }}</td>
             }
             @if (meta().activo) {
               <td>
-                <span class="estado" [class.activo]="item.activo !== false" [class.inactivo]="item.activo === false">
-                  {{ item.activo === false ? 'Inactivo' : 'Activo' }}
-                </span>
+                <div class="acciones">
+                  <span class="estado" [class.activo]="item.activo !== false" [class.inactivo]="item.activo === false">
+                    {{ item.activo === false ? 'Inactivo' : 'Activo' }}
+                  </span>
+                  <button
+                    type="button"
+                    class="btn-accion estado"
+                    [class.off]="item.activo === false"
+                    [title]="item.activo === false ? 'Activar' : 'Desactivar'"
+                    [attr.aria-label]="item.activo === false ? 'Activar' : 'Desactivar'"
+                    (click)="pedirCambioEstado(item.id, item.nombre, item.activo !== false)"
+                  >
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                      <path d="M12 3v10" />
+                      <path d="M8.5 7.5a6 6 0 106.9 0" />
+                    </svg>
+                  </button>
+                </div>
               </td>
             }
           </tr>
         } @empty {
           <tr>
-            <td [attr.colspan]="3 + (meta().extra ? 1 : 0) + (meta().activo ? 1 : 0)" class="vacio">
+            <td [attr.colspan]="2 + (meta().extra ? 1 : 0) + (meta().activo ? 1 : 0)" class="vacio">
               No hay registros. Usa Añadir para crear el primero.
             </td>
           </tr>
@@ -71,6 +95,55 @@
     </table>
   </div>
 </section>
+
+@if (detalle) {
+  <div class="detalle-modal" role="dialog" aria-modal="true" aria-labelledby="maestro-detalle-titulo">
+    <div class="detalle-modal-fondo" (click)="cerrarDetalle()"></div>
+    <article class="detalle-modal-card">
+      <header class="detalle-modal-franja">
+        <div>
+          <p>{{ meta().titulo }}</p>
+          <h2 id="maestro-detalle-titulo">{{ detalle.nombre }}</h2>
+        </div>
+        <button type="button" class="detalle-modal-cerrar" (click)="cerrarDetalle()" aria-label="Cerrar">✕</button>
+      </header>
+      <div class="detalle-modal-cuerpo">
+        @if (meta().extra) {
+          <section class="detalle-bloque">
+            <h3>{{ meta().extra }}</h3>
+            <p class="detalle-texto">{{ detalle.extra || '—' }}</p>
+          </section>
+        }
+        @if (meta().activo) {
+          <section class="detalle-bloque">
+            <h3>Estado</h3>
+            <p class="detalle-texto">{{ detalle.activo === false ? 'Inactivo' : 'Activo' }}</p>
+          </section>
+        }
+        <section class="detalle-bloque">
+          <h3>Nombre</h3>
+          <p class="detalle-texto">{{ detalle.nombre }}</p>
+        </section>
+      </div>
+    </article>
+  </div>
+}
+
+@if (pendienteEstado) {
+  <div class="confirm-capa">
+    <div class="confirm-fondo" (click)="cancelarEstado()"></div>
+    <div class="confirm-dialog" role="alertdialog" aria-modal="true" aria-labelledby="maestro-estado-titulo">
+      <h2 id="maestro-estado-titulo">{{ pendienteEstado.activo ? '¿Desactivar este registro?' : '¿Activar este registro?' }}</h2>
+      <p>{{ pendienteEstado.nombre }} quedará {{ pendienteEstado.activo ? 'inactivo' : 'activo' }}.</p>
+      <div class="confirm-acciones">
+        <button type="button" class="btn-cancelar" (click)="cancelarEstado()">Cancelar</button>
+        <button type="button" class="btn-peligro" (click)="confirmarEstado()">
+          {{ pendienteEstado.activo ? 'Desactivar' : 'Activar' }}
+        </button>
+      </div>
+    </div>
+  </div>
+}
 
 @if (modalOpen) {
   <div class="modal" role="dialog" aria-modal="true">

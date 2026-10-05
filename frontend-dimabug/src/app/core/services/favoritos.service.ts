@@ -26,6 +26,10 @@ export class FavoritosService {
     this.guardar(next);
   }
 
+  quitar(id: number): void {
+    this.guardar(this.itemsSignal().filter((item) => item.id !== id));
+  }
+
   private guardar(items: FavoritoItem[]): void {
     this.itemsSignal.set(items);
     localStorage.setItem(META, JSON.stringify(items));

@@ -25,6 +25,9 @@ export class OrganizacionService {
   private readonly http = inject(HttpClient);
   private readonly departamentosDetalleKey = 'dimabug.departamentos.detalle.v1';
   private readonly pruebasKey = 'dimabug.pruebas.lista.v1';
+  private readonly pruebasActivoKey = 'dimabug.pruebas.activo.v1';
+  private readonly departamentosOcultosKey = 'dimabug.departamentos.ocultos.v1';
+  private readonly pruebasOcultosKey = 'dimabug.pruebas.ocultos.v1';
   private pruebasCache$: Observable<PruebaCatalogo[]> | null = null;
   private departamentosCache$: Observable<CatalogoRef[]> | null = null;
   private departamentosDetalleCache$: Observable<DepartamentoItem[]> | null = null;
@@ -60,12 +63,14 @@ export class OrganizacionService {
   listarPruebasDetalle(force = false): Observable<PruebaItem[]> {
     return this.listarPruebas(force).pipe(
       map((items) =>
-        items.map((p) => ({
-          id: p.id,
-          descripcion: p.descripcion,
-          resultadoEsperado: p.resultadoEsperado,
-          activo: true,
-        })),
+        items
+          .filter((p) => !this.estaOculto(this.pruebasOcultosKey, p.id))
+          .map((p) => ({
+            id: p.id,
+            descripcion: p.descripcion,
+            resultadoEsperado: p.resultadoEsperado,
+            activo: this.activoPrueba(p.id),
+          })),
       ),
     );
   }
@@ -99,7 +104,7 @@ export class OrganizacionService {
           return {
             id: d.id,
             nombre: d.nombre,
-            activo: true,
+            activo: prev?.activo ?? true,
             responsables: prev?.responsables ?? [],
             contactos: prev?.contactos ?? [],
           };
@@ -117,7 +122,7 @@ export class OrganizacionService {
                   of({
                     id: d.id,
                     nombre: d.nombre,
-                    activo: true,
+                    activo: this.activoDepartamentoGuardado(d.id),
                     responsables: [] as string[],
                     contactos: [] as DepartamentoContacto[],
                   }),
@@ -142,6 +147,7 @@ export class OrganizacionService {
     );
 
     this.departamentosDetalleCache$ = (stale?.length ? concat(of(stale), network$) : network$).pipe(
+      map((items) => items.filter((item) => !this.estaOculto(this.departamentosOcultosKey, item.id))),
       tap((items) => this.writeDepartamentosSession(items)),
       shareReplay(1),
     );
@@ -190,11 +196,87 @@ export class OrganizacionService {
       map(({ responsables, contactos }) => ({
         id: d.id,
         nombre: d.nombre,
-        activo: true,
+        activo: this.activoDepartamentoGuardado(d.id),
         responsables: responsables.map((r) => r.nombre).filter(Boolean),
         contactos,
       })),
     );
+  }
+
+  ocultarDepartamento(id: number): void {
+    this.marcarOculto(this.departamentosOcultosKey, id);
+    this.departamentosDetalleCache$ = null;
+    const actual = this.readDepartamentosSession() ?? [];
+    this.writeDepartamentosSession(actual.filter((item) => item.id !== id));
+  }
+
+  ocultarPrueba(id: number): void {
+    this.marcarOculto(this.pruebasOcultosKey, id);
+    this.pruebasCache$ = null;
+    const actual = this.readPruebasSession() ?? [];
+    this.writePruebasSession(actual.filter((item) => item.id !== id));
+  }
+
+  marcarDepartamentoActivo(id: number, activo: boolean): void {
+    const actual = this.readDepartamentosSession() ?? [];
+    const next = actual.map((item) => (item.id === id ? { ...item, activo } : item));
+    this.writeDepartamentosSession(next);
+    this.departamentosDetalleCache$ = null;
+  }
+
+  marcarPruebaActiva(id: number, activo: boolean): void {
+    const mapa = this.leerPruebasActivo();
+    mapa[id] = activo;
+    try {
+      sessionStorage.setItem(this.pruebasActivoKey, JSON.stringify(mapa));
+    } catch {
+      // ignore
+    }
+  }
+
+  private estaOculto(key: string, id: number): boolean {
+    return this.leerOcultos(key).includes(id);
+  }
+
+  private marcarOculto(key: string, id: number): void {
+    const ids = this.leerOcultos(key);
+    if (ids.includes(id)) {
+      return;
+    }
+    try {
+      sessionStorage.setItem(key, JSON.stringify([...ids, id]));
+    } catch {
+      // ignore
+    }
+  }
+
+  private leerOcultos(key: string): number[] {
+    try {
+      const raw = sessionStorage.getItem(key);
+      const parsed = raw ? (JSON.parse(raw) as number[]) : [];
+      return Array.isArray(parsed) ? parsed.map(Number).filter((id) => id > 0) : [];
+    } catch {
+      return [];
+    }
+  }
+
+  private activoPrueba(id: number): boolean {
+    const valor = this.leerPruebasActivo()[id];
+    return valor == null ? true : valor;
+  }
+
+  private activoDepartamentoGuardado(id: number): boolean {
+    const prev = this.readDepartamentosSession()?.find((item) => item.id === id);
+    return prev?.activo ?? true;
+  }
+
+  private leerPruebasActivo(): Record<number, boolean> {
+    try {
+      const raw = sessionStorage.getItem(this.pruebasActivoKey);
+      return raw ? (JSON.parse(raw) as Record<number, boolean>) : {};
+    } catch {
+      return {};
+    }
   }
 
   private asPruebaLista(res: unknown): PruebaCatalogo[] {

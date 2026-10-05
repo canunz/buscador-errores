@@ -1,32 +1,24 @@
+<app-loading-modal [visible]="loading" mensaje="Cargando" />
+
 <section class="cat-page pr-page">
   <div class="franja">
     <div>
       <p>Catálogos</p>
       <h1>{{ titulo }}</h1>
-      <span>
-        @if (loading) {
-          Cargando…
-        } @else {
-          {{ items.length }} {{ titulo === 'Procedimientos' ? 'procedimiento' : 'prueba' }}{{ items.length === 1 ? '' : 's' }} desde la base de datos
-        }
-      </span>
+      <span>{{ items.length }} {{ titulo === 'Procedimientos' ? 'procedimiento' : 'prueba' }}{{ items.length === 1 ? '' : 's' }} desde la base de datos</span>
     </div>
   </div>
-
-  <app-catalogo-tabs />
 
   @if (error) {
     <p class="alert">{{ error }}</p>
   }
 
   <div class="tabla-wrap">
-    @if (loading) {
-      <p class="muted pad">Cargando…</p>
-    } @else {
+    @if (!loading) {
       <table>
         <thead>
           <tr>
-            <th>#</th>
+            <th class="col-acciones">Acciones</th>
             <th>{{ titulo === 'Procedimientos' ? 'Procedimiento' : 'Prueba' }}</th>
             <th>Resultado esperado</th>
             <th>Estado</th>
@@ -35,7 +27,34 @@
         <tbody>
           @for (item of items; track item.id) {
             <tr>
-              <td class="muted">{{ item.id }}</td>
+              <td>
+                <div class="acciones">
+                  <button type="button" class="btn-accion ver" title="Ver detalle" aria-label="Ver detalle" (click)="ver(item)">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                      <circle cx="12" cy="12" r="3" />
+                    </svg>
+                  </button>
+                  <button
+                    type="button"
+                    class="btn-accion estado"
+                    [class.off]="!item.activo"
+                    [title]="item.activo ? 'Desactivar' : 'Activar'"
+                    [attr.aria-label]="item.activo ? 'Desactivar' : 'Activar'"
+                    (click)="pedirCambioEstado(item)"
+                  >
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                      <path d="M12 3v10" />
+                      <path d="M8.5 7.5a6 6 0 106.9 0" />
+                    </svg>
+                  </button>
+                  <button type="button" class="btn-accion eliminar" title="Eliminar" aria-label="Eliminar" (click)="pedirEliminar(item)">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                      <path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6" />
+                    </svg>
+                  </button>
+                </div>
+              </td>
               <td><strong class="nombre">{{ item.descripcion }}</strong></td>
               <td><p class="resultado">{{ item.resultadoEsperado || '—' }}</p></td>
               <td>
@@ -54,3 +73,58 @@
     }
   </div>
 </section>
+
+@if (detalle) {
+  <div class="detalle-modal" role="dialog" aria-modal="true" aria-labelledby="prueba-detalle-titulo">
+    <div class="detalle-modal-fondo" (click)="cerrarDetalle()"></div>
+    <article class="detalle-modal-card">
+      <header class="detalle-modal-franja">
+        <div>
+          <p>{{ titulo === 'Procedimientos' ? 'Procedimiento' : 'Prueba' }}</p>
+          <h2 id="prueba-detalle-titulo">{{ detalle.descripcion }}</h2>
+        </div>
+        <button type="button" class="detalle-modal-cerrar" (click)="cerrarDetalle()" aria-label="Cerrar">✕</button>
+      </header>
+      <div class="detalle-modal-cuerpo">
+        <section class="detalle-bloque">
+          <h3>Estado</h3>
+          <p class="detalle-texto">{{ detalle.activo ? 'Activa' : 'Inactiva' }}</p>
+        </section>
+        <section class="detalle-bloque">
+          <h3>Resultado esperado</h3>
+          <p class="detalle-texto">{{ detalle.resultadoEsperado || 'Sin resultado esperado registrado.' }}</p>
+        </section>
+      </div>
+    </article>
+  </div>
+}
+
+@if (pendienteEliminar) {
+  <div class="confirm-capa">
+    <div class="confirm-fondo" (click)="cancelarEliminar()"></div>
+    <div class="confirm-dialog" role="alertdialog" aria-modal="true" aria-labelledby="prueba-eliminar-titulo">
+      <h2 id="prueba-eliminar-titulo">¿Eliminar este registro?</h2>
+      <p>{{ pendienteEliminar.descripcion }} dejará de verse en este listado.</p>
+      <div class="confirm-acciones">
+        <button type="button" class="btn-cancelar" (click)="cancelarEliminar()">Cancelar</button>
+        <button type="button" class="btn-peligro" (click)="confirmarEliminar()">Eliminar</button>
+      </div>
+    </div>
+  </div>
+}
+
+@if (pendienteEstado) {
+  <div class="confirm-capa">
+    <div class="confirm-fondo" (click)="cancelarEstado()"></div>
+    <div class="confirm-dialog" role="alertdialog" aria-modal="true" aria-labelledby="prueba-estado-titulo">
+      <h2 id="prueba-estado-titulo">{{ pendienteEstado.activo ? '¿Desactivar esta prueba?' : '¿Activar esta prueba?' }}</h2>
+      <p>{{ pendienteEstado.descripcion }} quedará {{ pendienteEstado.activo ? 'inactiva' : 'activa' }}.</p>
+      <div class="confirm-acciones">
+        <button type="button" class="btn-cancelar" (click)="cancelarEstado()">Cancelar</button>
+        <button type="button" class="btn-peligro" (click)="confirmarEstado()">
+          {{ pendienteEstado.activo ? 'Desactivar' : 'Activar' }}
+        </button>
+      </div>
+    </div>
+  </div>
+}

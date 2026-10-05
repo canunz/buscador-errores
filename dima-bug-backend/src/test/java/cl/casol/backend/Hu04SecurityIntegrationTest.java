@@ -77,10 +77,12 @@ class Hu04SecurityIntegrationTest {
     }
 
     @Test
-    void rolNoAutorizadoDevuelve403() throws Exception {
+    void usuarioPuedeBuscarPublicados() throws Exception {
         autenticar("usuario", "USUARIO");
+        when(buscador.buscar(null, null, null, null, null)).thenReturn(List.of(resultado()));
         mockMvc.perform(get("/api/conocimientos/buscar").header("Authorization", "Bearer usuario"))
-                .andExpect(status().isForbidden());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id").value(10));
     }
 
     private void autenticar(String token, String rol) {

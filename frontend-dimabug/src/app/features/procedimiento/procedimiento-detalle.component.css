@@ -194,6 +194,44 @@ li {
   color: #e5e7eb;
 }
 
+.form-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+}
+
+.form-modal-fondo {
+  position: absolute;
+  inset: 0;
+  background: rgba(11, 27, 77, 0.5);
+}
+
+.form-modal-dialog {
+  position: relative;
+  z-index: 1;
+  width: min(560px, 100%);
+  max-height: min(86vh, 720px);
+  overflow: auto;
+  padding: 24px 24px 20px;
+  border-radius: 20px;
+  background: #fff;
+  box-shadow: 0 24px 60px rgba(11, 27, 77, 0.28);
+}
+
+.form-modal-dialog h2 {
+  margin: 0 0 8px;
+  color: #0b1b4d;
+  font-size: 20px;
+  letter-spacing: -0.02em;
+}
+
+.form-modal-dialog app-material-apoyo-form {
+  display: block;
+}
+
 .alerta,
 .muted {
   margin: 14px 0 0;

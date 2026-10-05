@@ -3,6 +3,7 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, catchError, map, throwError } from 'rxjs';
 import { apiUrl } from '../config/api';
 import { mensajeApiError } from '../http/api-error';
+import { crearFormDataMaterial, descargarMaterialAutenticado } from '../material/material-archivo';
 import {
   EstadoProcedimiento,
   GuardarMaterialPasoRequest,
@@ -98,6 +99,32 @@ export class ProcedimientoService {
         map((res) => this.normalizeMaterial(res)),
         catchError((err: HttpErrorResponse) => throwError(() => new Error(this.mensaje(err)))),
       );
+  }
+
+  crearMaterialArchivo(
+    procedimientoId: number,
+    pasoId: number,
+    nombre: string,
+    tipo: TipoMaterialProcedimiento,
+    archivo: File,
+  ): Observable<MaterialPaso> {
+    return this.http
+      .post<unknown>(
+        `${this.base}/${procedimientoId}/pasos/${pasoId}/materiales/archivo`,
+        crearFormDataMaterial(nombre, tipo, archivo),
+      )
+      .pipe(
+        map((res) => this.normalizeMaterial(res)),
+        catchError((err: HttpErrorResponse) => throwError(() => new Error(this.mensaje(err)))),
+      );
+  }
+
+  descargarMaterial(material: MaterialPaso): Observable<void> {
+    return descargarMaterialAutenticado(this.http, material.url, material.nombre, material.tipo).pipe(
+      catchError((err: HttpErrorResponse | Error) =>
+        throwError(() => (err instanceof HttpErrorResponse ? new Error(this.mensaje(err)) : err)),
+      ),
+    );
   }
 
   actualizarMaterial(

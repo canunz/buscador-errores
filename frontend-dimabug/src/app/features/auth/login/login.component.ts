@@ -20,7 +20,7 @@ export class LoginComponent {
   showPass = false;
 
   form = this.fb.nonNullable.group({
-    email: ['', [Validators.required, Validators.email]],
+    email: ['', Validators.required],
     password: ['', Validators.required],
   });
 
@@ -32,23 +32,16 @@ export class LoginComponent {
 
     if (!email || !password) {
       this.form.markAllAsTouched();
-      this.error = 'Ingrese su correo y su contraseña.';
-      return;
-    }
-    if (!email.includes('@') || this.form.controls.email.invalid) {
-      this.form.markAllAsTouched();
-      this.error = 'Use el correo completo, por ejemplo usuario@correo.cl (no el usuario corto).';
+      this.error = 'Ingrese su usuario o correo y su contraseña.';
       return;
     }
     this.loading = true;
-    this.form.disable({ emitEvent: false });
     this.auth.login(email, password).subscribe({
       next: () => {
         this.router.navigateByUrl('/inicio');
       },
       error: (err: Error) => {
         this.loading = false;
-        this.form.enable({ emitEvent: false });
         const msg = err?.message || '';
         const technical =
           /spring|boot|:8080|:8081|localhost|\/api\/|httpd|apache|proxy|endpoint/i.test(msg);

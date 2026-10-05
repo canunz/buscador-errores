@@ -1,19 +1,13 @@
+<app-loading-modal [visible]="loading" mensaje="Cargando" />
+
 <section class="cat-page sol-page">
   <div class="franja">
     <div>
       <p>Catálogos</p>
       <h1>Soluciones</h1>
-      <span>
-        @if (loading) {
-          Cargando…
-        } @else {
-          {{ filtrados.length }} solución{{ filtrados.length === 1 ? '' : 'es' }} desde conocimiento
-        }
-      </span>
+      <span>{{ filtrados.length }} solución{{ filtrados.length === 1 ? '' : 'es' }} desde conocimiento</span>
     </div>
   </div>
-
-  <app-catalogo-tabs />
 
   <div class="toolbar">
     <label class="search">
@@ -33,12 +27,11 @@
   }
 
   <div class="tabla-wrap">
-    @if (loading) {
-      <p class="muted pad">Cargando soluciones…</p>
-    } @else {
+    @if (!loading) {
       <table>
         <thead>
           <tr>
+            <th class="col-acciones">Acciones</th>
             <th>Solución</th>
             <th>Tipo</th>
             <th>Conocimiento</th>
@@ -48,26 +41,37 @@
           @for (item of filtrados; track trackKey(item)) {
             <tr>
               <td>
+                <div class="acciones">
+                  <button type="button" class="btn-accion ver" title="Ver detalle" aria-label="Ver detalle" (click)="ver(item)">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                      <circle cx="12" cy="12" r="3" />
+                    </svg>
+                  </button>
+                  <button type="button" class="btn-accion editar" title="Editar" aria-label="Editar" (click)="openEdit(item)">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                      <path d="M12 20h9" />
+                      <path d="M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4 12.5-12.5z" />
+                    </svg>
+                  </button>
+                  <button type="button" class="btn-accion eliminar" title="Eliminar" aria-label="Eliminar" (click)="pedirEliminar(item)">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                      <path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6" />
+                    </svg>
+                  </button>
+                </div>
+              </td>
+              <td>
                 <strong class="nombre">{{ item.nombre }}</strong>
               </td>
               <td>
-                <span class="tipo-pill">{{ recortar(item.pasos) }}</span>
+                <span class="tipo-pill">{{ item.tipo === 'DERIVACION' ? 'Derivación' : 'Pasos a seguir' }}</span>
               </td>
-              <td>
-                <div class="guia-acciones">
-                  <button type="button" class="btn-sec" (click)="openEdit(item)">Editar</button>
-                  @if (item.conocimientoId) {
-                    <a class="btn-kb" [routerLink]="['/conocimiento', item.conocimientoId]">
-                      Abrir guía
-                      <small>{{ item.conocimientoTitulo || item.anexos }}</small>
-                    </a>
-                  }
-                </div>
-              </td>
+              <td>{{ item.conocimientoTitulo || '—' }}</td>
             </tr>
           } @empty {
             <tr>
-              <td colspan="3" class="vacio">No hay soluciones registradas en la base de datos.</td>
+              <td colspan="4" class="vacio">No hay soluciones registradas en la base de datos.</td>
             </tr>
           }
         </tbody>
@@ -75,6 +79,66 @@
     }
   </div>
 </section>
+
+@if (pendienteEliminar) {
+  <div class="confirm-capa">
+    <div class="confirm-fondo" (click)="cancelarEliminar()"></div>
+    <div class="confirm-dialog" role="alertdialog" aria-modal="true" aria-labelledby="sol-eliminar-titulo">
+      <h2 id="sol-eliminar-titulo">¿Eliminar esta solución?</h2>
+      <p>{{ pendienteEliminar.nombre }} dejará de verse en este listado.</p>
+      <div class="confirm-acciones">
+        <button type="button" class="btn-cancelar" (click)="cancelarEliminar()">Cancelar</button>
+        <button type="button" class="btn-peligro" (click)="confirmarEliminar()">Eliminar</button>
+      </div>
+    </div>
+  </div>
+}
+
+@if (detalle) {
+  <div class="detalle-modal" role="dialog" aria-modal="true" aria-labelledby="solucion-detalle-titulo">
+    <div class="detalle-modal-fondo" (click)="cerrarDetalle()"></div>
+    <article class="detalle-modal-card">
+      <header class="detalle-modal-franja">
+        <div>
+          <p>Solución</p>
+          <h2 id="solucion-detalle-titulo">{{ detalle.nombre }}</h2>
+        </div>
+        <button type="button" class="detalle-modal-cerrar" (click)="cerrarDetalle()" aria-label="Cerrar">✕</button>
+      </header>
+      <div class="detalle-modal-cuerpo">
+        <section class="detalle-bloque">
+          <h3>Tipo</h3>
+          <p class="detalle-texto">{{ detalle.tipo === 'DERIVACION' ? 'Derivación' : 'Pasos a seguir' }}</p>
+        </section>
+        <section class="detalle-bloque">
+          <h3>Conocimiento</h3>
+          <p class="detalle-texto">{{ detalle.conocimientoTitulo || 'Sin guía asociada' }}</p>
+        </section>
+        @if (detalle.pasos) {
+          <section class="detalle-bloque">
+            <h3>Detalle</h3>
+            <p class="detalle-texto">{{ detalle.pasos }}</p>
+          </section>
+        }
+        @if (detalle.asignaciones.length) {
+          <section class="detalle-bloque">
+            <h3>Asignaciones</h3>
+            <ul class="detalle-lista">
+              @for (asig of detalle.asignaciones; track asig) {
+                <li>{{ asig }}</li>
+              }
+            </ul>
+          </section>
+        }
+        @if (detalle.conocimientoId) {
+          <section class="detalle-bloque">
+            <a class="btn-crear" [routerLink]="['/conocimiento', detalle.conocimientoId]">Abrir guía</a>
+          </section>
+        }
+      </div>
+    </article>
+  </div>
+}
 
 @if (modalOpen) {
   <div class="modal" role="dialog" aria-modal="true" aria-labelledby="solucion-titulo">

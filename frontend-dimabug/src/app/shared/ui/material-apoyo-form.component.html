@@ -1,0 +1,56 @@
+<form class="material-form" (ngSubmit)="enviar()">
+  <label>
+    <span>Nombre <span class="req">*</span></span>
+    <input name="nombre" maxlength="150" [(ngModel)]="nombre" placeholder="Manual o documento de apoyo" />
+  </label>
+  <label>
+    Tipo
+    <select name="tipo" [ngModel]="tipo" (ngModelChange)="cambiarTipo($event)" data-testid="tipo">
+      @for (t of tipos; track t) {
+        <option [ngValue]="t">{{ etiquetaTipo(t) }}</option>
+      }
+    </select>
+  </label>
+  @if (muestraUrl) {
+    <label class="full" data-testid="campo-url">
+      <span>URL <span class="req">*</span></span>
+      <input name="url" maxlength="500" [(ngModel)]="url" placeholder="https://..." />
+    </label>
+  }
+  @if (admiteAdjunto) {
+    <div class="adjunto-field full" [class.has-file]="!!archivo">
+      <span>
+        Adjuntar archivo
+        @if (tipo !== 'VIDEO') {
+          <span class="req">*</span>
+        }
+      </span>
+      <input
+        #archivoInput
+        type="file"
+        class="sr-only"
+        [accept]="accept"
+        (change)="elegirArchivo($event)"
+      />
+      <button type="button" class="adjuntar-zona" data-testid="campo-archivo" (click)="archivoInput.click()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+          <path d="M12 16V7m0 0-3.2 3.2M12 7l3.2 3.2" />
+          <path d="M5 16.5V18a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-1.5" />
+        </svg>
+        <span class="adjuntar-copy">
+          <strong>{{ archivo ? archivo.name : 'Seleccionar archivo' }}</strong>
+          <em>{{ pistaAdjunto }}</em>
+        </span>
+      </button>
+    </div>
+  }
+  @if (error) {
+    <p class="err" data-testid="error-form">{{ error }}</p>
+  }
+  <div class="acciones">
+    <button type="submit" [disabled]="enviando" data-testid="enviar">
+      {{ enviando ? 'Enviando…' : editando ? 'Guardar cambios' : 'Agregar material' }}
+    </button>
+    <button type="button" class="ghost" (click)="cancelar.emit()" [disabled]="enviando">Cancelar</button>
+  </div>
+</form>

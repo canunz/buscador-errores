@@ -1,32 +1,24 @@
+<app-loading-modal [visible]="loading" mensaje="Cargando" />
+
 <section class="cat-page dep-page">
   <div class="franja">
     <div>
       <p>Catálogos</p>
       <h1>Departamentos</h1>
-      <span>
-        @if (loading) {
-          Cargando…
-        } @else {
-          {{ items.length }} departamento{{ items.length === 1 ? '' : 's' }} desde la base de datos
-        }
-      </span>
+      <span>{{ items.length }} departamento{{ items.length === 1 ? '' : 's' }} desde la base de datos</span>
     </div>
   </div>
-
-  <app-catalogo-tabs />
 
   @if (error) {
     <p class="alert">{{ error }}</p>
   }
 
   <div class="tabla-wrap">
-    @if (loading) {
-      <p class="muted pad">Cargando departamentos…</p>
-    } @else {
+    @if (!loading) {
       <table>
         <thead>
           <tr>
-            <th>#</th>
+            <th class="col-acciones">Acciones</th>
             <th>Departamento</th>
             <th>Contactos</th>
             <th>Responsables</th>
@@ -36,7 +28,34 @@
         <tbody>
           @for (item of items; track item.id) {
             <tr>
-              <td class="muted">{{ item.id }}</td>
+              <td>
+                <div class="acciones">
+                  <button type="button" class="btn-accion ver" title="Ver detalle" aria-label="Ver detalle" (click)="ver(item)">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                      <circle cx="12" cy="12" r="3" />
+                    </svg>
+                  </button>
+                  <button
+                    type="button"
+                    class="btn-accion estado"
+                    [class.off]="!item.activo"
+                    [title]="item.activo ? 'Desactivar' : 'Activar'"
+                    [attr.aria-label]="item.activo ? 'Desactivar' : 'Activar'"
+                    (click)="pedirCambioEstado(item)"
+                  >
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                      <path d="M12 3v10" />
+                      <path d="M8.5 7.5a6 6 0 106.9 0" />
+                    </svg>
+                  </button>
+                  <button type="button" class="btn-accion eliminar" title="Eliminar" aria-label="Eliminar" (click)="pedirEliminar(item)">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                      <path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6" />
+                    </svg>
+                  </button>
+                </div>
+              </td>
               <td><strong class="nombre">{{ item.nombre }}</strong></td>
               <td>
                 <div class="chips">
@@ -74,3 +93,78 @@
     }
   </div>
 </section>
+
+@if (detalle) {
+  <div class="detalle-modal" role="dialog" aria-modal="true" aria-labelledby="dep-detalle-titulo">
+    <div class="detalle-modal-fondo" (click)="cerrarDetalle()"></div>
+    <article class="detalle-modal-card">
+      <header class="detalle-modal-franja">
+        <div>
+          <p>Departamento</p>
+          <h2 id="dep-detalle-titulo">{{ detalle.nombre }}</h2>
+        </div>
+        <button type="button" class="detalle-modal-cerrar" (click)="cerrarDetalle()" aria-label="Cerrar">✕</button>
+      </header>
+      <div class="detalle-modal-cuerpo">
+        <section class="detalle-bloque">
+          <h3>Estado</h3>
+          <p class="detalle-texto">{{ detalle.activo ? 'Activo' : 'Inactivo' }}</p>
+        </section>
+        <section class="detalle-bloque">
+          <h3>Contactos</h3>
+          @if (detalle.contactos.length) {
+            <ul class="detalle-lista">
+              @for (c of detalle.contactos; track c.numero) {
+                <li>{{ c.tipo }}: {{ c.numero }}{{ c.activo ? '' : ' (inactivo)' }}</li>
+              }
+            </ul>
+          } @else {
+            <p class="detalle-vacio">Sin contactos registrados.</p>
+          }
+        </section>
+        <section class="detalle-bloque">
+          <h3>Responsables</h3>
+          @if (detalle.responsables.length) {
+            <ul class="detalle-lista">
+              @for (r of detalle.responsables; track r) {
+                <li>{{ r }}</li>
+              }
+            </ul>
+          } @else {
+            <p class="detalle-vacio">Sin responsables asignados.</p>
+          }
+        </section>
+      </div>
+    </article>
+  </div>
+}
+
+@if (pendienteEliminar) {
+  <div class="confirm-capa">
+    <div class="confirm-fondo" (click)="cancelarEliminar()"></div>
+    <div class="confirm-dialog" role="alertdialog" aria-modal="true" aria-labelledby="dep-eliminar-titulo">
+      <h2 id="dep-eliminar-titulo">¿Eliminar este departamento?</h2>
+      <p>{{ pendienteEliminar.nombre }} dejará de verse en este listado.</p>
+      <div class="confirm-acciones">
+        <button type="button" class="btn-cancelar" (click)="cancelarEliminar()">Cancelar</button>
+        <button type="button" class="btn-peligro" (click)="confirmarEliminar()">Eliminar</button>
+      </div>
+    </div>
+  </div>
+}
+
+@if (pendienteEstado) {
+  <div class="confirm-capa">
+    <div class="confirm-fondo" (click)="cancelarEstado()"></div>
+    <div class="confirm-dialog" role="alertdialog" aria-modal="true" aria-labelledby="dep-estado-titulo">
+      <h2 id="dep-estado-titulo">{{ pendienteEstado.activo ? '¿Desactivar este departamento?' : '¿Activar este departamento?' }}</h2>
+      <p>{{ pendienteEstado.nombre }} quedará {{ pendienteEstado.activo ? 'inactivo' : 'activo' }}.</p>
+      <div class="confirm-acciones">
+        <button type="button" class="btn-cancelar" (click)="cancelarEstado()">Cancelar</button>
+        <button type="button" class="btn-peligro" (click)="confirmarEstado()">
+          {{ pendienteEstado.activo ? 'Desactivar' : 'Activar' }}
+        </button>
+      </div>
+    </div>
+  </div>
+}

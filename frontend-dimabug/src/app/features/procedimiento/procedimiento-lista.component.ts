@@ -3,11 +3,12 @@ import { RouterLink } from '@angular/router';
 import { Procedimiento } from '../../core/models/procedimiento.model';
 import { AuthService } from '../../core/services/auth.service';
 import { ProcedimientoService } from '../../core/services/procedimiento.service';
+import { LoadingModalComponent } from '../../shared/ui/loading-modal.component';
 
 @Component({
   selector: 'app-procedimiento-lista',
   standalone: true,
-  imports: [RouterLink],
+  imports: [RouterLink, LoadingModalComponent],
   templateUrl: './procedimiento-lista.component.html',
   styleUrl: '../../shared/ui/catalogo-page.css',
 })

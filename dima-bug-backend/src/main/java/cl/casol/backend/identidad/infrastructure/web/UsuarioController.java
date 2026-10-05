@@ -3,6 +3,7 @@ package cl.casol.backend.identidad.infrastructure.web;
 import cl.casol.backend.identidad.application.service.AdministrarUsuariosService;
 import cl.casol.backend.identidad.domain.Usuario;
 import cl.casol.backend.identidad.infrastructure.web.dto.CambiarEstadoUsuarioRequest;
+import cl.casol.backend.identidad.infrastructure.web.dto.CambiarPasswordRequest;
 import cl.casol.backend.identidad.infrastructure.web.dto.CrearUsuarioRequest;
 import cl.casol.backend.identidad.infrastructure.web.dto.ModificarUsuarioRequest;
 import cl.casol.backend.identidad.infrastructure.web.dto.UsuarioResponse;
@@ -53,8 +54,14 @@ public class UsuarioController {
     public UsuarioResponse modificar(@PathVariable Integer id,
                                      @Valid @RequestBody ModificarUsuarioRequest request) {
         return UsuarioResponse.from(
-                service.modificar(id, request.nombre(), request.email(), request.rolId())
+                service.modificar(id, request.nombre(), request.email(), request.rolId(), request.password())
         );
+    }
+
+    @PatchMapping("/{id}/password")
+    public UsuarioResponse cambiarPassword(@PathVariable Integer id,
+                                           @Valid @RequestBody CambiarPasswordRequest request) {
+        return UsuarioResponse.from(service.cambiarPassword(id, request.password()));
     }
 
     @PatchMapping("/{id}/estado")

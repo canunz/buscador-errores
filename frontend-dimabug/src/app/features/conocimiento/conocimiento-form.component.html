@@ -1,11 +1,17 @@
 <section class="kb form-page">
-  <app-loading-modal [visible]="saving" mensaje="Cargando, por favor…" />
+  <app-loading-modal [visible]="loading || saving" mensaje="Cargando" />
 
   <div class="franja">
     <div>
       <p>Conocimiento</p>
       <h1>{{ esEdicion ? 'Editar conocimiento' : 'Nuevo conocimiento' }}</h1>
-      <span>{{ esEdicion ? 'Actualice los datos y guarde los cambios.' : 'El registro se creará como borrador.' }}</span>
+      <span>
+        @if (esEdicion) {
+          Puedes corregir el caso. Publicarlo lo hace un administrador.
+        } @else {
+          El registro queda en borrador. Un administrador lo publica.
+        }
+      </span>
     </div>
     <a routerLink="/conocimiento" class="btn-ghost">Volver al listado</a>
   </div>
@@ -14,9 +20,19 @@
     <div class="alert">{{ error }}</div>
   }
 
-  @if (loading) {
-    <p class="muted">Cargando…</p>
-  } @else if (!noDisponible) {
+  @if (!loading && !noDisponible) {
+    @if (esEdicion) {
+      <div class="form-tabs" role="tablist" aria-label="Secciones de edición">
+        <button type="button" role="tab" [attr.aria-selected]="pestana === 'ficha'" [class.on]="pestana === 'ficha'" (click)="pestana = 'ficha'">
+          Datos del caso
+        </button>
+        <button type="button" role="tab" [attr.aria-selected]="pestana === 'guia'" [class.on]="pestana === 'guia'" (click)="pestana = 'guia'">
+          Guía y soluciones
+        </button>
+      </div>
+    }
+
+    @if (!esEdicion || pestana === 'ficha') {
     <form class="kb-form" [formGroup]="form" (ngSubmit)="guardar()">
       <label class="full">
         <span>Título <span class="req" aria-hidden="true">*</span></span>
@@ -90,5 +106,8 @@
         <a routerLink="/conocimiento">Cancelar</a>
       </div>
     </form>
+    } @else if (esEdicion && pestana === 'guia') {
+      <app-conocimiento-detalle [embebido]="true" />
+    }
   }
 </section>

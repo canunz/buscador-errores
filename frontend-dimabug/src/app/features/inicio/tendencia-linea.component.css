@@ -1,0 +1,8 @@
+:host {
+  display: block;
+}
+
+.lienzo {
+  position: relative;
+  height: 340px;
+}

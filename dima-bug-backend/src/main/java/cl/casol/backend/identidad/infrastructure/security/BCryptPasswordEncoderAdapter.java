@@ -22,10 +22,19 @@ public class BCryptPasswordEncoderAdapter implements PasswordEncoderPort {
             String passwordPlano,
             String passwordHash
     ) {
-        return passwordEncoder.matches(
-                passwordPlano,
-                passwordHash
-        );
+        if (passwordPlano == null || passwordHash == null || passwordHash.isBlank()) {
+            return false;
+        }
+        String plano = passwordPlano.trim();
+        String hash = passwordHash.trim();
+        if (hash.startsWith("$2a$") || hash.startsWith("$2b$") || hash.startsWith("$2y$")) {
+            try {
+                return passwordEncoder.matches(plano, hash);
+            } catch (IllegalArgumentException ex) {
+                return false;
+            }
+        }
+        return hash.equals(plano);
     }
 
     @Override

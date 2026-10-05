@@ -1,3 +1,5 @@
+<app-loading-modal [visible]="loading && !item" mensaje="Cargando" />
+
 <section class="detalle">
   <p class="crumb">
     <a routerLink="/procedimientos">Procedimientos</a>
@@ -5,9 +7,7 @@
     Detalle
   </p>
 
-  @if (loading && !item) {
-    <p class="muted">Cargando procedimiento…</p>
-  } @else if (error && !item) {
+  @if (error && !item && !loading) {
     <p class="alerta">
       {{ error }}
       <a routerLink="/procedimientos">Volver al listado</a>
@@ -66,10 +66,13 @@
               <ul>
                 @for (material of materialesDe(paso.id); track material.id) {
                   <li>
-                    <a [href]="material.url" target="_blank" rel="noopener">
-                      {{ iconoTipo(material.tipo) }} {{ material.nombre }}
-                    </a>
-                    <button type="button" class="texto" (click)="abrirMaterial(paso.id, material)">Editar</button>
+                    <span>{{ iconoTipo(material.tipo) }} {{ material.nombre }} · {{ etiquetaTipo(material.tipo) }}</span>
+                    @if (esMaterialLocal(material)) {
+                      <button type="button" class="texto" (click)="descargarMaterial(material)">Descargar</button>
+                    } @else {
+                      <a [href]="material.url" target="_blank" rel="noopener">Abrir enlace</a>
+                      <button type="button" class="texto" (click)="abrirMaterial(paso.id, material)">Editar</button>
+                    }
                   </li>
                 }
               </ul>
@@ -77,30 +80,19 @@
             <button type="button" class="texto" (click)="abrirMaterial(paso.id)">+ Material</button>
 
             @if (materialPasoId === paso.id) {
-              <form class="editor" (ngSubmit)="guardarMaterial()">
-                <label>
-                  Nombre *
-                  <input name="mnombre" maxlength="150" [(ngModel)]="materialNombre" />
-                </label>
-                <label>
-                  Tipo *
-                  <select name="mtipo" [(ngModel)]="materialTipo">
-                    @for (tipo of tipos; track tipo) {
-                      <option [ngValue]="tipo">{{ etiquetaTipo(tipo) }}</option>
-                    }
-                  </select>
-                </label>
-                <label>
-                  URL *
-                  <input name="murl" maxlength="500" [(ngModel)]="materialUrl" />
-                </label>
-                <div class="fila">
-                  <button type="submit" [disabled]="guardandoMaterial">
-                    {{ guardandoMaterial ? 'Guardando…' : (editMaterialId ? 'Guardar material' : 'Agregar material') }}
-                  </button>
-                  <button type="button" class="texto" (click)="cerrarMaterial()">Cancelar</button>
+              <div class="form-modal">
+                <div class="form-modal-fondo" (click)="cerrarMaterial()"></div>
+                <div class="form-modal-dialog" role="dialog" aria-modal="true">
+                  <h2>{{ editMaterialId ? 'Editar material' : 'Agregar material' }}</h2>
+                  <app-material-apoyo-form
+                    [enviando]="guardandoMaterial"
+                    [editando]="editMaterialId != null"
+                    [tipos]="tipos"
+                    (guardar)="guardarMaterial($event)"
+                    (cancelar)="cerrarMaterial()"
+                  />
                 </div>
-              </form>
+              </div>
             }
           </article>
         }

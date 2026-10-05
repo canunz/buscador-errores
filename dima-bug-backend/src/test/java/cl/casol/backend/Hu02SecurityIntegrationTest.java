@@ -161,7 +161,7 @@ class Hu02SecurityIntegrationTest {
         autenticarComo("jwt-admin", "admin@dimarsa.cl", "ADMINISTRADOR");
         Usuario modificado = usuario(2, "nuevo@dimarsa.cl", "ADMINISTRADOR", true);
         Usuario desactivado = usuario(2, "nuevo@dimarsa.cl", "ADMINISTRADOR", false);
-        when(usuariosService.modificar(2, "Nuevo nombre", "nuevo@dimarsa.cl", 1)).thenReturn(modificado);
+        when(usuariosService.modificar(2, "Nuevo nombre", "nuevo@dimarsa.cl", 1, null)).thenReturn(modificado);
         when(usuariosService.cambiarEstado(2, false, "admin@dimarsa.cl")).thenReturn(desactivado);
 
         mockMvc.perform(put("/api/usuarios/2")

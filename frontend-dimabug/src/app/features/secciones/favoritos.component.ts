@@ -38,6 +38,7 @@ interface FavoritoVista extends FavoritoItem {
                 <td>
                   <div class="acciones">
                     <a class="act ver" [routerLink]="['/conocimiento', item.id]">Ver</a>
+                    <button type="button" class="act del" (click)="pedirQuitar(item)">Quitar</button>
                   </div>
                 </td>
                 <td><strong>{{ item.titulo }}</strong></td>
@@ -52,6 +53,20 @@ interface FavoritoVista extends FavoritoItem {
         </table>
       </div>
     </section>
+
+    @if (pendienteQuitar) {
+      <div class="confirm-capa">
+        <div class="confirm-fondo" (click)="cancelarQuitar()"></div>
+        <div class="confirm-dialog" role="alertdialog" aria-modal="true" aria-labelledby="quitar-titulo">
+          <h2 id="quitar-titulo">¿Quitar de favoritos?</h2>
+          <p>Este conocimiento dejará de aparecer en tu lista de favoritos.</p>
+          <div class="confirm-acciones">
+            <button type="button" class="btn-cancelar" (click)="cancelarQuitar()">Cancelar</button>
+            <button type="button" class="btn-peligro" (click)="confirmarQuitar()">Quitar</button>
+          </div>
+        </div>
+      </div>
+    }
   `,
   styleUrl: '../../shared/ui/catalogo-page.css',
 })
@@ -64,6 +79,25 @@ export class FavoritosComponent implements OnInit {
     return estado ? this.etiquetaEstado(estado) : 'Guardado';
   }
   items: FavoritoVista[] = [];
+  pendienteQuitar: FavoritoVista | null = null;
+
+  pedirQuitar(item: FavoritoVista): void {
+    this.pendienteQuitar = item;
+  }
+
+  cancelarQuitar(): void {
+    this.pendienteQuitar = null;
+  }
+
+  confirmarQuitar(): void {
+    const item = this.pendienteQuitar;
+    if (!item) {
+      return;
+    }
+    this.favoritos.quitar(item.id);
+    this.items = this.items.filter((actual) => actual.id !== item.id);
+    this.pendienteQuitar = null;
+  }
 
   ngOnInit(): void {
     this.items = this.favoritos.items();

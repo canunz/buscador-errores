@@ -1,9 +1,8 @@
+<app-loading-modal [visible]="(cargando && !efectividad) || cargandoHistorial" mensaje="Cargando" />
+
 <section class="efectividad" aria-label="Efectividad de la solución">
   <div class="efectividad-head">
     <h3>Efectividad</h3>
-    @if (cargando && !efectividad) {
-      <span class="estado">Cargando efectividad…</span>
-    }
   </div>
 
   @if (errorCarga) {
@@ -84,9 +83,7 @@
 
   @if (historialVisible) {
     <div class="historial">
-      @if (cargandoHistorial) {
-        <p class="estado">Cargando historial…</p>
-      } @else if (errorHistorial) {
+      @if (errorHistorial) {
         <p class="alerta">{{ errorHistorial }}</p>
       } @else if (!historial.length) {
         <p class="sin">Sin evaluaciones</p>

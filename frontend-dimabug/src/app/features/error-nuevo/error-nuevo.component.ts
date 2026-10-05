@@ -1,20 +1,20 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
 import { CatalogoService } from '../../core/services/catalogo.service';
 import { ErrorItem, FRECUENCIAS } from '../../core/models/catalogo.model';
-import { CatalogoTabsComponent } from '../../shared/ui/catalogo-tabs.component';
-
 @Component({
   selector: 'app-error-nuevo',
   standalone: true,
-  imports: [ReactiveFormsModule, CatalogoTabsComponent],
+  imports: [ReactiveFormsModule, RouterLink],
   templateUrl: './error-nuevo.component.html',
   styleUrls: ['../../shared/ui/catalogo-page.css', './error-nuevo.component.css'],
 })
 export class ErrorNuevoComponent implements OnInit {
   private readonly catalogo = inject(CatalogoService);
   private readonly auth = inject(AuthService);
+  private readonly router = inject(Router);
   private readonly fb = inject(FormBuilder);
 
   readonly puedeGestionar = this.auth.isStaff;
@@ -24,6 +24,7 @@ export class ErrorNuevoComponent implements OnInit {
   editId: number | null = null;
   success = '';
   lista: ErrorItem[] = [];
+  pendienteEliminar: ErrorItem | null = null;
 
   form = this.fb.nonNullable.group({
     descripcion: ['', Validators.required],
@@ -40,6 +41,10 @@ export class ErrorNuevoComponent implements OnInit {
 
   ngOnInit(): void {
     this.refrescarLista();
+    if (!this.puedeGestionar()) {
+      const yo = this.auth.usuario();
+      this.form.controls.usuarioContexto.setValue(yo?.usuarioNombre || yo?.usuarioEmail || '');
+    }
   }
 
   get hardware() {
@@ -103,11 +108,26 @@ export class ErrorNuevoComponent implements OnInit {
     this.editId = null;
   }
 
-  eliminar(item: ErrorItem): void {
-    if (confirm(`¿Eliminar el error "${item.descripcion}"?`)) {
-      this.catalogo.eliminarError(item.id);
-      this.refrescarLista();
+  pedirEliminar(item: ErrorItem): void {
+    this.pendienteEliminar = item;
+  }
+
+  cancelarEliminar(): void {
+    this.pendienteEliminar = null;
+  }
+
+  confirmarEliminar(): void {
+    const item = this.pendienteEliminar;
+    if (!item) {
+      return;
     }
+    this.catalogo.eliminarError(item.id);
+    this.pendienteEliminar = null;
+    this.refrescarLista();
+  }
+
+  buscarEnConocimiento(item: ErrorItem): void {
+    void this.router.navigate(['/conocimiento'], { queryParams: { q: item.descripcion } });
   }
 
   save(): void {
@@ -133,15 +153,18 @@ export class ErrorNuevoComponent implements OnInit {
     this.refrescarLista();
     this.modalOpen = false;
     this.editId = null;
-    this.success = esEdicion ? 'Incidencia actualizada.' : 'Incidencia registrada correctamente.';
+    this.success = esEdicion
+      ? 'Reporte actualizado.'
+      : 'Soporte ya puede verlo y buscará la solución en Conocimiento.';
     if (!this.puedeGestionar()) {
+      const yo = this.auth.usuario();
       this.form.reset({
         descripcion: '',
         hardwareId: 0,
         sistema: '',
         modulo: '',
         frecuencia: '',
-        usuarioContexto: '',
+        usuarioContexto: yo?.usuarioNombre || yo?.usuarioEmail || '',
         causa: '',
         comentarios: '',
         solucionIds: [],

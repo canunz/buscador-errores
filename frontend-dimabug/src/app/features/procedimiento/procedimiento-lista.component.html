@@ -1,3 +1,5 @@
+<app-loading-modal [visible]="loading" mensaje="Cargando" />
+
 <section class="cat-page">
   <div class="franja">
     <div>
@@ -16,9 +18,7 @@
   }
 
   <div class="tabla-wrap">
-    @if (loading) {
-      <p class="muted pad">Cargando procedimientos…</p>
-    } @else {
+    @if (!loading) {
       <table>
         <thead>
           <tr>

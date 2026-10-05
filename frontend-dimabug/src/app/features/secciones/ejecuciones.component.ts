@@ -4,11 +4,12 @@ import { RouterLink } from '@angular/router';
 import { forkJoin } from 'rxjs';
 import { Ejecucion } from '../../core/models/ejecucion.model';
 import { EjecucionService } from '../../core/services/ejecucion.service';
+import { LoadingModalComponent } from '../../shared/ui/loading-modal.component';
 
 @Component({
   selector: 'app-ejecuciones',
   standalone: true,
-  imports: [DatePipe, RouterLink],
+  imports: [DatePipe, RouterLink, LoadingModalComponent],
   templateUrl: './ejecuciones.component.html',
   styleUrl: '../../shared/ui/catalogo-page.css',
 })

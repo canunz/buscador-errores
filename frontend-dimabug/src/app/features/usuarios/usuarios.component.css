@@ -145,6 +145,18 @@ td:first-child {
   border: 0;
 }
 
+.btn-accion.ver {
+  background: #1e4fd6;
+  border-color: #1638a8;
+  color: #fff;
+}
+
+.btn-accion.ver:hover {
+  background: #1638a8;
+  border-color: #1638a8;
+  color: #fff;
+}
+
 .btn-accion.editar {
   background: #eaf0fe;
   border-color: #c9d6f8;
@@ -300,6 +312,66 @@ td:first-child {
 .modal-header h2 {
   margin: 0;
   font-size: 22px;
+}
+
+.modal-dialog.detalle-usuario {
+  padding: 0;
+  overflow: hidden;
+}
+
+.franja-detalle {
+  margin: 0;
+  padding: 22px 24px 20px;
+  border-bottom: 0;
+  background: linear-gradient(105deg, #163070 0%, #1a3a8c 48%, #1e4fd6 100%);
+  color: #fff;
+}
+
+.franja-detalle .kicker {
+  color: #c5d4f5;
+}
+
+.franja-detalle h2 {
+  color: #fff;
+}
+
+.franja-detalle .cerrar {
+  border-color: transparent;
+  background: rgba(255, 255, 255, 0.16);
+  color: #fff;
+}
+
+.detalle-cuerpo {
+  padding: 26px 28px 28px;
+}
+
+.detalle-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px 20px;
+  margin: 0;
+}
+
+.detalle-grid dt {
+  margin: 0 0 6px;
+  color: #163070;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.detalle-grid dd {
+  margin: 0;
+  color: #1d2433;
+  font-size: 16px;
+  font-weight: 650;
+}
+
+@media (max-width: 640px) {
+  .detalle-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 .cerrar {

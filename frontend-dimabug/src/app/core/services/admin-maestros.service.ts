@@ -97,6 +97,14 @@ export class AdminMaestrosService {
     this.registrar(item.id ? `Modificó ${tipo}` : `Añadió ${saved.nombre}`, `/admin/catalogo/${tipo}`);
   }
 
+  marcarActivo(tipo: MaestroTipo, id: number, activo: boolean): void {
+    const current = this.state();
+    this.escribir({
+      ...current,
+      [tipo]: current[tipo].map((row) => (row.id === id ? { ...row, activo } : row)),
+    });
+  }
+
   eliminar(tipo: MaestroTipo, id: number): void {
     const current = this.state();
     this.escribir({

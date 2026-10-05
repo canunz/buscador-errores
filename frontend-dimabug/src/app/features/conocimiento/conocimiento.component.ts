@@ -2,7 +2,7 @@ import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { Subscription } from 'rxjs';
-import { CatalogoRef, ResultadoBusquedaConocimiento } from '../../core/models/conocimiento.model';
+import { CatalogoRef, Conocimiento, ResultadoBusquedaConocimiento } from '../../core/models/conocimiento.model';
 import { AuthService } from '../../core/services/auth.service';
 import { ClasificacionService } from '../../core/services/clasificacion.service';
 import { ConocimientoService } from '../../core/services/conocimiento.service';
@@ -30,6 +30,7 @@ export class ConocimientoComponent implements OnInit, OnDestroy {
   readonly puedeGestionar = this.auth.isStaff;
 
   resultados: ResultadoBusquedaConocimiento[] = [];
+  borradores: Conocimiento[] = [];
   hardwares: CatalogoRef[] = [];
   sistemas: CatalogoRef[] = [];
   modulos: CatalogoRef[] = [];
@@ -39,12 +40,16 @@ export class ConocimientoComponent implements OnInit, OnDestroy {
   sistemaId: number | null = null;
   moduloId: number | null = null;
   frecuenciaId: number | null = null;
+  pestana: 'publicados' | 'borradores' = 'publicados';
   loading = false;
   buscado = false;
+  private debounceBusqueda: ReturnType<typeof setTimeout> | null = null;
   error = '';
   aviso = '';
-  pendienteEliminar: ResultadoBusquedaConocimiento | null = null;
+  pendienteEliminar: { id: number; titulo: string } | null = null;
+  pendienteQuitarFavorito: { id: number; titulo: string } | null = null;
   eliminando = false;
+  publicandoId: number | null = null;
 
   ngOnInit(): void {
     const state = history.state as { conocimientoEliminado?: boolean } | null;
@@ -59,6 +64,7 @@ export class ConocimientoComponent implements OnInit, OnDestroy {
       next: (data) => (this.frecuencias = data.items),
     });
     this.cargarSistemas();
+    this.cargarBorradores();
     this.texto = this.route.snapshot.queryParamMap.get('q') || '';
     this.buscar();
     this.querySub = this.route.queryParamMap.subscribe((params) => {
@@ -73,6 +79,47 @@ export class ConocimientoComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.querySub?.unsubscribe();
     this.busquedaSub?.unsubscribe();
+    if (this.debounceBusqueda) {
+      clearTimeout(this.debounceBusqueda);
+    }
+  }
+
+  get borradoresFiltrados(): Conocimiento[] {
+    const q = this.texto.trim().toLowerCase();
+    return this.borradores.filter((item) => {
+      if (this.hardwareId && item.hardwareId !== this.hardwareId) {
+        return false;
+      }
+      if (this.sistemaId && item.sistemaId !== this.sistemaId) {
+        return false;
+      }
+      if (this.moduloId && item.moduloId !== this.moduloId) {
+        return false;
+      }
+      if (this.frecuenciaId && item.frecuenciaId !== this.frecuenciaId) {
+        return false;
+      }
+      if (!q) {
+        return true;
+      }
+      return (
+        item.titulo.toLowerCase().includes(q) ||
+        (item.descripcion || '').toLowerCase().includes(q) ||
+        (item.hardwareNombre || '').toLowerCase().includes(q) ||
+        (item.sistemaNombre || '').toLowerCase().includes(q)
+      );
+    });
+  }
+
+  mostrarPestana(pestana: 'publicados' | 'borradores'): void {
+    this.pestana = pestana;
+    if (pestana === 'publicados') {
+      this.buscar();
+    }
+  }
+
+  onTextoChange(): void {
+    this.programarBusqueda(280);
   }
 
   onHardwareChange(): void {
@@ -80,11 +127,28 @@ export class ConocimientoComponent implements OnInit, OnDestroy {
     this.moduloId = null;
     this.modulos = [];
     this.cargarSistemas();
+    this.programarBusqueda(0);
   }
 
   onSistemaChange(): void {
     this.moduloId = null;
     this.cargarModulos();
+    this.programarBusqueda(0);
+  }
+
+  onFiltroChange(): void {
+    this.programarBusqueda(0);
+  }
+
+  private programarBusqueda(delayMs: number): void {
+    if (this.debounceBusqueda) {
+      clearTimeout(this.debounceBusqueda);
+    }
+    this.debounceBusqueda = setTimeout(() => {
+      if (this.pestana === 'publicados') {
+        this.buscar();
+      }
+    }, delayMs);
   }
 
   buscar(): void {
@@ -132,16 +196,37 @@ export class ConocimientoComponent implements OnInit, OnDestroy {
     });
   }
 
-  abrir(item: ResultadoBusquedaConocimiento): void {
+  abrir(item: { id: number }): void {
     void this.router.navigate(['/conocimiento', item.id]);
   }
 
-  editar(item: ResultadoBusquedaConocimiento, event: Event): void {
+  publicar(item: Conocimiento): void {
+    if (!this.esAdministrador() || item.estado !== 'BORRADOR' || this.publicandoId != null) {
+      return;
+    }
+    this.publicandoId = item.id;
+    this.error = '';
+    this.conocimientosApi.cambiarEstado(item.id, 'PUBLICADO').subscribe({
+      next: () => {
+        this.borradores = this.borradores.filter((actual) => actual.id !== item.id);
+        this.publicandoId = null;
+        this.aviso = 'El conocimiento quedó publicado y ya se puede consultar.';
+        this.loading = false;
+        this.buscar();
+      },
+      error: (err: Error) => {
+        this.publicandoId = null;
+        this.error = err.message;
+      },
+    });
+  }
+
+  editar(item: { id: number }, event: Event): void {
     event.stopPropagation();
     void this.router.navigate(['/conocimiento', item.id, 'editar']);
   }
 
-  pedirEliminar(item: ResultadoBusquedaConocimiento, event: Event): void {
+  pedirEliminar(item: { id: number; titulo: string }, event: Event): void {
     event.stopPropagation();
     if (this.eliminando) {
       return;
@@ -166,6 +251,7 @@ export class ConocimientoComponent implements OnInit, OnDestroy {
     this.conocimientosApi.eliminar(item.id).subscribe({
       next: () => {
         this.resultados = this.resultados.filter((actual) => actual.id !== item.id);
+        this.borradores = this.borradores.filter((actual) => actual.id !== item.id);
         this.pendienteEliminar = null;
         this.eliminando = false;
         this.aviso = 'El conocimiento dejó de estar disponible para consulta y búsqueda.';
@@ -185,7 +271,36 @@ export class ConocimientoComponent implements OnInit, OnDestroy {
 
   toggleFavorito(id: number, titulo: string, event: Event): void {
     event.stopPropagation();
+    if (this.favoritosService.tiene(id)) {
+      this.pendienteQuitarFavorito = { id, titulo };
+      return;
+    }
     this.favoritosService.toggle(id, titulo);
+  }
+
+  cancelarQuitarFavorito(): void {
+    this.pendienteQuitarFavorito = null;
+  }
+
+  confirmarQuitarFavorito(): void {
+    const item = this.pendienteQuitarFavorito;
+    if (!item) {
+      return;
+    }
+    this.favoritosService.quitar(item.id);
+    this.pendienteQuitarFavorito = null;
+  }
+
+  private cargarBorradores(): void {
+    if (!this.puedeGestionar()) {
+      this.borradores = [];
+      return;
+    }
+    this.conocimientosApi.listar().subscribe({
+      next: (items) => {
+        this.borradores = items.filter((item) => item.estado === 'BORRADOR');
+      },
+    });
   }
 
   private cargarSistemas(): void {

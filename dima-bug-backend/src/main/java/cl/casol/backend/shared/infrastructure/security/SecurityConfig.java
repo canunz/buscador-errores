@@ -46,10 +46,21 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.DELETE, "/api/conocimientos/*")
                         .hasRole("ADMINISTRADOR")
+                        .requestMatchers(HttpMethod.GET,
+                                "/api/conocimientos",
+                                "/api/conocimientos/buscar",
+                                "/api/conocimientos/**",
+                                "/api/hardware",
+                                "/api/hardware/**",
+                                "/api/sistemas",
+                                "/api/sistemas/**",
+                                "/api/frecuencias",
+                                "/api/frecuencias/**")
+                        .hasAnyRole("ADMINISTRADOR", "TECNICO", "SOPORTE", "USUARIO")
                         .requestMatchers("/api/sistemas/**", "/api/hardware/**", "/api/conocimientos/**",
                                 "/api/frecuencias/**", "/api/departamentos/**", "/api/pruebas/**",
                                 "/api/procedimientos/**", "/api/ejecuciones/**")
-                        .hasAnyRole("ADMINISTRADOR", "TECNICO")
+                        .hasAnyRole("ADMINISTRADOR", "TECNICO", "SOPORTE")
                         .requestMatchers("/api/usuarios/**", "/api/roles/**")
                         .hasRole("ADMINISTRADOR")
                         .requestMatchers(HttpMethod.GET, "/").permitAll()

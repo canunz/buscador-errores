@@ -42,6 +42,23 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    @ExceptionHandler(cl.casol.backend.shared.application.archivo.ArchivoException.class)
+    public ResponseEntity<Map<String, String>> handleArchivo(cl.casol.backend.shared.application.archivo.ArchivoException ex) {
+        HttpStatus status = switch (ex.motivo()) {
+            case INVALIDO -> HttpStatus.BAD_REQUEST;
+            case DEMASIADO_GRANDE -> HttpStatus.PAYLOAD_TOO_LARGE;
+            case NO_ENCONTRADO -> HttpStatus.NOT_FOUND;
+            case ALMACENAMIENTO -> HttpStatus.INTERNAL_SERVER_ERROR;
+        };
+        return ResponseEntity.status(status).body(Map.of("message", ex.getMessage()));
+    }
+
+    @ExceptionHandler(org.springframework.web.multipart.MaxUploadSizeExceededException.class)
+    public ResponseEntity<Map<String, String>> handleTamanoArchivo(Exception ex) {
+        return ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE)
+                .body(Map.of("message", "El archivo o request supera el límite permitido"));
+    }
+
     @ExceptionHandler({UsuarioNoEncontradoException.class, RolNoEncontradoException.class,
             CatalogoNoEncontradoException.class, ConocimientoNoEncontradoException.class,
             DepartamentoNoEncontradoException.class, SintomaNoEncontradoException.class,
@@ -105,6 +122,15 @@ public class GlobalExceptionHandler {
         return ResponseEntity
                 .status(HttpStatus.UNAUTHORIZED)
                 .body(Map.of("message", ex.getMessage()));
+    }
+
+    @ExceptionHandler({
+            org.springframework.dao.DataAccessException.class,
+            org.springframework.jdbc.CannotGetJdbcConnectionException.class
+    })
+    public ResponseEntity<Map<String, String>> handleBaseDeDatos(Exception ex) {
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
+                .body(Map.of("message", "No se pudo conectar con la base de datos. Intente de nuevo."));
     }
 
     @ExceptionHandler(UsuarioInactivoException.class)

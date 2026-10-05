@@ -4,7 +4,6 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { map } from 'rxjs';
 import { AdminMaestrosService, MaestroTipo } from '../../core/services/admin-maestros.service';
-import { CatalogoTabsComponent } from '../../shared/ui/catalogo-tabs.component';
 
 const META: Record<MaestroTipo, { titulo: string; singular: string; seccion: string; extra?: string; activo?: boolean }> = {
   grupos: { titulo: 'Grupos', singular: 'grupo', seccion: 'Autenticación y autorización' },
@@ -17,7 +16,7 @@ const META: Record<MaestroTipo, { titulo: string; singular: string; seccion: str
 @Component({
   selector: 'app-admin-catalogo',
   standalone: true,
-  imports: [ReactiveFormsModule, RouterLink, CatalogoTabsComponent],
+  imports: [ReactiveFormsModule, RouterLink],
   templateUrl: './admin-catalogo.component.html',
   styleUrls: ['../../shared/ui/catalogo-page.css', './admin-catalogo.component.css'],
 })
@@ -36,6 +35,16 @@ export class AdminCatalogoComponent {
 
   modalOpen = false;
   editId: number | null = null;
+  detalle: { id: number; nombre: string; extra?: string; activo?: boolean } | null = null;
+  pendienteEstado: { id: number; nombre: string; activo: boolean } | null = null;
+
+  ver(item: { id: number; nombre: string; extra?: string; activo?: boolean }): void {
+    this.detalle = item;
+  }
+
+  cerrarDetalle(): void {
+    this.detalle = null;
+  }
 
   form = this.fb.nonNullable.group({
     nombre: ['', Validators.required],
@@ -68,6 +77,23 @@ export class AdminCatalogoComponent {
       activo: this.meta().activo ? raw.activo : undefined,
     });
     this.modalOpen = false;
+  }
+
+  pedirCambioEstado(id: number, nombre: string, activo: boolean): void {
+    this.pendienteEstado = { id, nombre, activo };
+  }
+
+  cancelarEstado(): void {
+    this.pendienteEstado = null;
+  }
+
+  confirmarEstado(): void {
+    const item = this.pendienteEstado;
+    if (!item) {
+      return;
+    }
+    this.maestros.marcarActivo(this.tipo(), item.id, !item.activo);
+    this.pendienteEstado = null;
   }
 
   eliminar(id: number, nombre: string): void {

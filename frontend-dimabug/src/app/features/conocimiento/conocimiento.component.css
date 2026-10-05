@@ -10,9 +10,9 @@
   padding: 28px 32px;
   margin-bottom: 18px;
   border-radius: 18px;
-  background: linear-gradient(105deg, #071336 0%, #0b1b4d 42%, #1638a8 78%, #1e4fd6 100%);
+  background: linear-gradient(105deg, #163070 0%, #1a3a8c 48%, #1e4fd6 100%);
   color: #fff;
-  box-shadow: 0 16px 36px rgba(7, 19, 54, 0.22);
+  box-shadow: 0 16px 36px rgba(22, 48, 112, 0.2);
 }
 
 .kicker {
@@ -21,7 +21,7 @@
   font-weight: 800;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: #9eb6f5;
+  color: #b8c8ee;
 }
 
 .franja h1 {
@@ -60,49 +60,86 @@
 }
 
 .filtros {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  display: flex;
+  flex-direction: column;
   gap: 10px;
   margin-bottom: 16px;
 }
 
-.filtros input,
-.filtros-acciones {
-  grid-column: 1 / -1;
+.filtros-fila {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr)) auto;
+  gap: 10px;
+  align-items: center;
 }
 
-.filtros-acciones {
-  display: flex;
-  gap: 8px;
-}
-
-.btn-buscar,
 .btn-limpiar {
   height: 46px;
   border-radius: 11px;
   padding: 0 16px;
   font: inherit;
-  font-size: 15px;
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+  border: 1px solid #d8deea;
+  background: #fff;
+  color: #0b1b4d;
+  white-space: nowrap;
+}
+
+.btn-limpiar:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.pestanas {
+  display: flex;
+  gap: 8px;
+  margin: 6px 0 16px;
+}
+
+.pestana {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 40px;
+  padding: 0 14px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  font: inherit;
+  font-size: 14px;
   font-weight: 800;
   cursor: pointer;
 }
 
-.btn-buscar {
-  border: 0;
-  background: #1e4fd6;
+.pestana span {
+  min-width: 22px;
+  padding: 2px 7px;
+  border-radius: 999px;
+  font-size: 12px;
+  background: rgba(15, 23, 42, 0.08);
+}
+
+.pestana.publicados,
+.pestana.borradores {
+  background: #eef3fb;
+  border-color: #d8deea;
+  color: #334155;
+}
+
+.pestana.on {
+  box-shadow: 0 6px 16px rgba(11, 27, 77, 0.12);
+}
+
+.pestana.publicados.on,
+.pestana.borradores.on {
+  background: #1a3a8c;
+  border-color: #1a3a8c;
   color: #fff;
 }
 
-.btn-limpiar {
-  border: 1px solid #d8deea;
-  background: #fff;
-  color: #0b1b4d;
-}
-
-.btn-buscar:disabled,
-.btn-limpiar:disabled {
-  opacity: 0.6;
-  cursor: default;
+.pestana.on span {
+  background: rgba(255, 255, 255, 0.22);
 }
 
 .filtros input,
@@ -136,6 +173,10 @@
 .alert.ok {
   background: #ecfdf5;
   color: #047857;
+}
+
+.borradores {
+  margin-bottom: 22px;
 }
 
 .meta {
@@ -241,18 +282,29 @@ td strong {
   align-items: center;
 }
 
+.meta-hint {
+  margin: 4px 0 0;
+  color: #64748b;
+  font-size: 13px;
+  font-weight: 500;
+}
+
 .btn-accion {
-  height: 40px;
+  width: 36px;
+  height: 36px;
+  padding: 0;
   border-radius: 10px;
   border: 1px solid transparent;
   cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+  display: inline-grid;
+  place-items: center;
   font: inherit;
-  font-size: 14px;
-  font-weight: 800;
-  transition: transform 0.12s ease, box-shadow 0.12s ease;
+  transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.12s ease;
+}
+
+.btn-accion svg {
+  width: 16px;
+  height: 16px;
 }
 
 .btn-accion:hover {
@@ -260,11 +312,16 @@ td strong {
 }
 
 .btn-accion.ver {
-  padding: 0 12px;
   background: #1e4fd6;
   border-color: #1638a8;
   color: #fff;
   box-shadow: 0 4px 12px rgba(30, 79, 214, 0.28);
+}
+
+.btn-accion.publicar {
+  background: #dcfce7;
+  border-color: #86efac;
+  color: #166534;
 }
 
 .btn-accion.ver:hover {
@@ -272,7 +329,6 @@ td strong {
 }
 
 .btn-accion.editar {
-  padding: 0 12px;
   background: #eaf0fe;
   border-color: #c9d6f8;
   color: #0e2266;
@@ -283,8 +339,7 @@ td strong {
 }
 
 .btn-accion.eliminar {
-  margin-left: 10px;
-  padding: 0 12px;
+  margin-left: 4px;
   background: #fff;
   border-color: #f3b4b4;
   color: #b42318;
@@ -301,11 +356,9 @@ td strong {
 }
 
 .btn-accion.fav {
-  padding: 0 12px;
   background: #fff7ed;
   border-color: #fdba74;
   color: #c2410c;
-  font-size: 14px;
 }
 
 .btn-accion.fav.on {
@@ -428,13 +481,13 @@ td strong {
     align-items: flex-start;
   }
 
-  .filtros {
+  .filtros-fila {
     grid-template-columns: 1fr 1fr;
   }
 
-  .filtros input,
-  .filtros-acciones {
+  .btn-limpiar {
     grid-column: 1 / -1;
+    justify-self: start;
   }
 }
 

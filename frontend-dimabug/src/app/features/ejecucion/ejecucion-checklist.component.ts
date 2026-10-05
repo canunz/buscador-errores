@@ -4,11 +4,12 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { Ejecucion, EjecucionPaso, ProcedimientoResumen } from '../../core/models/ejecucion.model';
 import { EjecucionService } from '../../core/services/ejecucion.service';
+import { LoadingModalComponent } from '../../shared/ui/loading-modal.component';
 
 @Component({
   selector: 'app-ejecucion-checklist',
   standalone: true,
-  imports: [DatePipe, FormsModule, RouterLink],
+  imports: [DatePipe, FormsModule, RouterLink, LoadingModalComponent],
   templateUrl: './ejecucion-checklist.component.html',
   styleUrl: './ejecucion-checklist.component.css',
 })
@@ -27,6 +28,7 @@ export class EjecucionChecklistComponent implements OnInit {
   cancelando = false;
   confirmarCancelacion = false;
   motivoCancelacion = '';
+  pasoActual = 1;
 
   ngOnInit(): void {
     const id = Number(this.route.snapshot.paramMap.get('id'));
@@ -51,6 +53,17 @@ export class EjecucionChecklistComponent implements OnInit {
       return 0;
     }
     return Math.round((this.cumplidos * 100) / this.pasos.length);
+  }
+
+  get paso(): EjecucionPaso | null {
+    return this.pasos[this.pasoActual - 1] ?? null;
+  }
+
+  irPaso(numero: number): void {
+    if (numero < 1 || numero > this.pasos.length) {
+      return;
+    }
+    this.pasoActual = numero;
   }
 
   get puedeCompletar(): boolean {
@@ -213,6 +226,8 @@ export class EjecucionChecklistComponent implements OnInit {
     for (const paso of pasos) {
       this.borradores[paso.ejecucionPasoId] = paso.observacion ?? '';
     }
+    const pendiente = pasos.findIndex((paso) => !paso.cumplido);
+    this.pasoActual = pendiente >= 0 ? pendiente + 1 : 1;
   }
 
   private reemplazar(actualizado: EjecucionPaso): void {

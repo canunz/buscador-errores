@@ -1,9 +1,11 @@
+<app-loading-modal [visible]="loading" mensaje="Cargando" />
+
 <section class="cat-page">
   <div class="franja">
     <div>
       <p>Operaciones</p>
       <h1>Mis ejecuciones</h1>
-      <span>Historial de procedimientos que has iniciado, completado o cancelado.</span>
+      <span>Cada fila es un procedimiento que ejecutaste. Ábrelo para ver los pasos que marcaste.</span>
     </div>
     <a routerLink="/procedimientos" class="btn-crear">Ver procedimientos</a>
   </div>
@@ -13,9 +15,7 @@
   }
 
   <div class="tabla-wrap">
-    @if (loading) {
-      <p class="muted pad">Cargando ejecuciones…</p>
-    } @else {
+    @if (!loading) {
       <table>
         <thead>
           <tr>

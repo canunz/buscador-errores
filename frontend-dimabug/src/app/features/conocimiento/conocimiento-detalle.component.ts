@@ -1,5 +1,5 @@
 import { DatePipe, NgClass } from '@angular/common';
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, Input, OnInit, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import {
@@ -20,6 +20,15 @@ import { AuthService } from '../../core/services/auth.service';
 import { ConocimientoService } from '../../core/services/conocimiento.service';
 import { FavoritosService } from '../../core/services/favoritos.service';
 import { OrganizacionService } from '../../core/services/organizacion.service';
+import {
+  OrigenMaterial,
+  acceptArchivoMaterial,
+  admiteUploadLocal,
+  esUrlDescargaAutenticada,
+  muestraUrlMaterial,
+  origenDesdeAdjunto,
+  validarMaterialFormulario,
+} from '../../core/material/material-archivo';
 import { LoadingModalComponent } from '../../shared/ui/loading-modal.component';
 import { SolucionEfectividadComponent } from './solucion-efectividad.component';
 
@@ -28,7 +37,14 @@ type Seccion = 'sintomas' | 'causas' | 'pruebas' | 'soluciones' | 'materiales' |
 @Component({
   selector: 'app-conocimiento-detalle',
   standalone: true,
-  imports: [DatePipe, NgClass, RouterLink, ReactiveFormsModule, LoadingModalComponent, SolucionEfectividadComponent],
+  imports: [
+    DatePipe,
+    NgClass,
+    RouterLink,
+    ReactiveFormsModule,
+    LoadingModalComponent,
+    SolucionEfectividadComponent,
+  ],
   templateUrl: './conocimiento-detalle.component.html',
   styleUrl: './conocimiento-detalle.component.css',
 })
@@ -40,6 +56,8 @@ export class ConocimientoDetalleComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly fb = inject(FormBuilder);
+
+  @Input() embebido = false;
 
   readonly esAdministrador = this.auth.isAdmin;
   readonly puedeGestionar = this.auth.isStaff;
@@ -69,17 +87,26 @@ export class ConocimientoDetalleComponent implements OnInit {
   publishing = false;
   eliminando = false;
   confirmarEliminacion = false;
+  confirmarQuitarFavorito = false;
   saving: Seccion | null = null;
   copiado = false;
   private currentId: number | null = null;
 
   editSintomaId: number | null = null;
   editCausaId: number | null = null;
-  editPruebaId: number | null = null;
   editSolucionId: number | null = null;
   editMaterialId: number | null = null;
   editAsignacionId: number | null = null;
   solucionAsignacionId: number | null = null;
+
+  paso = 1;
+  readonly pasosGuia = [
+    { id: 1, titulo: 'Observar', detalle: 'Síntomas' },
+    { id: 2, titulo: 'Diagnosticar', detalle: 'Causas' },
+    { id: 3, titulo: 'Verificar', detalle: 'Pruebas' },
+    { id: 4, titulo: 'Resolver', detalle: 'Solución' },
+    { id: 5, titulo: 'Apoyo', detalle: 'Material' },
+  ] as const;
 
   formAbierto: Record<'sintomas' | 'causas' | 'pruebas' | 'soluciones' | 'materiales', boolean> = {
     sintomas: false,
@@ -122,8 +149,9 @@ export class ConocimientoDetalleComponent implements OnInit {
   materialForm = this.fb.nonNullable.group({
     nombre: ['', Validators.required],
     tipo: this.fb.nonNullable.control<TipoMaterial>('PDF'),
-    url: ['', Validators.required],
+    url: [''],
   });
+  archivoMaterial: File | null = null;
 
   get favorito(): boolean {
     return !!this.item && this.favoritosService.tiene(this.item.id);
@@ -134,14 +162,20 @@ export class ConocimientoDetalleComponent implements OnInit {
   }
 
   get mostrandoCarga(): boolean {
-    return this.saving != null || this.publishing || this.eliminando;
+    return (this.loading && !this.item) || this.saving != null || this.publishing || this.eliminando;
   }
 
   get mensajeCarga(): string {
-    return this.eliminando ? 'Eliminando, por favor…' : 'Cargando, por favor…';
+    return this.eliminando ? 'Eliminando' : 'Cargando';
   }
 
   ngOnInit(): void {
+    this.materialForm.controls.tipo.valueChanges.subscribe((tipo) => {
+      if (!admiteUploadLocal(tipo)) {
+        this.archivoMaterial = null;
+      }
+    });
+
     this.asignacionForm.controls.departamentoId.valueChanges.subscribe((departamentoId) => {
       this.asignacionForm.controls.responsableId.setValue(null, { emitEvent: false });
       this.responsables = [];
@@ -284,8 +318,41 @@ export class ConocimientoDetalleComponent implements OnInit {
     });
   }
 
+  irPaso(paso: number): void {
+    if (paso < 1 || paso > this.pasosGuia.length) {
+      return;
+    }
+    this.paso = paso;
+  }
+
+  cantidadPaso(id: number): number {
+    if (id === 1) {
+      return this.sintomas.length;
+    }
+    if (id === 2) {
+      return this.causas.length;
+    }
+    if (id === 3) {
+      return this.pruebas.length;
+    }
+    if (id === 4) {
+      return this.soluciones.length;
+    }
+    return this.materiales.length;
+  }
+
+  get estaModificando(): boolean {
+    return Object.values(this.formAbierto).some(Boolean) || this.solucionAsignacionId != null;
+  }
+
   abrirFormulario(seccion: keyof typeof this.formAbierto): void {
+    if (seccion === 'sintomas' && this.editSintomaId == null) {
+      this.sintomaForm.controls.orden.setValue(this.nextOrden(this.sintomas));
+    }
     this.formAbierto[seccion] = true;
+    if (seccion === 'materiales') {
+      this.resetMaterialFormulario();
+    }
     if (seccion === 'pruebas' && !this.pruebasCatalogo.length) {
       this.organizacion.listarPruebas().subscribe({
         next: (items) => (this.pruebasCatalogo = items),
@@ -303,13 +370,32 @@ export class ConocimientoDetalleComponent implements OnInit {
   }
 
   toggleFavorito(): void {
-    if (this.item) {
-      this.favoritosService.toggle(this.item.id, this.item.titulo);
+    if (!this.item) {
+      return;
     }
+    if (this.favoritosService.tiene(this.item.id)) {
+      this.confirmarQuitarFavorito = true;
+      return;
+    }
+    this.favoritosService.toggle(this.item.id, this.item.titulo);
+  }
+
+  cancelarQuitarFavorito(): void {
+    this.confirmarQuitarFavorito = false;
+  }
+
+  aceptarQuitarFavorito(): void {
+    if (this.item) {
+      this.favoritosService.quitar(this.item.id);
+    }
+    this.confirmarQuitarFavorito = false;
   }
 
   cambiarEstado(estado: 'PUBLICADO' | 'BORRADOR'): void {
-    if (!this.item || this.item.estado === estado) {
+    if (!this.puedeGestionar() || !this.item || this.item.estado === estado || this.publishing) {
+      return;
+    }
+    if (estado === 'PUBLICADO' && !this.esAdministrador()) {
       return;
     }
     this.publishing = true;
@@ -327,7 +413,7 @@ export class ConocimientoDetalleComponent implements OnInit {
   }
 
   editar(): void {
-    if (this.item) {
+    if (this.item && this.puedeGestionar()) {
       void this.router.navigate(['/conocimiento', this.item.id, 'editar']);
     }
   }
@@ -464,24 +550,15 @@ export class ConocimientoDetalleComponent implements OnInit {
     }
     const value = this.pruebaForm.getRawValue();
     this.saving = 'pruebas';
-    if (this.editPruebaId != null) {
-      this.conocimientosApi.modificarPrueba(id, this.editPruebaId, { orden: value.orden }).subscribe({
-        next: () => {
-          this.editPruebaId = null;
-          this.formAbierto.pruebas = false;
-          this.pruebaForm.reset({ pruebaId: null, orden: this.nextOrden(this.pruebas) + 1 });
-          this.reloadPruebas(id);
-        },
-        error: (err: Error) => this.fail(err),
-      });
-      return;
-    }
     if (value.pruebaId == null) {
       this.sectionError = 'Seleccione una prueba del catálogo.';
       this.saving = null;
       return;
     }
-    this.conocimientosApi.asociarPrueba(id, { pruebaId: value.pruebaId, orden: value.orden }).subscribe({
+    this.conocimientosApi.asociarPrueba(id, {
+      pruebaId: value.pruebaId,
+      orden: this.nextOrden(this.pruebas),
+    }).subscribe({
       next: () => {
         this.formAbierto.pruebas = false;
         this.pruebaForm.reset({ pruebaId: null, orden: this.nextOrden(this.pruebas) + 1 });
@@ -491,14 +568,7 @@ export class ConocimientoDetalleComponent implements OnInit {
     });
   }
 
-  editarPrueba(item: PruebaAsociada): void {
-    this.formAbierto.pruebas = true;
-    this.editPruebaId = item.id;
-    this.pruebaForm.setValue({ pruebaId: item.id, orden: item.orden });
-  }
-
   cancelarPrueba(): void {
-    this.editPruebaId = null;
     this.pruebaForm.reset({ pruebaId: null, orden: this.nextOrden(this.pruebas) });
   }
 
@@ -603,34 +673,113 @@ export class ConocimientoDetalleComponent implements OnInit {
     });
   }
 
-  guardarMaterial(): void {
-    const id = this.conocimientoId;
-    if (!id || this.materialForm.invalid) {
+  get muestraUrlMaterial(): boolean {
+    return muestraUrlMaterial(this.materialForm.controls.tipo.value);
+  }
+
+  get admiteAdjuntoMaterial(): boolean {
+    return this.editMaterialId == null && admiteUploadLocal(this.materialForm.controls.tipo.value);
+  }
+
+  get acceptMaterial(): string {
+    return acceptArchivoMaterial(this.materialForm.controls.tipo.value);
+  }
+
+  get pistaAdjuntoMaterial(): string {
+    const tipo = this.materialForm.controls.tipo.value;
+    if (tipo === 'PDF') {
+      return 'PDF · máximo 10 MiB';
+    }
+    if (tipo === 'IMAGEN') {
+      return 'PNG, JPEG o WEBP · máximo 10 MiB';
+    }
+    return 'MP4, WEBM o MOV · máximo 10 MiB';
+  }
+
+  elegirArchivoMaterial(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    this.archivoMaterial = input.files?.[0] ?? null;
+  }
+
+  guardarMaterialDesdeFormulario(): void {
+    const valor = this.materialForm.getRawValue();
+    const origen = origenDesdeAdjunto(valor.tipo, this.archivoMaterial);
+    const error = validarMaterialFormulario({
+      nombre: valor.nombre,
+      tipo: valor.tipo,
+      origen,
+      url: valor.url,
+      archivo: this.archivoMaterial,
+    });
+    if (error) {
+      this.sectionError = error;
       this.materialForm.markAllAsTouched();
-      this.sectionError = 'Complete nombre y URL del material.';
       return;
     }
-    const request = this.materialForm.getRawValue();
+    this.guardarMaterial({
+      nombre: valor.nombre,
+      tipo: valor.tipo,
+      origen,
+      url: valor.url,
+      archivo: this.archivoMaterial,
+    });
+  }
+
+  private guardarMaterial(valor: {
+    nombre: string;
+    tipo: TipoMaterial;
+    origen: OrigenMaterial;
+    url: string;
+    archivo: File | null;
+  }): void {
+    const id = this.conocimientoId;
+    if (!id) {
+      return;
+    }
     this.saving = 'materiales';
+    this.sectionError = '';
     const req$ =
-      this.editMaterialId != null
-        ? this.conocimientosApi.modificarMaterial(id, this.editMaterialId, request)
-        : this.conocimientosApi.crearMaterial(id, request);
+      valor.origen === 'archivo' && valor.archivo
+        ? this.conocimientosApi.crearMaterialArchivo(id, valor.nombre, valor.tipo, valor.archivo)
+        : this.editMaterialId != null
+          ? this.conocimientosApi.modificarMaterial(id, this.editMaterialId, {
+              nombre: valor.nombre.trim(),
+              tipo: valor.tipo,
+              url: valor.url.trim(),
+            })
+          : this.conocimientosApi.crearMaterial(id, {
+              nombre: valor.nombre.trim(),
+              tipo: valor.tipo,
+              url: valor.url.trim(),
+            });
     req$.subscribe({
       next: () => {
-        this.editMaterialId = null;
+        this.resetMaterialFormulario();
         this.formAbierto.materiales = false;
-        this.materialForm.reset({ nombre: '', tipo: 'PDF', url: '' });
         this.reloadMateriales(id);
       },
       error: (err: Error) => this.fail(err),
     });
   }
 
+  esMaterialLocal(item: MaterialApoyo): boolean {
+    return esUrlDescargaAutenticada(item.url);
+  }
+
+  descargarMaterial(item: MaterialApoyo): void {
+    this.conocimientosApi.descargarMaterial(item).subscribe({
+      error: (err: Error) => this.fail(err),
+    });
+  }
+
   editarMaterial(item: MaterialApoyo): void {
+    if (this.esMaterialLocal(item)) {
+      return;
+    }
     this.formAbierto.materiales = true;
     this.editMaterialId = item.id;
-    this.materialForm.setValue({
+    this.archivoMaterial = null;
+    this.materialForm.reset({
       nombre: item.nombre,
       tipo: item.tipo,
       url: item.url,
@@ -668,7 +817,12 @@ export class ConocimientoDetalleComponent implements OnInit {
   }
 
   cancelarMaterial(): void {
+    this.resetMaterialFormulario();
+  }
+
+  private resetMaterialFormulario(): void {
     this.editMaterialId = null;
+    this.archivoMaterial = null;
     this.materialForm.reset({ nombre: '', tipo: 'PDF', url: '' });
   }
 
@@ -741,11 +895,11 @@ export class ConocimientoDetalleComponent implements OnInit {
     });
   }
 
-  private reloadMateriales(id: number): void {
+  private reloadMateriales(id: number, mensaje = 'Material guardado.'): void {
     this.conocimientosApi.listarMateriales(id, true).subscribe({
       next: (items) => {
         this.materiales = items;
-        this.ok('Material guardado.');
+        this.ok(mensaje);
       },
       error: (err: Error) => this.fail(err),
     });

@@ -3,12 +3,11 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
 import { OrganizacionService } from '../../core/services/organizacion.service';
 import { PruebaItem } from '../../core/models/catalogo.model';
-import { CatalogoTabsComponent } from '../../shared/ui/catalogo-tabs.component';
-
+import { LoadingModalComponent } from '../../shared/ui/loading-modal.component';
 @Component({
   selector: 'app-pruebas',
   standalone: true,
-  imports: [CatalogoTabsComponent],
+  imports: [LoadingModalComponent],
   templateUrl: './pruebas.component.html',
   styleUrls: ['../../shared/ui/catalogo-page.css', './pruebas.component.css'],
 })
@@ -20,9 +19,60 @@ export class PruebasComponent implements OnInit {
   items: PruebaItem[] = [];
   loading = false;
   error = '';
+  detalle: PruebaItem | null = null;
+  pendienteEstado: PruebaItem | null = null;
+  pendienteEliminar: PruebaItem | null = null;
+
+  ver(item: PruebaItem): void {
+    this.detalle = item;
+  }
+
+  cerrarDetalle(): void {
+    this.detalle = null;
+  }
 
   get titulo(): string {
     return this.router.url.includes('procedimientos') ? 'Procedimientos' : 'Pruebas';
+  }
+
+  pedirCambioEstado(item: PruebaItem): void {
+    this.pendienteEstado = item;
+  }
+
+  cancelarEstado(): void {
+    this.pendienteEstado = null;
+  }
+
+  pedirEliminar(item: PruebaItem): void {
+    this.pendienteEliminar = item;
+  }
+
+  cancelarEliminar(): void {
+    this.pendienteEliminar = null;
+  }
+
+  confirmarEliminar(): void {
+    const item = this.pendienteEliminar;
+    if (!item) {
+      return;
+    }
+    this.organizacion.ocultarPrueba(item.id);
+    this.items = this.items.filter((actual) => actual.id !== item.id);
+    if (this.detalle?.id === item.id) {
+      this.detalle = null;
+    }
+    this.pendienteEliminar = null;
+  }
+
+  confirmarEstado(): void {
+    const item = this.pendienteEstado;
+    if (!item) {
+      return;
+    }
+    const activo = !item.activo;
+    this.organizacion.marcarPruebaActiva(item.id, activo);
+    this.items = this.items.map((actual) => (actual.id === item.id ? { ...actual, activo } : actual));
+    this.pendienteEstado = null;
   }
 
   ngOnInit(): void {

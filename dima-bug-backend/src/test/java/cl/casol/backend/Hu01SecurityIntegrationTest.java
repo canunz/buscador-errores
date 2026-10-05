@@ -85,7 +85,7 @@ class Hu01SecurityIntegrationTest {
     void requestInvalidoResponde400() throws Exception {
         mockMvc.perform(post("/api/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"email\":\"no-es-email\",\"password\":\"\"}"))
+                        .content("{\"email\":\"\",\"password\":\"\"}"))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message").exists());
     }

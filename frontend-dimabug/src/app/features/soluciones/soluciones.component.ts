@@ -5,12 +5,11 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 import { ConocimientoService } from '../../core/services/conocimiento.service';
 import { SolucionItem } from '../../core/models/catalogo.model';
 import { Conocimiento, TipoSolucion } from '../../core/models/conocimiento.model';
-import { CatalogoTabsComponent } from '../../shared/ui/catalogo-tabs.component';
-
+import { LoadingModalComponent } from '../../shared/ui/loading-modal.component';
 @Component({
   selector: 'app-soluciones',
   standalone: true,
-  imports: [FormsModule, ReactiveFormsModule, CatalogoTabsComponent, RouterLink],
+  imports: [FormsModule, ReactiveFormsModule, RouterLink, LoadingModalComponent],
   templateUrl: './soluciones.component.html',
   styleUrls: ['../../shared/ui/catalogo-page.css', './soluciones.component.css'],
 })
@@ -29,6 +28,16 @@ export class SolucionesComponent implements OnInit {
   formError = '';
   modalOpen = false;
   editItem: SolucionItem | null = null;
+  detalle: SolucionItem | null = null;
+  pendienteEliminar: SolucionItem | null = null;
+
+  ver(item: SolucionItem): void {
+    this.detalle = item;
+  }
+
+  cerrarDetalle(): void {
+    this.detalle = null;
+  }
 
   form = this.fb.nonNullable.group({
     conocimientoId: [0, Validators.min(1)],
@@ -98,6 +107,27 @@ export class SolucionesComponent implements OnInit {
     this.form.controls.conocimientoId.disable();
     this.modalOpen = true;
     this.cargarGuias();
+  }
+
+  pedirEliminar(item: SolucionItem): void {
+    this.pendienteEliminar = item;
+  }
+
+  cancelarEliminar(): void {
+    this.pendienteEliminar = null;
+  }
+
+  confirmarEliminar(): void {
+    const item = this.pendienteEliminar;
+    if (!item) {
+      return;
+    }
+    this.conocimientos.ocultarSolucionCatalogo(item.conocimientoId ?? 0, item.id);
+    this.items = this.items.filter((actual) => this.trackKey(actual) !== this.trackKey(item));
+    if (this.detalle && this.trackKey(this.detalle) === this.trackKey(item)) {
+      this.detalle = null;
+    }
+    this.pendienteEliminar = null;
   }
 
   closeModal(): void {

@@ -36,8 +36,8 @@ public class AuthController {
     ) {
 
         Usuario usuario = autenticarUsuarioService.autenticar(
-                request.email(),
-                request.password()
+                request.identificador(),
+                request.clave()
         );
 
         String token = tokenService.generarToken(usuario);

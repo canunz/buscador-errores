@@ -18,6 +18,7 @@ import {
 } from 'rxjs';
 import { apiUrl } from '../config/api';
 import { mensajeApiError } from '../http/api-error';
+import { crearFormDataMaterial, descargarMaterialAutenticado } from '../material/material-archivo';
 import {
   AsignacionRequest,
   AsignacionSolucion,
@@ -60,6 +61,7 @@ export class ConocimientoService {
   private readonly base = apiUrl('/conocimientos');
   private readonly listaStorageKey = 'dimabug.conocimientos.lista.v1';
   private readonly solucionesCatalogoKey = 'dimabug.soluciones.catalogo.v1';
+  private readonly solucionesOcultasKey = 'dimabug.soluciones.ocultas.v1';
 
   private listaCache$: Observable<Conocimiento[]> | null = null;
   private detalleCache = new Map<number, Conocimiento>();
@@ -355,11 +357,27 @@ export class ConocimientoService {
     );
 
     this.solucionesCatalogoCache$ = (stale?.length ? concat(of(stale), network$) : network$).pipe(
+      map((items) => items.filter((item) => !this.solucionOculta(item))),
       tap((items) => this.writeSolucionesSession(items)),
       shareReplay(1),
     );
 
     return this.solucionesCatalogoCache$;
+  }
+
+  ocultarSolucionCatalogo(conocimientoId: number, id: number): void {
+    const clave = `${conocimientoId}-${id}`;
+    const ids = this.leerSolucionesOcultas();
+    if (!ids.includes(clave)) {
+      try {
+        sessionStorage.setItem(this.solucionesOcultasKey, JSON.stringify([...ids, clave]));
+      } catch {
+        // ignore
+      }
+    }
+    this.solucionesCatalogoCache$ = null;
+    const actual = this.readSolucionesSession() ?? [];
+    this.writeSolucionesSession(actual.filter((item) => `${item.conocimientoId}-${item.id}` !== clave));
   }
 
   crearSolucion(conocimientoId: number, request: SolucionRequest): Observable<Solucion> {
@@ -495,6 +513,38 @@ export class ConocimientoService {
       tap(() => this.clearSeccion(`materiales:${conocimientoId}`)),
       catchError((err: HttpErrorResponse) =>
         throwError(() => new Error(mensajeApiError(err, 'No fue posible crear el material.'))),
+      ),
+    );
+  }
+
+  crearMaterialArchivo(
+    conocimientoId: number,
+    nombre: string,
+    tipo: TipoMaterial,
+    archivo: File,
+  ): Observable<MaterialApoyo> {
+    return this.http
+      .post<unknown>(
+        `${this.base}/${conocimientoId}/materiales/archivo`,
+        crearFormDataMaterial(nombre, tipo, archivo),
+      )
+      .pipe(
+        map((res) => this.normalizeMaterial(res)),
+        tap(() => this.clearSeccion(`materiales:${conocimientoId}`)),
+        catchError((err: HttpErrorResponse) =>
+          throwError(() => new Error(mensajeApiError(err, 'No fue posible subir el archivo.'))),
+        ),
+      );
+  }
+
+  descargarMaterial(material: MaterialApoyo): Observable<void> {
+    return descargarMaterialAutenticado(this.http, material.url, material.nombre, material.tipo).pipe(
+      catchError((err: HttpErrorResponse | Error) =>
+        throwError(() =>
+          err instanceof HttpErrorResponse
+            ? new Error(mensajeApiError(err, 'No fue posible descargar el archivo.'))
+            : err,
+        ),
       ),
     );
   }
@@ -733,6 +783,20 @@ export class ConocimientoService {
       sessionStorage.setItem(this.listaStorageKey, JSON.stringify(items));
     } catch {
       // quota / private mode: ignore
+    }
+  }
+
+  private solucionOculta(item: SolucionCatalogoItem): boolean {
+    return this.leerSolucionesOcultas().includes(`${item.conocimientoId}-${item.id}`);
+  }
+
+  private leerSolucionesOcultas(): string[] {
+    try {
+      const raw = sessionStorage.getItem(this.solucionesOcultasKey);
+      const parsed = raw ? (JSON.parse(raw) as string[]) : [];
+      return Array.isArray(parsed) ? parsed.map(String) : [];
+    } catch {
+      return [];
     }
   }
 

@@ -31,6 +31,7 @@ interface ClasificacionTree {
 export class ClasificacionService {
   private readonly http = inject(HttpClient);
   private readonly storageKey = 'dimabug.hardware.detalle.v1';
+  private readonly ocultosKey = 'dimabug.hardware.ocultos.v1';
   private readonly treeKey = 'dimabug.clasificacion.tree.v1';
   private hardwareDetalleCache$: Observable<HardwareItem[]> | null = null;
   private hardwareListaCache$: Observable<CatalogoRef[]> | null = null;
@@ -148,11 +149,26 @@ export class ClasificacionService {
     );
 
     this.hardwareDetalleCache$ = (stale?.length ? concat(of(stale), network$) : network$).pipe(
+      map((items) => items.filter((item) => !this.estaOculto(item.id))),
       tap((items) => this.writeSession(items)),
       shareReplay(1),
     );
 
     return this.hardwareDetalleCache$;
+  }
+
+  ocultarHardware(id: number): void {
+    const ids = this.leerOcultos();
+    if (!ids.includes(id)) {
+      try {
+        sessionStorage.setItem(this.ocultosKey, JSON.stringify([...ids, id]));
+      } catch {
+        // ignore
+      }
+    }
+    this.hardwareDetalleCache$ = null;
+    const actual = this.readSession() ?? [];
+    this.writeSession(actual.filter((item) => item.id !== id));
   }
 
   sistemasDeHardware(hardwareId: number, force = false): Observable<CatalogoRef[]> {
@@ -356,6 +372,20 @@ export class ClasificacionService {
       }
     }
     return [];
+  }
+
+  private estaOculto(id: number): boolean {
+    return this.leerOcultos().includes(id);
+  }
+
+  private leerOcultos(): number[] {
+    try {
+      const raw = sessionStorage.getItem(this.ocultosKey);
+      const parsed = raw ? (JSON.parse(raw) as number[]) : [];
+      return Array.isArray(parsed) ? parsed.map(Number).filter((item) => item > 0) : [];
+    } catch {
+      return [];
+    }
   }
 
   private readSession(): HardwareItem[] | null {

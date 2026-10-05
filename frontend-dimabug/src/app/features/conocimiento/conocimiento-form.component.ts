@@ -6,11 +6,12 @@ import { CatalogoRef, ConocimientoRequest } from '../../core/models/conocimiento
 import { ClasificacionService } from '../../core/services/clasificacion.service';
 import { ConocimientoService } from '../../core/services/conocimiento.service';
 import { LoadingModalComponent } from '../../shared/ui/loading-modal.component';
+import { ConocimientoDetalleComponent } from './conocimiento-detalle.component';
 
 @Component({
   selector: 'app-conocimiento-form',
   standalone: true,
-  imports: [ReactiveFormsModule, RouterLink, LoadingModalComponent],
+  imports: [ReactiveFormsModule, RouterLink, LoadingModalComponent, ConocimientoDetalleComponent],
   templateUrl: './conocimiento-form.component.html',
   styleUrls: ['./conocimiento.component.css', './conocimiento-form.component.css'],
 })
@@ -27,6 +28,7 @@ export class ConocimientoFormComponent implements OnInit {
   noDisponible = false;
   error = '';
   frecuenciasDisponibles = false;
+  pestana: 'ficha' | 'guia' = 'ficha';
 
   hardwares: CatalogoRef[] = [];
   sistemas: CatalogoRef[] = [];

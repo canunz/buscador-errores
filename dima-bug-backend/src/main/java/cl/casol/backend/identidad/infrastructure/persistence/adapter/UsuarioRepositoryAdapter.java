@@ -24,9 +24,15 @@ public class UsuarioRepositoryAdapter implements UsuarioRepository {
 
     @Override
     public Optional<Usuario> buscarPorEmail(String email) {
+        String valor = email == null ? "" : email.trim();
+        if (valor.isEmpty()) {
+            return Optional.empty();
+        }
 
         return usuarioJpaRepository
-                .findByEmail(email)
+                .findByEmailIgnoreCase(valor)
+                .or(() -> usuarioJpaRepository.findByEmail(valor))
+                .or(() -> valor.contains("@") ? Optional.empty() : usuarioJpaRepository.findByIdentificador(valor))
                 .map(UsuarioMapper::toDomain);
     }
 
@@ -42,12 +48,15 @@ public class UsuarioRepositoryAdapter implements UsuarioRepository {
 
     @Override
     public boolean existePorEmail(String email) {
-        return usuarioJpaRepository.existsByEmail(email);
+        String valor = email == null ? "" : email.trim();
+        return usuarioJpaRepository.existsByEmailIgnoreCase(valor) || usuarioJpaRepository.existsByEmail(valor);
     }
 
     @Override
     public boolean existePorEmailYIdDistinto(String email, Integer id) {
-        return usuarioJpaRepository.existsByEmailAndIdNot(email, id);
+        String valor = email == null ? "" : email.trim();
+        return usuarioJpaRepository.existsByEmailIgnoreCaseAndIdNot(valor, id)
+                || usuarioJpaRepository.existsByEmailAndIdNot(valor, id);
     }
 
     @Override

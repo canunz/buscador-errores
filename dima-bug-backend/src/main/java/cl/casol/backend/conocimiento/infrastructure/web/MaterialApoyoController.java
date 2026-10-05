@@ -24,6 +24,7 @@ public class MaterialApoyoController {
     @ResponseStatus(HttpStatus.CREATED)
     public MaterialApoyoResponse crear(@PathVariable Integer conocimientoId,
             @Valid @RequestBody GuardarMaterialApoyoRequest request) {
+        cl.casol.backend.shared.infrastructure.web.ArchivoHttp.validarEnlace(request.url());
         return MaterialApoyoResponse.from(
                 service.crear(conocimientoId, request.nombre(), request.tipo(), request.url()));
     }
@@ -31,6 +32,7 @@ public class MaterialApoyoController {
     @PutMapping("/{materialId}")
     public MaterialApoyoResponse modificar(@PathVariable Integer conocimientoId, @PathVariable Integer materialId,
             @Valid @RequestBody GuardarMaterialApoyoRequest request) {
+        cl.casol.backend.shared.infrastructure.web.ArchivoHttp.validarEnlace(request.url());
         return MaterialApoyoResponse.from(
                 service.modificar(conocimientoId, materialId, request.nombre(), request.tipo(), request.url()));
     }

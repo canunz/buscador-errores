@@ -1,3 +1,5 @@
+<app-loading-modal [visible]="loading || guardando" mensaje="Cargando" />
+
 <section class="formulario">
   <p class="crumb">
     <a routerLink="/procedimientos">Procedimientos</a>
@@ -8,9 +10,7 @@
   <h1>{{ editId ? 'Editar procedimiento' : 'Nuevo procedimiento' }}</h1>
   <p class="ayuda">Queda en borrador. La publicación la hace un administrador desde el detalle.</p>
 
-  @if (loading) {
-    <p class="muted">Cargando…</p>
-  } @else {
+  @if (!loading) {
     <form [formGroup]="form" (ngSubmit)="guardar()">
       <label>
         Nombre <span class="req">*</span>

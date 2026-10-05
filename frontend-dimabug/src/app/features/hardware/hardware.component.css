@@ -27,7 +27,142 @@
 }
 
 .hw-page .col-acciones {
-  width: 180px;
+  width: 1%;
+  white-space: nowrap;
+}
+
+.hw-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: grid;
+  place-items: center;
+  padding: 28px;
+}
+
+.hw-modal-fondo {
+  position: absolute;
+  inset: 0;
+  background: rgba(22, 48, 112, 0.5);
+  backdrop-filter: blur(3px);
+}
+
+.hw-modal-card {
+  position: relative;
+  z-index: 1;
+  width: min(760px, 100%);
+  max-height: calc(100vh - 56px);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: 22px;
+  background: #fff;
+  box-shadow: 0 28px 70px rgba(22, 48, 112, 0.32);
+}
+
+.hw-modal-franja {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 22px 24px 20px;
+  background: linear-gradient(105deg, #163070 0%, #1a3a8c 48%, #1e4fd6 100%);
+  color: #fff;
+}
+
+.hw-modal-franja p {
+  margin: 0 0 6px;
+  color: #c5d4f5;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.hw-modal-franja h2 {
+  margin: 0;
+  font-size: 28px;
+  letter-spacing: -0.03em;
+  line-height: 1.2;
+}
+
+.hw-modal-cerrar {
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  border: 0;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.16);
+  color: #fff;
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.hw-modal-cerrar:hover {
+  background: rgba(255, 255, 255, 0.26);
+}
+
+.hw-modal-cuerpo {
+  padding: 26px 28px 28px;
+  overflow: auto;
+}
+
+.hw-bloque + .hw-bloque {
+  margin-top: 26px;
+}
+
+.hw-bloque h3 {
+  margin: 0 0 10px;
+  color: #163070;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.hw-so {
+  margin: 0;
+  color: #1d2433;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.hw-cuenta {
+  margin: 0 0 14px;
+  color: #64748b;
+  font-size: 14px;
+}
+
+.hw-sistemas {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.hw-sistemas li {
+  padding: 14px 16px;
+  border-radius: 14px;
+  border: 1px solid #dce3f0;
+  background: #f6f8fd;
+  color: #163070;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.hw-vacio {
+  margin: 0;
+  color: #64748b;
+  font-size: 15px;
+}
+
+@media (max-width: 640px) {
+  .hw-sistemas {
+    grid-template-columns: 1fr;
+  }
 }
 
 .hw-page .acciones {

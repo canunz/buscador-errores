@@ -1,13 +1,13 @@
+<app-loading-modal [visible]="loading" mensaje="Cargando" />
+
 <section class="checklist">
   <p class="crumb">
     <a routerLink="/ejecuciones">Mis ejecuciones</a>
     <span>/</span>
-    Checklist
+    {{ procedimiento?.nombre || 'Procedimiento' }}
   </p>
 
-  @if (loading) {
-    <p class="muted">Cargando ejecución…</p>
-  } @else if (error && !ejecucion) {
+  @if (error && !ejecucion) {
     <p class="alerta">
       {{ error }}
       <a routerLink="/ejecuciones">Volver al listado</a>
@@ -18,6 +18,15 @@
         <span class="badge" [attr.data-estado]="ejecucion.estado">{{ etiquetaEstado(ejecucion.estado) }}</span>
         <h1>{{ procedimiento?.nombre || ('Procedimiento ' + ejecucion.procedimientoId) }}</h1>
         <p>
+          @if (enCurso) {
+            Marca cada paso mientras lo haces. Al terminar, completa el procedimiento.
+          } @else if (ejecucion.estado === 'COMPLETADA') {
+            Registro cerrado. Así se ejecutó este procedimiento.
+          } @else {
+            Esta ejecución se canceló. El registro se conserva.
+          }
+        </p>
+        <p class="fechas">
           Inicio: {{ ejecucion.fechaInicio ? (ejecucion.fechaInicio | date: 'dd/MM/yyyy HH:mm') : '—' }}
           @if (ejecucion.fechaFin) {
             · Fin: {{ ejecucion.fechaFin | date: 'dd/MM/yyyy HH:mm' }}
@@ -25,7 +34,7 @@
         </p>
       </div>
       <div class="progreso">
-        <strong>{{ cumplidos }} de {{ pasos.length }} pasos realizados</strong>
+        <strong>{{ cumplidos }} / {{ pasos.length }}</strong>
         <span>{{ porcentaje }} %</span>
         <div class="barra" aria-hidden="true"><i [style.width.%]="porcentaje"></i></div>
       </div>
@@ -34,61 +43,53 @@
     @if (error) {
       <p class="alerta">{{ error }}</p>
     }
-    @if (!enCurso) {
-      <p class="aviso">Esta ejecución está {{ etiquetaEstado(ejecucion.estado).toLowerCase() }} y no se puede modificar.</p>
-    }
     @if (ejecucion.observaciones) {
-      <p class="aviso">Observación general: {{ ejecucion.observaciones }}</p>
+      <p class="aviso">Nota: {{ ejecucion.observaciones }}</p>
     }
 
     @if (!pasos.length) {
-      <p class="muted">Esta ejecución no tiene pasos.</p>
-    } @else {
-      <ol>
-        @for (paso of pasos; track paso.ejecucionPasoId) {
-          <li [class.hecho]="paso.cumplido">
-            <label class="check">
-              <input
-                type="checkbox"
-                [checked]="paso.cumplido"
-                [disabled]="!enCurso || guardando != null || completando || cancelando"
-                (change)="marcar(paso, $any($event.target).checked)"
-              />
-              <span>
-                <strong>Paso {{ paso.orden }}</strong>
-                {{ paso.instruccion }}
-              </span>
-            </label>
-            @if (paso.esCritico) {
-              <em class="critico">Paso crítico</em>
-            }
-            <label class="nota">
-              Observación
-              <textarea
-                rows="2"
-                maxlength="300"
-                [name]="'obs-' + paso.ejecucionPasoId"
-                [(ngModel)]="borradores[paso.ejecucionPasoId]"
-                [disabled]="!enCurso || guardando != null"
-              ></textarea>
-              <span class="cuenta">{{ (borradores[paso.ejecucionPasoId] || '').length }} / 300</span>
-            </label>
-            @if (enCurso) {
-              <button
-                type="button"
-                class="guardar"
-                (click)="guardarObservacion(paso)"
-                [disabled]="guardando != null || (borradores[paso.ejecucionPasoId] || '').length > 300"
-              >
-                {{ guardando === paso.ejecucionPasoId ? 'Guardando…' : 'Guardar' }}
-              </button>
-            }
-          </li>
+      <p class="muted">Este procedimiento no tiene pasos.</p>
+    } @else if (enCurso && paso) {
+      <article class="paso-card">
+        <p class="paso-kicker">Paso {{ paso.orden }} de {{ pasos.length }}</p>
+        <h2>{{ paso.instruccion }}</h2>
+        @if (paso.esCritico) {
+          <em class="critico">Paso crítico</em>
         }
-      </ol>
-    }
+        <label class="check">
+          <input
+            type="checkbox"
+            [checked]="paso.cumplido"
+            [disabled]="guardando != null || completando || cancelando"
+            (change)="marcar(paso, $any($event.target).checked)"
+          />
+          <span>Hecho</span>
+        </label>
+        <label class="nota">
+          Observación
+          <textarea
+            rows="3"
+            maxlength="300"
+            [name]="'obs-' + paso.ejecucionPasoId"
+            [(ngModel)]="borradores[paso.ejecucionPasoId]"
+            [disabled]="guardando != null"
+          ></textarea>
+          <span class="cuenta">{{ (borradores[paso.ejecucionPasoId] || '').length }} / 300</span>
+        </label>
+        <button
+          type="button"
+          class="guardar"
+          (click)="guardarObservacion(paso)"
+          [disabled]="guardando != null || (borradores[paso.ejecucionPasoId] || '').length > 300"
+        >
+          {{ guardando === paso.ejecucionPasoId ? 'Guardando…' : 'Guardar observación' }}
+        </button>
+        <footer class="paso-nav">
+          <button type="button" class="secundario" (click)="irPaso(pasoActual - 1)" [disabled]="pasoActual === 1">Anterior</button>
+          <button type="button" class="primario" (click)="irPaso(pasoActual + 1)" [disabled]="pasoActual === pasos.length">Siguiente</button>
+        </footer>
+      </article>
 
-    @if (enCurso) {
       <div class="acciones">
         <button type="button" class="secundario" (click)="pedirCancelar()" [disabled]="cancelando || completando || guardando != null">
           Cancelar ejecución
@@ -97,6 +98,21 @@
           {{ completando ? 'Completando…' : 'Completar procedimiento' }}
         </button>
       </div>
+    } @else {
+      <ol>
+        @for (item of pasos; track item.ejecucionPasoId) {
+          <li [class.hecho]="item.cumplido">
+            <p class="paso-kicker">Paso {{ item.orden }}</p>
+            <strong>{{ item.instruccion }}</strong>
+            @if (item.esCritico) {
+              <em class="critico">Paso crítico</em>
+            }
+            @if (item.observacion) {
+              <p class="obs-texto">{{ item.observacion }}</p>
+            }
+          </li>
+        }
+      </ol>
     }
   }
 </section>
@@ -104,10 +120,10 @@
 @if (confirmarCancelacion) {
   <div class="capa">
     <div class="dialog" role="alertdialog" aria-modal="true">
-      <h2>¿Deseas cancelar esta ejecución?</h2>
-      <p>Los pasos registrados se conservarán.</p>
+      <h2>¿Cancelar esta ejecución?</h2>
+      <p>Los pasos ya marcados se conservan.</p>
       <label>
-        Observación general
+        Motivo
         <textarea rows="3" [(ngModel)]="motivoCancelacion" [disabled]="cancelando"></textarea>
       </label>
       <div class="acciones">

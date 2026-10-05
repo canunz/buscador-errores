@@ -38,10 +38,14 @@ export class AuthService {
   readonly isStaff = computed(() => esStaff(this.sessionSignal()?.usuario));
 
   login(email: string, password: string): Observable<AuthSession> {
+    const identificador = email.trim();
+    const clave = password.trim();
     return this.http
       .post<LoginResponse>(apiUrl('/auth/login'), {
-        email: email.trim(),
-        password,
+        email: identificador,
+        usuario: identificador,
+        correo: identificador,
+        password: clave,
       })
       .pipe(
         map((res) => this.sessionFromLogin(res)),
@@ -150,8 +154,11 @@ export class AuthService {
     if (err.status === 403) {
       return 'Su cuenta no tiene autorización o está inactiva.';
     }
+    if (err.status === 503) {
+      return 'El servidor tardó en hablar con la base de datos. Intente de nuevo en unos segundos.';
+    }
     if (err.status === 0) {
-      return 'No se pudo conectar con el servidor. Intente más tarde.';
+      return 'No se pudo conectar con el servidor. Confirme que el backend esté en el puerto 9090.';
     }
     if (err.status === 404) {
       return 'El servidor no tiene el login activo. Reinicia el backend de este proyecto (puerto 8080) e intenta de nuevo.';

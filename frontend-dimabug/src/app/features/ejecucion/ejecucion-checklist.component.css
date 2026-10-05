@@ -20,7 +20,7 @@
   margin-bottom: 16px;
   padding: 24px;
   border-radius: 22px;
-  background: linear-gradient(105deg, #071336 0%, #1638a8 100%);
+  background: linear-gradient(105deg, #163070 0%, #1a3a8c 48%, #1e4fd6 100%);
   color: #fff;
 }
 
@@ -30,8 +30,9 @@
 }
 
 .hero p,
-.progreso span {
-  margin: 0;
+.progreso span,
+.hero .fechas {
+  margin: 8px 0 0;
   color: #d5e0ff;
 }
 
@@ -95,6 +96,42 @@ li {
 
 li.hecho {
   border-color: #bbf7d0;
+}
+
+.paso-card {
+  padding: 22px;
+  border: 1px solid #e8eef8;
+  border-radius: 18px;
+  background: #fff;
+}
+
+.paso-kicker {
+  margin: 0 0 6px;
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.paso-card h2 {
+  margin: 0 0 12px;
+  color: #163070;
+  font-size: 22px;
+}
+
+.paso-nav {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.obs-texto {
+  margin: 10px 0 0;
+  color: #334155;
+  font-size: 14px;
+  line-height: 1.45;
 }
 
 .check {

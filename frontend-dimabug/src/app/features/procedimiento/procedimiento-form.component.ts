@@ -2,11 +2,12 @@ import { Component, OnInit, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { ProcedimientoService } from '../../core/services/procedimiento.service';
+import { LoadingModalComponent } from '../../shared/ui/loading-modal.component';
 
 @Component({
   selector: 'app-procedimiento-form',
   standalone: true,
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [ReactiveFormsModule, RouterLink, LoadingModalComponent],
   templateUrl: './procedimiento-form.component.html',
   styleUrl: './procedimiento-form.component.css',
 })

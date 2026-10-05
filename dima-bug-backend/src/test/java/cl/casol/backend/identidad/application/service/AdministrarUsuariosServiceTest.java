@@ -77,12 +77,27 @@ class AdministrarUsuariosServiceTest {
         when(rolRepository.buscarPorId(1)).thenReturn(Optional.of(administrador));
         when(usuarioRepository.guardar(org.mockito.ArgumentMatchers.any())).thenAnswer(i -> i.getArgument(0));
 
-        Usuario modificado = service.modificar(5, "Nombre nuevo", "nuevo@dimarsa.cl", 1);
+        Usuario modificado = service.modificar(5, "Nombre nuevo", "nuevo@dimarsa.cl", 1, null);
 
         assertEquals("Nombre nuevo", modificado.getNombre());
         assertEquals("nuevo@dimarsa.cl", modificado.getEmail());
         assertEquals("hash-existente", modificado.getPasswordHash());
         assertEquals("ADMINISTRADOR", modificado.getRol().getNombre());
+        verify(passwordEncoder, never()).codificar(org.mockito.ArgumentMatchers.anyString());
+    }
+
+    @Test
+    void modificaPasswordCuandoSeEnvia() {
+        Usuario actual = usuario(5, "tecnico@dimarsa.cl", true, rol(2, "TECNICO", true));
+        when(usuarioRepository.buscarPorId(5)).thenReturn(Optional.of(actual));
+        when(rolRepository.buscarPorId(2)).thenReturn(Optional.of(rol(2, "TECNICO", true)));
+        when(passwordEncoder.codificar("NuevaClave123")).thenReturn("$2a$10$nueva");
+        when(usuarioRepository.guardar(org.mockito.ArgumentMatchers.any())).thenAnswer(i -> i.getArgument(0));
+
+        Usuario modificado = service.modificar(5, "Usuario", "tecnico@dimarsa.cl", 2, "NuevaClave123");
+
+        assertEquals("$2a$10$nueva", modificado.getPasswordHash());
+        verify(passwordEncoder).codificar("NuevaClave123");
     }
 
     @Test
@@ -92,7 +107,7 @@ class AdministrarUsuariosServiceTest {
         when(usuarioRepository.existePorEmailYIdDistinto("usado@dimarsa.cl", 5)).thenReturn(true);
 
         assertThrows(EmailDuplicadoException.class,
-                () -> service.modificar(5, "Nombre", "usado@dimarsa.cl", 2));
+                () -> service.modificar(5, "Nombre", "usado@dimarsa.cl", 2, null));
     }
 
     @Test

@@ -20,7 +20,7 @@
         decoding="async"
       />
       <h1>Inicio de sesión</h1>
-      <p>Use el correo de la cuenta, no el usuario corto</p>
+      <p>Ingrese su usuario o su correo</p>
     </div>
 
     @if (error) {
@@ -31,7 +31,7 @@
 
     <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
       <div class="login-field">
-        <label for="email">Correo</label>
+        <label for="email">Usuario o correo</label>
         <div class="login-input" [class.is-invalid]="!!error">
           <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
             <path
@@ -41,9 +41,9 @@
           </svg>
           <input
             id="email"
-            type="email"
+            type="text"
             formControlName="email"
-            placeholder="usuario@correo.cl"
+            placeholder="Usuario o correo"
             autocomplete="username"
             [attr.aria-disabled]="loading"
           />

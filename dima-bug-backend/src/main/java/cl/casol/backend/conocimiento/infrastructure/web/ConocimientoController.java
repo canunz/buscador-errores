@@ -4,6 +4,7 @@ import cl.casol.backend.conocimiento.application.service.MantenerConocimientoSer
 import cl.casol.backend.conocimiento.application.service.BuscarConocimientoService;
 import cl.casol.backend.conocimiento.domain.EstadoConocimiento;
 import cl.casol.backend.conocimiento.domain.exception.ClasificacionInvalidaException;
+import cl.casol.backend.conocimiento.domain.exception.ConocimientoNoEncontradoException;
 import cl.casol.backend.conocimiento.infrastructure.web.dto.*;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -37,13 +38,21 @@ public class ConocimientoController {
     }
 
     @GetMapping
-    public List<ConocimientoResponse> listar() {
-        return service.listar().stream().map(ConocimientoResponse::from).toList();
+    public List<ConocimientoResponse> listar(Authentication authentication) {
+        boolean staff = esStaff(authentication);
+        return service.listar().stream()
+                .filter(item -> staff || item.getEstado() == EstadoConocimiento.PUBLICADO)
+                .map(ConocimientoResponse::from)
+                .toList();
     }
 
     @GetMapping("/{id}")
-    public ConocimientoResponse buscar(@PathVariable Integer id) {
-        return ConocimientoResponse.from(service.buscar(id));
+    public ConocimientoResponse buscar(@PathVariable Integer id, Authentication authentication) {
+        var item = service.buscar(id);
+        if (!esStaff(authentication) && item.getEstado() != EstadoConocimiento.PUBLICADO) {
+            throw new ConocimientoNoEncontradoException(id);
+        }
+        return ConocimientoResponse.from(item);
     }
 
     @PostMapping
@@ -80,5 +89,14 @@ public class ConocimientoController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void eliminar(@PathVariable Integer id, Authentication authentication) {
         service.eliminar(id, authentication.getName());
+    }
+
+    private boolean esStaff(Authentication authentication) {
+        if (authentication == null) {
+            return false;
+        }
+        return authentication.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ADMINISTRADOR"))
+                || authentication.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_TECNICO"))
+                || authentication.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_SOPORTE"));
     }
 }

@@ -27,9 +27,9 @@ public class AutenticarUsuarioService {
 
     public Usuario autenticar(String email, String password) {
 
-        // 1. Buscar usuario por email
+        // 1. Buscar por correo o por usuario corto
         Usuario usuario = usuarioRepository
-                .buscarPorEmail(email)
+                .buscarPorEmail(email == null ? "" : email.trim())
                 .orElseThrow(CredencialesInvalidasException::new);
 
         // 2. Verificar que el usuario esté activo

@@ -5,7 +5,6 @@ import { Router } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
 import { UsuarioService } from '../../core/services/usuario.service';
 import { Rol, Usuario, esAdministrador, loginUsername } from '../../core/models/usuario.model';
-import { CatalogoTabsComponent } from '../../shared/ui/catalogo-tabs.component';
 import { LoadingModalComponent } from '../../shared/ui/loading-modal.component';
 
 type TonoConfirmacion = 'peligro' | 'aviso' | 'ok';
@@ -23,7 +22,7 @@ interface Confirmacion {
 @Component({
   selector: 'app-usuarios',
   standalone: true,
-  imports: [ReactiveFormsModule, DatePipe, CatalogoTabsComponent, LoadingModalComponent],
+  imports: [ReactiveFormsModule, DatePipe, LoadingModalComponent],
   templateUrl: './usuarios.component.html',
   styleUrl: './usuarios.component.css',
 })
@@ -42,6 +41,7 @@ export class UsuariosComponent implements OnInit {
   error = '';
   success = '';
   modalOpen = false;
+  detalle: Usuario | null = null;
   editId: number | null = null;
   private editOriginal: { nombre: string; email: string; rolId: number; activo: boolean } | null = null;
   confirmacion: Confirmacion | null = null;
@@ -172,13 +172,19 @@ export class UsuariosComponent implements OnInit {
       return;
     }
     const raw = this.form.getRawValue();
-    if (raw.password1 || raw.password2) {
-      if (raw.password1 !== raw.password2) {
+    const password = (raw.password1 || '').trim();
+    const password2 = (raw.password2 || '').trim();
+    if (password || password2) {
+      if (password.length < 6) {
+        this.error = 'La contraseña debe tener al menos 6 caracteres.';
+        return;
+      }
+      if (password !== password2) {
         this.error = 'Las contraseñas no coinciden.';
         return;
       }
     }
-    if (!this.editId && !raw.password1) {
+    if (!this.editId && !password) {
       this.error = 'La contraseña es obligatoria al crear.';
       return;
     }
@@ -199,7 +205,7 @@ export class UsuariosComponent implements OnInit {
       usuarioEmail: emailCambio && !editandoActual ? raw.email.trim() : correo,
       rolId: Number(raw.rolId),
       usuarioEstado: !!raw.activo,
-      usuarioPassword: raw.password1 || undefined,
+      usuarioPassword: password || undefined,
     };
 
     if (this.editId && original) {
@@ -257,6 +263,28 @@ export class UsuariosComponent implements OnInit {
     if (this.confirmacion) {
       this.cerrarConfirmacion();
     }
+  }
+
+  pedirEliminar(u: Usuario): void {
+    if (this.esCuentaActual(u)) {
+      return;
+    }
+    this.confirmacion = {
+      titulo: 'Eliminar usuario',
+      pregunta: '¿Estás seguro de eliminar a',
+      nombre: u.usuarioNombre,
+      nota: 'Dejará de verse en este listado.',
+      accion: 'Eliminar',
+      tono: 'peligro',
+      ejecutar: () => {
+        this.usuariosApi.ocultar(u.usuarioId);
+        this.usuarios = this.usuarios.filter((actual) => actual.usuarioId !== u.usuarioId);
+        if (this.detalle?.usuarioId === u.usuarioId) {
+          this.detalle = null;
+        }
+        this.success = `${u.usuarioNombre} fue eliminado del listado.`;
+      },
+    };
   }
 
   toggleEstado(u: Usuario): void {
@@ -318,6 +346,14 @@ export class UsuariosComponent implements OnInit {
         });
       },
     });
+  }
+
+  ver(u: Usuario): void {
+    this.detalle = u;
+  }
+
+  cerrarDetalle(): void {
+    this.detalle = null;
   }
 
   rolNombre(u: Usuario): string {

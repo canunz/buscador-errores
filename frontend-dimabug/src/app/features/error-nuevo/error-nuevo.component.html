@@ -1,50 +1,68 @@
 @if (!puedeGestionar()) {
-  <section class="cat-page err-page usuario-error">
-    <div class="franja">
-      <div>
+  <section class="aviso-page">
+    <header class="aviso-hero">
+      <div class="aviso-hero-copy">
         <p>Incidencias</p>
-        <h1>Nuevo error</h1>
-        <span>Cuéntanos qué está fallando. Soporte lo revisará junto con los casos parecidos.</span>
+        <h1>Avisar un error</h1>
+        <span>Cuéntanos qué pasó. Soporte lo recibe y busca la solución en Conocimiento.</span>
+        <ol class="aviso-pasos">
+          <li><strong>1</strong> Describes el problema</li>
+          <li><strong>2</strong> Soporte lo revisa</li>
+          <li><strong>3</strong> Te responden con la guía</li>
+        </ol>
       </div>
-    </div>
+      <a routerLink="/conocimiento" class="aviso-buscar">Buscar primero en Conocimiento</a>
+    </header>
 
     @if (success) {
-      <p class="ok">{{ success }}</p>
+      <div class="aviso-ok" role="status">
+        <span class="aviso-ok-icono" aria-hidden="true">✓</span>
+        <div>
+          <strong>Aviso enviado</strong>
+          <p>{{ success }}</p>
+        </div>
+      </div>
     }
 
-    <form class="form-card usuario-form" [formGroup]="form" (ngSubmit)="save()">
-      <div class="form-grid">
-        <label class="full">
-          Qué está fallando *
-          <textarea rows="4" formControlName="descripcion" placeholder="Describe el error con tus palabras"></textarea>
-          @if (form.controls.descripcion.touched && form.controls.descripcion.invalid) {
-            <small class="err">La descripción es obligatoria.</small>
-          }
-        </label>
-        <label>
-          Dónde ocurre
-          <input type="text" formControlName="modulo" placeholder="Caja, bodega, reportes..." />
-        </label>
-        <label>
-          Cada cuánto pasa
-          <select formControlName="frecuencia">
+    <form class="aviso-card" [formGroup]="form" (ngSubmit)="save()">
+      <div class="aviso-campo">
+        <label for="err-desc">Qué está fallando</label>
+        <p class="ayuda">Obligatorio. Usa tus palabras, como se lo contarías a un compañero.</p>
+        <textarea id="err-desc" rows="5" formControlName="descripcion" placeholder="Ej.: La caja no imprime la boleta y aparece un mensaje rojo."></textarea>
+        @if (form.controls.descripcion.touched && form.controls.descripcion.invalid) {
+          <small class="err">Escribe qué está fallando.</small>
+        }
+      </div>
+
+      <div class="aviso-fila">
+        <div class="aviso-campo">
+          <label for="err-mod">Dónde ocurre</label>
+          <input id="err-mod" type="text" formControlName="modulo" placeholder="Caja, bodega, reportes…" />
+        </div>
+        <div class="aviso-campo">
+          <label for="err-freq">Cada cuánto pasa</label>
+          <select id="err-freq" formControlName="frecuencia">
             <option value="">No estoy seguro</option>
             @for (f of frecuencias; track f) {
               <option [value]="f">{{ f }}</option>
             }
           </select>
-        </label>
-        <label class="full">
-          Quién lo está viendo
-          <input type="text" formControlName="usuarioContexto" placeholder="Tu nombre, sucursal o usuario" />
-        </label>
-        <label class="full">
-          Qué más notaste
-          <textarea rows="3" formControlName="comentarios" placeholder="Mensaje en pantalla, hora, si ya lo intentaste de nuevo"></textarea>
-        </label>
+        </div>
       </div>
-      <div class="form-actions">
-        <button type="submit" class="btn-crear">Enviar error</button>
+
+      <div class="aviso-campo">
+        <label for="err-quien">Quién lo está viendo</label>
+        <input id="err-quien" type="text" formControlName="usuarioContexto" placeholder="Tu nombre, sucursal o usuario" />
+      </div>
+
+      <div class="aviso-campo">
+        <label for="err-mas">Qué más notaste</label>
+        <p class="ayuda">Mensaje en pantalla, hora o si ya lo intentaste de nuevo.</p>
+        <textarea id="err-mas" rows="3" formControlName="comentarios" placeholder="Ej.: Salió “timeout” a las 10:15. Reinicié y siguió igual."></textarea>
+      </div>
+
+      <div class="aviso-acciones">
+        <button type="submit" class="aviso-enviar">Enviar aviso</button>
       </div>
     </form>
   </section>
@@ -54,12 +72,10 @@
     <div>
       <p>Incidencias</p>
       <h1>Errores</h1>
-      <span>{{ lista.length }} incidencia{{ lista.length === 1 ? '' : 's' }} registrada{{ lista.length === 1 ? '' : 's' }}</span>
+      <span>{{ lista.length }} reporte{{ lista.length === 1 ? '' : 's' }} · Soporte atiende y resuelve desde Conocimiento.</span>
     </div>
     <button type="button" class="btn-crear" (click)="abrirNuevo()">+ Añadir error</button>
   </div>
-
-  <app-catalogo-tabs />
 
   @if (success) {
     <p class="ok">{{ success }}</p>
@@ -74,7 +90,7 @@
           <th>Hardware</th>
           <th>Sistema</th>
           <th>Frecuencia</th>
-          <th>Soluciones</th>
+          <th>Estado</th>
         </tr>
       </thead>
       <tbody>
@@ -82,8 +98,23 @@
           <tr>
             <td>
               <div class="acciones">
-                <button type="button" class="act edit" (click)="abrirEditar(item)">Editar</button>
-                <button type="button" class="act del" (click)="eliminar(item)">Eliminar</button>
+                <button type="button" class="btn-accion ver" title="Buscar solución" aria-label="Buscar solución" (click)="buscarEnConocimiento(item)">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                    <circle cx="12" cy="12" r="3" />
+                  </svg>
+                </button>
+                <button type="button" class="btn-accion editar" title="Editar" aria-label="Editar" (click)="abrirEditar(item)">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                    <path d="M12 20h9" />
+                    <path d="M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4 12.5-12.5z" />
+                  </svg>
+                </button>
+                <button type="button" class="btn-accion eliminar" title="Eliminar" aria-label="Eliminar" (click)="pedirEliminar(item)">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                    <path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6" />
+                  </svg>
+                </button>
               </div>
             </td>
             <td>
@@ -94,26 +125,12 @@
             </td>
             <td>{{ nombreHardware(item.hardwareId) }}</td>
             <td>{{ item.sistema || '—' }}</td>
-            <td>
-              @if (item.frecuencia) {
-                <span class="chip">{{ item.frecuencia }}</span>
-              } @else {
-                <span class="muted">—</span>
-              }
-            </td>
-            <td>
-              <div class="chips">
-                @for (s of nombresSoluciones(item.solucionIds); track s) {
-                  <span class="chip sol">{{ s }}</span>
-                } @empty {
-                  <span class="muted">Sin soluciones</span>
-                }
-              </div>
-            </td>
+            <td>{{ item.frecuencia || '—' }}</td>
+            <td><span class="estado">Pendiente</span></td>
           </tr>
         } @empty {
           <tr>
-            <td colspan="6" class="vacio">Aún no hay errores. Usa Añadir error para registrar el primero.</td>
+            <td colspan="6" class="vacio">No hay reportes. Un usuario o soporte los registra aquí.</td>
           </tr>
         }
       </tbody>
@@ -135,7 +152,7 @@
         <div>
           <p>Incidencias</p>
           <h2 id="error-modal-title">{{ editId ? 'Editar error' : 'Nuevo error' }}</h2>
-          <span class="modal-lead">Describe la incidencia y su contexto operativo.</span>
+          <span class="modal-lead">Soporte verá el reporte y buscará la solución en Conocimiento.</span>
         </div>
         <button type="button" class="cerrar" (click)="cerrarModal()" aria-label="Cerrar">✕</button>
       </header>
@@ -211,6 +228,20 @@
           <button type="submit" class="btn-crear">Guardar error</button>
         </footer>
       </form>
+    </div>
+  </div>
+}
+
+@if (pendienteEliminar) {
+  <div class="confirm-capa">
+    <div class="confirm-fondo" (click)="cancelarEliminar()"></div>
+    <div class="confirm-dialog" role="alertdialog" aria-modal="true" aria-labelledby="eliminar-error-titulo">
+      <h2 id="eliminar-error-titulo">¿Eliminar este reporte?</h2>
+      <p>Saldrá de esta lista. El conocimiento, si existe, no se borra.</p>
+      <div class="confirm-acciones">
+        <button type="button" class="btn-cancelar" (click)="cancelarEliminar()">Cancelar</button>
+        <button type="button" class="btn-peligro" (click)="confirmarEliminar()">Eliminar</button>
+      </div>
     </div>
   </div>
 }

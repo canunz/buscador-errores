@@ -40,27 +40,46 @@ public class AdministrarUsuariosService {
     }
 
     public Usuario crear(String nombre, String email, String password, Integer rolId) {
-        if (usuarioRepository.existePorEmail(email)) {
+        String correo = email == null ? "" : email.trim().toLowerCase();
+        if (usuarioRepository.existePorEmail(correo)) {
             throw new EmailDuplicadoException();
         }
 
         Rol rol = obtenerRolActivo(rolId);
         LocalDateTime ahora = LocalDateTime.now();
         Usuario usuario = new Usuario(
-                null, rol, nombre, email, passwordEncoder.codificar(password), true, ahora, ahora
+                null, rol, nombre, correo, passwordEncoder.codificar(password), true, ahora, ahora
         );
         return usuarioRepository.guardar(usuario);
     }
 
-    public Usuario modificar(Integer id, String nombre, String email, Integer rolId) {
+    public Usuario modificar(Integer id, String nombre, String email, Integer rolId, String password) {
         Usuario actual = buscarPorId(id);
-        if (usuarioRepository.existePorEmailYIdDistinto(email, id)) {
+        String correo = email == null ? "" : email.trim().toLowerCase();
+        if (usuarioRepository.existePorEmailYIdDistinto(correo, id)) {
             throw new EmailDuplicadoException();
         }
 
         Rol rol = obtenerRolActivo(rolId);
+        String passwordHash = actual.getPasswordHash();
+        if (password != null && !password.isBlank()) {
+            passwordHash = passwordEncoder.codificar(password.trim());
+        }
         Usuario modificado = new Usuario(
-                actual.getId(), rol, nombre, email, actual.getPasswordHash(), actual.isActivo(),
+                actual.getId(), rol, nombre, correo, passwordHash, actual.isActivo(),
+                actual.getFechaCreacion(), LocalDateTime.now()
+        );
+        return usuarioRepository.guardar(modificado);
+    }
+
+    public Usuario cambiarPassword(Integer id, String password) {
+        if (password == null || password.isBlank()) {
+            throw new IllegalArgumentException("La contraseña es obligatoria");
+        }
+        Usuario actual = buscarPorId(id);
+        Usuario modificado = new Usuario(
+                actual.getId(), actual.getRol(), actual.getNombre(), actual.getEmail(),
+                passwordEncoder.codificar(password.trim()), actual.isActivo(),
                 actual.getFechaCreacion(), LocalDateTime.now()
         );
         return usuarioRepository.guardar(modificado);

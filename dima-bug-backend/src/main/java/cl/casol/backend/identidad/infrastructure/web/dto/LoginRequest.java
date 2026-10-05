@@ -1,17 +1,23 @@
 package cl.casol.backend.identidad.infrastructure.web.dto;
 
-import jakarta.validation.constraints.Email;
+import com.fasterxml.jackson.annotation.JsonAlias;
 import jakarta.validation.constraints.NotBlank;
-//Paso I de Endpoint: Validation, Spring podrá rechazar la solicitud antes de llegar siquiera
-// al caso de uso.
+
 public record LoginRequest(
 
-        @NotBlank(message = "El email es obligatorio")
-        @Email(message = "El email no es válido")
+        @NotBlank(message = "El usuario o correo es obligatorio")
+        @JsonAlias({"usuario", "username", "correo"})
         String email,
 
         @NotBlank(message = "La contraseña es obligatoria")
         String password
 
 ) {
+    public String identificador() {
+        return email == null ? "" : email.trim();
+    }
+
+    public String clave() {
+        return password == null ? "" : password.trim();
+    }
 }

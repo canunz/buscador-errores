@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, ViewChild, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { forkJoin } from 'rxjs';
@@ -11,11 +11,17 @@ import {
 import { AuthService } from '../../core/services/auth.service';
 import { EjecucionService } from '../../core/services/ejecucion.service';
 import { ProcedimientoService } from '../../core/services/procedimiento.service';
+import { esUrlDescargaAutenticada } from '../../core/material/material-archivo';
+import { LoadingModalComponent } from '../../shared/ui/loading-modal.component';
+import {
+  MaterialApoyoFormComponent,
+  MaterialApoyoFormValue,
+} from '../../shared/ui/material-apoyo-form.component';
 
 @Component({
   selector: 'app-procedimiento-detalle',
   standalone: true,
-  imports: [FormsModule, RouterLink],
+  imports: [FormsModule, RouterLink, LoadingModalComponent, MaterialApoyoFormComponent],
   templateUrl: './procedimiento-detalle.component.html',
   styleUrl: './procedimiento-detalle.component.css',
 })
@@ -25,6 +31,8 @@ export class ProcedimientoDetalleComponent implements OnInit {
   private readonly auth = inject(AuthService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
+
+  @ViewChild(MaterialApoyoFormComponent) materialEditor?: MaterialApoyoFormComponent;
 
   readonly esAdministrador = this.auth.isAdmin;
   readonly tipos: TipoMaterialProcedimiento[] = ['IMAGEN', 'PDF', 'VIDEO', 'ENLACE'];
@@ -120,13 +128,34 @@ export class ProcedimientoDetalleComponent implements OnInit {
     });
   }
 
+  esMaterialLocal(material: MaterialPaso): boolean {
+    return esUrlDescargaAutenticada(material.url);
+  }
+
+  descargarMaterial(material: MaterialPaso): void {
+    this.procedimientos.descargarMaterial(material).subscribe({
+      error: (err: Error) => (this.error = err.message),
+    });
+  }
+
   abrirMaterial(pasoId: number, material?: MaterialPaso): void {
+    if (material && this.esMaterialLocal(material)) {
+      return;
+    }
     this.materialPasoId = pasoId;
     this.editMaterialId = material?.id ?? null;
     this.materialNombre = material?.nombre ?? '';
     this.materialTipo = material?.tipo ?? 'PDF';
     this.materialUrl = material?.url ?? '';
     this.error = '';
+    queueMicrotask(() =>
+      this.materialEditor?.reset({
+        origen: 'enlace',
+        nombre: this.materialNombre,
+        tipo: this.materialTipo,
+        url: this.materialUrl,
+      }),
+    );
   }
 
   cerrarMaterial(): void {
@@ -135,23 +164,31 @@ export class ProcedimientoDetalleComponent implements OnInit {
     this.editMaterialId = null;
   }
 
-  guardarMaterial(): void {
+  guardarMaterial(valor: MaterialApoyoFormValue): void {
     if (!this.item || this.materialPasoId == null || this.guardandoMaterial) return;
-    if (!this.materialNombre.trim() || !this.materialUrl.trim()) {
-      this.error = 'El nombre y la URL del material son obligatorios.';
-      return;
-    }
-    const request = {
-      nombre: this.materialNombre.trim(),
-      tipo: this.materialTipo,
-      url: this.materialUrl.trim(),
-    };
     const pasoId = this.materialPasoId;
     this.guardandoMaterial = true;
     this.error = '';
-    const llamada = this.editMaterialId
-      ? this.procedimientos.actualizarMaterial(this.item.id, pasoId, this.editMaterialId, request)
-      : this.procedimientos.crearMaterial(this.item.id, pasoId, request);
+    const llamada =
+      valor.origen === 'archivo' && valor.archivo
+        ? this.procedimientos.crearMaterialArchivo(
+            this.item.id,
+            pasoId,
+            valor.nombre,
+            valor.tipo,
+            valor.archivo,
+          )
+        : this.editMaterialId
+          ? this.procedimientos.actualizarMaterial(this.item.id, pasoId, this.editMaterialId, {
+              nombre: valor.nombre.trim(),
+              tipo: valor.tipo,
+              url: valor.url.trim(),
+            })
+          : this.procedimientos.crearMaterial(this.item.id, pasoId, {
+              nombre: valor.nombre.trim(),
+              tipo: valor.tipo,
+              url: valor.url.trim(),
+            });
     llamada.subscribe({
       next: () => {
         this.guardandoMaterial = false;

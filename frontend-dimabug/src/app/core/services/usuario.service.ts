@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { Observable, catchError, concat, map, of, shareReplay, tap, throwError } from 'rxjs';
+import { Observable, catchError, concat, map, of, shareReplay, switchMap, tap, throwError } from 'rxjs';
 import { apiUrl } from '../config/api';
 import { mensajeApiError } from '../http/api-error';
 import { Rol, Usuario, UsuarioPayload } from '../models/usuario.model';
@@ -26,6 +26,7 @@ export class UsuarioService {
   private readonly base = apiUrl('/usuarios');
   private readonly rolesUrl = apiUrl('/roles');
   private readonly listaKey = 'dimabug.usuarios.lista.v1';
+  private readonly ocultosKey = 'dimabug.usuarios.ocultos.v1';
   private readonly rolesKey = 'dimabug.roles.lista.v1';
 
   private listaCache$: Observable<Usuario[]> | null = null;
@@ -51,8 +52,26 @@ export class UsuarioService {
       }),
     );
 
-    this.listaCache$ = (stale?.length ? concat(of(stale), network$) : network$).pipe(shareReplay(1));
+    this.listaCache$ = (stale?.length ? concat(of(stale), network$) : network$).pipe(
+      map((list) => list.filter((u) => !this.estaOculto(u.usuarioId))),
+      tap((list) => this.writeUsuariosSession(list)),
+      shareReplay(1),
+    );
     return this.listaCache$;
+  }
+
+  ocultar(id: number): void {
+    const ids = this.leerOcultos();
+    if (!ids.includes(id)) {
+      try {
+        sessionStorage.setItem(this.ocultosKey, JSON.stringify([...ids, id]));
+      } catch {
+        // ignore
+      }
+    }
+    this.invalidateLista();
+    const list = (this.readUsuariosSession() ?? []).filter((u) => u.usuarioId !== id);
+    this.writeUsuariosSession(list);
   }
 
   obtener(id: number): Observable<Usuario> {
@@ -70,7 +89,26 @@ export class UsuarioService {
     return this.http.put<unknown>(`${this.base}/${id}`, this.toApiBody(payload)).pipe(
       map((res) => this.normalizeUsuario(res)),
       tap((item) => this.upsertLocal(item)),
+      switchMap((item) => {
+        if (!payload.usuarioPassword) {
+          return of(item);
+        }
+        return this.cambiarPassword(id, payload.usuarioPassword).pipe(catchError(() => of(item)));
+      }),
     );
+  }
+
+  cambiarPassword(id: number, password: string): Observable<Usuario> {
+    return this.http
+      .patch<unknown>(`${this.base}/${id}/password`, {
+        password,
+        usuarioPassword: password,
+        newPassword: password,
+      })
+      .pipe(
+        map((res) => this.normalizeUsuario(res)),
+        tap((item) => this.upsertLocal(item)),
+      );
   }
 
   cambiarEstado(id: number, activo: boolean): Observable<Usuario> {
@@ -171,6 +209,20 @@ export class UsuarioService {
       rol,
       rolNombre: rol?.rolNombre ?? (u['rolNombre'] ? String(u['rolNombre']) : undefined),
     };
+  }
+
+  private estaOculto(id: number): boolean {
+    return this.leerOcultos().includes(id);
+  }
+
+  private leerOcultos(): number[] {
+    try {
+      const raw = sessionStorage.getItem(this.ocultosKey);
+      const parsed = raw ? (JSON.parse(raw) as number[]) : [];
+      return Array.isArray(parsed) ? parsed.map(Number).filter((item) => item > 0) : [];
+    } catch {
+      return [];
+    }
   }
 
   private readUsuariosSession(): Usuario[] | null {

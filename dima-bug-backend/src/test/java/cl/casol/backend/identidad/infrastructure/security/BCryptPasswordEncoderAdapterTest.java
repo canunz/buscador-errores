@@ -17,5 +17,6 @@ class BCryptPasswordEncoderAdapterTest {
         assertNotEquals("ClaveInicialSegura", hash);
         assertTrue(hash.startsWith("$2"));
         assertTrue(adapter.coincide("ClaveInicialSegura", hash));
+        assertTrue(adapter.coincide("ClavePlana", "ClavePlana"));
     }
 }
