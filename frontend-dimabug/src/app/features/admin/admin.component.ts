@@ -4,6 +4,7 @@ import { RouterLink } from '@angular/router';
 import { AdminMaestrosService, MaestroTipo } from '../../core/services/admin-maestros.service';
 import { CatalogoService } from '../../core/services/catalogo.service';
 import { UsuarioService } from '../../core/services/usuario.service';
+import { AyudaFranjaComponent } from '../../shared/ui/ayuda-franja.component';
 
 type AdminTab = 'todos' | 'auth' | 'buscador' | 'recientes';
 
@@ -20,7 +21,7 @@ interface AdminModelo {
 @Component({
   selector: 'app-admin',
   standalone: true,
-  imports: [RouterLink, DatePipe],
+  imports: [RouterLink, DatePipe, AyudaFranjaComponent],
   templateUrl: './admin.component.html',
   styleUrl: './admin.component.css',
 })

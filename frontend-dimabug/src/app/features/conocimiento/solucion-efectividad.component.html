@@ -1,15 +1,57 @@
-<app-loading-modal [visible]="(cargando && !efectividad) || cargandoHistorial" mensaje="Cargando" />
-
 <section class="efectividad" aria-label="Efectividad de la solución">
-  <div class="efectividad-head">
-    <h3>Efectividad</h3>
+  <header class="voto-head">
+    <h3>¿Funcionó la solución?</h3>
+    <p>Tu respuesta ayuda a saber si esta guía le sirve al equipo.</p>
+  </header>
+
+  <div class="votos" role="group" aria-label="Resultado de la aplicación">
+    <button type="button" class="voto si" [class.activo]="eleccion === true" (click)="abrir(true)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+        <path d="M7 11v9H4a1 1 0 01-1-1v-7a1 1 0 011-1h3z" />
+        <path d="M7 11l4.2-6.2A2 2 0 0114.6 6L13 11h6.2a2 2 0 011.9 2.6l-1.4 5A2 2 0 0117.8 20H7" />
+      </svg>
+      Funcionó
+    </button>
+    <button type="button" class="voto no" [class.activo]="eleccion === false" (click)="abrir(false)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+        <path d="M7 13V4H4a1 1 0 00-1 1v7a1 1 0 001 1h3z" />
+        <path d="M7 13l4.2 6.2A2 2 0 0014.6 18L13 13h6.2a2 2 0 001.9-2.6l-1.4-5A2 2 0 0017.8 4H7" />
+      </svg>
+      No funcionó
+    </button>
   </div>
 
+  @if (panelAbierto) {
+    <form class="registro" (ngSubmit)="registrar()">
+      <label class="comentario">
+        Comentario opcional
+        <textarea
+          name="comentario"
+          rows="3"
+          maxlength="300"
+          [(ngModel)]="comentario"
+          placeholder="Qué ocurrió al aplicar la solución"
+        ></textarea>
+        <span class="cuenta" [class.limite]="comentario.length >= 300">{{ comentario.length }} / 300</span>
+      </label>
+      @if (errorRegistro) {
+        <p class="alerta">{{ errorRegistro }}</p>
+      }
+      <div class="registro-acciones">
+        <button type="button" class="secundario" (click)="cerrarPanel()">Cancelar</button>
+        <button type="submit" [disabled]="eleccion == null || comentario.length > 300">Registrar</button>
+      </div>
+    </form>
+  }
+
+  @if (aviso) {
+    <p class="ok">{{ aviso }}</p>
+  }
   @if (errorCarga) {
     <p class="alerta">{{ errorCarga }}</p>
-  } @else if (sinEvaluaciones) {
-    <p class="sin">Sin evaluaciones</p>
-  } @else if (efectividad) {
+  }
+
+  @if (efectividad && efectividad.totalAplicaciones > 0) {
     <dl class="cifras">
       <div>
         <dt>Funcionó</dt>
@@ -25,74 +67,27 @@
       </div>
       <div>
         <dt>Efectividad</dt>
-        <dd>{{ porcentajeTexto }}</dd>
+        <dd>{{ porcentajeTexto || '—' }}</dd>
       </div>
     </dl>
   }
 
-  <p class="pregunta">¿Esta solución funcionó?</p>
-  <div class="acciones">
-    <button type="button" class="voto si" (click)="abrir(true)" [disabled]="registrando">👍 Funcionó</button>
-    <button type="button" class="voto no" (click)="abrir(false)" [disabled]="registrando">👎 No funcionó</button>
-    <button type="button" class="link" (click)="alternarHistorial()">
-      {{ historialVisible ? 'Ocultar historial' : 'Ver historial' }}
-    </button>
-  </div>
-
-  @if (aviso) {
-    <p class="ok">{{ aviso }}</p>
-  }
-
-  @if (panelAbierto) {
-    <form class="registro" (ngSubmit)="registrar()">
-      <fieldset [disabled]="registrando">
-        <legend>Registrar aplicación</legend>
-        <div class="eleccion">
-          <label>
-            <input type="radio" name="funciono-{{ solucionId }}" [checked]="eleccion === true" (change)="eleccion = true" />
-            Funcionó
-          </label>
-          <label>
-            <input type="radio" name="funciono-{{ solucionId }}" [checked]="eleccion === false" (change)="eleccion = false" />
-            No funcionó
-          </label>
-        </div>
-        <label class="comentario">
-          Comentario opcional
-          <textarea
-            name="comentario"
-            rows="3"
-            maxlength="300"
-            [(ngModel)]="comentario"
-            placeholder="Qué ocurrió al aplicar la solución"
-          ></textarea>
-          <span class="cuenta" [class.limite]="comentario.length >= 300">{{ comentario.length }} / 300</span>
-        </label>
-      </fieldset>
-      @if (errorRegistro) {
-        <p class="alerta">{{ errorRegistro }}</p>
-      }
-      <div class="registro-acciones">
-        <button type="button" class="secundario" (click)="cerrarPanel()" [disabled]="registrando">Cancelar</button>
-        <button type="submit" [disabled]="registrando || eleccion == null || comentario.length > 300">
-          {{ registrando ? 'Registrando…' : 'Registrar' }}
-        </button>
-      </div>
-    </form>
-  }
+  <button type="button" class="link" (click)="alternarHistorial()">
+    {{ historialVisible ? 'Ocultar historial' : 'Ver historial' }}
+  </button>
 
   @if (historialVisible) {
     <div class="historial">
       @if (errorHistorial) {
         <p class="alerta">{{ errorHistorial }}</p>
-      } @else if (!historial.length) {
-        <p class="sin">Sin evaluaciones</p>
+      } @else if (!historial.length && !cargandoHistorial) {
+        <p class="sin">Todavía no hay registros.</p>
       } @else {
         <ol>
           @for (item of historial; track item.id) {
             <li>
               <div class="historial-top">
-                <strong>{{ item.funciono ? 'Funcionó' : 'No funcionó' }}</strong>
+                <strong [class.mal]="!item.funciono">{{ item.funciono ? 'Funcionó' : 'No funcionó' }}</strong>
                 <span>{{ item.usuario.nombre || 'Usuario' }}</span>
                 @if (item.fecha) {
                   <time [attr.datetime]="item.fecha">{{ item.fecha | date: 'dd/MM/yyyy HH:mm' }}</time>

@@ -1,10 +1,11 @@
 import { DatePipe } from '@angular/common';
 import { Component, HostListener, OnInit, inject } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { AbstractControl, FormBuilder, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
 import { UsuarioService } from '../../core/services/usuario.service';
 import { Rol, Usuario, esAdministrador, loginUsername } from '../../core/models/usuario.model';
+import { AyudaFranjaComponent } from '../../shared/ui/ayuda-franja.component';
 import { LoadingModalComponent } from '../../shared/ui/loading-modal.component';
 
 type TonoConfirmacion = 'peligro' | 'aviso' | 'ok';
@@ -22,7 +23,7 @@ interface Confirmacion {
 @Component({
   selector: 'app-usuarios',
   standalone: true,
-  imports: [ReactiveFormsModule, DatePipe, LoadingModalComponent],
+  imports: [ReactiveFormsModule, DatePipe, LoadingModalComponent, AyudaFranjaComponent],
   templateUrl: './usuarios.component.html',
   styleUrl: './usuarios.component.css',
 })
@@ -32,8 +33,8 @@ export class UsuariosComponent implements OnInit {
   private readonly router = inject(Router);
   private readonly fb = inject(FormBuilder);
 
-  usuarios: Usuario[] = [];
-  roles: Rol[] = [];
+  usuarios: Usuario[] = this.usuariosApi.listaEnSesion();
+  roles: Rol[] = this.usuariosApi.rolesEnSesion();
   loading = false;
   saving = false;
   cambiandoEstado = false;
@@ -46,14 +47,17 @@ export class UsuariosComponent implements OnInit {
   private editOriginal: { nombre: string; email: string; rolId: number; activo: boolean } | null = null;
   confirmacion: Confirmacion | null = null;
 
-  form = this.fb.nonNullable.group({
-    nombre: ['', Validators.required],
-    email: ['', [Validators.required, Validators.email]],
-    rolId: [0, Validators.required],
-    password1: [''],
-    password2: [''],
-    activo: [true],
-  });
+  form = this.fb.nonNullable.group(
+    {
+      nombre: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(80)]],
+      email: ['', [Validators.required, Validators.email, Validators.maxLength(120)]],
+      rolId: [0, [Validators.required, Validators.min(1)]],
+      password1: ['', [Validators.required, Validators.minLength(6), Validators.maxLength(72)]],
+      password2: ['', [Validators.required, Validators.maxLength(72)]],
+      activo: [true],
+    },
+    { validators: (grupo) => this.clavesIguales(grupo) },
+  );
 
   ngOnInit(): void {
     this.cargar();
@@ -118,13 +122,12 @@ export class UsuariosComponent implements OnInit {
     this.form.reset({
       nombre: '',
       email: '',
-      rolId: this.roles[0]?.rolId || 0,
+      rolId: 0,
       password1: '',
       password2: '',
       activo: true,
     });
-    this.form.controls.password1.setValidators([Validators.required, Validators.minLength(6)]);
-    this.form.controls.password1.updateValueAndValidity();
+    this.exigirClaves();
     this.modalOpen = true;
   }
 
@@ -145,8 +148,7 @@ export class UsuariosComponent implements OnInit {
       password2: '',
       activo: u.usuarioEstado,
     });
-    this.form.controls.password1.clearValidators();
-    this.form.controls.password1.updateValueAndValidity();
+    this.exigirClaves();
     if (this.esCuentaActual(u)) {
       this.form.controls.email.disable({ emitEvent: false });
     } else {
@@ -168,24 +170,15 @@ export class UsuariosComponent implements OnInit {
     this.error = '';
     if (this.form.invalid) {
       this.form.markAllAsTouched();
-      this.error = 'Revisa los datos del formulario.';
+      this.error = 'Completa los campos obligatorios.';
       return;
     }
     const raw = this.form.getRawValue();
     const password = (raw.password1 || '').trim();
     const password2 = (raw.password2 || '').trim();
-    if (password || password2) {
-      if (password.length < 6) {
-        this.error = 'La contraseña debe tener al menos 6 caracteres.';
-        return;
-      }
-      if (password !== password2) {
-        this.error = 'Las contraseñas no coinciden.';
-        return;
-      }
-    }
-    if (!this.editId && !password) {
-      this.error = 'La contraseña es obligatoria al crear.';
+    if (!password || password !== password2) {
+      this.form.markAllAsTouched();
+      this.error = 'Completa los campos obligatorios.';
       return;
     }
 
@@ -354,6 +347,55 @@ export class UsuariosComponent implements OnInit {
 
   cerrarDetalle(): void {
     this.detalle = null;
+  }
+
+  invalido(campo: 'nombre' | 'email' | 'rolId' | 'password1' | 'password2'): boolean {
+    const control = this.form.controls[campo];
+    const tocado = control.touched || this.form.touched;
+    if (campo === 'password2' && this.form.hasError('claves') && tocado && control.value) {
+      return true;
+    }
+    return control.invalid && tocado;
+  }
+
+  textoCampo(campo: 'nombre' | 'email' | 'rolId' | 'password1' | 'password2'): string {
+    if (!this.invalido(campo)) {
+      return '';
+    }
+    const control = this.form.controls[campo];
+    if (control.hasError('required')) {
+      return 'Este campo es obligatorio.';
+    }
+    if (control.hasError('email')) {
+      return 'Ingresa un correo válido.';
+    }
+    if (control.hasError('minlength')) {
+      const minimo = control.getError('minlength') as { requiredLength: number };
+      return `Debe tener al menos ${minimo.requiredLength} caracteres.`;
+    }
+    if (control.hasError('min')) {
+      return 'Selecciona un rol.';
+    }
+    if (campo === 'password2' && this.form.hasError('claves')) {
+      return 'Las contraseñas no coinciden.';
+    }
+    return 'Revisa este campo.';
+  }
+
+  private exigirClaves(): void {
+    this.form.controls.password1.setValidators([Validators.required, Validators.minLength(6), Validators.maxLength(72)]);
+    this.form.controls.password2.setValidators([Validators.required, Validators.maxLength(72)]);
+    this.form.controls.password1.updateValueAndValidity();
+    this.form.controls.password2.updateValueAndValidity();
+  }
+
+  private clavesIguales(grupo: AbstractControl): ValidationErrors | null {
+    const primera = String(grupo.get('password1')?.value ?? '');
+    const segunda = String(grupo.get('password2')?.value ?? '');
+    if (!primera || !segunda || primera === segunda) {
+      return null;
+    }
+    return { claves: true };
   }
 
   rolNombre(u: Usuario): string {

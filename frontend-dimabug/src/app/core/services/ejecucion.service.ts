@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { Observable, catchError, map, throwError } from 'rxjs';
+import { Observable, catchError, concat, map, of, shareReplay, tap, throwError } from 'rxjs';
 import { apiUrl } from '../config/api';
 import { mensajeApiError } from '../http/api-error';
 import {
@@ -16,33 +16,170 @@ import {
 @Injectable({ providedIn: 'root' })
 export class EjecucionService {
   private readonly http = inject(HttpClient);
+  private readonly storageKey = 'dimabug.ejecuciones.lista.v1';
+  private listaCache$: Observable<Ejecucion[]> | null = null;
+
+  listaEnSesion(): Ejecucion[] {
+    return this.leerLista() ?? [];
+  }
 
   iniciar(procedimientoId: number): Observable<Ejecucion> {
     return this.http.post<unknown>(apiUrl(`/procedimientos/${procedimientoId}/ejecuciones`), null).pipe(
       map((res) => this.normalizeEjecucion(res)),
+      tap((item) => this.recordar([item, ...this.listaEnSesion().filter((actual) => actual.id !== item.id)])),
       catchError((err: HttpErrorResponse) => throwError(() => new Error(this.mensaje(err)))),
     );
   }
 
-  listar(): Observable<Ejecucion[]> {
-    return this.http.get<unknown>(apiUrl('/ejecuciones')).pipe(
+  listar(force = false): Observable<Ejecucion[]> {
+    if (!force && this.listaCache$) {
+      return this.listaCache$;
+    }
+    const stale = !force ? this.leerLista() : null;
+    stale?.forEach((item) => this.preparar(item.id));
+    const network$ = this.http.get<unknown>(apiUrl('/ejecuciones')).pipe(
       map((res) => this.asArray(res).map((item) => this.normalizeEjecucion(item))),
-      catchError((err: HttpErrorResponse) => throwError(() => new Error(this.mensaje(err)))),
+      tap((items) => {
+        this.guardarLista(items);
+        items.forEach((item) => {
+          this.guardarDetalle(item);
+          this.preparar(item.id);
+        });
+      }),
+      catchError((err: HttpErrorResponse) => {
+        if (stale?.length) {
+          return of(stale);
+        }
+        this.listaCache$ = null;
+        return throwError(() => new Error(this.mensaje(err)));
+      }),
     );
+    const fuente = stale?.length ? concat(of(stale), network$) : network$;
+    this.listaCache$ = fuente.pipe(shareReplay({ bufferSize: 1, refCount: false }));
+    return this.listaCache$;
+  }
+
+  private readonly detalleCache = new Map<number, Observable<Ejecucion>>();
+  private readonly pasosCache = new Map<number, Observable<EjecucionPaso[]>>();
+  private readonly pasosMarca = new Map<number, number>();
+  private readonly colaPasos: number[] = [];
+  private pasosEnCurso = false;
+
+  detalleEnSesion(id: number): Ejecucion | null {
+    try {
+      const raw = localStorage.getItem(`${this.storageKey}.detalle.${id}`);
+      if (!raw) {
+        return null;
+      }
+      return this.normalizeEjecucion(JSON.parse(raw) as unknown);
+    } catch {
+      return null;
+    }
+  }
+
+  pasosEnSesion(id: number): EjecucionPaso[] | null {
+    try {
+      const raw = localStorage.getItem(`${this.storageKey}.pasos.${id}`);
+      if (!raw) {
+        return null;
+      }
+      const parsed = JSON.parse(raw) as unknown;
+      if (!Array.isArray(parsed)) {
+        return null;
+      }
+      return parsed.map((item) => this.normalizePaso(item));
+    } catch {
+      return null;
+    }
+  }
+
+  marcaPasos(id: number): number {
+    return this.pasosMarca.get(id) ?? 0;
+  }
+
+  fijarPasos(id: number, pasos: EjecucionPaso[]): void {
+    this.pasosMarca.set(id, (this.pasosMarca.get(id) ?? 0) + 1);
+    this.pasosCache.delete(id);
+    this.guardarPasos(id, pasos);
+  }
+
+  preparar(id: number, ya = false): void {
+    if (ya) {
+      this.obtener(id).subscribe({ error: () => undefined });
+      this.obtenerPasos(id).subscribe({ error: () => undefined });
+      return;
+    }
+    if (this.pasosEnSesion(id)?.length || this.colaPasos.includes(id)) {
+      return;
+    }
+    this.colaPasos.push(id);
+    this.seguirPasos();
+  }
+
+  private seguirPasos(): void {
+    if (this.pasosEnCurso || !this.colaPasos.length) {
+      return;
+    }
+    const id = this.colaPasos.shift();
+    if (id == null) {
+      return;
+    }
+    if (this.pasosEnSesion(id)?.length) {
+      this.seguirPasos();
+      return;
+    }
+    this.pasosEnCurso = true;
+    this.obtener(id).subscribe({ error: () => undefined });
+    this.obtenerPasos(id).subscribe({
+      next: () => {
+        this.pasosEnCurso = false;
+        this.seguirPasos();
+      },
+      error: () => {
+        this.pasosEnCurso = false;
+        this.seguirPasos();
+      },
+    });
   }
 
   obtener(id: number): Observable<Ejecucion> {
-    return this.http.get<unknown>(apiUrl(`/ejecuciones/${id}`)).pipe(
+    const actual = this.detalleCache.get(id);
+    if (actual) {
+      return actual;
+    }
+    const stale = this.detalleEnSesion(id);
+    const network$ = this.http.get<unknown>(apiUrl(`/ejecuciones/${id}`)).pipe(
       map((res) => this.normalizeEjecucion(res)),
+      tap((item) => this.guardarDetalle(item)),
       catchError((err: HttpErrorResponse) => throwError(() => new Error(this.mensaje(err)))),
     );
+    const fuente = stale ? concat(of(stale), network$) : network$;
+    const compartida = fuente.pipe(shareReplay({ bufferSize: 1, refCount: false }));
+    this.detalleCache.set(id, compartida);
+    return compartida;
   }
 
   obtenerPasos(id: number): Observable<EjecucionPaso[]> {
-    return this.http.get<unknown>(apiUrl(`/ejecuciones/${id}/pasos`)).pipe(
+    const actual = this.pasosCache.get(id);
+    if (actual) {
+      return actual;
+    }
+    const marca = this.marcaPasos(id);
+    const stale = this.pasosEnSesion(id);
+    const network$ = this.http.get<unknown>(apiUrl(`/ejecuciones/${id}/pasos`)).pipe(
       map((res) => this.asArray(res).map((item) => this.normalizePaso(item))),
+      tap((pasos) => {
+        if (this.marcaPasos(id) !== marca) {
+          return;
+        }
+        this.guardarPasos(id, pasos);
+      }),
       catchError((err: HttpErrorResponse) => throwError(() => new Error(this.mensaje(err)))),
     );
+    const fuente = stale?.length ? concat(of(stale), network$) : network$;
+    const compartida = fuente.pipe(shareReplay({ bufferSize: 1, refCount: false }));
+    this.pasosCache.set(id, compartida);
+    return compartida;
   }
 
   actualizarPaso(
@@ -65,6 +202,7 @@ export class EjecucionService {
   completar(id: number): Observable<Ejecucion> {
     return this.http.patch<unknown>(apiUrl(`/ejecuciones/${id}/completar`), null).pipe(
       map((res) => this.normalizeEjecucion(res)),
+      tap((item) => this.reemplazar(item)),
       catchError((err: HttpErrorResponse) => throwError(() => new Error(this.mensaje(err)))),
     );
   }
@@ -73,6 +211,7 @@ export class EjecucionService {
     const observaciones = request.observaciones?.trim() ? request.observaciones.trim() : null;
     return this.http.patch<unknown>(apiUrl(`/ejecuciones/${id}/cancelar`), { observaciones }).pipe(
       map((res) => this.normalizeEjecucion(res)),
+      tap((item) => this.reemplazar(item)),
       catchError((err: HttpErrorResponse) => throwError(() => new Error(this.mensaje(err)))),
     );
   }
@@ -89,6 +228,62 @@ export class EjecucionService {
       map((res) => this.normalizeProcedimiento(res)),
       catchError((err: HttpErrorResponse) => throwError(() => new Error(mensajeApiError(err, 'El procedimiento no está disponible.')))),
     );
+  }
+
+  private reemplazar(item: Ejecucion): void {
+    this.guardarDetalle(item);
+    this.detalleCache.delete(item.id);
+    const actual = this.listaEnSesion();
+    if (!actual.some((fila) => fila.id === item.id)) {
+      this.recordar([item, ...actual]);
+      return;
+    }
+    this.recordar(actual.map((fila) => (fila.id === item.id ? item : fila)));
+  }
+
+  private recordar(items: Ejecucion[]): void {
+    this.guardarLista(items);
+    this.listaCache$ = null;
+  }
+
+  private leerLista(): Ejecucion[] | null {
+    try {
+      const raw = localStorage.getItem(this.storageKey);
+      if (!raw) {
+        return null;
+      }
+      const parsed = JSON.parse(raw) as unknown;
+      if (!Array.isArray(parsed)) {
+        return null;
+      }
+      return parsed.map((item) => this.normalizeEjecucion(item));
+    } catch {
+      return null;
+    }
+  }
+
+  private guardarLista(items: Ejecucion[]): void {
+    try {
+      localStorage.setItem(this.storageKey, JSON.stringify(items));
+    } catch {
+      // cuota o modo privado
+    }
+  }
+
+  private guardarDetalle(item: Ejecucion): void {
+    try {
+      localStorage.setItem(`${this.storageKey}.detalle.${item.id}`, JSON.stringify(item));
+    } catch {
+      // cuota o modo privado
+    }
+  }
+
+  private guardarPasos(id: number, pasos: EjecucionPaso[]): void {
+    try {
+      localStorage.setItem(`${this.storageKey}.pasos.${id}`, JSON.stringify(pasos));
+    } catch {
+      // cuota o modo privado
+    }
   }
 
   private mensaje(err: HttpErrorResponse): string {

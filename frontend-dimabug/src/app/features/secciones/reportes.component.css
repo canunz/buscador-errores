@@ -9,11 +9,13 @@
 }
 
 .head {
+  position: relative;
   display: flex;
   justify-content: space-between;
   gap: 16px;
   align-items: flex-end;
   margin-bottom: 20px;
+  padding-right: 44px;
 }
 
 h1 {

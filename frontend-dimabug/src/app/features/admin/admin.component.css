@@ -3,8 +3,9 @@
 }
 
 .hero {
+  position: relative;
   margin-bottom: 18px;
-  padding: 26px 28px;
+  padding: 26px 64px 26px 28px;
   border-radius: 18px;
   background: linear-gradient(105deg, #071336 0%, #0b1b4d 42%, #1638a8 78%, #1e4fd6 100%);
   color: #fff;

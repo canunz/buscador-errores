@@ -17,7 +17,7 @@ public class ProcedimientoRepositoryAdapter implements ProcedimientoRepository {
         this.repository=repository; this.usuarios=usuarios;
     }
     public List<Procedimiento> buscarTodos() {
-        return repository.findAllByOrderByFechaCreacionDesc().stream().map(ProcedimientoMapper::toDomain).toList();
+        return repository.listarConRelaciones().stream().map(ProcedimientoMapper::toDomain).toList();
     }
     public Optional<Procedimiento> buscarPorId(Integer id) {
         return repository.findById(id).map(ProcedimientoMapper::toDomain);

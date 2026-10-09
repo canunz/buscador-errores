@@ -42,6 +42,7 @@ export class ProcedimientoDetalleComponent implements OnInit {
   materiales: Record<number, MaterialPaso[]> = {};
   pasoIndex = 0;
   cargandoPasos = false;
+  cargaInicial = true;
   loading = true;
   error = '';
   iniciando = false;
@@ -67,6 +68,7 @@ export class ProcedimientoDetalleComponent implements OnInit {
     if (!id) {
       this.error = 'El procedimiento o recurso solicitado no está disponible.';
       this.loading = false;
+      this.cargaInicial = false;
       return;
     }
     this.cargar(id);
@@ -166,9 +168,6 @@ export class ProcedimientoDetalleComponent implements OnInit {
   }
 
   abrirMaterial(pasoId: number, material?: MaterialPaso): void {
-    if (material && this.esMaterialLocal(material)) {
-      return;
-    }
     this.materialPasoId = pasoId;
     this.editMaterialId = material?.id ?? null;
     this.materialNombre = material?.nombre ?? '';
@@ -230,37 +229,59 @@ export class ProcedimientoDetalleComponent implements OnInit {
 
   guardarMaterial(valor: MaterialApoyoFormValue): void {
     if (!this.item || this.materialPasoId == null || this.guardandoMaterial) return;
+    const procedimientoId = this.item.id;
     const pasoId = this.materialPasoId;
-    this.guardandoMaterial = true;
+    const editId = this.editMaterialId;
+    const reemplazado = valor.origen === 'archivo' ? editId : null;
+    const previo = this.materialesDe(pasoId);
+    const tempId = reemplazado != null || editId == null ? -Date.now() : editId;
+    const provisional: MaterialPaso = {
+      id: tempId,
+      nombre: valor.nombre.trim(),
+      tipo: valor.tipo,
+      url: valor.origen === 'archivo' ? '' : valor.url.trim(),
+    };
+    const lista =
+      reemplazado != null
+        ? [...previo.filter((item) => item.id !== reemplazado), provisional]
+        : editId != null
+          ? previo.map((item) => (item.id === editId ? provisional : item))
+          : [...previo, provisional];
+    this.ponerMateriales(pasoId, lista);
+    this.materialPasoId = null;
+    this.editMaterialId = null;
     this.error = '';
+
     const llamada =
       valor.origen === 'archivo' && valor.archivo
-        ? this.procedimientos.crearMaterialArchivo(
-            this.item.id,
-            pasoId,
-            valor.nombre,
-            valor.tipo,
-            valor.archivo,
-          )
-        : this.editMaterialId
-          ? this.procedimientos.actualizarMaterial(this.item.id, pasoId, this.editMaterialId, {
+        ? this.procedimientos.crearMaterialArchivo(procedimientoId, pasoId, valor.nombre, valor.tipo, valor.archivo)
+        : editId != null && reemplazado == null
+          ? this.procedimientos.actualizarMaterial(procedimientoId, pasoId, editId, {
               nombre: valor.nombre.trim(),
               tipo: valor.tipo,
               url: valor.url.trim(),
             })
-          : this.procedimientos.crearMaterial(this.item.id, pasoId, {
+          : this.procedimientos.crearMaterial(procedimientoId, pasoId, {
               nombre: valor.nombre.trim(),
               tipo: valor.tipo,
               url: valor.url.trim(),
             });
+
     llamada.subscribe({
-      next: () => {
-        this.guardandoMaterial = false;
-        this.cerrarMaterial();
-        this.cargarMateriales(pasoId);
+      next: (creado) => {
+        const actual = this.materialesDe(pasoId).map((item) => (item.id === tempId ? creado : item));
+        this.ponerMateriales(pasoId, actual);
+        if (reemplazado == null) {
+          return;
+        }
+        this.procedimientos.eliminarMaterial(procedimientoId, pasoId, reemplazado).subscribe({
+          error: (err: Error) => {
+            this.error = `El archivo nuevo se subió, pero no se pudo quitar el anterior: ${err.message}`;
+          },
+        });
       },
       error: (err: Error) => {
-        this.guardandoMaterial = false;
+        this.ponerMateriales(pasoId, previo);
         this.error = err.message;
       },
     });
@@ -306,25 +327,40 @@ export class ProcedimientoDetalleComponent implements OnInit {
     }
     this.loading = !enCache;
     this.cargandoPasos = !pasosCache;
+    this.cargaInicial = !enCache;
+
+    let procListo = !!enCache;
+    let pasosListos = !!pasosCache;
+    const publicar = () => {
+      if (procListo && pasosListos) {
+        this.cargaInicial = false;
+      }
+    };
 
     this.procedimientos.obtenerPorId(id).subscribe({
       next: (item) => {
         this.mostrarProcedimiento(item);
         this.loading = false;
+        procListo = true;
+        publicar();
       },
       error: (err: Error) => {
         this.error = err.message;
         this.loading = false;
+        this.cargaInicial = false;
       },
     });
     this.procedimientos.listarPasos(id).subscribe({
       next: (pasos) => {
         this.aplicarPasos(id, pasos, false);
         this.cargandoPasos = false;
+        pasosListos = true;
+        publicar();
       },
       error: (err: Error) => {
         this.error = err.message;
         this.cargandoPasos = false;
+        this.cargaInicial = false;
       },
     });
   }
@@ -338,7 +374,12 @@ export class ProcedimientoDetalleComponent implements OnInit {
     this.item = item;
   }
 
-  private aplicarPasos(procedimientoId: number, pasos: PasoProcedimiento[], soloCache: boolean): void {
+  private aplicarPasos(
+    procedimientoId: number,
+    pasos: PasoProcedimiento[],
+    soloCache: boolean,
+    alCargarMaterial?: () => void,
+  ): void {
     this.pasos = pasos;
     if (this.pasoIndex >= pasos.length) {
       this.pasoIndex = Math.max(0, pasos.length - 1);
@@ -351,9 +392,20 @@ export class ProcedimientoDetalleComponent implements OnInit {
     this.materiales = materiales;
     if (soloCache) return;
     for (const paso of pasos) {
+      const marca = this.procedimientos.marcaMateriales(paso.id);
       this.procedimientos.listarMateriales(procedimientoId, paso.id).subscribe({
-        next: (items) => (this.materiales = { ...this.materiales, [paso.id]: items }),
-        error: (err: Error) => (this.error = err.message),
+        next: (items) => {
+          if (this.procedimientos.marcaMateriales(paso.id) !== marca) {
+            alCargarMaterial?.();
+            return;
+          }
+          this.materiales = { ...this.materiales, [paso.id]: items };
+          alCargarMaterial?.();
+        },
+        error: (err: Error) => {
+          this.error = err.message;
+          alCargarMaterial?.();
+        },
       });
     }
   }
@@ -370,10 +422,21 @@ export class ProcedimientoDetalleComponent implements OnInit {
     });
   }
 
+  private ponerMateriales(pasoId: number, items: MaterialPaso[]): void {
+    this.materiales = { ...this.materiales, [pasoId]: items };
+    this.procedimientos.fijarMateriales(pasoId, items);
+  }
+
   private cargarMateriales(pasoId: number): void {
     if (!this.item) return;
+    const marca = this.procedimientos.marcaMateriales(pasoId);
     this.procedimientos.listarMateriales(this.item.id, pasoId).subscribe({
-      next: (items) => (this.materiales = { ...this.materiales, [pasoId]: items }),
+      next: (items) => {
+        if (this.procedimientos.marcaMateriales(pasoId) !== marca) {
+          return;
+        }
+        this.materiales = { ...this.materiales, [pasoId]: items };
+      },
       error: (err: Error) => (this.error = err.message),
     });
   }

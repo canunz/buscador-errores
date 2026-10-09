@@ -44,12 +44,13 @@
 }
 
 .franja {
+  position: relative;
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 16px;
   margin: 0 0 20px;
-  padding: 22px 24px;
+  padding: 22px 64px 22px 24px;
   border-radius: 18px;
   background: linear-gradient(105deg, #071336 0%, #0b1b4d 42%, #1638a8 78%, #1e4fd6 100%);
   color: #fff;

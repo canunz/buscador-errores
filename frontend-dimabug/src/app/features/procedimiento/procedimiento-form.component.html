@@ -1,4 +1,4 @@
-<app-loading-modal [visible]="loading || guardando" mensaje="Cargando" />
+<app-loading-modal [visible]="loading || guardando" [mensaje]="guardando ? 'Guardando' : 'Cargando'" />
 
 <section class="formulario">
   <p class="crumb">

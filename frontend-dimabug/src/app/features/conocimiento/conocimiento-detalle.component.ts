@@ -44,7 +44,7 @@ type Seccion = 'sintomas' | 'causas' | 'pruebas' | 'soluciones' | 'materiales' |
     ReactiveFormsModule,
     LoadingModalComponent,
     SolucionEfectividadComponent,
-  ],
+    ],
   templateUrl: './conocimiento-detalle.component.html',
   styleUrl: './conocimiento-detalle.component.css',
 })
@@ -172,7 +172,13 @@ export class ConocimientoDetalleComponent implements OnInit {
   }
 
   get mensajeCarga(): string {
-    return this.eliminando || this.saving === 'materiales' ? 'Eliminando' : 'Cargando';
+    if (this.eliminando || this.saving === 'materiales') {
+      return 'Eliminando';
+    }
+    if (this.saving != null || this.publishing) {
+      return 'Guardando';
+    }
+    return 'Cargando';
   }
 
   ngOnInit(): void {
@@ -223,7 +229,9 @@ export class ConocimientoDetalleComponent implements OnInit {
       this.item = null;
     }
 
-    this.conocimientosApi.obtenerPorId(id, true).subscribe({
+    this.pintarSeccionesGuardadas(id);
+
+    this.conocimientosApi.obtenerPorId(id).subscribe({
       next: (item) => {
         if (this.currentId !== id) return;
         this.item = item;
@@ -242,8 +250,36 @@ export class ConocimientoDetalleComponent implements OnInit {
     this.cargarSeccionProgresiva(id);
   }
 
+  private pintarSeccionesGuardadas(id: number): void {
+    const sintomas = this.conocimientosApi.leerSeccion<typeof this.sintomas>(`sintomas:${id}`);
+    const causas = this.conocimientosApi.leerSeccion<typeof this.causas>(`causas:${id}`);
+    const pruebas = this.conocimientosApi.leerSeccion<typeof this.pruebas>(`pruebas:${id}`);
+    const soluciones = this.conocimientosApi.leerSeccion<typeof this.soluciones>(`soluciones:${id}`);
+    const materiales = this.conocimientosApi.leerSeccion<typeof this.materiales>(`materiales:${id}`);
+    if (sintomas) {
+      this.sintomas = sintomas;
+      this.loadingSintomas = false;
+    }
+    if (causas) {
+      this.causas = causas;
+      this.loadingCausas = false;
+    }
+    if (pruebas) {
+      this.pruebas = pruebas;
+      this.loadingPruebas = false;
+    }
+    if (soluciones) {
+      this.soluciones = soluciones;
+      this.loadingSoluciones = false;
+    }
+    if (materiales) {
+      this.materiales = materiales;
+      this.loadingMateriales = false;
+    }
+  }
+
   private cargarSeccionProgresiva(id: number): void {
-    this.loadingSintomas = true;
+    this.loadingSintomas = this.conocimientosApi.leerSeccion(`sintomas:${id}`) == null;
     this.conocimientosApi.listarSintomas(id).subscribe({
       next: (items) => {
         if (this.currentId !== id) return;
@@ -258,7 +294,7 @@ export class ConocimientoDetalleComponent implements OnInit {
       },
     });
 
-    this.loadingCausas = true;
+    this.loadingCausas = this.conocimientosApi.leerSeccion(`causas:${id}`) == null;
     this.conocimientosApi.listarCausas(id).subscribe({
       next: (items) => {
         if (this.currentId !== id) return;
@@ -273,7 +309,7 @@ export class ConocimientoDetalleComponent implements OnInit {
       },
     });
 
-    this.loadingPruebas = true;
+    this.loadingPruebas = this.conocimientosApi.leerSeccion(`pruebas:${id}`) == null;
     this.conocimientosApi.listarPruebas(id).subscribe({
       next: (items) => {
         if (this.currentId !== id) return;
@@ -288,7 +324,7 @@ export class ConocimientoDetalleComponent implements OnInit {
       },
     });
 
-    this.loadingSoluciones = true;
+    this.loadingSoluciones = this.conocimientosApi.leerSeccion(`soluciones:${id}`) == null;
     this.conocimientosApi.listarSoluciones(id).subscribe({
       next: (items) => {
         if (this.currentId !== id) return;
@@ -309,7 +345,7 @@ export class ConocimientoDetalleComponent implements OnInit {
       },
     });
 
-    this.loadingMateriales = true;
+    this.loadingMateriales = this.conocimientosApi.leerSeccion(`materiales:${id}`) == null;
     this.conocimientosApi.listarMateriales(id).subscribe({
       next: (items) => {
         if (this.currentId !== id) return;
@@ -487,19 +523,32 @@ export class ConocimientoDetalleComponent implements OnInit {
       return;
     }
     const request = this.sintomaForm.getRawValue();
-    this.saving = 'sintomas';
+    const previo = this.sintomas;
+    const editando = this.editSintomaId;
+    const temporal = editando ?? -Date.now();
+    this.sintomas =
+      editando != null
+        ? this.sintomas.map((item) => (item.id === editando ? { ...item, ...request } : item))
+        : [...this.sintomas, { id: temporal, descripcion: request.descripcion, orden: request.orden }];
+    this.publicarLista(`sintomas:${id}`, this.sintomas);
+    this.editSintomaId = null;
+    this.formAbierto.sintomas = false;
+    this.sintomaForm.reset({ descripcion: '', orden: this.nextOrden(this.sintomas) });
+    this.ok(editando != null ? 'Síntoma actualizado.' : 'Síntoma agregado.');
     const req$ =
-      this.editSintomaId != null
-        ? this.conocimientosApi.modificarSintoma(id, this.editSintomaId, request)
+      editando != null
+        ? this.conocimientosApi.modificarSintoma(id, editando, request)
         : this.conocimientosApi.crearSintoma(id, request);
     req$.subscribe({
-      next: () => {
-        this.editSintomaId = null;
-        this.formAbierto.sintomas = false;
-        this.sintomaForm.reset({ descripcion: '', orden: this.nextOrden(this.sintomas) + 1 });
-        this.reloadSintomas(id);
+      next: (creado) => {
+        this.sintomas = this.sintomas.map((item) => (item.id === temporal ? creado : item));
+        this.publicarLista(`sintomas:${id}`, this.sintomas);
       },
-      error: (err: Error) => this.fail(err),
+      error: (err: Error) => {
+        this.sintomas = previo;
+        this.publicarLista(`sintomas:${id}`, previo);
+        this.fail(err);
+      },
     });
   }
 
@@ -521,19 +570,32 @@ export class ConocimientoDetalleComponent implements OnInit {
       return;
     }
     const request = this.causaForm.getRawValue();
-    this.saving = 'causas';
+    const previo = this.causas;
+    const editando = this.editCausaId;
+    const temporal = editando ?? -Date.now();
+    this.causas =
+      editando != null
+        ? this.causas.map((item) => (item.id === editando ? { ...item, ...request } : item))
+        : [...this.causas, { id: temporal, descripcion: request.descripcion, orden: request.orden }];
+    this.publicarLista(`causas:${id}`, this.causas);
+    this.editCausaId = null;
+    this.formAbierto.causas = false;
+    this.causaForm.reset({ descripcion: '', orden: this.nextOrden(this.causas) });
+    this.ok(editando != null ? 'Causa actualizada.' : 'Causa agregada.');
     const req$ =
-      this.editCausaId != null
-        ? this.conocimientosApi.modificarCausa(id, this.editCausaId, request)
+      editando != null
+        ? this.conocimientosApi.modificarCausa(id, editando, request)
         : this.conocimientosApi.crearCausa(id, request);
     req$.subscribe({
-      next: () => {
-        this.editCausaId = null;
-        this.formAbierto.causas = false;
-        this.causaForm.reset({ descripcion: '', orden: this.nextOrden(this.causas) + 1 });
-        this.reloadCausas(id);
+      next: (creado) => {
+        this.causas = this.causas.map((item) => (item.id === temporal ? creado : item));
+        this.publicarLista(`causas:${id}`, this.causas);
       },
-      error: (err: Error) => this.fail(err),
+      error: (err: Error) => {
+        this.causas = previo;
+        this.publicarLista(`causas:${id}`, previo);
+        this.fail(err);
+      },
     });
   }
 
@@ -555,22 +617,37 @@ export class ConocimientoDetalleComponent implements OnInit {
       return;
     }
     const value = this.pruebaForm.getRawValue();
-    this.saving = 'pruebas';
     if (value.pruebaId == null) {
       this.sectionError = 'Seleccione una prueba del catálogo.';
-      this.saving = null;
       return;
     }
-    this.conocimientosApi.asociarPrueba(id, {
-      pruebaId: value.pruebaId,
-      orden: this.nextOrden(this.pruebas),
-    }).subscribe({
-      next: () => {
-        this.formAbierto.pruebas = false;
-        this.pruebaForm.reset({ pruebaId: null, orden: this.nextOrden(this.pruebas) + 1 });
-        this.reloadPruebas(id);
+    const catalogo = this.pruebasCatalogo.find((item) => item.id === value.pruebaId);
+    const orden = this.nextOrden(this.pruebas);
+    const temporal = -Date.now();
+    const previo = this.pruebas;
+    this.pruebas = [
+      ...this.pruebas,
+      {
+        id: temporal,
+        descripcion: catalogo?.descripcion || 'Prueba',
+        resultadoEsperado: catalogo?.resultadoEsperado || '',
+        orden,
       },
-      error: (err: Error) => this.fail(err),
+    ];
+    this.publicarLista(`pruebas:${id}`, this.pruebas);
+    this.formAbierto.pruebas = false;
+    this.pruebaForm.reset({ pruebaId: null, orden: this.nextOrden(this.pruebas) });
+    this.ok('Prueba asociada.');
+    this.conocimientosApi.asociarPrueba(id, { pruebaId: value.pruebaId, orden }).subscribe({
+      next: (creada) => {
+        this.pruebas = this.pruebas.map((item) => (item.id === temporal ? creada : item));
+        this.publicarLista(`pruebas:${id}`, this.pruebas);
+      },
+      error: (err: Error) => {
+        this.pruebas = previo;
+        this.publicarLista(`pruebas:${id}`, previo);
+        this.fail(err);
+      },
     });
   }
 
@@ -585,19 +662,32 @@ export class ConocimientoDetalleComponent implements OnInit {
       return;
     }
     const request = this.solucionForm.getRawValue();
-    this.saving = 'soluciones';
+    const previo = this.soluciones;
+    const editando = this.editSolucionId;
+    const temporal = editando ?? -Date.now();
+    this.soluciones =
+      editando != null
+        ? this.soluciones.map((item) => (item.id === editando ? { ...item, ...request } : item))
+        : [...this.soluciones, { id: temporal, descripcion: request.descripcion, tipo: request.tipo, orden: request.orden }];
+    this.publicarLista(`soluciones:${id}`, this.soluciones);
+    this.editSolucionId = null;
+    this.formAbierto.soluciones = false;
+    this.solucionForm.reset({ descripcion: '', tipo: 'PASOS', orden: this.nextOrden(this.soluciones) });
+    this.ok(editando != null ? 'Solución actualizada.' : 'Solución agregada.');
     const req$ =
-      this.editSolucionId != null
-        ? this.conocimientosApi.modificarSolucion(id, this.editSolucionId, request)
+      editando != null
+        ? this.conocimientosApi.modificarSolucion(id, editando, request)
         : this.conocimientosApi.crearSolucion(id, request);
     req$.subscribe({
-      next: () => {
-        this.editSolucionId = null;
-        this.formAbierto.soluciones = false;
-        this.solucionForm.reset({ descripcion: '', tipo: 'PASOS', orden: this.nextOrden(this.soluciones) + 1 });
-        this.reloadSoluciones(id);
+      next: (creada) => {
+        this.soluciones = this.soluciones.map((item) => (item.id === temporal ? creada : item));
+        this.publicarLista(`soluciones:${id}`, this.soluciones);
       },
-      error: (err: Error) => this.fail(err),
+      error: (err: Error) => {
+        this.soluciones = previo;
+        this.publicarLista(`soluciones:${id}`, previo);
+        this.fail(err);
+      },
     });
   }
 
@@ -654,28 +744,46 @@ export class ConocimientoDetalleComponent implements OnInit {
       this.sectionError = 'Indique al menos un departamento o un responsable.';
       return;
     }
-    this.saving = 'asignaciones';
     const request = {
       departamentoId: value.departamentoId,
       responsableId: value.responsableId,
       principal: value.principal,
     };
+    const clave = `asignaciones:${conocimientoId}:${solucionId}`;
+    const previo = this.asignacionesDe(solucionId);
+    const editando = this.editAsignacionId;
+    const temporal = editando ?? -Date.now();
+    const departamento = this.departamentos.find((item) => item.id === value.departamentoId);
+    const responsable = this.responsables.find((item) => item.id === value.responsableId);
+    const fila: AsignacionSolucion = {
+      id: temporal,
+      departamentoId: value.departamentoId,
+      departamentoNombre: departamento?.nombre ?? null,
+      responsableId: value.responsableId,
+      responsableNombre: responsable?.nombre ?? null,
+      principal: value.principal,
+    };
+    const siguiente =
+      editando != null ? previo.map((item) => (item.id === editando ? { ...item, ...fila, id: editando } : item)) : [...previo, fila];
+    this.asignacionesPorSolucion = { ...this.asignacionesPorSolucion, [solucionId]: siguiente };
+    this.publicarLista(clave, siguiente);
+    this.cancelarAsignacion();
+    this.ok('Asignación guardada.');
     const req$ =
-      this.editAsignacionId != null
-        ? this.conocimientosApi.modificarAsignacion(
-            conocimientoId,
-            solucionId,
-            this.editAsignacionId,
-            request,
-          )
+      editando != null
+        ? this.conocimientosApi.modificarAsignacion(conocimientoId, solucionId, editando, request)
         : this.conocimientosApi.crearAsignacion(conocimientoId, solucionId, request);
     req$.subscribe({
-      next: () => {
-        this.cancelarAsignacion();
-        this.reloadAsignaciones(conocimientoId, solucionId);
-        this.ok('Asignación guardada.');
+      next: (creada) => {
+        const actual = this.asignacionesDe(solucionId).map((item) => (item.id === temporal ? creada : item));
+        this.asignacionesPorSolucion = { ...this.asignacionesPorSolucion, [solucionId]: actual };
+        this.publicarLista(clave, actual);
       },
-      error: (err: Error) => this.fail(err),
+      error: (err: Error) => {
+        this.asignacionesPorSolucion = { ...this.asignacionesPorSolucion, [solucionId]: previo };
+        this.publicarLista(clave, previo);
+        this.fail(err);
+      },
     });
   }
 
@@ -742,13 +850,29 @@ export class ConocimientoDetalleComponent implements OnInit {
     if (!id) {
       return;
     }
-    this.saving = 'materiales';
     this.sectionError = '';
+    const previo = this.materiales;
+    const editando = this.editMaterialId;
+    const temporal = editando ?? -Date.now();
+    const borrador: MaterialApoyo = {
+      id: temporal,
+      nombre: valor.nombre.trim(),
+      tipo: valor.tipo,
+      url: valor.origen === 'archivo' ? '' : valor.url.trim(),
+    };
+    this.materiales =
+      editando != null
+        ? this.materiales.map((item) => (item.id === editando ? { ...item, ...borrador, id: editando } : item))
+        : [...this.materiales, borrador];
+    this.publicarLista(`materiales:${id}`, this.materiales);
+    this.resetMaterialFormulario();
+    this.formAbierto.materiales = false;
+    this.ok(editando != null ? 'Material actualizado.' : 'Material agregado.');
     const req$ =
       valor.origen === 'archivo' && valor.archivo
         ? this.conocimientosApi.crearMaterialArchivo(id, valor.nombre, valor.tipo, valor.archivo)
-        : this.editMaterialId != null
-          ? this.conocimientosApi.modificarMaterial(id, this.editMaterialId, {
+        : editando != null
+          ? this.conocimientosApi.modificarMaterial(id, editando, {
               nombre: valor.nombre.trim(),
               tipo: valor.tipo,
               url: valor.url.trim(),
@@ -759,12 +883,15 @@ export class ConocimientoDetalleComponent implements OnInit {
               url: valor.url.trim(),
             });
     req$.subscribe({
-      next: () => {
-        this.resetMaterialFormulario();
-        this.formAbierto.materiales = false;
-        this.reloadMateriales(id);
+      next: (creado) => {
+        this.materiales = this.materiales.map((item) => (item.id === temporal ? creado : item));
+        this.publicarLista(`materiales:${id}`, this.materiales);
       },
-      error: (err: Error) => this.fail(err),
+      error: (err: Error) => {
+        this.materiales = previo;
+        this.publicarLista(`materiales:${id}`, previo);
+        this.fail(err);
+      },
     });
   }
 
@@ -844,15 +971,18 @@ export class ConocimientoDetalleComponent implements OnInit {
     if (!id || !material || this.saving === 'materiales') {
       return;
     }
-    this.saving = 'materiales';
+    const previo = this.materiales;
     this.materialAEliminar = null;
     this.sectionError = '';
+    this.materiales = this.materiales.filter((item) => item.id !== material.id);
+    this.publicarLista(`materiales:${id}`, this.materiales);
+    this.ok('Material eliminado.');
     this.conocimientosApi.eliminarMaterial(id, material.id).subscribe({
-      next: () => {
-        this.materiales = this.materiales.filter((item) => item.id !== material.id);
-        this.ok('Material eliminado.');
+      error: (err: Error) => {
+        this.materiales = previo;
+        this.publicarLista(`materiales:${id}`, previo);
+        this.fail(err);
       },
-      error: (err: Error) => this.fail(err),
     });
   }
 
@@ -940,6 +1070,11 @@ export class ConocimientoDetalleComponent implements OnInit {
       error: (err: Error) => this.fail(err),
     });
   }
+
+  private publicarLista(clave: string, items: unknown[]): void {
+    this.conocimientosApi.recordarSeccion(clave, items);
+  }
+
 
   private nextOrden(items: { orden: number }[]): number {
     return items.reduce((max, item) => Math.max(max, item.orden || 0), 0) + 1;

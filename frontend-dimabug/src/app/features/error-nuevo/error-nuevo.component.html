@@ -1,6 +1,7 @@
 @if (!puedeGestionar()) {
   <section class="aviso-page">
     <header class="aviso-hero">
+      <app-ayuda-franja titulo="Nuevo error" detalle="Registro de una incidencia que aún no está documentada en la base de conocimiento." />
       <div class="aviso-hero-copy">
         <p>Incidencias</p>
         <h1>Avisar un error</h1>
@@ -69,6 +70,7 @@
 } @else {
 <section class="cat-page err-page">
   <div class="franja">
+    <app-ayuda-franja titulo="Errores" detalle="Registro de una incidencia que aún no está documentada en la base de conocimiento." />
     <div>
       <p>Incidencias</p>
       <h1>Errores</h1>

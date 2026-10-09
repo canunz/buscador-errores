@@ -269,6 +269,99 @@
   cursor: not-allowed;
 }
 
+.gestion {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px 20px;
+  margin: -8px 0 16px;
+  padding: 12px 14px 12px 18px;
+  border: 1px solid #e7e9f0;
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.04);
+}
+
+.gestion-registro {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 18px;
+  margin: 0;
+  color: #64748b;
+  font-size: 12.5px;
+}
+
+.gestion-registro strong {
+  color: #0f172a;
+  font-weight: 700;
+}
+
+.gestion-acciones {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.accion {
+  display: inline-flex;
+  align-items: center;
+  height: 36px;
+  padding: 0 14px;
+  border: 1px solid #d7e0f5;
+  border-radius: 10px;
+  background: #fff;
+  color: #163070;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.accion:hover:not(:disabled) {
+  border-color: #1e4fd6;
+  background: #f4f7ff;
+}
+
+.accion.principal {
+  border-color: #1e4fd6;
+  background: #1e4fd6;
+  color: #fff;
+}
+
+.accion.principal:hover:not(:disabled) {
+  background: #1638a8;
+}
+
+.accion.peligro {
+  border-color: #fecaca;
+  color: #b91c1c;
+  background: #fff;
+}
+
+.accion.peligro:hover:not(:disabled) {
+  background: #fef2f2;
+  border-color: #f87171;
+}
+
+.accion.volver {
+  border-color: transparent;
+  background: transparent;
+  color: #475569;
+}
+
+.accion.volver:hover {
+  background: #f8fafc;
+  color: #0f172a;
+}
+
+.accion:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
 .nota {
   margin-bottom: 18px;
   padding: 14px 16px;
@@ -407,15 +500,22 @@
 }
 
 .ficha-bar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+  display: grid;
   gap: 16px;
   margin-top: 16px;
-  padding: 14px 16px;
+  padding: 16px;
   border: 1px solid #e7e9f0;
   border-radius: 16px;
   background: #fff;
+}
+
+.ficha-titulo {
+  margin: 0 0 10px;
+  color: #64748b;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 .ficha-bar dl {
@@ -441,17 +541,42 @@
 }
 
 .ficha-acciones {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  flex-shrink: 0;
+  min-width: 0;
+}
+
+.accion-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
 }
 
 .ficha-acciones .ghost,
 .ficha-acciones .ghost.link {
+  display: grid;
+  gap: 4px;
   width: auto;
   margin: 0;
-  text-align: center;
+  padding: 12px 14px;
+  text-align: left;
+}
+
+.ficha-acciones .ghost strong,
+.ficha-acciones .ghost.link strong {
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.ficha-acciones .ghost small,
+.ficha-acciones .ghost.link small {
+  color: #475569;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.ficha-acciones .ghost:hover small,
+.ficha-acciones .ghost.link:hover small {
+  color: #e0e7ff;
 }
 
 .layout {
@@ -1542,6 +1667,10 @@
   .paso-nav {
     flex: 0 0 168px;
   }
+
+  .accion-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 @media (max-width: 900px) {
@@ -1551,6 +1680,7 @@
     grid-template-columns: 1fr;
   }
 
+  .gestion,
   .barra-estado {
     flex-direction: column;
     align-items: stretch;
@@ -1575,6 +1705,7 @@
 :host-context(.tema-oscuro) .guide,
 :host-context(.tema-oscuro) .paso-nav,
 :host-context(.tema-oscuro) .paso-controles,
+:host-context(.tema-oscuro) .gestion,
 :host-context(.tema-oscuro) .ficha-bar,
 :host-context(.tema-oscuro) .panel,
 :host-context(.tema-oscuro) .checklist li,
@@ -1593,6 +1724,7 @@
   border-color: #1e4fd6;
 }
 
+:host-context(.tema-oscuro) .gestion-registro strong,
 :host-context(.tema-oscuro) .ficha-bar dd,
 :host-context(.tema-oscuro) .paso-nav,
 :host-context(.tema-oscuro) .guide-head h2,

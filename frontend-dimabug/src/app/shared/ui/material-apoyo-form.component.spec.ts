@@ -52,6 +52,30 @@ describe('MaterialApoyoFormComponent', () => {
     );
   });
 
+  it('al editar un PDF enlazado muestra la URL, permite adjuntar y guarda sin archivo', () => {
+    const spy = jasmine.createSpy('guardar');
+    component.guardar.subscribe(spy);
+    component.editando = true;
+    component.reset({ nombre: 'Prueba', tipo: 'PDF', url: 'https://ejemplo.cl/manual.pdf' });
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('[data-testid="campo-url"]')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('[data-testid="campo-archivo"]')).toBeTruthy();
+    component.enviar();
+    expect(spy).toHaveBeenCalledWith(
+      jasmine.objectContaining({ origen: 'enlace', tipo: 'PDF', url: 'https://ejemplo.cl/manual.pdf' }),
+    );
+  });
+
+  it('al editar un archivo subido exige el nuevo archivo para reemplazarlo', () => {
+    const spy = jasmine.createSpy('guardar');
+    component.guardar.subscribe(spy);
+    component.editando = true;
+    component.reset({ nombre: 'Foto', tipo: 'IMAGEN', url: '/api/procedimientos/1/pasos/2/materiales/3/archivo' });
+    component.enviar();
+    expect(spy).not.toHaveBeenCalled();
+    expect(component.error).toContain('nuevo archivo');
+  });
+
   it('deshabilita envío mientras se envía', () => {
     component.enviando = true;
     fixture.detectChanges();

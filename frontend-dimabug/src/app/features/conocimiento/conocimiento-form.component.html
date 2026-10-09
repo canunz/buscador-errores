@@ -1,7 +1,8 @@
 <section class="kb form-page">
-  <app-loading-modal [visible]="loading || saving" mensaje="Cargando" />
+  <app-loading-modal [visible]="loading || saving" [mensaje]="saving ? 'Guardando' : 'Cargando'" />
 
   <div class="franja">
+    <app-ayuda-franja titulo="Conocimiento" detalle="Base de conocimiento. Documenta un caso con síntoma, causa, prueba de verificación y solución. El alta queda en borrador hasta que un administrador lo publica." />
     <div>
       <p>Conocimiento</p>
       <h1>{{ esEdicion ? 'Editar conocimiento' : 'Nuevo conocimiento' }}</h1>

@@ -90,6 +90,10 @@ export class OrganizacionService {
     return this.departamentosCache$;
   }
 
+  departamentosEnSesion(): DepartamentoItem[] {
+    return this.readDepartamentosSession() ?? [];
+  }
+
   listarDepartamentosDetalle(force = false): Observable<DepartamentoItem[]> {
     if (!force && this.departamentosDetalleCache$) {
       return this.departamentosDetalleCache$;
@@ -110,11 +114,15 @@ export class OrganizacionService {
           };
         });
 
-        if (!deps.length) {
+        const faltan = deps.filter((d) => {
+          const prev = stale?.find((s) => s.id === d.id);
+          return !prev?.responsables.length && !prev?.contactos.length;
+        });
+        if (!deps.length || !faltan.length) {
           return of(initial);
         }
 
-        const enrich$ = from(deps).pipe(
+        const enrich$ = from(faltan).pipe(
           mergeMap(
             (d) =>
               this.detalleDeDepartamento(d).pipe(
@@ -128,7 +136,7 @@ export class OrganizacionService {
                   }),
                 ),
               ),
-            4,
+            8,
           ),
           scan((acc, upd) => acc.map((item) => (item.id === upd.id ? upd : item)), initial),
         );
@@ -322,7 +330,7 @@ export class OrganizacionService {
 
   private readDepartamentosSession(): DepartamentoItem[] | null {
     try {
-      const raw = sessionStorage.getItem(this.departamentosDetalleKey);
+      const raw = sessionStorage.getItem(this.departamentosDetalleKey) ?? localStorage.getItem(this.departamentosDetalleKey);
       if (!raw) {
         return null;
       }
@@ -335,7 +343,9 @@ export class OrganizacionService {
 
   private writeDepartamentosSession(items: DepartamentoItem[]): void {
     try {
-      sessionStorage.setItem(this.departamentosDetalleKey, JSON.stringify(items));
+      const raw = JSON.stringify(items);
+      sessionStorage.setItem(this.departamentosDetalleKey, raw);
+      localStorage.setItem(this.departamentosDetalleKey, raw);
     } catch {
       // ignore
     }

@@ -13,7 +13,7 @@
   padding: 48px clamp(48px, 10vw, 140px) 48px 5vw;
   background: #eef7ff;
   overflow: hidden;
-  font-family: 'Segoe UI', system-ui, sans-serif;
+  font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
 }
 
 .login-bg {

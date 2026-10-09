@@ -101,12 +101,24 @@ export class InicioService {
    * Procedimientos frecuentes primero (GET /pruebas, con caché).
    * Conocimientos solo enriquecen contadores/fecha en segundo plano.
    */
+  dashboardAhora(): InicioDashboard {
+    const guardado = this.readSession();
+    const conocimientos = this.conocimientos.listaEnSesion();
+    const pruebas = this.organizacion.snapshotPruebas();
+    const hardware = this.clasificacion.snapshotHardware();
+    if (!conocimientos.length && !pruebas.length && !hardware.length && guardado) {
+      return guardado;
+    }
+    return this.build(pruebas, conocimientos.length ? conocimientos : null, hardware, guardado);
+  }
+
   dashboard(force = false): Observable<InicioDashboard> {
     if (!force && this.dashboardCache$) {
       return this.dashboardCache$;
     }
 
-    const stale = !force ? this.readSession() : null;
+    const ahora = this.dashboardAhora();
+    const stale = ahora;
 
     const network$ = this.organizacion.listarPruebas().pipe(
       catchError(() => of([] as PruebaCatalogo[])),
@@ -140,7 +152,7 @@ export class InicioService {
       }),
     );
 
-    this.dashboardCache$ = (stale ? concat(of(stale), network$) : network$).pipe(
+    this.dashboardCache$ = concat(of(ahora), network$).pipe(
       tap((data) => this.writeSession(data)),
       shareReplay(1),
     );
@@ -453,7 +465,7 @@ export class InicioService {
 
   private readSession(): InicioDashboard | null {
     try {
-      const raw = sessionStorage.getItem(this.storageKey);
+      const raw = sessionStorage.getItem(this.storageKey) ?? localStorage.getItem(this.storageKey);
       if (!raw) {
         return null;
       }
@@ -466,7 +478,9 @@ export class InicioService {
 
   private writeSession(data: InicioDashboard): void {
     try {
-      sessionStorage.setItem(this.storageKey, JSON.stringify(data));
+      const raw = JSON.stringify(data);
+      sessionStorage.setItem(this.storageKey, raw);
+      localStorage.setItem(this.storageKey, raw);
     } catch {
       // ignore
     }

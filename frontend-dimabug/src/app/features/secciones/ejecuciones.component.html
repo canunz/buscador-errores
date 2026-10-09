@@ -2,10 +2,11 @@
 
 <section class="cat-page">
   <div class="franja">
+    <app-ayuda-franja titulo="Mis ejecuciones" detalle="Instancias de un procedimiento iniciado. Permite marcar pasos y cerrar la ejecución." />
     <div>
       <p>Operaciones</p>
       <h1>Mis ejecuciones</h1>
-      <span>Cada fila es un procedimiento que ejecutaste. Ábrelo para ver los pasos que marcaste.</span>
+      <span>Instancias de procedimientos iniciados. Abre una fila para revisar los pasos marcados.</span>
     </div>
     <a routerLink="/procedimientos" class="btn-crear">Ver procedimientos</a>
   </div>
@@ -15,7 +16,7 @@
   }
 
   <div class="tabla-wrap">
-    @if (!loading) {
+    @if (items.length || !loading) {
       <table>
         <thead>
           <tr>
@@ -30,7 +31,7 @@
           @for (item of items; track item.id) {
             <tr>
               <td>
-                <a class="act ver" [routerLink]="['/ejecuciones', item.id]">Ver</a>
+                <a class="act ver" [routerLink]="['/ejecuciones', item.id]" (click)="preparar(item.id, true)">Ver</a>
               </td>
               <td><strong>{{ nombre(item.procedimientoId) }}</strong></td>
               <td>

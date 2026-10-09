@@ -2,6 +2,7 @@
 
 <section class="usuarios-page">
   <section class="usuarios-franja">
+    <app-ayuda-franja titulo="Usuarios" detalle="Administración de cuentas y asignación de rol: Administrador, Soporte o Usuario." />
     <div>
       <p class="kicker">Administración</p>
       <h1>Sobre usuarios</h1>
@@ -23,7 +24,7 @@
   </div>
 
   <div class="tabla-wrap">
-    @if (!loading) {
+    @if (usuarios.length || !loading) {
       <table>
         <thead>
           <tr>
@@ -172,37 +173,61 @@
 
       <form [formGroup]="form" (ngSubmit)="save()" class="modal-form" novalidate>
         <div class="grid">
-          <label>
-            Nombre completo
-            <input type="text" formControlName="nombre" />
+          <label [class.invalido]="invalido('nombre')">
+            <span>Nombre completo <em>*</em></span>
+            <input type="text" formControlName="nombre" placeholder="Nombre y apellido" autocomplete="name" />
+            @if (textoCampo('nombre')) {
+              <small class="error">{{ textoCampo('nombre') }}</small>
+            }
           </label>
-          <label>
-            Correo
-            <input type="email" formControlName="email" />
+          <label [class.invalido]="invalido('email')">
+            <span>Correo <em>*</em></span>
+            <input type="email" formControlName="email" placeholder="nombre@correo.com" autocomplete="email" />
             @if (editandoCuentaActual) {
               <small class="ayuda">Este correo identifica tu sesión y queda bloqueado.</small>
             }
+            @if (textoCampo('email')) {
+              <small class="error">{{ textoCampo('email') }}</small>
+            }
           </label>
-          <label>
-            Rol
+          <label [class.invalido]="invalido('rolId')">
+            <span>Rol <em>*</em></span>
             <select formControlName="rolId">
               <option [value]="0" disabled>Selecciona un rol</option>
               @for (r of roles; track r.rolId) {
                 <option [value]="r.rolId">{{ r.rolNombre }}</option>
               }
             </select>
+            @if (textoCampo('rolId')) {
+              <small class="error">{{ textoCampo('rolId') }}</small>
+            }
           </label>
-          <label class="check">
-            <input type="checkbox" formControlName="activo" />
-            <span>Usuario activo</span>
+          <div class="estado">
+            <span>Usuario activo <em>*</em></span>
+            <button
+              type="button"
+              class="switch"
+              [class.on]="form.controls.activo.value"
+              (click)="form.controls.activo.setValue(!form.controls.activo.value)"
+            >
+              <i aria-hidden="true"></i>
+              {{ form.controls.activo.value ? 'Activo' : 'Inactivo' }}
+            </button>
+            <small class="ayuda">{{ form.controls.activo.value ? 'Puede iniciar sesión.' : 'No puede iniciar sesión.' }}</small>
+          </div>
+          <label [class.invalido]="invalido('password1')">
+            <span>Contraseña <em>*</em></span>
+            <input type="password" formControlName="password1" placeholder="Mínimo 6 caracteres" autocomplete="new-password" />
+            @if (textoCampo('password1')) {
+              <small class="error">{{ textoCampo('password1') }}</small>
+            }
           </label>
-          <label>
-            {{ editId ? 'Nueva contraseña' : 'Contraseña' }}
-            <input type="password" formControlName="password1" [placeholder]="editId ? 'Dejar vacío para no cambiar' : ''" />
-          </label>
-          <label>
-            Confirmar contraseña
-            <input type="password" formControlName="password2" />
+          <label [class.invalido]="invalido('password2')">
+            <span>Confirmar contraseña <em>*</em></span>
+            <input type="password" formControlName="password2" placeholder="Repite la contraseña" autocomplete="new-password" />
+            @if (textoCampo('password2')) {
+              <small class="error">{{ textoCampo('password2') }}</small>
+            }
           </label>
         </div>
         <div class="acciones-modal">

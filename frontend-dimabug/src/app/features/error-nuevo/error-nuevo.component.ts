@@ -4,10 +4,11 @@ import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
 import { CatalogoService } from '../../core/services/catalogo.service';
 import { ErrorItem, FRECUENCIAS } from '../../core/models/catalogo.model';
+import { AyudaFranjaComponent } from '../../shared/ui/ayuda-franja.component';
 @Component({
   selector: 'app-error-nuevo',
   standalone: true,
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [ReactiveFormsModule, RouterLink, AyudaFranjaComponent],
   templateUrl: './error-nuevo.component.html',
   styleUrls: ['../../shared/ui/catalogo-page.css', './error-nuevo.component.css'],
 })

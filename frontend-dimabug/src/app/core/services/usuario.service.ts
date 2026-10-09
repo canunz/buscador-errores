@@ -32,6 +32,14 @@ export class UsuarioService {
   private listaCache$: Observable<Usuario[]> | null = null;
   private rolesCache$: Observable<Rol[]> | null = null;
 
+  listaEnSesion(): Usuario[] {
+    return (this.readUsuariosSession() ?? []).filter((usuario) => !this.estaOculto(usuario.usuarioId));
+  }
+
+  rolesEnSesion(): Rol[] {
+    return this.readRolesSession() ?? [];
+  }
+
   /** Caché de sesión al instante + refresco en red. */
   listar(force = false): Observable<Usuario[]> {
     if (!force && this.listaCache$) {
@@ -227,7 +235,7 @@ export class UsuarioService {
 
   private readUsuariosSession(): Usuario[] | null {
     try {
-      const raw = sessionStorage.getItem(this.listaKey);
+      const raw = sessionStorage.getItem(this.listaKey) ?? localStorage.getItem(this.listaKey);
       if (!raw) {
         return null;
       }
@@ -240,7 +248,9 @@ export class UsuarioService {
 
   private writeUsuariosSession(items: Usuario[]): void {
     try {
-      sessionStorage.setItem(this.listaKey, JSON.stringify(items));
+      const raw = JSON.stringify(items);
+      sessionStorage.setItem(this.listaKey, raw);
+      localStorage.setItem(this.listaKey, raw);
     } catch {
       // ignore
     }
@@ -248,7 +258,7 @@ export class UsuarioService {
 
   private readRolesSession(): Rol[] | null {
     try {
-      const raw = sessionStorage.getItem(this.rolesKey);
+      const raw = sessionStorage.getItem(this.rolesKey) ?? localStorage.getItem(this.rolesKey);
       if (!raw) {
         return null;
       }
@@ -261,7 +271,9 @@ export class UsuarioService {
 
   private writeRolesSession(items: Rol[]): void {
     try {
-      sessionStorage.setItem(this.rolesKey, JSON.stringify(items));
+      const raw = JSON.stringify(items);
+      sessionStorage.setItem(this.rolesKey, raw);
+      localStorage.setItem(this.rolesKey, raw);
     } catch {
       // ignore
     }

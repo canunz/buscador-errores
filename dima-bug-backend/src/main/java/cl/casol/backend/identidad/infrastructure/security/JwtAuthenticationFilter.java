@@ -28,13 +28,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final TokenServicePort tokenService;
     private final UsuarioRepository usuarioRepository;
+    private final UsuarioAutenticadoCache usuariosAutenticados;
 
     public JwtAuthenticationFilter(
             TokenServicePort tokenService,
-            UsuarioRepository usuarioRepository
+            UsuarioRepository usuarioRepository,
+            UsuarioAutenticadoCache usuariosAutenticados
     ) {
         this.tokenService = tokenService;
         this.usuarioRepository = usuarioRepository;
+        this.usuariosAutenticados = usuariosAutenticados;
     }
 
     @Override
@@ -86,9 +89,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
 
-        Usuario usuario = usuarioRepository
-                .buscarPorEmail(email)
-                .orElse(null);
+        Usuario usuario = usuariosAutenticados.obtener(email).orElse(null);
+        if (usuario == null) {
+            usuario = usuarioRepository
+                    .buscarPorEmail(email)
+                    .orElse(null);
+            if (usuario != null) {
+                usuariosAutenticados.guardar(email, usuario);
+            }
+        }
 
         log.debug("JWT: usuario encontrado={}", usuario != null);
 

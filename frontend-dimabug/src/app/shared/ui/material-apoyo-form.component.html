@@ -20,9 +20,12 @@
   @if (admiteAdjunto) {
     <div class="adjunto-field full" [class.has-file]="!!archivo">
       <span>
-        Adjuntar archivo
-        @if (tipo !== 'VIDEO') {
+        {{ tituloAdjunto }}
+        @if (archivoObligatorio) {
           <span class="req">*</span>
+        }
+        @if (archivo) {
+          <button type="button" class="quitar-archivo" (click)="archivo = null; archivoInput.value = ''">Quitar</button>
         }
       </span>
       <input

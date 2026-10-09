@@ -5,6 +5,7 @@ import {
   OrigenMaterial,
   acceptArchivoMaterial,
   admiteUploadLocal,
+  esUrlDescargaAutenticada,
   muestraUrlMaterial,
   origenDesdeAdjunto,
   validarMaterialFormulario,
@@ -37,13 +38,26 @@ export class MaterialApoyoFormComponent {
   url = '';
   archivo: File | null = null;
   error = '';
+  private urlExterna = false;
+  private archivoActual = false;
 
   get muestraUrl(): boolean {
-    return muestraUrlMaterial(this.tipo);
+    return muestraUrlMaterial(this.tipo) || (this.editando && this.urlExterna && !this.archivo);
   }
 
   get admiteAdjunto(): boolean {
-    return !this.editando && admiteUploadLocal(this.tipo);
+    return admiteUploadLocal(this.tipo);
+  }
+
+  get archivoObligatorio(): boolean {
+    if (this.tipo === 'VIDEO') {
+      return false;
+    }
+    return !this.editando || this.archivoActual;
+  }
+
+  get tituloAdjunto(): string {
+    return this.editando ? 'Reemplazar archivo' : 'Adjuntar archivo';
   }
 
   get accept(): string {
@@ -51,6 +65,12 @@ export class MaterialApoyoFormComponent {
   }
 
   get pistaAdjunto(): string {
+    if (this.editando && !this.archivoActual) {
+      return 'Opcional: si eliges uno, reemplaza al enlace actual.';
+    }
+    if (this.editando) {
+      return 'Elige el nuevo archivo; el actual se reemplaza al guardar.';
+    }
     if (this.tipo === 'PDF') {
       return 'PDF · máximo 10 MiB';
     }
@@ -66,6 +86,11 @@ export class MaterialApoyoFormComponent {
     this.url = inicial?.url ?? '';
     this.archivo = inicial?.archivo ?? null;
     this.error = '';
+    this.archivoActual = esUrlDescargaAutenticada(this.url);
+    this.urlExterna = !!this.url && !this.archivoActual;
+    if (this.archivoActual) {
+      this.url = '';
+    }
     if (!admiteUploadLocal(this.tipo)) {
       this.archivo = null;
     }
@@ -99,12 +124,29 @@ export class MaterialApoyoFormComponent {
       url: this.url,
       archivo: this.archivo,
     };
-    const error = validarMaterialFormulario(valor);
+    const error = this.editando && !this.archivo ? this.validarEdicionSinArchivo() : validarMaterialFormulario(valor);
     if (error) {
       this.error = error;
       return;
     }
     this.error = '';
     this.guardar.emit(valor);
+  }
+
+  private validarEdicionSinArchivo(): string | null {
+    const nombre = this.nombre.trim();
+    if (!nombre) {
+      return 'El nombre es obligatorio.';
+    }
+    if (nombre.length > 150) {
+      return 'El nombre no puede superar 150 caracteres.';
+    }
+    if (this.archivoActual && this.tipo !== 'ENLACE') {
+      return 'Adjunte el nuevo archivo para reemplazar el actual.';
+    }
+    if (this.muestraUrl && !this.url.trim()) {
+      return this.tipo === 'VIDEO' ? 'Indique una URL o adjunte un video.' : 'La URL es obligatoria.';
+    }
+    return null;
   }
 }

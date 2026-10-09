@@ -3,6 +3,7 @@ import { RouterLink } from '@angular/router';
 import { ConocimientoEstado, etiquetaEstadoConocimiento } from '../../core/models/conocimiento.model';
 import { ConocimientoService } from '../../core/services/conocimiento.service';
 import { FavoritoItem, FavoritosService } from '../../core/services/favoritos.service';
+import { AyudaFranjaComponent } from '../../shared/ui/ayuda-franja.component';
 
 interface FavoritoVista extends FavoritoItem {
   estado?: ConocimientoEstado;
@@ -11,10 +12,11 @@ interface FavoritoVista extends FavoritoItem {
 @Component({
   selector: 'app-favoritos',
   standalone: true,
-  imports: [RouterLink],
+  imports: [RouterLink, AyudaFranjaComponent],
   template: `
     <section class="cat-page">
       <div class="franja">
+        <app-ayuda-franja titulo="Favoritos" detalle="Conocimientos marcados para acceso directo. Este listado no incluye procedimientos." />
         <div>
           <p>Biblioteca</p>
           <h1>Favoritos</h1>

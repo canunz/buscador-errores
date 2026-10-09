@@ -1,0 +1,64 @@
+<section class="pagina">
+  <header class="franja">
+    <div class="texto">
+      <p>Tu bandeja</p>
+      <h1>Notificaciones</h1>
+      <span>Ejecuciones y borradores de esta cuenta.</span>
+    </div>
+    <div class="lado">
+      <div class="cifras">
+        <div>
+          <b>{{ avisos.length }}</b>
+          <small>en total</small>
+        </div>
+        <div>
+          <b>{{ sinLeer() }}</b>
+          <small>sin leer</small>
+        </div>
+      </div>
+      @if (vista === 'nuevas' && sinLeer() > 0) {
+        <button type="button" class="marcar" (click)="marcarTodas()">Marcar todas como leídas</button>
+      }
+    </div>
+  </header>
+
+  <nav class="pestanas" aria-label="Estado de las notificaciones">
+    <button type="button" [class.on]="vista === 'nuevas'" (click)="vista = 'nuevas'">
+      No leídas
+      <b>{{ sinLeer() }}</b>
+    </button>
+    <button type="button" [class.on]="vista === 'leidas'" (click)="vista = 'leidas'">
+      Marcadas como leídas
+      <b>{{ yaLeidas() }}</b>
+    </button>
+  </nav>
+
+  @if (!visibles().length) {
+    <p class="vacio">
+      {{ vista === 'nuevas' ? 'No tienes notificaciones sin leer.' : 'Todavía no marcas notificaciones como leídas.' }}
+    </p>
+  } @else {
+    <ul>
+      @for (aviso of visibles(); track aviso.id) {
+        <li [class.nueva]="!leida(aviso)">
+          <span class="punto" aria-hidden="true"></span>
+          <span class="cuerpo">
+            <strong>{{ aviso.titulo }}</strong>
+            <em>{{ aviso.detalle }}</em>
+            @if (aviso.fecha) {
+              <time>{{ aviso.fecha | date: 'dd/MM/yyyy HH:mm' }}</time>
+            }
+          </span>
+          <span class="acciones">
+            <button type="button" class="abrir" (click)="abrir(aviso)">Abrir</button>
+            @if (leida(aviso)) {
+              <button type="button" class="estado" (click)="desmarcarUna(aviso)">Marcar como no leída</button>
+            } @else {
+              <button type="button" class="estado" (click)="marcarUna(aviso)">Marcar como leída</button>
+            }
+          </span>
+        </li>
+      }
+    </ul>
+  }
+</section>

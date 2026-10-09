@@ -15,7 +15,7 @@
   min-height: 100vh;
   background: var(--gris-fondo);
   color: var(--gris-oscuro);
-  font-family: 'Segoe UI', system-ui, sans-serif;
+  font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
 }
 
 .sidebar {
@@ -185,6 +185,113 @@
   border-color: #c7d7fb;
 }
 
+.avisos {
+  position: relative;
+}
+
+.campana {
+  position: relative;
+}
+
+.campana-cuenta {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 4px;
+  border-radius: 999px;
+  background: #e11d48;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 800;
+  line-height: 18px;
+  text-align: center;
+}
+
+.avisos-panel {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  z-index: 40;
+  width: min(360px, calc(100vw - 32px));
+  max-height: min(420px, calc(100vh - 90px));
+  overflow: auto;
+  border: 1px solid #e7e9f0;
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 18px 40px rgba(11, 27, 77, 0.18);
+}
+
+.avisos-panel header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 16px 10px;
+  border-bottom: 1px solid #eef2f7;
+}
+
+.avisos-panel header strong {
+  color: #0b1b4d;
+  font-size: 14px;
+}
+
+.avisos-panel header button {
+  border: 0;
+  background: transparent;
+  color: #1e4fd6;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.avisos-panel ul {
+  margin: 0;
+  padding: 8px;
+  list-style: none;
+}
+
+.avisos-panel li button {
+  display: grid;
+  gap: 2px;
+  width: 100%;
+  padding: 10px 12px;
+  border: 0;
+  border-radius: 12px;
+  background: transparent;
+  color: #334155;
+  text-align: left;
+  font: inherit;
+  cursor: pointer;
+}
+
+.avisos-panel li button:hover {
+  background: #f4f7ff;
+}
+
+.avisos-panel li button.nueva {
+  background: #f8faff;
+}
+
+.avisos-panel li strong {
+  color: #0f172a;
+  font-size: 13.5px;
+}
+
+.avisos-panel li span,
+.avisos-panel li small,
+.avisos-vacio {
+  color: #64748b;
+  font-size: 12.5px;
+}
+
+.avisos-vacio {
+  margin: 0;
+  padding: 22px 16px 20px;
+}
+
 .menu-toggle {
   display: none;
   margin-right: auto;
@@ -319,6 +426,18 @@
   background: #1f2937;
   border-color: #374151;
   color: #fbbf24;
+}
+
+.app-shell.tema-oscuro .avisos-panel,
+.app-shell.tema-oscuro .avisos-panel li button.nueva {
+  background: #111827;
+  border-color: #1f2937;
+  color: #e5e7eb;
+}
+
+.app-shell.tema-oscuro .avisos-panel header strong,
+.app-shell.tema-oscuro .avisos-panel li strong {
+  color: #f8fafc;
 }
 
 .app-shell.tema-oscuro .tema-toggle:hover {

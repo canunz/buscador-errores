@@ -4,7 +4,7 @@
       <img src="assets/img/logo_dimabug.png" alt="DimaBug" class="brand-logo" />
     </div>
 
-    <nav>
+        <nav>
       <p class="nav-label">Principal</p>
       <a routerLink="/inicio" routerLinkActive="activo" [routerLinkActiveOptions]="{ exact: true }" (click)="closeMenu()">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
@@ -111,6 +111,23 @@
     <header>
       <button type="button" class="menu-toggle" (click)="toggleMenu()" aria-label="Menú">☰</button>
       <div class="header-actions">
+        @if (isStaff()) {
+          <button
+            type="button"
+            class="tema-toggle campana"
+            (click)="abrirNotificaciones($event)"
+            aria-label="Notificaciones"
+            title="Notificaciones"
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M15 17H6.5a1.5 1.5 0 01-1.2-2.4L6 13.2V10a6 6 0 1112 0v3.2l.7 1.4A1.5 1.5 0 0117.5 17H15z"/>
+              <path d="M10 17a2 2 0 004 0"/>
+            </svg>
+            @if (sinLeer > 0) {
+              <span class="campana-cuenta">{{ sinLeer > 9 ? '9+' : sinLeer }}</span>
+            }
+          </button>
+        }
         <button
           type="button"
           class="tema-toggle"

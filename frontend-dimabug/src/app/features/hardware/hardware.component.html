@@ -2,6 +2,7 @@
 
 <section class="cat-page hw-page">
   <div class="franja">
+    <app-ayuda-franja titulo="Hardware" detalle="Catálogo de equipos: nombre, sistema operativo y sistemas asociados." />
     <div>
       <p>Catálogos</p>
       <h1>Hardware</h1>
@@ -14,7 +15,7 @@
   }
 
   <div class="tabla-wrap">
-    @if (!loading) {
+    @if (items.length || !loading) {
       <table>
         <thead>
           <tr>

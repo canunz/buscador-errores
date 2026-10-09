@@ -2,6 +2,7 @@
 
 <section class="cat-page dep-page">
   <div class="franja">
+    <app-ayuda-franja titulo="Departamentos" detalle="Catálogo de áreas organizacionales. Se usa al asignar responsables de una solución." />
     <div>
       <p>Catálogos</p>
       <h1>Departamentos</h1>
@@ -14,7 +15,7 @@
   }
 
   <div class="tabla-wrap">
-    @if (!loading) {
+    @if (items.length || !loading) {
       <table>
         <thead>
           <tr>

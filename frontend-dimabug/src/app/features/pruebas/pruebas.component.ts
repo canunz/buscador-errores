@@ -3,11 +3,12 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
 import { OrganizacionService } from '../../core/services/organizacion.service';
 import { PruebaItem } from '../../core/models/catalogo.model';
+import { AyudaFranjaComponent } from '../../shared/ui/ayuda-franja.component';
 import { LoadingModalComponent } from '../../shared/ui/loading-modal.component';
 @Component({
   selector: 'app-pruebas',
   standalone: true,
-  imports: [LoadingModalComponent],
+  imports: [LoadingModalComponent, AyudaFranjaComponent],
   templateUrl: './pruebas.component.html',
   styleUrls: ['../../shared/ui/catalogo-page.css', './pruebas.component.css'],
 })

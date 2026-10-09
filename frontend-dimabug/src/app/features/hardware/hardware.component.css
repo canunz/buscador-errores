@@ -26,7 +26,8 @@
   background: #f8faff;
 }
 
-.hw-page .col-acciones {
+.hw-page .col-acciones,
+.hw-page td:first-child {
   width: 1%;
   white-space: nowrap;
 }
@@ -166,9 +167,15 @@
 }
 
 .hw-page .acciones {
-  display: flex;
-  flex-wrap: wrap;
+  display: inline-flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
   gap: 8px;
+}
+
+.hw-page .btn-accion {
+  flex: 0 0 auto;
 }
 
 .hw-page .act {

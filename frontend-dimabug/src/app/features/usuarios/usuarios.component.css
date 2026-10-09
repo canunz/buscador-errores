@@ -1,9 +1,10 @@
 .usuarios-franja {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 24px;
-  padding: 28px 32px;
+  padding: 28px 64px 28px 32px;
   margin-bottom: 22px;
   border-radius: 18px;
   background: linear-gradient(90deg, #0b1b4d 0%, #1e4fd6 55%, #3b82f6 100%);
@@ -389,12 +390,19 @@ td:first-child {
   gap: 16px 18px;
 }
 
-.modal-form label {
+.modal-form label,
+.estado {
   display: flex;
   flex-direction: column;
   gap: 6px;
   font-size: 13px;
   font-weight: 700;
+  color: #163070;
+}
+
+.modal-form em {
+  color: #e11d48;
+  font-style: normal;
 }
 
 .ayuda {
@@ -405,10 +413,89 @@ td:first-child {
 
 .modal-form input,
 .modal-form select {
-  border: 1px solid #e7e9f0;
-  border-radius: 10px;
+  border: 1px solid #d7e0f5;
+  border-radius: 12px;
   padding: 12px 14px;
+  background: #f8faff;
+  color: #0f172a;
   font: inherit;
+  font-weight: 500;
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+}
+
+.modal-form input:focus,
+.modal-form select:focus {
+  border-color: #1e4fd6;
+  background: #fff;
+  box-shadow: 0 0 0 4px rgba(30, 79, 214, 0.12);
+}
+
+.modal-form label.invalido input,
+.modal-form label.invalido select {
+  border-color: #e11d48;
+  background: #fff;
+}
+
+.error {
+  color: #be123c;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.estado {
+  justify-content: flex-start;
+}
+
+.switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  width: fit-content;
+  height: 46px;
+  padding: 0 14px 0 10px;
+  border: 1px solid #d7e0f5;
+  border-radius: 12px;
+  background: #f8faff;
+  color: #163070;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.switch i {
+  width: 36px;
+  height: 22px;
+  border-radius: 999px;
+  background: #cbd5e1;
+  position: relative;
+}
+
+.switch i::after {
+  content: '';
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #fff;
+  transition: transform 0.15s ease;
+}
+
+.switch.on {
+  border-color: #86efac;
+  background: #f0fdf4;
+  color: #166534;
+}
+
+.switch.on i {
+  background: #22c55e;
+}
+
+.switch.on i::after {
+  transform: translateX(14px);
 }
 
 .modal-form input:disabled {
@@ -418,10 +505,7 @@ td:first-child {
 }
 
 .check {
-  flex-direction: row !important;
-  align-items: center;
-  gap: 10px !important;
-  padding-top: 28px;
+  display: none;
 }
 
 .acciones-modal {

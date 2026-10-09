@@ -1,102 +1,271 @@
 <app-loading-modal [visible]="isStaff() && !dashboard && !error" mensaje="Cargando" />
 
 <div class="inicio">
-  <header class="saludo">
-    <p class="eyebrow">
-      @switch (rolVista()) {
-        @case ('admin') { Panel administrador }
-        @case ('soporte') { Panel de soporte }
-        @default { Inicio }
-      }
-    </p>
-    <h1>¡Hola, {{ primerNombre() }}!</h1>
-    <p class="lead">
-      @switch (rolVista()) {
-        @case ('admin') {
-          Controla catálogos, cuentas y el estado del conocimiento publicado.
-        }
-        @case ('soporte') {
-          Busca el caso, aplica el procedimiento y registra si la solución funcionó.
-        }
-        @default {
-          Busca un caso parecido al tuyo, consulta el procedimiento y márcalo como favorito.
-        }
-      }
-    </p>
-  </header>
-
   <section class="hero" aria-labelledby="hero-title">
+    <div class="hero-deco" aria-hidden="true">
+      <span class="blob blob-a"></span>
+      <span class="blob blob-b"></span>
+      <span class="puntos"></span>
+    </div>
+
     <div class="hero-copy">
-      <h2 id="hero-title">
+      <div class="hero-top">
+        <span class="chip-rol">
+          <span class="punto-vivo"></span>
+          @switch (rolVista()) {
+            @case ('admin') { Panel administrador }
+            @case ('soporte') { Panel de soporte }
+            @default { Mesa de ayuda }
+          }
+        </span>
+        <span class="chip-fecha">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <rect x="3" y="5" width="18" height="16" rx="2" />
+            <path d="M16 3v4M8 3v4M3 10h18" />
+          </svg>
+          {{ hoyTexto }}
+        </span>
+      </div>
+
+      <h1 id="hero-title">{{ saludoHora }}, <span class="nombre">{{ primerNombre() }}</span></h1>
+      <p class="lead">
+        @switch (rolVista()) {
+          @case ('admin') { Controla catálogos, cuentas y el estado del conocimiento publicado. }
+          @case ('soporte') { Busca el caso, aplica el procedimiento y registra si la solución funcionó. }
+          @default { Cuéntanos qué está fallando y te mostramos cómo resolverlo, paso a paso. }
+        }
+      </p>
+
+      <h2 class="pregunta">
         @switch (rolVista()) {
           @case ('admin') { ¿Qué quieres administrar? }
           @case ('soporte') { ¿Qué incidencia atiendes? }
           @default { ¿Qué necesitas resolver? }
         }
       </h2>
-      <form class="buscador" [formGroup]="searchForm" (ngSubmit)="buscar()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-          <circle cx="11" cy="11" r="8" />
-          <line x1="21" y1="21" x2="16.65" y2="16.65" />
-        </svg>
-        <input
-          type="search"
-          formControlName="q"
-          placeholder="Ej.: Impresora fuera de línea, Jadima, POS no imprime…"
-          aria-label="Buscar incidencia"
-          (keydown.enter)="$event.preventDefault(); buscar()"
-        />
-        <button type="submit" class="btn-buscar" (click)="$event.stopPropagation()">Buscar</button>
-      </form>
-      <p class="hero-hint">
-        @switch (rolVista()) {
-          @case ('admin') {
-            Revisa lo publicado y entra a Administración o Usuarios cuando necesites cambiar maestros o accesos.
-          }
-          @case ('soporte') {
-            Si el problema ya ocurrió, ábrelo. El mismo caso se reutiliza: no hace falta un conocimiento nuevo.
-          }
-          @default {
-            Si el problema ya ocurrió, búscalo. Revisa el procedimiento, la solución y tus reportes.
-          }
+
+      <div class="buscador-caja" [class.abierto]="panelAbierto">
+        <form class="buscador" [formGroup]="searchForm" (ngSubmit)="buscar()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <circle cx="11" cy="11" r="8" />
+            <line x1="21" y1="21" x2="16.65" y2="16.65" />
+          </svg>
+          <input
+            type="search"
+            formControlName="q"
+            placeholder="¿Qué está fallando? Ej.: la impresora no imprime"
+            aria-label="Buscar incidencia"
+            aria-autocomplete="list"
+            [attr.aria-expanded]="panelAbierto"
+            autocomplete="off"
+            (input)="actualizarCoincidencias()"
+            (focus)="actualizarCoincidencias()"
+            (keydown.enter)="$event.preventDefault(); buscar()"
+          />
+          <button type="submit" class="btn-buscar" (click)="$event.stopPropagation()">
+            Buscar
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+          </button>
+        </form>
+        @if (panelAbierto) {
+          <ul class="coincidencias" role="listbox">
+            <li>
+              <button type="button" (click)="buscar()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                  <circle cx="11" cy="11" r="8" />
+                  <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                </svg>
+                <span class="linea"><span class="marca">{{ consulta }}</span></span>
+              </button>
+            </li>
+            @for (item of coincidencias; track item.id) {
+              <li>
+                <button type="button" (click)="abrirCoincidencia(item)">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                    <circle cx="11" cy="11" r="8" />
+                    <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                  </svg>
+                  <span class="linea">
+                    @for (parte of partes(item.titulo); track $index) {
+                      @if (parte.marca) {
+                        <span class="marca">{{ parte.texto }}</span>
+                      } @else {
+                        <span>{{ parte.texto }}</span>
+                      }
+                    }
+                  </span>
+                </button>
+              </li>
+            }
+          </ul>
         }
-      </p>
+      </div>
+
+      <div class="sugerencias">
+        <span>Búsquedas comunes:</span>
+        @for (texto of sugerencias; track texto) {
+          <button type="button" class="chip-sugerencia" (click)="buscarSugerencia(texto)">{{ texto }}</button>
+        }
+      </div>
     </div>
-    <img class="mascota-hero" src="assets/img/iniciologo.png" alt="" width="200" height="200" decoding="async" />
+
+    <div class="hero-mascota" aria-hidden="true">
+      <div class="burbuja">
+        @switch (rolVista()) {
+          @case ('admin') { ¡Todo listo para revisar! }
+          @case ('soporte') { ¿Qué resolvemos hoy? }
+          @default { ¿Te ayudo a buscar? }
+        }
+      </div>
+      <img class="mascota" src="assets/img/iniciologo.png" alt="" width="220" height="150" decoding="async" />
+      <span class="mascota-sombra"></span>
+    </div>
   </section>
+
+  @if (!isStaff()) {
+    <section class="como" aria-labelledby="como-title">
+      <div class="seccion-titulo">
+        <div>
+          <p class="eyebrow">Así de fácil</p>
+          <h2 id="como-title">Resuelve tu problema en 3 pasos</h2>
+        </div>
+      </div>
+      <ol class="pasos-como">
+        <li>
+          <span class="paso-num">1</span>
+          <span class="paso-icono azul" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="8" />
+              <line x1="21" y1="21" x2="16.65" y2="16.65" />
+            </svg>
+          </span>
+          <h3>Busca el problema</h3>
+          <p>Escribe lo que pasa con tus palabras, como «no imprime» o «sin red».</p>
+        </li>
+        <li>
+          <span class="paso-num">2</span>
+          <span class="paso-icono violeta" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2" />
+              <rect x="9" y="3" width="6" height="4" rx="1" />
+              <path d="M9 13l2 2 4-4" />
+            </svg>
+          </span>
+          <h3>Sigue la guía</h3>
+          <p>Cada caso trae los pasos para revisarlo y la solución que funcionó.</p>
+        </li>
+        <li>
+          <span class="paso-num">3</span>
+          <span class="paso-icono naranja" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 3.6l2.35 4.76 5.25.76-3.8 3.7.9 5.24L12 15.7l-4.7 2.46.9-5.24-3.8-3.7 5.25-.76L12 3.6z" />
+            </svg>
+          </span>
+          <h3>Guárdala</h3>
+          <p>Márcala con la estrella y la tendrás a mano la próxima vez.</p>
+        </li>
+      </ol>
+    </section>
+  }
 
   @if (isStaff()) {
     <section class="escala" aria-label="Indicadores del catálogo">
       @if (dashboard?.escala; as escala) {
         <div class="kpi-grid">
-          <article class="kpi-card" data-kpi="unicos">
-            <span class="kpi-etiqueta">Casos únicos</span>
-            <strong>{{ escala.casosUnicos }}</strong>
-            <span class="kpi-detalle">Un conocimiento publicado por problema.</span>
-          </article>
-          <article class="kpi-card" data-kpi="diario">
-            <span class="kpi-etiqueta">Diario</span>
-            <strong>{{ escala.diario }}</strong>
-            <span class="kpi-detalle">El mismo caso, cada vez que falla en el día.</span>
-          </article>
-          <article class="kpi-card" data-kpi="semanal">
-            <span class="kpi-etiqueta">Semanal</span>
-            <strong>{{ escala.semanal }}</strong>
-            <span class="kpi-detalle">La repetición queda en el registro original.</span>
-          </article>
-          <article class="kpi-card" data-kpi="frecuente">
-            <span class="kpi-etiqueta">Frecuente</span>
-            <strong>{{ escala.frecuente }}</strong>
-            <span class="kpi-detalle">Se documenta el mismo caso, sin duplicarlo.</span>
-          </article>
+          @for (kpi of kpis(); track kpi.clave) {
+            <button type="button" class="kpi-card" [attr.data-kpi]="kpi.clave" (click)="ir('/conocimiento')">
+              <div class="kpi-head">
+                <span class="kpi-etiqueta">{{ kpi.etiqueta }}</span>
+                <span class="kpi-icono" aria-hidden="true">
+                  @switch (kpi.clave) {
+                    @case ('unicos') {
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M4 19.5A2.5 2.5 0 016.5 17H20" />
+                        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z" />
+                      </svg>
+                    }
+                    @case ('diario') {
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="4" />
+                        <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" />
+                      </svg>
+                    }
+                    @case ('semanal') {
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="5" width="18" height="16" rx="2" />
+                        <path d="M16 3v4M8 3v4M3 10h18M8 14h2M12 14h2M16 14h.01" />
+                      </svg>
+                    }
+                    @default {
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 12a9 9 0 11-3-6.7" />
+                        <path d="M21 4v5h-5" />
+                      </svg>
+                    }
+                  }
+                </span>
+              </div>
+              <strong>{{ kpi.mostrado }}</strong>
+              <span class="kpi-detalle">{{ kpi.detalle }}</span>
+              <span class="kpi-barra" aria-hidden="true">
+                <span [style.width.%]="kpi.porcentaje"></span>
+              </span>
+            </button>
+          }
         </div>
 
-        <article class="panel-grafico">
-          <h2 class="grafico-titulo">
-            {{ escala.grafico.modo === 'meses' ? 'Publicados por mes' : 'Por frecuencia' }}
-          </h2>
-          <app-tendencia-linea [grafico]="escala.grafico" />
-        </article>
+        <div class="panel-doble">
+          <article class="panel-grafico">
+            <div class="panel-head">
+              <div>
+                <p class="eyebrow">Tendencia</p>
+                <h2 class="grafico-titulo">
+                  {{ escala.grafico.modo === 'meses' ? 'Publicados por mes' : 'Por frecuencia' }}
+                </h2>
+              </div>
+              <span class="pill-total">{{ escala.casosUnicos }} publicados</span>
+            </div>
+            <app-tendencia-linea [grafico]="escala.grafico" />
+          </article>
+
+          <aside class="panel-lado">
+            <div class="panel-head">
+              <div>
+                <p class="eyebrow">Repetición</p>
+                <h2 class="grafico-titulo">¿Cada cuánto fallan?</h2>
+              </div>
+            </div>
+            <ul class="barras">
+              @for (barra of escala.barras; track barra.clave) {
+                <li [attr.data-clave]="barra.clave">
+                  <div class="barra-texto">
+                    <span>{{ barra.etiqueta }}</span>
+                    <strong>{{ barra.total }}</strong>
+                  </div>
+                  <span class="barra-pista"><span [style.width.%]="barra.ancho"></span></span>
+                </li>
+              }
+            </ul>
+
+            @if (escala.repetidos.length) {
+              <h3 class="sub-lado">Casos que más se repiten</h3>
+              <ul class="repetidos">
+                @for (caso of escala.repetidos.slice(0, 4); track caso.id) {
+                  <li>
+                    <button type="button" (click)="irCaso(caso.id)">
+                      <span class="chip-freq" [attr.data-clave]="caso.clave">{{ caso.frecuencia }}</span>
+                      <span class="caso-texto">
+                        <strong>{{ caso.titulo }}</strong>
+                        <small>{{ caso.contexto }}</small>
+                      </span>
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M9 6l6 6-6 6" /></svg>
+                    </button>
+                  </li>
+                }
+              </ul>
+            }
+          </aside>
+        </div>
       } @else if (!error) {
         <div class="kpi-grid" aria-hidden="true">
           @for (item of [1, 2, 3, 4]; track item) {
@@ -111,25 +280,26 @@
   <section class="atajos" [attr.aria-label]="rolVista() === 'admin' ? 'Administración' : rolVista() === 'soporte' ? 'Operación' : 'Accesos'">
     <div class="seccion-titulo">
       <div>
-        <p class="eyebrow dark">
+        <p class="eyebrow">
           @switch (rolVista()) {
             @case ('admin') { Sistema }
             @case ('soporte') { Operación }
-            @default { Accesos }
+            @default { Accesos rápidos }
           }
         </p>
         <h2>
           @switch (rolVista()) {
             @case ('admin') { Sitio administrativo }
             @case ('soporte') { Trabajo del día }
-            @default { Qué puedes hacer }
+            @default { ¿A dónde quieres ir? }
           }
         </h2>
       </div>
     </div>
+
     <div class="grid-accesos">
       @if (rolVista() === 'admin') {
-        <button type="button" class="card-acceso" (click)="ir('/admin')">
+        <button type="button" class="card-acceso" data-color="azul" (click)="ir('/admin')">
           <span class="icono-cuadrado" aria-hidden="true">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M12 3l8 4v6c0 5-3.5 8.5-8 9-4.5-.5-8-4-8-9V7l8-4z" />
@@ -140,8 +310,9 @@
             <h3>Administrador</h3>
             <p>Catálogos, grupos y actividad del sitio.</p>
           </span>
+          <span class="flecha-wrap" aria-hidden="true"><svg class="flecha" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6" /></svg></span>
         </button>
-        <button type="button" class="card-acceso" (click)="ir('/usuarios')">
+        <button type="button" class="card-acceso" data-color="violeta" (click)="ir('/usuarios')">
           <span class="icono-cuadrado" aria-hidden="true">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2" />
@@ -153,8 +324,9 @@
             <h3>Usuarios</h3>
             <p>Crea cuentas, cambia roles y contraseñas.</p>
           </span>
+          <span class="flecha-wrap" aria-hidden="true"><svg class="flecha" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6" /></svg></span>
         </button>
-        <button type="button" class="card-acceso verde" (click)="ir('/conocimiento')">
+        <button type="button" class="card-acceso" data-color="verde" (click)="ir('/conocimiento')">
           <span class="icono-cuadrado" aria-hidden="true">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M4 19.5A2.5 2.5 0 016.5 17H20" />
@@ -165,8 +337,9 @@
             <h3>Conocimiento</h3>
             <p>Publica, edita o elimina guías del catálogo.</p>
           </span>
+          <span class="flecha-wrap" aria-hidden="true"><svg class="flecha" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6" /></svg></span>
         </button>
-        <button type="button" class="card-acceso verde" (click)="ir('/plataforma/hardware')">
+        <button type="button" class="card-acceso" data-color="naranja" (click)="ir('/plataforma/hardware')">
           <span class="icono-cuadrado" aria-hidden="true">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <rect x="3" y="4" width="18" height="12" rx="2" />
@@ -177,9 +350,10 @@
             <h3>Hardware</h3>
             <p>Revisa equipos y sistemas asociados.</p>
           </span>
+          <span class="flecha-wrap" aria-hidden="true"><svg class="flecha" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6" /></svg></span>
         </button>
       } @else if (rolVista() === 'soporte') {
-        <button type="button" class="card-acceso" (click)="ir('/conocimiento')">
+        <button type="button" class="card-acceso" data-color="azul" (click)="ir('/conocimiento')">
           <span class="icono-cuadrado" aria-hidden="true">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M4 19.5A2.5 2.5 0 016.5 17H20" />
@@ -190,8 +364,9 @@
             <h3>Conocimiento</h3>
             <p>Abre la guía del caso y sigue los pasos.</p>
           </span>
+          <span class="flecha-wrap" aria-hidden="true"><svg class="flecha" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6" /></svg></span>
         </button>
-        <button type="button" class="card-acceso" (click)="ir('/error/nuevo')">
+        <button type="button" class="card-acceso" data-color="naranja" (click)="ir('/error/nuevo')">
           <span class="icono-cuadrado" aria-hidden="true">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <circle cx="12" cy="12" r="9" />
@@ -199,11 +374,12 @@
             </svg>
           </span>
           <span class="card-acceso-texto">
-            <h3>Errores</h3>
-            <p>Revisa reportes pendientes y busca solución.</p>
+            <h3>Nuevo error</h3>
+            <p>Registra un problema que aún no está documentado.</p>
           </span>
+          <span class="flecha-wrap" aria-hidden="true"><svg class="flecha" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6" /></svg></span>
         </button>
-        <button type="button" class="card-acceso verde" (click)="ir('/procedimientos')">
+        <button type="button" class="card-acceso" data-color="violeta" (click)="ir('/procedimientos')">
           <span class="icono-cuadrado" aria-hidden="true">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2" />
@@ -214,8 +390,9 @@
             <h3>Procedimientos</h3>
             <p>Ejecuta un procedimiento paso a paso.</p>
           </span>
+          <span class="flecha-wrap" aria-hidden="true"><svg class="flecha" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6" /></svg></span>
         </button>
-        <button type="button" class="card-acceso verde" (click)="ir('/ejecuciones')">
+        <button type="button" class="card-acceso" data-color="verde" (click)="ir('/ejecuciones')">
           <span class="icono-cuadrado" aria-hidden="true">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <circle cx="12" cy="12" r="9" />
@@ -226,9 +403,10 @@
             <h3>Mis ejecuciones</h3>
             <p>Continúa un procedimiento que quedó en curso.</p>
           </span>
+          <span class="flecha-wrap" aria-hidden="true"><svg class="flecha" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6" /></svg></span>
         </button>
       } @else {
-        <button type="button" class="card-acceso" (click)="ir('/conocimiento')">
+        <button type="button" class="card-acceso" data-color="azul" (click)="ir('/conocimiento')">
           <span class="icono-cuadrado" aria-hidden="true">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <circle cx="11" cy="11" r="8" />
@@ -239,8 +417,9 @@
             <h3>Buscar conocimiento</h3>
             <p>Encuentra un caso publicado parecido al tuyo.</p>
           </span>
+          <span class="flecha-wrap" aria-hidden="true"><svg class="flecha" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6" /></svg></span>
         </button>
-        <button type="button" class="card-acceso verde" (click)="ir('/procedimientos')">
+        <button type="button" class="card-acceso" data-color="violeta" (click)="ir('/procedimientos')">
           <span class="icono-cuadrado" aria-hidden="true">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2" />
@@ -251,8 +430,9 @@
             <h3>Procedimientos</h3>
             <p>Consulta los pasos publicados para resolver el caso.</p>
           </span>
+          <span class="flecha-wrap" aria-hidden="true"><svg class="flecha" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6" /></svg></span>
         </button>
-        <button type="button" class="card-acceso" (click)="ir('/favoritos')">
+        <button type="button" class="card-acceso" data-color="naranja" (click)="ir('/favoritos')">
           <span class="icono-cuadrado" aria-hidden="true">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M12 3.6l2.35 4.76 5.25.76-3.8 3.7.9 5.24L12 15.7l-4.7 2.46.9-5.24-3.8-3.7 5.25-.76L12 3.6z" />
@@ -268,8 +448,12 @@
               }
             </p>
           </span>
+          @if (favoritosCount() > 0) {
+            <span class="contador" aria-hidden="true">{{ favoritosCount() }}</span>
+          }
+          <span class="flecha-wrap" aria-hidden="true"><svg class="flecha" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6" /></svg></span>
         </button>
-        <button type="button" class="card-acceso verde" (click)="ir('/reportes')">
+        <button type="button" class="card-acceso" data-color="verde" (click)="ir('/reportes')">
           <span class="icono-cuadrado" aria-hidden="true">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M4 19V5M4 19h16" />
@@ -280,70 +464,83 @@
             <h3>Reportes</h3>
             <p>Revisa el uso de la base de conocimiento.</p>
           </span>
+          <span class="flecha-wrap" aria-hidden="true"><svg class="flecha" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6" /></svg></span>
         </button>
       }
     </div>
   </section>
 
   @if (isStaff()) {
-  <section class="frecuentes">
-    <div class="seccion-titulo">
-      <div>
-        <p class="eyebrow dark">{{ rolVista() === 'admin' ? 'Catálogo' : 'Atajos' }}</p>
-        <h2>{{ rolVista() === 'admin' ? 'Lo más usado del catálogo' : 'Procedimientos frecuentes' }}</h2>
+    <section class="frecuentes">
+      <div class="seccion-titulo">
+        <div>
+          <p class="eyebrow">{{ rolVista() === 'admin' ? 'Catálogo' : 'Atajos' }}</p>
+          <h2>{{ rolVista() === 'admin' ? 'Lo más usado del catálogo' : 'Procedimientos frecuentes' }}</h2>
+        </div>
+        <button type="button" class="link" (click)="ir('/procedimientos')">
+          Ver todo
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+        </button>
       </div>
-      <button type="button" class="link" (click)="ir('/procedimientos')">Ver todo →</button>
-    </div>
 
-    @if (error) {
-      <p class="estado-vacio">{{ error }}</p>
-    } @else if (!dashboard) {
-      <p class="estado-vacio"></p>
-    } @else if (dashboard.frecuentes.length === 0) {
-      <p class="estado-vacio">Aún no hay procedimientos ni temas frecuentes publicados.</p>
-    } @else {
-      <div class="grid-procedimientos">
-        @for (item of dashboard.frecuentes; track item.tipo + item.id) {
-          <button type="button" class="proc-card" (click)="irFrecuente(item)">
-            <span class="proc-icono" [attr.data-tipo]="item.tipo" aria-hidden="true">
-              @switch (item.tipo) {
-                @case ('HARDWARE') {
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <rect x="3" y="4" width="18" height="12" rx="2" />
-                    <path d="M8 20h8M12 16v4" />
-                  </svg>
+      @if (error) {
+        <p class="estado-vacio">{{ error }}</p>
+      } @else if (!dashboard) {
+        <p class="estado-vacio"></p>
+      } @else if (dashboard.frecuentes.length === 0) {
+        <p class="estado-vacio">Aún no hay procedimientos ni temas frecuentes publicados.</p>
+      } @else {
+        <div class="grid-procedimientos">
+          @for (item of dashboard.frecuentes; track item.tipo + item.id; let i = $index) {
+            <button type="button" class="proc-card" [style.animation-delay.ms]="i * 60" (click)="irFrecuente(item)">
+              <span class="proc-icono" [attr.data-tipo]="item.tipo" aria-hidden="true">
+                @switch (item.tipo) {
+                  @case ('HARDWARE') {
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <rect x="3" y="4" width="18" height="12" rx="2" />
+                      <path d="M8 20h8M12 16v4" />
+                    </svg>
+                  }
+                  @case ('CATEGORIA') {
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M4 19.5A2.5 2.5 0 016.5 17H20" />
+                      <path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z" />
+                    </svg>
+                  }
+                  @default {
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2" />
+                      <rect x="9" y="3" width="6" height="4" rx="1" />
+                    </svg>
+                  }
                 }
-                @case ('CATEGORIA') {
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M4 19.5A2.5 2.5 0 016.5 17H20" />
-                    <path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z" />
-                  </svg>
+              </span>
+              <h4>{{ item.titulo }}</h4>
+              <p class="proc-categoria">{{ item.subtitulo }}</p>
+              <span class="proc-pie">
+                @if (item.pasos != null) {
+                  <span class="proc-pasos">{{ item.pasos }} paso{{ item.pasos === 1 ? '' : 's' }}</span>
                 }
-                @default {
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2" />
-                    <rect x="9" y="3" width="6" height="4" rx="1" />
-                  </svg>
-                }
-              }
-            </span>
-            <h4>{{ item.titulo }}</h4>
-            <p class="proc-categoria">{{ item.subtitulo }}</p>
-            @if (item.pasos != null) {
-              <span class="proc-pasos">{{ item.pasos }} paso{{ item.pasos === 1 ? '' : 's' }}</span>
-            }
-          </button>
-        }
-      </div>
-    }
-  </section>
+                <span class="proc-abrir">
+                  Abrir
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+                </span>
+              </span>
+            </button>
+          }
+        </div>
+      }
+    </section>
   }
 
   <p class="pie">
-    @if (dashboard?.ultimaActualizacion) {
-      Última actualización de conocimiento: {{ dashboard?.ultimaActualizacion | date: 'dd/MM/yyyy HH:mm' }}
-    } @else {
-      Soporte TI · Holding Dimarsa
-    }
+    <span class="pie-pill">
+      <span class="punto-vivo verde"></span>
+      @if (dashboard?.ultimaActualizacion) {
+        Última actualización de conocimiento: {{ dashboard?.ultimaActualizacion | date: 'dd/MM/yyyy HH:mm' }}
+      } @else {
+        Soporte TI · Holding Dimarsa
+      }
+    </span>
   </p>
 </div>

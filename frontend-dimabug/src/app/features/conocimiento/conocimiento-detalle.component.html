@@ -73,25 +73,50 @@
         </div>
       </dl>
     </header>
+    @if (puedeGestionar()) {
+      <div class="gestion">
+        <p class="gestion-registro">
+          <span>Creado por <strong>{{ kb.creadoPor || '—' }}</strong></span>
+          <span>Creado <strong>{{ kb.fechaCreacion ? (kb.fechaCreacion | date: 'dd/MM/yyyy HH:mm') : '—' }}</strong></span>
+          <span>Actualizado <strong>{{ kb.fechaModificacion ? (kb.fechaModificacion | date: 'dd/MM/yyyy HH:mm') : '—' }}</strong></span>
+        </p>
+        <div class="gestion-acciones">
+          @if (kb.estado === 'PUBLICADO' && !estaModificando) {
+            <button type="button" class="accion principal" title="Cambia el nombre, la descripción, el hardware, el sistema y el módulo." (click)="editar()">
+              Editar ficha
+            </button>
+          }
+          @if (kb.estado === 'PUBLICADO') {
+            <button type="button" class="accion" title="Pasa a borrador. El equipo deja de verlo hasta que se publique otra vez." (click)="cambiarEstado('BORRADOR')" [disabled]="publishing">
+              {{ publishing ? 'Guardando…' : 'Pasar a borrador' }}
+            </button>
+          }
+          @if (esAdministrador()) {
+            <button type="button" class="accion peligro" title="Lo quita del sistema. Después no se puede recuperar." (click)="pedirEliminar()" [disabled]="eliminando">
+              Eliminar
+            </button>
+          }
+          <a class="accion volver" routerLink="/conocimiento" title="Regresa a todos los conocimientos, sin cambiar este.">Volver</a>
+        </div>
+      </div>
+    }
 
-    <div class="barra-estado">
-      <p class="rol-nota">
-        @if (kb.estado === 'BORRADOR' && esAdministrador()) {
-          Este caso está en borrador. Puedes publicarlo para que el resto lo consulte.
-        } @else if (kb.estado === 'BORRADOR' && puedeGestionar()) {
-          Este caso está en borrador. Puedes completar síntomas, causas, pruebas y soluciones. Publicarlo lo hace un administrador.
-        } @else if (kb.estado === 'PUBLICADO') {
-          Este caso está publicado y disponible para consulta.
-        } @else {
-          Guía publicada para consulta.
+    @if (kb.estado === 'BORRADOR') {
+      <div class="barra-estado">
+        <p class="rol-nota">
+          @if (esAdministrador()) {
+            Este caso está en borrador. Puedes publicarlo para que el resto lo consulte.
+          } @else {
+            Este caso está en borrador. Puedes completar síntomas, causas, pruebas y soluciones. Publicarlo lo hace un administrador.
+          }
+        </p>
+        @if (esAdministrador()) {
+          <button type="button" class="btn-publicar" (click)="cambiarEstado('PUBLICADO')" [disabled]="publishing">
+            {{ publishing ? 'Publicando…' : 'Publicar' }}
+          </button>
         }
-      </p>
-      @if (esAdministrador() && kb.estado === 'BORRADOR') {
-        <button type="button" class="btn-publicar" (click)="cambiarEstado('PUBLICADO')" [disabled]="publishing">
-          {{ publishing ? 'Publicando…' : 'Publicar' }}
-        </button>
-      }
-    </div>
+      </div>
+    }
 
     @if (puedeGestionar() && kb.comentario) {
       <aside class="nota">
@@ -614,30 +639,6 @@
         </button>
       </footer>
     </div>
-
-    @if (!embebido && puedeGestionar()) {
-    <section class="ficha-bar">
-      <dl>
-        <div><dt>Creado por</dt><dd>{{ kb.creadoPor || '—' }}</dd></div>
-        <div><dt>Creado</dt><dd>{{ kb.fechaCreacion ? (kb.fechaCreacion | date: 'dd/MM/yyyy HH:mm') : '—' }}</dd></div>
-        <div><dt>Actualizado</dt><dd>{{ kb.fechaModificacion ? (kb.fechaModificacion | date: 'dd/MM/yyyy HH:mm') : '—' }}</dd></div>
-      </dl>
-      <div class="ficha-acciones">
-        @if (kb.estado === 'PUBLICADO' && !estaModificando) {
-          <button type="button" class="ghost" (click)="editar()">Editar ficha</button>
-        }
-        @if (kb.estado === 'PUBLICADO') {
-          <button type="button" class="ghost" (click)="cambiarEstado('BORRADOR')" [disabled]="publishing">
-            {{ publishing ? 'Guardando…' : 'Volver a borrador' }}
-          </button>
-        }
-        @if (esAdministrador()) {
-          <button type="button" class="ghost peligro" (click)="pedirEliminar()" [disabled]="eliminando">Eliminar</button>
-        }
-        <a class="ghost link" routerLink="/conocimiento">Volver al listado</a>
-      </div>
-    </section>
-    }
   </article>
 }
 

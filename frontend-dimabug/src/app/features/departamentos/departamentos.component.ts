@@ -2,11 +2,12 @@ import { Component, DestroyRef, OnInit, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { OrganizacionService } from '../../core/services/organizacion.service';
 import { DepartamentoItem } from '../../core/models/catalogo.model';
+import { AyudaFranjaComponent } from '../../shared/ui/ayuda-franja.component';
 import { LoadingModalComponent } from '../../shared/ui/loading-modal.component';
 @Component({
   selector: 'app-departamentos',
   standalone: true,
-  imports: [LoadingModalComponent],
+  imports: [LoadingModalComponent, AyudaFranjaComponent],
   templateUrl: './departamentos.component.html',
   styleUrls: ['../../shared/ui/catalogo-page.css', './departamentos.component.css'],
 })
@@ -14,7 +15,7 @@ export class DepartamentosComponent implements OnInit {
   private readonly organizacion = inject(OrganizacionService);
   private readonly destroyRef = inject(DestroyRef);
 
-  items: DepartamentoItem[] = [];
+  items: DepartamentoItem[] = this.organizacion.departamentosEnSesion();
   loading = false;
   error = '';
   detalle: DepartamentoItem | null = null;
@@ -30,6 +31,10 @@ export class DepartamentosComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    const guardados = this.organizacion.departamentosEnSesion();
+    if (guardados.length) {
+      this.items = guardados;
+    }
     this.cargar();
   }
 

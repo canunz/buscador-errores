@@ -4,6 +4,8 @@ import {
   Observable,
   catchError,
   concat,
+  finalize,
+  forkJoin,
   from,
   map,
   mergeMap,
@@ -68,7 +70,32 @@ export class ConocimientoService {
   /** Ids eliminados en esta sesión, para que un listado ya en curso no los vuelva a pintar. */
   private readonly retirados = new Set<number>();
   private seccionCache = new Map<string, unknown>();
+  private readonly seccionEnVuelo = new Map<string, Observable<unknown>>();
+  private readonly seccionMarca = new Map<string, number>();
+  private readonly colaGuia: number[] = [];
+  private guiaEnCurso = false;
   private solucionesCatalogoCache$: Observable<SolucionCatalogoItem[]> | null = null;
+
+  /** Lectura síncrona de la última lista, para pintar la pantalla sin esperar la red. */
+  listaEnSesion(): Conocimiento[] {
+    return this.readListaSession() ?? [];
+  }
+
+  /** Coincidencias locales sobre la lista ya guardada. No llama al servidor. */
+  parecidos(texto: string, limite = 8): Conocimiento[] {
+    const palabras = this.palabras(texto);
+    if (!palabras.length) {
+      return [];
+    }
+    const consulta = palabras.join(' ');
+    return this.listaEnSesion()
+      .filter((item) => item.estado === 'PUBLICADO')
+      .map((item) => ({ item, puntos: this.puntos(item, palabras, consulta) }))
+      .filter((fila) => fila.puntos > 0)
+      .sort((a, b) => b.puntos - a.puntos || a.item.titulo.localeCompare(b.item.titulo, 'es'))
+      .slice(0, limite)
+      .map((fila) => fila.item);
+  }
 
   /** Emite caché de sesión al instante y refresca en segundo plano (sin tocar el backend). */
   listar(force = false): Observable<Conocimiento[]> {
@@ -144,9 +171,50 @@ export class ConocimientoService {
     );
   }
 
-  /** Lectura síncrona de la ficha si ya está en memoria (listado / visita previa). */
+  /** Lectura síncrona de la ficha si ya está en memoria o en la lista guardada. */
   peekDetalle(id: number): Conocimiento | null {
-    return this.detalleCache.get(id) ?? null;
+    const enMemoria = this.detalleCache.get(id);
+    if (enMemoria) {
+      return enMemoria;
+    }
+    const deLista = this.listaEnSesion().find((item) => item.id === id) ?? null;
+    if (deLista) {
+      this.detalleCache.set(id, deLista);
+    }
+    return deLista;
+  }
+
+  /** Deja la sección escrita al instante, sin esperar otra consulta. */
+  recordarSeccion(clave: string, valor: unknown): void {
+    this.seccionMarca.set(clave, (this.seccionMarca.get(clave) ?? 0) + 1);
+    this.guardarSeccion(clave, valor);
+  }
+
+  /** Sección ya guardada (síntomas, causas, pruebas, soluciones o material). */
+  leerSeccion<T>(clave: string): T | null {
+    if (this.seccionCache.has(clave)) {
+      return this.seccionCache.get(clave) as T;
+    }
+    const guardada = this.leerSeccionLocal<T>(clave);
+    if (guardada != null) {
+      this.seccionCache.set(clave, guardada);
+    }
+    return guardada;
+  }
+
+  /** Pide la guía completa. `ya` la dispara al abrir; si no, entra a una cola para no saturar. */
+  precargarGuia(id: number, ya = false): void {
+    if (this.guiaCompleta(id)) {
+      return;
+    }
+    if (ya) {
+      this.dispararGuia(id);
+      return;
+    }
+    if (!this.colaGuia.includes(id)) {
+      this.colaGuia.push(id);
+    }
+    this.seguirColaGuia();
   }
 
   crear(request: ConocimientoRequest): Observable<Conocimiento> {
@@ -204,7 +272,7 @@ export class ConocimientoService {
       `${this.base}/${conocimientoId}/sintomas`,
       request,
       'No fue posible crear el síntoma.',
-    ).pipe(tap(() => this.clearSeccion(`sintomas:${conocimientoId}`)));
+    );
   }
 
   modificarSintoma(conocimientoId: number, sintomaId: number, request: OrdenRequest): Observable<ItemOrdenado> {
@@ -212,7 +280,7 @@ export class ConocimientoService {
       `${this.base}/${conocimientoId}/sintomas/${sintomaId}`,
       request,
       'No fue posible actualizar el síntoma.',
-    ).pipe(tap(() => this.clearSeccion(`sintomas:${conocimientoId}`)));
+    );
   }
 
   listarCausas(conocimientoId: number, force = false): Observable<ItemOrdenado[]> {
@@ -228,7 +296,7 @@ export class ConocimientoService {
       `${this.base}/${conocimientoId}/causas`,
       request,
       'No fue posible crear la causa.',
-    ).pipe(tap(() => this.clearSeccion(`causas:${conocimientoId}`)));
+    );
   }
 
   modificarCausa(conocimientoId: number, causaId: number, request: OrdenRequest): Observable<ItemOrdenado> {
@@ -236,7 +304,7 @@ export class ConocimientoService {
       `${this.base}/${conocimientoId}/causas/${causaId}`,
       request,
       'No fue posible actualizar la causa.',
-    ).pipe(tap(() => this.clearSeccion(`causas:${conocimientoId}`)));
+    );
   }
 
   listarPruebas(conocimientoId: number, force = false): Observable<PruebaAsociada[]> {
@@ -260,7 +328,6 @@ export class ConocimientoService {
   asociarPrueba(conocimientoId: number, request: AsociarPruebaRequest): Observable<PruebaAsociada> {
     return this.http.post<unknown>(`${this.base}/${conocimientoId}/pruebas`, request).pipe(
       map((res) => this.normalizePrueba(res)),
-      tap(() => this.clearSeccion(`pruebas:${conocimientoId}`)),
       catchError((err: HttpErrorResponse) =>
         throwError(() => new Error(mensajeApiError(err, 'No fue posible asociar la prueba.'))),
       ),
@@ -274,7 +341,6 @@ export class ConocimientoService {
   ): Observable<PruebaAsociada> {
     return this.http.put<unknown>(`${this.base}/${conocimientoId}/pruebas/${pruebaId}`, request).pipe(
       map((res) => this.normalizePrueba(res)),
-      tap(() => this.clearSeccion(`pruebas:${conocimientoId}`)),
       catchError((err: HttpErrorResponse) =>
         throwError(() => new Error(mensajeApiError(err, 'No fue posible actualizar la prueba asociada.'))),
       ),
@@ -384,7 +450,6 @@ export class ConocimientoService {
     return this.http.post<unknown>(`${this.base}/${conocimientoId}/soluciones`, request).pipe(
       map((res) => this.normalizeSolucion(res)),
       tap(() => {
-        this.clearSeccion(`soluciones:${conocimientoId}`);
         this.solucionesCatalogoCache$ = null;
         sessionStorage.removeItem(this.solucionesCatalogoKey);
       }),
@@ -402,7 +467,6 @@ export class ConocimientoService {
     return this.http.put<unknown>(`${this.base}/${conocimientoId}/soluciones/${solucionId}`, request).pipe(
       map((res) => this.normalizeSolucion(res)),
       tap(() => {
-        this.clearSeccion(`soluciones:${conocimientoId}`);
         this.solucionesCatalogoCache$ = null;
         sessionStorage.removeItem(this.solucionesCatalogoKey);
       }),
@@ -466,7 +530,6 @@ export class ConocimientoService {
       .post<unknown>(`${this.base}/${conocimientoId}/soluciones/${solucionId}/asignaciones`, request)
       .pipe(
         map((res) => this.normalizeAsignacion(res)),
-        tap(() => this.clearSeccion(`asignaciones:${conocimientoId}:${solucionId}`)),
         catchError((err: HttpErrorResponse) =>
           throwError(() => new Error(mensajeApiError(err, 'No fue posible crear la asignación.'))),
         ),
@@ -486,7 +549,6 @@ export class ConocimientoService {
       )
       .pipe(
         map((res) => this.normalizeAsignacion(res)),
-        tap(() => this.clearSeccion(`asignaciones:${conocimientoId}:${solucionId}`)),
         catchError((err: HttpErrorResponse) =>
           throwError(() => new Error(mensajeApiError(err, 'No fue posible actualizar la asignación.'))),
         ),
@@ -510,7 +572,6 @@ export class ConocimientoService {
   crearMaterial(conocimientoId: number, request: MaterialRequest): Observable<MaterialApoyo> {
     return this.http.post<unknown>(`${this.base}/${conocimientoId}/materiales`, request).pipe(
       map((res) => this.normalizeMaterial(res)),
-      tap(() => this.clearSeccion(`materiales:${conocimientoId}`)),
       catchError((err: HttpErrorResponse) =>
         throwError(() => new Error(mensajeApiError(err, 'No fue posible crear el material.'))),
       ),
@@ -530,7 +591,6 @@ export class ConocimientoService {
       )
       .pipe(
         map((res) => this.normalizeMaterial(res)),
-        tap(() => this.clearSeccion(`materiales:${conocimientoId}`)),
         catchError((err: HttpErrorResponse) =>
           throwError(() => new Error(mensajeApiError(err, 'No fue posible subir el archivo.'))),
         ),
@@ -552,7 +612,6 @@ export class ConocimientoService {
   eliminarMaterial(conocimientoId: number, materialId: number): Observable<void> {
     return this.http.delete(`${this.base}/${conocimientoId}/materiales/${materialId}`, { responseType: 'text' }).pipe(
       map(() => undefined),
-      tap(() => this.clearSeccion(`materiales:${conocimientoId}`)),
       catchError((err: HttpErrorResponse) =>
         throwError(() => new Error(mensajeApiError(err, 'No fue posible eliminar el material.'))),
       ),
@@ -566,70 +625,135 @@ export class ConocimientoService {
   ): Observable<MaterialApoyo> {
     return this.http.put<unknown>(`${this.base}/${conocimientoId}/materiales/${materialId}`, request).pipe(
       map((res) => this.normalizeMaterial(res)),
-      tap(() => this.clearSeccion(`materiales:${conocimientoId}`)),
       catchError((err: HttpErrorResponse) =>
         throwError(() => new Error(mensajeApiError(err, 'No fue posible actualizar el material.'))),
       ),
     );
   }
 
-  private getCached<T>(key: string, factory: () => Observable<T>, force: boolean): Observable<T> {
-    if (!force && this.seccionCache.has(key)) {
-      const cached = this.seccionCache.get(key) as T;
-      // Refresco en segundo plano sin bloquear la UI.
-      factory()
-        .pipe(
-          tap((value) => this.seccionCache.set(key, value)),
-          catchError(() => of(cached)),
-        )
-        .subscribe();
-      return of(cached);
-    }
+  private guiaCompleta(id: number): boolean {
+    return ['sintomas', 'causas', 'pruebas', 'soluciones', 'materiales'].every(
+      (seccion) => this.leerSeccion(`${seccion}:${id}`) != null,
+    );
+  }
 
-    const sessionKey = `dimabug.seccion.${key}`;
+  private dispararGuia(id: number): void {
+    if (this.guiaCompleta(id)) {
+      return;
+    }
+    forkJoin([
+      this.listarSintomas(id),
+      this.listarCausas(id),
+      this.listarPruebas(id),
+      this.listarSoluciones(id),
+      this.listarMateriales(id),
+    ])
+      .pipe(take(1))
+      .subscribe({ error: () => undefined });
+  }
+
+  private seguirColaGuia(): void {
+    if (this.guiaEnCurso || !this.colaGuia.length) {
+      return;
+    }
+    const id = this.colaGuia.shift();
+    if (id == null) {
+      return;
+    }
+    if (this.guiaCompleta(id)) {
+      this.seguirColaGuia();
+      return;
+    }
+    this.guiaEnCurso = true;
+    forkJoin([
+      this.listarSintomas(id),
+      this.listarCausas(id),
+      this.listarPruebas(id),
+      this.listarSoluciones(id),
+      this.listarMateriales(id),
+    ])
+      .pipe(
+        take(1),
+        finalize(() => {
+          this.guiaEnCurso = false;
+          this.seguirColaGuia();
+        }),
+      )
+      .subscribe({ error: () => undefined });
+  }
+
+  private getCached<T>(key: string, factory: () => Observable<T>, force: boolean): Observable<T> {
     if (!force) {
-      try {
-        const raw = sessionStorage.getItem(sessionKey);
-        if (raw) {
-          const stale = JSON.parse(raw) as T;
-          this.seccionCache.set(key, stale);
-          factory()
-            .pipe(
-              tap((value) => {
-                this.seccionCache.set(key, value);
-                try {
-                  sessionStorage.setItem(sessionKey, JSON.stringify(value));
-                } catch {
-                  // ignore
-                }
-              }),
-              catchError(() => of(stale)),
-            )
-            .subscribe();
-          return of(stale);
-        }
-      } catch {
-        // ignore
+      const lista = this.leerSeccion<T>(key);
+      if (lista != null) {
+        this.refrescarSeccion(key, factory);
+        return of(lista);
+      }
+      const enVuelo = this.seccionEnVuelo.get(key);
+      if (enVuelo) {
+        return enVuelo as Observable<T>;
       }
     }
 
-    return factory().pipe(
-      tap((value) => {
-        this.seccionCache.set(key, value);
-        try {
-          sessionStorage.setItem(sessionKey, JSON.stringify(value));
-        } catch {
-          // ignore
-        }
-      }),
+    const marca = this.seccionMarca.get(key) ?? 0;
+    const pedido$ = factory().pipe(
+      tap((value) => this.guardarSeccion(key, value, marca)),
+      finalize(() => this.seccionEnVuelo.delete(key)),
       shareReplay(1),
     );
+    this.seccionEnVuelo.set(key, pedido$);
+    return pedido$;
+  }
+
+  private refrescarSeccion<T>(key: string, factory: () => Observable<T>): void {
+    if (this.seccionEnVuelo.has(key)) {
+      return;
+    }
+    const marca = this.seccionMarca.get(key) ?? 0;
+    const pedido$ = factory().pipe(
+      tap((value) => this.guardarSeccion(key, value, marca)),
+      catchError(() => of(undefined)),
+      finalize(() => this.seccionEnVuelo.delete(key)),
+      shareReplay(1),
+    );
+    this.seccionEnVuelo.set(key, pedido$);
+    pedido$.subscribe();
+  }
+
+  private guardarSeccion(key: string, value: unknown, marca?: number): void {
+    if (marca != null && (this.seccionMarca.get(key) ?? 0) !== marca) {
+      return;
+    }
+    this.seccionCache.set(key, value);
+    try {
+      localStorage.setItem(this.claveSeccion(key), JSON.stringify(value));
+    } catch {
+      // cuota o modo privado
+    }
+  }
+
+  private leerSeccionLocal<T>(key: string): T | null {
+    try {
+      const raw = localStorage.getItem(this.claveSeccion(key)) ?? sessionStorage.getItem(this.claveSeccion(key));
+      if (!raw) {
+        return null;
+      }
+      return JSON.parse(raw) as T;
+    } catch {
+      return null;
+    }
+  }
+
+  private claveSeccion(key: string): string {
+    return `dimabug.seccion.${key}`;
   }
 
   private clearSeccion(key: string): void {
     this.seccionCache.delete(key);
+    this.seccionEnVuelo.delete(key);
     try {
-      sessionStorage.removeItem(`dimabug.seccion.${key}`);
+      localStorage.removeItem(this.claveSeccion(key));
+      sessionStorage.removeItem(this.claveSeccion(key));
     } catch {
       // ignore
     }
@@ -726,13 +850,16 @@ export class ConocimientoService {
     const prefix = `dimabug.seccion.asignaciones:${id}:`;
     try {
       const keys: string[] = [];
-      for (let i = 0; i < sessionStorage.length; i += 1) {
-        const key = sessionStorage.key(i);
-        if (key?.startsWith(prefix)) {
-          keys.push(key);
+      for (const store of [localStorage, sessionStorage]) {
+        for (let i = 0; i < store.length; i += 1) {
+          const key = store.key(i);
+          if (key?.startsWith(prefix)) {
+            keys.push(key);
+          }
         }
       }
       for (const key of keys) {
+        localStorage.removeItem(key);
         sessionStorage.removeItem(key);
       }
     } catch {
@@ -770,6 +897,41 @@ export class ConocimientoService {
         this.seccionCache.delete(key);
       }
     }
+  }
+
+  private palabras(texto: string): string[] {
+    return this.plano(texto)
+      .split(/[^a-z0-9]+/)
+      .filter((palabra) => palabra.length >= 2);
+  }
+
+  private plano(texto: string): string {
+    return texto
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase();
+  }
+
+  private puntos(item: Conocimiento, palabras: string[], consulta: string): number {
+    const titulo = this.plano(item.titulo);
+    const bolsa = this.plano(
+      [item.titulo, item.descripcion, item.hardwareNombre, item.sistemaNombre, item.moduloNombre, item.frecuenciaNombre]
+        .filter(Boolean)
+        .join(' '),
+    );
+    if (!palabras.every((palabra) => bolsa.includes(palabra))) {
+      return 0;
+    }
+    let puntos = 1;
+    if (titulo.includes(consulta)) {
+      puntos += 8;
+    }
+    for (const palabra of palabras) {
+      if (titulo.includes(palabra)) {
+        puntos += 3;
+      }
+    }
+    return puntos;
   }
 
   private readListaSession(): Conocimiento[] | null {

@@ -5,13 +5,14 @@ import { forkJoin, of } from 'rxjs';
 import { CatalogoRef, ConocimientoRequest } from '../../core/models/conocimiento.model';
 import { ClasificacionService } from '../../core/services/clasificacion.service';
 import { ConocimientoService } from '../../core/services/conocimiento.service';
+import { AyudaFranjaComponent } from '../../shared/ui/ayuda-franja.component';
 import { LoadingModalComponent } from '../../shared/ui/loading-modal.component';
 import { ConocimientoDetalleComponent } from './conocimiento-detalle.component';
 
 @Component({
   selector: 'app-conocimiento-form',
   standalone: true,
-  imports: [ReactiveFormsModule, RouterLink, LoadingModalComponent, ConocimientoDetalleComponent],
+  imports: [ReactiveFormsModule, RouterLink, LoadingModalComponent, ConocimientoDetalleComponent, AyudaFranjaComponent],
   templateUrl: './conocimiento-form.component.html',
   styleUrls: ['./conocimiento.component.css', './conocimiento-form.component.css'],
 })

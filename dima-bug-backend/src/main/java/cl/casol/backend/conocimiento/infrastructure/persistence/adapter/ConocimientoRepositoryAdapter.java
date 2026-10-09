@@ -32,7 +32,7 @@ public class ConocimientoRepositoryAdapter implements ConocimientoRepository {
 
     @Override
     public List<Conocimiento> buscarTodos() {
-        return repository.findAllByEstadoNotOrderByFechaCreacionDesc(EstadoConocimiento.ELIMINADO).stream()
+        return repository.listarConRelaciones(EstadoConocimiento.ELIMINADO).stream()
                 .map(ConocimientoMapper::toDomain).toList();
     }
 

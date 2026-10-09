@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { Ejecucion, EjecucionPaso, ProcedimientoResumen } from '../../core/models/ejecucion.model';
 import { EjecucionService } from '../../core/services/ejecucion.service';
+import { ProcedimientoService } from '../../core/services/procedimiento.service';
 import { LoadingModalComponent } from '../../shared/ui/loading-modal.component';
 
 @Component({
@@ -15,13 +16,15 @@ import { LoadingModalComponent } from '../../shared/ui/loading-modal.component';
 })
 export class EjecucionChecklistComponent implements OnInit {
   private readonly ejecuciones = inject(EjecucionService);
+  private readonly procedimientos = inject(ProcedimientoService);
   private readonly route = inject(ActivatedRoute);
 
   ejecucion: Ejecucion | null = null;
   procedimiento: ProcedimientoResumen | null = null;
   pasos: EjecucionPaso[] = [];
   borradores: Record<number, string> = {};
-  loading = true;
+  loading = false;
+  cargandoPasos = false;
   error = '';
   guardando: number | null = null;
   completando = false;
@@ -29,6 +32,8 @@ export class EjecucionChecklistComponent implements OnInit {
   confirmarCancelacion = false;
   motivoCancelacion = '';
   pasoActual = 1;
+  observacionListaId: number | null = null;
+  private readonly versiones = new Map<number, number>();
 
   ngOnInit(): void {
     const id = Number(this.route.snapshot.paramMap.get('id'));
@@ -53,6 +58,12 @@ export class EjecucionChecklistComponent implements OnInit {
       return 0;
     }
     return Math.round((this.cumplidos * 100) / this.pasos.length);
+  }
+
+  readonly circunferencia = 2 * Math.PI * 42;
+
+  get anilloOffset(): number {
+    return this.circunferencia * (1 - this.porcentaje / 100);
   }
 
   get paso(): EjecucionPaso | null {
@@ -81,50 +92,82 @@ export class EjecucionChecklistComponent implements OnInit {
   }
 
   marcar(paso: EjecucionPaso, cumplido: boolean): void {
-    if (!this.enCurso || this.guardando != null || this.completando || this.cancelando) {
+    if (!this.enCurso || !this.ejecucion || this.completando || this.cancelando) {
       return;
     }
-    this.guardando = paso.ejecucionPasoId;
+    const ejecucionId = this.ejecucion.id;
+    const version = this.version(paso.ejecucionPasoId);
+    const previo = this.pasos;
+    const observacion = (this.borradores[paso.ejecucionPasoId] ?? paso.observacion ?? '').trim();
+    this.pasos = this.pasos.map((item) =>
+      item.ejecucionPasoId === paso.ejecucionPasoId ? { ...item, cumplido, observacion: observacion || null } : item,
+    );
+    this.ejecuciones.fijarPasos(ejecucionId, this.pasos);
     this.error = '';
     this.ejecuciones
-      .actualizarPaso(this.ejecucion!.id, paso.ejecucionPasoId, {
+      .actualizarPaso(ejecucionId, paso.ejecucionPasoId, {
         cumplido,
-        observacion: this.borradores[paso.ejecucionPasoId] ?? paso.observacion,
+        observacion,
       })
       .subscribe({
         next: (actualizado) => {
+          if (!this.vigente(paso.ejecucionPasoId, version)) {
+            return;
+          }
           this.reemplazar(actualizado);
-          this.guardando = null;
         },
         error: (err: Error) => {
-          this.guardando = null;
+          if (!this.vigente(paso.ejecucionPasoId, version)) {
+            return;
+          }
+          this.pasos = previo;
+          this.ejecuciones.fijarPasos(ejecucionId, previo);
           this.error = err.message;
-          this.recargarPasos();
         },
       });
   }
 
+  alEscribirObservacion(paso: EjecucionPaso, texto: string): void {
+    if (this.observacionListaId === paso.ejecucionPasoId && (paso.observacion ?? '') !== texto.trim()) {
+      this.observacionListaId = null;
+    }
+  }
+
   guardarObservacion(paso: EjecucionPaso): void {
-    const texto = this.borradores[paso.ejecucionPasoId] ?? '';
-    if (!this.enCurso || this.guardando != null || texto.length > 300) {
+    const texto = (this.borradores[paso.ejecucionPasoId] ?? '').trim();
+    if (!this.enCurso || !this.ejecucion || texto.length > 300) {
       return;
     }
-    this.guardando = paso.ejecucionPasoId;
+    const ejecucionId = this.ejecucion.id;
+    const version = this.version(paso.ejecucionPasoId);
+    const previo = this.pasos;
+    this.borradores[paso.ejecucionPasoId] = texto;
+    this.pasos = this.pasos.map((item) =>
+      item.ejecucionPasoId === paso.ejecucionPasoId ? { ...item, observacion: texto || null } : item,
+    );
+    this.ejecuciones.fijarPasos(ejecucionId, this.pasos);
+    this.observacionListaId = paso.ejecucionPasoId;
     this.error = '';
     this.ejecuciones
-      .actualizarPaso(this.ejecucion!.id, paso.ejecucionPasoId, {
+      .actualizarPaso(ejecucionId, paso.ejecucionPasoId, {
         cumplido: paso.cumplido,
         observacion: texto,
       })
       .subscribe({
         next: (actualizado) => {
-          this.reemplazar(actualizado);
-          this.guardando = null;
+          if (!this.vigente(paso.ejecucionPasoId, version)) {
+            return;
+          }
+          this.reemplazar({ ...actualizado, observacion: actualizado.observacion ?? (texto || null) });
         },
         error: (err: Error) => {
-          this.guardando = null;
+          if (!this.vigente(paso.ejecucionPasoId, version)) {
+            return;
+          }
+          this.pasos = previo;
+          this.ejecuciones.fijarPasos(ejecucionId, previo);
+          this.observacionListaId = null;
           this.error = err.message;
-          this.recargarPasos();
         },
       });
   }
@@ -184,31 +227,73 @@ export class EjecucionChecklistComponent implements OnInit {
   }
 
   private cargar(id: number): void {
-    this.loading = true;
     this.error = '';
+    const guardada = this.ejecuciones.detalleEnSesion(id) ?? this.ejecuciones.listaEnSesion().find((item) => item.id === id) ?? null;
+    if (guardada) {
+      this.ejecucion = guardada;
+      this.pintarNombre(guardada.procedimientoId);
+    }
+    const pasosGuardados = this.ejecuciones.pasosEnSesion(id);
+    if (pasosGuardados?.length) {
+      this.aplicarPasos(pasosGuardados, true);
+    }
+    this.loading = !guardada;
+    this.cargandoPasos = !pasosGuardados?.length;
+    this.procedimientos.listar().subscribe({
+      next: () => {
+        if (this.ejecucion) {
+          this.pintarNombre(this.ejecucion.procedimientoId);
+        }
+      },
+      error: () => undefined,
+    });
+    const marca = this.ejecuciones.marcaPasos(id);
+
     this.ejecuciones.obtener(id).subscribe({
       next: (ejecucion) => {
         this.ejecucion = ejecucion;
+        this.loading = false;
+        this.pintarNombre(ejecucion.procedimientoId);
         this.ejecuciones.obtenerProcedimiento(ejecucion.procedimientoId).subscribe({
           next: (procedimiento) => (this.procedimiento = procedimiento),
-          error: () => (this.procedimiento = null),
-        });
-        this.ejecuciones.obtenerPasos(id).subscribe({
-          next: (pasos) => {
-            this.aplicarPasos(pasos);
-            this.loading = false;
-          },
-          error: (err: Error) => {
-            this.error = err.message;
-            this.loading = false;
-          },
+          error: () => undefined,
         });
       },
       error: (err: Error) => {
-        this.error = err.message;
+        if (!this.ejecucion) {
+          this.error = err.message;
+        }
         this.loading = false;
       },
     });
+    this.ejecuciones.obtenerPasos(id).subscribe({
+      next: (pasos) => {
+        if (this.ejecuciones.marcaPasos(id) !== marca) {
+          return;
+        }
+        this.cargandoPasos = false;
+        this.aplicarPasos(pasos, this.pasos.length === 0);
+      },
+      error: (err: Error) => {
+        this.cargandoPasos = false;
+        if (!this.pasos.length) {
+          this.error = err.message;
+        }
+      },
+    });
+  }
+
+  private pintarNombre(procedimientoId: number): void {
+    const item = this.procedimientos.listaEnSesion().find((procedimiento) => procedimiento.id === procedimientoId);
+    if (!item) {
+      return;
+    }
+    this.procedimiento = {
+      id: item.id,
+      nombre: item.nombre,
+      descripcion: item.descripcion,
+      estado: item.estado,
+    };
   }
 
   private recargarPasos(): void {
@@ -216,24 +301,44 @@ export class EjecucionChecklistComponent implements OnInit {
       return;
     }
     this.ejecuciones.obtenerPasos(this.ejecucion.id).subscribe({
-      next: (pasos) => this.aplicarPasos(pasos),
+      next: (pasos) => this.aplicarPasos(pasos, false),
       error: (err: Error) => (this.error = err.message),
     });
   }
 
-  private aplicarPasos(pasos: EjecucionPaso[]): void {
+  private aplicarPasos(pasos: EjecucionPaso[], inicial: boolean): void {
     this.pasos = pasos;
     for (const paso of pasos) {
-      this.borradores[paso.ejecucionPasoId] = paso.observacion ?? '';
+      if (inicial || this.borradores[paso.ejecucionPasoId] == null) {
+        this.borradores[paso.ejecucionPasoId] = paso.observacion ?? '';
+      }
+    }
+    if (!inicial) {
+      return;
     }
     const pendiente = pasos.findIndex((paso) => !paso.cumplido);
     this.pasoActual = pendiente >= 0 ? pendiente + 1 : 1;
+  }
+
+  private version(pasoId: number): number {
+    const siguiente = (this.versiones.get(pasoId) ?? 0) + 1;
+    this.versiones.set(pasoId, siguiente);
+    return siguiente;
+  }
+
+  private vigente(pasoId: number, version: number): boolean {
+    return this.versiones.get(pasoId) === version;
   }
 
   private reemplazar(actualizado: EjecucionPaso): void {
     this.pasos = this.pasos.map((paso) =>
       paso.ejecucionPasoId === actualizado.ejecucionPasoId ? actualizado : paso,
     );
-    this.borradores[actualizado.ejecucionPasoId] = actualizado.observacion ?? '';
+    if (actualizado.observacion != null) {
+      this.borradores[actualizado.ejecucionPasoId] = actualizado.observacion;
+    }
+    if (this.ejecucion) {
+      this.ejecuciones.fijarPasos(this.ejecucion.id, this.pasos);
+    }
   }
 }

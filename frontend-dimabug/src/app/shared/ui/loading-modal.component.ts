@@ -4,7 +4,7 @@ import { Component, Input } from '@angular/core';
   selector: 'app-loading-modal',
   standalone: true,
   template: `
-    @if (visible) {
+    @if (bloquea) {
       <div class="loading-modal" role="alertdialog" aria-live="assertive" aria-busy="true" [attr.aria-label]="mensaje">
         <div class="loading-modal__backdrop" aria-hidden="true"></div>
         <div class="loading-modal__card">
@@ -110,4 +110,9 @@ import { Component, Input } from '@angular/core';
 export class LoadingModalComponent {
   @Input() visible = false;
   @Input() mensaje = 'Cargando';
+
+  /** La carga inicial no tapa la pantalla. El modal queda para guardar o eliminar. */
+  get bloquea(): boolean {
+    return this.visible && this.mensaje !== 'Cargando';
+  }
 }

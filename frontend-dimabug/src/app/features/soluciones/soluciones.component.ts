@@ -5,11 +5,12 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 import { ConocimientoService } from '../../core/services/conocimiento.service';
 import { SolucionItem } from '../../core/models/catalogo.model';
 import { Conocimiento, TipoSolucion } from '../../core/models/conocimiento.model';
+import { AyudaFranjaComponent } from '../../shared/ui/ayuda-franja.component';
 import { LoadingModalComponent } from '../../shared/ui/loading-modal.component';
 @Component({
   selector: 'app-soluciones',
   standalone: true,
-  imports: [FormsModule, ReactiveFormsModule, RouterLink, LoadingModalComponent],
+  imports: [FormsModule, ReactiveFormsModule, RouterLink, LoadingModalComponent, AyudaFranjaComponent],
   templateUrl: './soluciones.component.html',
   styleUrls: ['../../shared/ui/catalogo-page.css', './soluciones.component.css'],
 })

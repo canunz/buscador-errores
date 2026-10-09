@@ -1,3 +1,4 @@
+import { DatePipe, NgTemplateOutlet } from '@angular/common';
 import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
@@ -7,12 +8,15 @@ import { AuthService } from '../../core/services/auth.service';
 import { ClasificacionService } from '../../core/services/clasificacion.service';
 import { ConocimientoService } from '../../core/services/conocimiento.service';
 import { FavoritosService } from '../../core/services/favoritos.service';
+import { AyudaFranjaComponent } from '../../shared/ui/ayuda-franja.component';
 import { LoadingModalComponent } from '../../shared/ui/loading-modal.component';
+
+type TipoIcono = 'impresora' | 'pantalla' | 'red' | 'servidor' | 'documento';
 
 @Component({
   selector: 'app-conocimiento',
   standalone: true,
-  imports: [FormsModule, RouterLink, LoadingModalComponent],
+  imports: [FormsModule, RouterLink, LoadingModalComponent, DatePipe, NgTemplateOutlet, AyudaFranjaComponent],
   templateUrl: './conocimiento.component.html',
   styleUrl: './conocimiento.component.css',
 })
@@ -25,12 +29,14 @@ export class ConocimientoComponent implements OnInit, OnDestroy {
   private readonly router = inject(Router);
   private querySub?: Subscription;
   private busquedaSub?: Subscription;
+  private listaSub?: Subscription;
 
   readonly esAdministrador = this.auth.isAdmin;
   readonly puedeGestionar = this.auth.isStaff;
 
   resultados: ResultadoBusquedaConocimiento[] = [];
   borradores: Conocimiento[] = [];
+  private catalogo: Conocimiento[] = [];
   hardwares: CatalogoRef[] = [];
   sistemas: CatalogoRef[] = [];
   modulos: CatalogoRef[] = [];
@@ -50,6 +56,7 @@ export class ConocimientoComponent implements OnInit, OnDestroy {
   pendienteQuitarFavorito: { id: number; titulo: string } | null = null;
   eliminando = false;
   publicandoId: number | null = null;
+  private detalles = new Map<number, Conocimiento>();
 
   ngOnInit(): void {
     const state = history.state as { conocimientoEliminado?: boolean } | null;
@@ -57,16 +64,10 @@ export class ConocimientoComponent implements OnInit, OnDestroy {
       this.aviso = 'El conocimiento dejó de estar disponible para consulta y búsqueda.';
       history.replaceState({ ...state, conocimientoEliminado: false }, '');
     }
-    this.clasificacion.listarHardware().subscribe({
-      next: (items) => (this.hardwares = items),
-    });
-    this.clasificacion.listarFrecuencias().subscribe({
-      next: (data) => (this.frecuencias = data.items),
-    });
-    this.cargarSistemas();
-    this.cargarBorradores();
     this.texto = this.route.snapshot.queryParamMap.get('q') || '';
+    this.aplicarCatalogo(this.conocimientosApi.listaEnSesion());
     this.buscar();
+    setTimeout(() => this.cargarFiltros(), 0);
     this.querySub = this.route.queryParamMap.subscribe((params) => {
       const q = params.get('q') || '';
       if (q !== this.texto) {
@@ -79,9 +80,14 @@ export class ConocimientoComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.querySub?.unsubscribe();
     this.busquedaSub?.unsubscribe();
+    this.listaSub?.unsubscribe();
     if (this.debounceBusqueda) {
       clearTimeout(this.debounceBusqueda);
     }
+  }
+
+  get filtrosActivos(): number {
+    return [this.hardwareId, this.sistemaId, this.moduloId, this.frecuenciaId].filter((id) => id != null).length;
   }
 
   get borradoresFiltrados(): Conocimiento[] {
@@ -153,11 +159,52 @@ export class ConocimientoComponent implements OnInit, OnDestroy {
 
   buscar(): void {
     this.busquedaSub?.unsubscribe();
-    this.loading = true;
+    this.listaSub?.unsubscribe();
     this.error = '';
+    const texto = this.texto.trim();
+    if (!texto) {
+      if (this.catalogo.length) {
+        this.publicarVista(this.catalogo);
+      }
+      this.loading = this.resultados.length === 0;
+      this.busquedaSub = this.conocimientosApi.listar().subscribe({
+        next: (items) => this.aplicarCatalogo(items),
+        error: (err: Error) => {
+          this.buscado = true;
+          this.loading = false;
+          if (!this.resultados.length) {
+            this.error = err.message;
+          }
+        },
+      });
+      return;
+    }
+
+    const locales = this.conocimientosApi.parecidos(texto, 50).filter((item) => this.coincideFiltro(item));
+    if (locales.length) {
+      this.resultados = locales.map((item) => this.aResultado(item));
+      this.buscado = true;
+      this.loading = false;
+    } else {
+      this.loading = this.resultados.length === 0;
+    }
+    this.listaSub = this.conocimientosApi.listar().subscribe({
+      next: () => {
+        if (!this.loading) {
+          return;
+        }
+        const encontrados = this.conocimientosApi.parecidos(texto, 50).filter((item) => this.coincideFiltro(item));
+        if (!encontrados.length) {
+          return;
+        }
+        this.resultados = encontrados.map((item) => this.aResultado(item));
+        this.buscado = true;
+        this.loading = false;
+      },
+    });
     this.busquedaSub = this.conocimientosApi
       .buscar({
-        texto: this.texto,
+        texto,
         hardwareId: this.hardwareId,
         sistemaId: this.sistemaId,
         moduloId: this.moduloId,
@@ -165,15 +212,18 @@ export class ConocimientoComponent implements OnInit, OnDestroy {
       })
       .subscribe({
         next: (items) => {
-          this.resultados = items;
+          if (items.length || !locales.length) {
+            this.resultados = items;
+          }
           this.buscado = true;
           this.loading = false;
         },
         error: (err: Error) => {
-          this.resultados = [];
           this.buscado = true;
           this.loading = false;
-          this.error = err.message;
+          if (!this.resultados.length) {
+            this.error = err.message;
+          }
         },
       });
   }
@@ -197,6 +247,7 @@ export class ConocimientoComponent implements OnInit, OnDestroy {
   }
 
   abrir(item: { id: number }): void {
+    this.conocimientosApi.precargarGuia(item.id, true);
     void this.router.navigate(['/conocimiento', item.id]);
   }
 
@@ -291,16 +342,90 @@ export class ConocimientoComponent implements OnInit, OnDestroy {
     this.pendienteQuitarFavorito = null;
   }
 
-  private cargarBorradores(): void {
-    if (!this.puedeGestionar()) {
-      this.borradores = [];
-      return;
+  descripcionDe(id: number): string {
+    return this.detalles.get(id)?.descripcion || '';
+  }
+
+  fechaDe(id: number): string | null {
+    const item = this.detalles.get(id);
+    return item?.fechaModificacion || item?.fechaCreacion || null;
+  }
+
+  iconoDe(item: { titulo: string; hardwareNombre?: string | null; sistemaNombre?: string | null }): TipoIcono {
+    const texto = `${item.hardwareNombre || ''} ${item.sistemaNombre || ''} ${item.titulo}`.toLowerCase();
+    if (/impres|printer|tsp|zebra|etiquet/.test(texto)) {
+      return 'impresora';
     }
-    this.conocimientosApi.listar().subscribe({
-      next: (items) => {
-        this.borradores = items.filter((item) => item.estado === 'BORRADOR');
-      },
+    if (/\bred\b|switch|firewall|enlace|router|wifi|vpn|internet|conectividad/.test(texto)) {
+      return 'red';
+    }
+    if (/servidor|server|plan b|\bvm\b|respaldo|backup/.test(texto)) {
+      return 'servidor';
+    }
+    if (/\bpos\b|jadima|pantalla|monitor|equipo|\bpc\b|notebook|caja/.test(texto)) {
+      return 'pantalla';
+    }
+    return 'documento';
+  }
+
+  private cargarFiltros(): void {
+    this.clasificacion.listarHardware().subscribe({
+      next: (items) => (this.hardwares = items),
     });
+    this.clasificacion.listarFrecuencias().subscribe({
+      next: (data) => (this.frecuencias = data.items),
+    });
+    this.cargarSistemas();
+  }
+
+  private aplicarCatalogo(items: Conocimiento[]): void {
+    this.catalogo = items;
+    this.detalles = new Map(items.map((item) => [item.id, item]));
+    this.borradores = this.puedeGestionar() ? items.filter((item) => item.estado === 'BORRADOR') : [];
+    if (!this.texto.trim()) {
+      this.publicarVista(items);
+    }
+    items.slice(0, 12).forEach((item) => this.conocimientosApi.precargarGuia(item.id));
+  }
+
+  private publicarVista(items: Conocimiento[]): void {
+    this.resultados = items
+      .filter((item) => item.estado === 'PUBLICADO' && this.coincideFiltro(item))
+      .map((item) => this.aResultado(item));
+    this.buscado = true;
+    this.loading = false;
+  }
+
+  private coincideFiltro(item: Conocimiento): boolean {
+    if (this.hardwareId && item.hardwareId !== this.hardwareId) {
+      return false;
+    }
+    if (this.sistemaId && item.sistemaId !== this.sistemaId) {
+      return false;
+    }
+    if (this.moduloId && item.moduloId !== this.moduloId) {
+      return false;
+    }
+    if (this.frecuenciaId && item.frecuenciaId !== this.frecuenciaId) {
+      return false;
+    }
+    return true;
+  }
+
+  private aResultado(item: Conocimiento): ResultadoBusquedaConocimiento {
+    return {
+      id: item.id,
+      titulo: item.titulo,
+      hardwareId: item.hardwareId,
+      hardwareNombre: item.hardwareNombre || null,
+      sistemaId: item.sistemaId,
+      sistemaNombre: item.sistemaNombre || null,
+      moduloId: item.moduloId,
+      moduloNombre: item.moduloNombre || null,
+      frecuenciaId: item.frecuenciaId,
+      frecuenciaNombre: item.frecuenciaNombre || null,
+      relevancia: null,
+    };
   }
 
   private cargarSistemas(): void {

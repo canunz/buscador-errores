@@ -4,6 +4,7 @@ import cl.casol.backend.identidad.application.port.out.UsuarioRepository;
 import cl.casol.backend.identidad.domain.Usuario;
 import cl.casol.backend.identidad.infrastructure.persistence.mapper.UsuarioMapper;
 import cl.casol.backend.identidad.infrastructure.persistence.repository.UsuarioJpaRepository;
+import cl.casol.backend.identidad.infrastructure.security.UsuarioAutenticadoCache;
 import org.springframework.stereotype.Component;
 import java.util.Optional;
 import java.util.List;
@@ -15,11 +16,14 @@ import java.util.List;
 public class UsuarioRepositoryAdapter implements UsuarioRepository {
 
     private final UsuarioJpaRepository usuarioJpaRepository;
+    private final UsuarioAutenticadoCache usuariosAutenticados;
 
     public UsuarioRepositoryAdapter(
-            UsuarioJpaRepository usuarioJpaRepository
+            UsuarioJpaRepository usuarioJpaRepository,
+            UsuarioAutenticadoCache usuariosAutenticados
     ) {
         this.usuarioJpaRepository = usuarioJpaRepository;
+        this.usuariosAutenticados = usuariosAutenticados;
     }
 
     @Override
@@ -61,6 +65,11 @@ public class UsuarioRepositoryAdapter implements UsuarioRepository {
 
     @Override
     public Usuario guardar(Usuario usuario) {
-        return UsuarioMapper.toDomain(usuarioJpaRepository.save(UsuarioMapper.toEntity(usuario)));
+        Usuario guardado = UsuarioMapper.toDomain(usuarioJpaRepository.save(UsuarioMapper.toEntity(usuario)));
+        usuariosAutenticados.invalidar(guardado.getEmail());
+        if (usuario.getEmail() != null && !usuario.getEmail().equalsIgnoreCase(guardado.getEmail())) {
+            usuariosAutenticados.invalidar(usuario.getEmail());
+        }
+        return guardado;
     }
 }

@@ -4,12 +4,11 @@ import { FormsModule } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { EfectividadSolucion, ResultadoSolucion } from '../../core/models/conocimiento.model';
 import { ConocimientoService } from '../../core/services/conocimiento.service';
-import { LoadingModalComponent } from '../../shared/ui/loading-modal.component';
 
 @Component({
   selector: 'app-solucion-efectividad',
   standalone: true,
-  imports: [DatePipe, FormsModule, LoadingModalComponent],
+  imports: [DatePipe, FormsModule],
   templateUrl: './solucion-efectividad.component.html',
   styleUrl: './solucion-efectividad.component.css',
 })
@@ -74,18 +73,12 @@ export class SolucionEfectividadComponent implements OnChanges, OnDestroy {
   }
 
   abrir(funciono: boolean): void {
-    if (this.registrando) {
-      return;
-    }
     this.panelAbierto = true;
     this.eleccion = funciono;
     this.errorRegistro = '';
   }
 
   cerrarPanel(): void {
-    if (this.registrando) {
-      return;
-    }
     this.panelAbierto = false;
     this.eleccion = null;
     this.comentario = '';
@@ -96,22 +89,22 @@ export class SolucionEfectividadComponent implements OnChanges, OnDestroy {
     if (this.eleccion == null || this.registrando || this.comentario.length > 300) {
       return;
     }
-    this.registrando = true;
+    const funciono = this.eleccion;
+    const comentario = this.comentario.trim();
+    const previo = this.efectividad;
+    this.efectividad = this.sumar(previo, funciono);
+    this.panelAbierto = false;
+    this.eleccion = null;
+    this.comentario = '';
     this.errorRegistro = '';
-    this.aviso = '';
+    this.mostrarAviso(funciono ? 'Quedó registrado: funcionó.' : 'Quedó registrado: no funcionó.');
+    this.registrando = true;
     this.registroSub?.unsubscribe();
     this.registroSub = this.conocimientos
-      .registrarResultado(this.conocimientoId, this.solucionId, {
-        funciono: this.eleccion,
-        comentario: this.comentario,
-      })
+      .registrarResultado(this.conocimientoId, this.solucionId, { funciono, comentario })
       .subscribe({
         next: () => {
           this.registrando = false;
-          this.panelAbierto = false;
-          this.eleccion = null;
-          this.comentario = '';
-          this.mostrarAviso('Resultado registrado.');
           this.cargarEfectividad();
           if (this.historialVisible) {
             this.cargarHistorial();
@@ -119,7 +112,11 @@ export class SolucionEfectividadComponent implements OnChanges, OnDestroy {
         },
         error: (err: Error) => {
           this.registrando = false;
+          this.efectividad = previo;
           this.aviso = '';
+          this.panelAbierto = true;
+          this.eleccion = funciono;
+          this.comentario = comentario;
           this.errorRegistro = err.message;
         },
       });
@@ -165,6 +162,26 @@ export class SolucionEfectividadComponent implements OnChanges, OnDestroy {
         this.errorHistorial = err.message;
       },
     });
+  }
+
+  private sumar(actual: EfectividadSolucion | null, funciono: boolean): EfectividadSolucion {
+    const base = actual ?? {
+      solucionId: this.solucionId,
+      totalAplicaciones: 0,
+      totalFunciono: 0,
+      totalNoFunciono: 0,
+      porcentajeEfectividad: null,
+    };
+    const totalAplicaciones = base.totalAplicaciones + 1;
+    const totalFunciono = base.totalFunciono + (funciono ? 1 : 0);
+    const totalNoFunciono = base.totalNoFunciono + (funciono ? 0 : 1);
+    return {
+      ...base,
+      totalAplicaciones,
+      totalFunciono,
+      totalNoFunciono,
+      porcentajeEfectividad: Math.round((totalFunciono / totalAplicaciones) * 1000) / 10,
+    };
   }
 
   private mostrarAviso(texto: string): void {

@@ -1,11 +1,14 @@
-import { Component, HostListener, OnInit, computed, inject } from '@angular/core';
+import { Component, HostListener, computed, inject } from '@angular/core';
 import { NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { filter } from 'rxjs';
 import { AuthService } from '../../core/services/auth.service';
-import { ClasificacionService } from '../../core/services/clasificacion.service';
+import { NotificacionService } from '../../core/services/notificacion.service';
 import { ConocimientoService } from '../../core/services/conocimiento.service';
+import { EjecucionService } from '../../core/services/ejecucion.service';
+import { ClasificacionService } from '../../core/services/clasificacion.service';
 import { InicioService } from '../../core/services/inicio.service';
 import { OrganizacionService } from '../../core/services/organizacion.service';
+import { ProcedimientoService } from '../../core/services/procedimiento.service';
 import { UsuarioService } from '../../core/services/usuario.service';
 import { esAdministrador, iniciales, loginUsername } from '../../core/models/usuario.model';
 
@@ -16,14 +19,17 @@ import { esAdministrador, iniciales, loginUsername } from '../../core/models/usu
   templateUrl: './shell-layout.component.html',
   styleUrl: './shell-layout.component.css',
 })
-export class ShellLayoutComponent implements OnInit {
+export class ShellLayoutComponent {
   private readonly auth = inject(AuthService);
   private readonly router = inject(Router);
+  private readonly procedimientos = inject(ProcedimientoService);
   private readonly conocimientos = inject(ConocimientoService);
+  private readonly ejecuciones = inject(EjecucionService);
+  private readonly notificaciones = inject(NotificacionService);
   private readonly clasificacion = inject(ClasificacionService);
   private readonly organizacion = inject(OrganizacionService);
   private readonly usuariosApi = inject(UsuarioService);
-  private readonly inicioApi = inject(InicioService);
+  private readonly inicio = inject(InicioService);
 
   readonly usuario = this.auth.usuario;
   readonly isAdmin = computed(() => esAdministrador(this.usuario()));
@@ -37,37 +43,28 @@ export class ShellLayoutComponent implements OnInit {
   fadeIn = false;
   menuOpen = false;
   usuarioMenuOpen = false;
+  sinLeer = 0;
   temaOscuro = localStorage.getItem('dimabug-tema') === 'oscuro';
 
   constructor() {
     this.applyTema();
+    this.procedimientos.listar().subscribe({ error: () => undefined });
+    this.conocimientos.listar().subscribe({ error: () => undefined });
+    this.ejecuciones.listar().subscribe({ error: () => undefined });
+    this.clasificacion.listarHardwareDetalle().subscribe({ error: () => undefined });
+    this.organizacion.listarDepartamentosDetalle().subscribe({ error: () => undefined });
+    if (this.isAdmin()) {
+      this.usuariosApi.listar().subscribe({ error: () => undefined });
+      this.usuariosApi.listarRoles().subscribe({ error: () => undefined });
+    }
+    if (this.isStaff()) {
+      this.inicio.dashboard().subscribe({ error: () => undefined });
+    }
+    this.cargarConteo();
     this.fadeIn = !this.esInicio(this.router.url);
     this.router.events.pipe(filter((event): event is NavigationEnd => event instanceof NavigationEnd)).subscribe((event) => {
-      if (this.esInicio(event.urlAfterRedirects)) {
-        this.fadeIn = false;
-        return;
-      }
-      this.fadeIn = false;
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          this.fadeIn = true;
-        });
-      });
+      this.fadeIn = !this.esInicio(event.urlAfterRedirects);
     });
-  }
-
-  ngOnInit(): void {
-    // Precarga liviana: lo pesado se completa en segundo plano sin bloquear la UI.
-    const ignore = { error: () => undefined };
-    if (this.isStaff()) {
-      this.clasificacion.precargarClasificacion();
-      this.organizacion.listarPruebas().subscribe(ignore);
-      this.conocimientos.listar().subscribe(ignore);
-      this.inicioApi.dashboard().subscribe(ignore);
-    }
-    if (this.isAdmin()) {
-      this.usuariosApi.listar().subscribe(ignore);
-    }
   }
 
   toggleTema(): void {
@@ -89,9 +86,40 @@ export class ShellLayoutComponent implements OnInit {
     this.usuarioMenuOpen = !this.usuarioMenuOpen;
   }
 
+  abrirNotificaciones(event: Event): void {
+    event.stopPropagation();
+    this.usuarioMenuOpen = false;
+    const url = this.router.serializeUrl(this.router.createUrlTree(['/notificaciones']));
+    window.open(url, '_blank', 'noopener');
+  }
+
   @HostListener('document:click')
   closeUsuarioMenu(): void {
     this.usuarioMenuOpen = false;
+  }
+
+  @HostListener('window:focus')
+  alVolver(): void {
+    this.cargarConteo();
+  }
+
+  private cargarConteo(): void {
+    if (!this.isStaff()) {
+      this.sinLeer = 0;
+      return;
+    }
+    const id = this.usuario()?.usuarioId ?? 0;
+    let leidas = new Set<string>();
+    try {
+      const raw = localStorage.getItem(`dimabug.notif.leidas.${id}`);
+      const parsed = raw ? (JSON.parse(raw) as unknown) : [];
+      leidas = new Set(Array.isArray(parsed) ? parsed.map(String) : []);
+    } catch {
+      leidas = new Set();
+    }
+    this.notificaciones.propias().subscribe((avisos) => {
+      this.sinLeer = avisos.filter((aviso) => !leidas.has(aviso.id)).length;
+    });
   }
 
   logout(): void {

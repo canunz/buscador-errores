@@ -1,73 +1,156 @@
 <app-loading-modal [visible]="loading" mensaje="Cargando" />
 
-<section class="cat-page">
-  <div class="franja">
-    <div>
-      <p>Operaciones</p>
-      <h1>Procedimientos</h1>
-      <span>{{
-        puedeGestionar()
-          ? 'Define los pasos del procedimiento. Un administrador lo publica.'
-          : 'Consulta los procedimientos publicados y sus pasos.'
-      }}</span>
+<section class="pl">
+  <header class="franja">
+    <app-ayuda-franja titulo="Procedimientos" detalle="Procedimiento operativo: secuencia de pasos, material de apoyo y estado (borrador o publicado). La ejecución se registra en Mis ejecuciones." />
+    <div class="franja-deco" aria-hidden="true">
+      <span class="blob blob-a"></span>
+      <span class="blob blob-b"></span>
+      <span class="puntos"></span>
     </div>
-    @if (puedeGestionar()) {
+
+    <div class="franja-contenido">
+      <span class="chip-rol">
+        <span class="punto-vivo"></span>
+        Operaciones
+      </span>
+      <h1>Procedimientos</h1>
+      <p>Procedimiento operativo: secuencia de pasos, material de apoyo y estado de publicación.</p>
+
       <div class="franja-acciones">
-        <a routerLink="/ejecuciones" class="btn-sec">Mis ejecuciones</a>
-        <a routerLink="/procedimientos/nuevo" class="btn-crear">+ Nuevo</a>
+        <form class="buscador" (ngSubmit)="$event.preventDefault()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <circle cx="11" cy="11" r="8" />
+            <line x1="21" y1="21" x2="16.65" y2="16.65" />
+          </svg>
+          <input
+            type="search"
+            [(ngModel)]="texto"
+            name="texto"
+            placeholder="Buscar procedimiento…"
+            aria-label="Buscar procedimiento"
+            autocomplete="off"
+          />
+        </form>
+        @if (puedeGestionar()) {
+          <a routerLink="/ejecuciones" class="btn-sec">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <circle cx="12" cy="12" r="9" />
+              <path d="M10 8.8l6 3.2-6 3.2V8.8z" />
+            </svg>
+            Mis ejecuciones
+          </a>
+          <a routerLink="/procedimientos/nuevo" class="btn-crear">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M12 5v14M5 12h14" /></svg>
+            Nuevo
+          </a>
+        }
       </div>
-    }
-  </div>
+    </div>
+  </header>
 
   @if (error) {
-    <p class="muted pad">{{ error }}</p>
+    <p class="alert">{{ error }}</p>
   }
 
-  <div class="tabla-wrap">
-    @if (!loading) {
-      <table>
-        <thead>
-          <tr>
-            <th class="col-acciones">{{ puedeGestionar() ? 'Acciones' : 'Consulta' }}</th>
-            <th>Procedimiento</th>
-            <th>Estado</th>
-          </tr>
-        </thead>
-        <tbody>
-          @for (item of items; track item.id) {
-            <tr>
-              <td>
-                <div class="acciones">
-                  <a class="act ver" [routerLink]="['/procedimientos', item.id]">Ver</a>
-                  @if (puedeGestionar()) {
-                    <a class="act edit" [routerLink]="['/procedimientos', item.id, 'editar']">Editar</a>
-                  }
-                  @if (esAdministrador() && item.estado === 'BORRADOR') {
-                    <button type="button" class="act ver" (click)="publicar(item)" [disabled]="publicandoId != null">
-                      {{ publicandoId === item.id ? 'Publicando…' : 'Publicar' }}
-                    </button>
-                  }
-                </div>
-              </td>
-              <td>
-                <strong>{{ item.nombre }}</strong>
-                @if (item.descripcion) {
-                  <span class="desc">{{ item.descripcion }}</span>
-                }
-              </td>
-              <td>
-                <span class="estado" [class.activo]="item.estado === 'PUBLICADO'" [class.warn]="item.estado === 'BORRADOR'">
-                  {{ item.estado === 'PUBLICADO' ? 'Publicado' : 'Borrador' }}
-                </span>
-              </td>
-            </tr>
-          } @empty {
-            <tr>
-              <td colspan="3" class="vacio">No hay procedimientos para mostrar.</td>
-            </tr>
-          }
-        </tbody>
-      </table>
+  <div class="barra">
+    @if (puedeGestionar()) {
+      <div class="pestanas" role="tablist" aria-label="Estado del procedimiento">
+        <button type="button" role="tab" class="pestana" [class.on]="estado === null" [attr.aria-selected]="estado === null" (click)="estado = null">
+          Todos <span>{{ contar(null) }}</span>
+        </button>
+        <button type="button" role="tab" class="pestana pub" [class.on]="estado === 'PUBLICADO'" [attr.aria-selected]="estado === 'PUBLICADO'" (click)="estado = 'PUBLICADO'">
+          Publicados <span>{{ contar('PUBLICADO') }}</span>
+        </button>
+        <button type="button" role="tab" class="pestana bor" [class.on]="estado === 'BORRADOR'" [attr.aria-selected]="estado === 'BORRADOR'" (click)="estado = 'BORRADOR'">
+          Borradores <span>{{ contar('BORRADOR') }}</span>
+        </button>
+      </div>
+    } @else {
+      <h2>Disponibles</h2>
+    }
+    @if (items.length || !loading) {
+      <span class="total">{{ filtrados.length }} procedimiento{{ filtrados.length === 1 ? '' : 's' }}</span>
     }
   </div>
+
+  @if (items.length || !loading) {
+    <ul class="grid">
+      @for (item of filtrados; track item.id; let i = $index) {
+        <li
+          class="card"
+          (click)="abrir(item)"
+        >
+          <div class="card-top">
+            <span class="card-icono" [class.borrador]="item.estado === 'BORRADOR'" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2" />
+                <rect x="9" y="3" width="6" height="4" rx="1" />
+                <path d="M9 12l2 2 4-4M9 17h6" />
+              </svg>
+            </span>
+            @if (puedeGestionar()) {
+              <span class="estado" [class.borrador]="item.estado === 'BORRADOR'">
+                {{ item.estado === 'PUBLICADO' ? 'Publicado' : 'Borrador' }}
+              </span>
+            }
+          </div>
+
+          <h3>{{ item.nombre }}</h3>
+          <p class="desc">{{ item.descripcion || 'Sin descripción.' }}</p>
+
+          <ul class="datos">
+            @if (item.fechaModificacion || item.fechaCreacion) {
+              <li>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                  <rect x="3" y="5" width="18" height="16" rx="2" />
+                  <path d="M16 3v4M8 3v4M3 10h18" />
+                </svg>
+                {{ item.fechaModificacion || item.fechaCreacion | date: 'dd/MM/yyyy' }}
+              </li>
+            }
+            @if (puedeGestionar() && (item.modificadoPor?.nombre || item.creadoPor?.nombre)) {
+              <li>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                  <circle cx="12" cy="8" r="4" />
+                  <path d="M4 21a8 8 0 0116 0" />
+                </svg>
+                {{ item.modificadoPor?.nombre || item.creadoPor?.nombre }}
+              </li>
+            }
+          </ul>
+
+          <div class="card-pie" (click)="$event.stopPropagation()">
+            <div class="acciones">
+              @if (puedeGestionar()) {
+                <a class="btn-icono" [routerLink]="['/procedimientos', item.id, 'editar']" title="Editar" aria-label="Editar">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                    <path d="M12 20h9" />
+                    <path d="M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4 12.5-12.5z" />
+                  </svg>
+                </a>
+              }
+              @if (esAdministrador() && item.estado === 'BORRADOR') {
+                <button type="button" class="btn-publicar" (click)="publicar(item, $event)" [disabled]="publicandoId != null">
+                  {{ publicandoId === item.id ? 'Publicando…' : 'Publicar' }}
+                </button>
+              }
+            </div>
+            <a class="btn-ver" [routerLink]="['/procedimientos', item.id]">
+              Ver pasos
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M9 6l6 6-6 6" /></svg>
+            </a>
+          </div>
+        </li>
+      } @empty {
+        <li class="vacio">
+          @if (texto || estado) {
+            No hay procedimientos que coincidan con la búsqueda.
+          } @else {
+            Aún no hay procedimientos para mostrar.
+          }
+        </li>
+      }
+    </ul>
+  }
 </section>

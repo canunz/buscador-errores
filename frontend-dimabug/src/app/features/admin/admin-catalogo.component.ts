@@ -4,6 +4,7 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { map } from 'rxjs';
 import { AdminMaestrosService, MaestroTipo } from '../../core/services/admin-maestros.service';
+import { AyudaFranjaComponent } from '../../shared/ui/ayuda-franja.component';
 
 const META: Record<MaestroTipo, { titulo: string; singular: string; seccion: string; extra?: string; activo?: boolean }> = {
   grupos: { titulo: 'Grupos', singular: 'grupo', seccion: 'Autenticación y autorización' },
@@ -16,7 +17,7 @@ const META: Record<MaestroTipo, { titulo: string; singular: string; seccion: str
 @Component({
   selector: 'app-admin-catalogo',
   standalone: true,
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [ReactiveFormsModule, RouterLink, AyudaFranjaComponent],
   templateUrl: './admin-catalogo.component.html',
   styleUrls: ['../../shared/ui/catalogo-page.css', './admin-catalogo.component.css'],
 })

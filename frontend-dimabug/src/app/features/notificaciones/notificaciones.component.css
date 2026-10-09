@@ -1,0 +1,275 @@
+.pagina {
+  width: 100%;
+}
+
+.franja {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 28px;
+  min-height: 188px;
+  margin: 0 0 22px;
+  padding: 36px 40px;
+  border-radius: 22px;
+  background:
+    radial-gradient(420px 180px at 100% 0%, rgba(255, 255, 255, 0.16), transparent 60%),
+    linear-gradient(115deg, #071336 0%, #0b1b4d 38%, #1638a8 72%, #1e4fd6 100%);
+  color: #fff;
+  box-shadow: 0 18px 40px rgba(7, 19, 54, 0.22);
+}
+
+.texto p {
+  margin: 0 0 8px;
+  color: #b7c9ff;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.texto h1 {
+  margin: 0 0 8px;
+  font-size: 42px;
+  font-weight: 750;
+  letter-spacing: -0.04em;
+  line-height: 1;
+}
+
+.texto span {
+  color: #e7eeff;
+  font-size: 16px;
+}
+
+.lado {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.cifras {
+  display: flex;
+  gap: 10px;
+}
+
+.cifras div {
+  min-width: 108px;
+  padding: 12px 16px 10px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.cifras b {
+  display: block;
+  font-size: 28px;
+  line-height: 1;
+  letter-spacing: -0.04em;
+}
+
+.cifras small {
+  color: #d5e1ff;
+  font-size: 12px;
+}
+
+.marcar {
+  border: 0;
+  border-radius: 14px;
+  padding: 12px 16px;
+  background: #fff;
+  color: #0b1b4d;
+  font: inherit;
+  font-size: 13.5px;
+  font-weight: 750;
+  cursor: pointer;
+}
+
+.marcar:hover {
+  background: #eef3ff;
+}
+
+.pestanas {
+  display: flex;
+  gap: 8px;
+  margin: 0 0 16px;
+  padding: 6px;
+  width: fit-content;
+  border: 1px solid #e7e9f0;
+  border-radius: 16px;
+  background: #fff;
+}
+
+.pestanas button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 0;
+  border-radius: 12px;
+  padding: 10px 14px;
+  background: transparent;
+  color: #475569;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.pestanas button.on {
+  background: #0b1b4d;
+  color: #fff;
+}
+
+.pestanas b {
+  min-width: 22px;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.08);
+  font-size: 12px;
+  text-align: center;
+}
+
+.pestanas button.on b {
+  background: rgba(255, 255, 255, 0.18);
+}
+
+.vacio {
+  margin: 0;
+  padding: 28px;
+  border: 1px dashed #d5dbe8;
+  border-radius: 16px;
+  color: #64748b;
+  background: #fff;
+}
+
+ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 10px;
+}
+
+li {
+  display: grid;
+  grid-template-columns: 14px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  padding: 16px 18px;
+  border: 1px solid #e7e9f0;
+  border-radius: 16px;
+  background: #fff;
+  color: #334155;
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.04);
+}
+
+li.nueva {
+  background: linear-gradient(180deg, #f8faff 0%, #fff 100%);
+  border-color: #c7d7fb;
+}
+
+.punto {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #cbd5e1;
+}
+
+li.nueva .punto {
+  background: #1e4fd6;
+  box-shadow: 0 0 0 4px #e7eeff;
+}
+
+.acciones {
+  display: flex;
+  gap: 8px;
+}
+
+.acciones button {
+  border-radius: 12px;
+  padding: 9px 12px;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.acciones .abrir {
+  border: 0;
+  background: #0b1b4d;
+  color: #fff;
+}
+
+.acciones .estado {
+  border: 1px solid #c7d7fb;
+  background: #fff;
+  color: #1e4fd6;
+}
+
+.cuerpo {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+
+.cuerpo strong {
+  color: #0f172a;
+  font-size: 16px;
+}
+
+.cuerpo em {
+  color: #475569;
+  font-style: normal;
+  font-size: 14px;
+}
+
+time {
+  color: #64748b;
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+@media (max-width: 800px) {
+  .franja,
+  .lado {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .franja {
+    min-height: 0;
+    padding: 28px 22px;
+  }
+
+  .texto h1 {
+    font-size: 34px;
+  }
+
+  li,
+  .acciones {
+    grid-template-columns: 14px minmax(0, 1fr);
+    flex-wrap: wrap;
+  }
+
+  .acciones {
+    grid-column: 2;
+  }
+}
+
+:host-context(.tema-oscuro) .pestanas,
+:host-context(.tema-oscuro) .vacio,
+:host-context(.tema-oscuro) li,
+:host-context(.tema-oscuro) li.nueva,
+:host-context(.tema-oscuro) .acciones .estado {
+  background: #111827;
+  border-color: #1f2937;
+  color: #e5e7eb;
+}
+
+:host-context(.tema-oscuro) .cuerpo strong {
+  color: #f8fafc;
+}
+
+:host-context(.tema-oscuro) .cuerpo em,
+:host-context(.tema-oscuro) time {
+  color: #94a3b8;
+}

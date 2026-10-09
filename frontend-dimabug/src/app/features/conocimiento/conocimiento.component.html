@@ -2,59 +2,97 @@
 
 <section class="kb">
   <header class="franja">
-    <div>
-      <p class="kicker">{{ esAdministrador() ? 'Administrador' : (puedeGestionar() ? 'Soporte' : 'Consulta') }}</p>
-      <h1>Conocimiento</h1>
-      <p>
-        @if (esAdministrador()) {
-          Registras y corriges los casos. También publicas y eliminas.
-        } @else if (puedeGestionar()) {
-          Registras y corriges síntomas, causas, pruebas y soluciones. Publicar y eliminar lo hace el administrador.
-        } @else {
-          Consultas las guías publicadas. Márcalas con la estrella para volver después.
-        }
-      </p>
+    <app-ayuda-franja titulo="Conocimiento" detalle="Base de conocimiento. Documenta un caso con síntoma, causa, prueba de verificación y solución. El alta queda en borrador hasta que un administrador lo publica." />
+    <div class="franja-deco" aria-hidden="true">
+      <span class="blob blob-a"></span>
+      <span class="blob blob-b"></span>
+      <span class="puntos"></span>
     </div>
-    @if (puedeGestionar()) {
-      <a routerLink="/conocimiento/nuevo" class="btn-crear">+ Nuevo</a>
-    }
+
+    <div class="franja-top">
+      <div class="franja-texto">
+        <span class="chip-rol">
+          <span class="punto-vivo"></span>
+          {{ esAdministrador() ? 'Administrador' : (puedeGestionar() ? 'Soporte' : 'Consulta') }}
+        </span>
+        <h1>Conocimiento</h1>
+        <p>Base de conocimiento: síntoma, causa, prueba de verificación y solución.</p>
+      </div>
+      @if (puedeGestionar()) {
+        <a routerLink="/conocimiento/nuevo" class="btn-crear">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M12 5v14M5 12h14" /></svg>
+          Nuevo conocimiento
+        </a>
+      }
+    </div>
+
+    <form class="buscador" (ngSubmit)="$event.preventDefault()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+        <circle cx="11" cy="11" r="8" />
+        <line x1="21" y1="21" x2="16.65" y2="16.65" />
+      </svg>
+      <input
+        type="search"
+        [(ngModel)]="texto"
+        name="texto"
+        placeholder="Buscar por título, síntoma, causa, prueba o solución…"
+        aria-label="Buscar conocimiento"
+        autocomplete="off"
+        (ngModelChange)="onTextoChange()"
+      />
+      @if (loading) {
+        <span class="buscando" aria-label="Buscando"></span>
+      }
+    </form>
   </header>
 
   <form class="filtros" (ngSubmit)="$event.preventDefault()">
-    <input
-      type="search"
-      [(ngModel)]="texto"
-      name="texto"
-      placeholder="Buscar por título, síntoma, causa, prueba o solución…"
-      autocomplete="off"
-      (ngModelChange)="onTextoChange()"
-    />
+    <span class="filtros-label">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+        <path d="M3 5h18l-7 8.5V19l-4 2v-7.5L3 5z" />
+      </svg>
+      Filtrar
+      @if (filtrosActivos) {
+        <span class="filtros-contador">{{ filtrosActivos }}</span>
+      }
+    </span>
     <div class="filtros-fila">
-      <select [(ngModel)]="hardwareId" name="hardware" aria-label="Hardware" (ngModelChange)="onHardwareChange()">
-        <option [ngValue]="null">Todo el hardware</option>
-        @for (item of hardwares; track item.id) {
-          <option [ngValue]="item.id">{{ item.nombre }}</option>
-        }
-      </select>
-      <select [(ngModel)]="sistemaId" name="sistema" aria-label="Sistema" (ngModelChange)="onSistemaChange()">
-        <option [ngValue]="null">Todos los sistemas</option>
-        @for (item of sistemas; track item.id) {
-          <option [ngValue]="item.id">{{ item.nombre }}</option>
-        }
-      </select>
-      <select [(ngModel)]="moduloId" name="modulo" aria-label="Módulo" [disabled]="!sistemaId" (ngModelChange)="onFiltroChange()">
-        <option [ngValue]="null">Todos los módulos</option>
-        @for (item of modulos; track item.id) {
-          <option [ngValue]="item.id">{{ item.nombre }}</option>
-        }
-      </select>
-      <select [(ngModel)]="frecuenciaId" name="frecuencia" aria-label="Frecuencia" (ngModelChange)="onFiltroChange()">
-        <option [ngValue]="null">Todas las frecuencias</option>
-        @for (item of frecuencias; track item.id) {
-          <option [ngValue]="item.id">{{ item.nombre }}</option>
-        }
-      </select>
-      <button type="button" class="btn-limpiar" (click)="limpiar()" [disabled]="loading">Limpiar filtros</button>
+      <label class="select-wrap" [class.activo]="hardwareId">
+        <select [(ngModel)]="hardwareId" name="hardware" aria-label="Hardware" (ngModelChange)="onHardwareChange()">
+          <option [ngValue]="null">Todo el hardware</option>
+          @for (item of hardwares; track item.id) {
+            <option [ngValue]="item.id">{{ item.nombre }}</option>
+          }
+        </select>
+      </label>
+      <label class="select-wrap" [class.activo]="sistemaId">
+        <select [(ngModel)]="sistemaId" name="sistema" aria-label="Sistema" (ngModelChange)="onSistemaChange()">
+          <option [ngValue]="null">Todos los sistemas</option>
+          @for (item of sistemas; track item.id) {
+            <option [ngValue]="item.id">{{ item.nombre }}</option>
+          }
+        </select>
+      </label>
+      <label class="select-wrap" [class.activo]="moduloId">
+        <select [(ngModel)]="moduloId" name="modulo" aria-label="Módulo" [disabled]="!sistemaId" (ngModelChange)="onFiltroChange()">
+          <option [ngValue]="null">Todos los módulos</option>
+          @for (item of modulos; track item.id) {
+            <option [ngValue]="item.id">{{ item.nombre }}</option>
+          }
+        </select>
+      </label>
+      <label class="select-wrap" [class.activo]="frecuenciaId">
+        <select [(ngModel)]="frecuenciaId" name="frecuencia" aria-label="Frecuencia" (ngModelChange)="onFiltroChange()">
+          <option [ngValue]="null">Todas las frecuencias</option>
+          @for (item of frecuencias; track item.id) {
+            <option [ngValue]="item.id">{{ item.nombre }}</option>
+          }
+        </select>
+      </label>
+      <button type="button" class="btn-limpiar" (click)="limpiar()" [disabled]="loading || (!filtrosActivos && !texto)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12" /></svg>
+        Limpiar
+      </button>
     </div>
   </form>
 
@@ -93,165 +131,211 @@
   }
 
   @if (pestana === 'borradores' && puedeGestionar()) {
-    <section class="listado">
-      <div class="meta">
-        <div>
-          <h2>Borradores</h2>
-          <p class="meta-hint">Casos pendientes de revisión. Un administrador los publica cuando están listos.</p>
-        </div>
-        <span>{{ borradoresFiltrados.length }} pendiente{{ borradoresFiltrados.length === 1 ? '' : 's' }}</span>
+    <div class="meta">
+      <div>
+        <h2>Borradores</h2>
+        <p class="meta-hint">Casos pendientes de revisión. Un administrador los publica cuando están listos.</p>
       </div>
-      <div class="tabla-wrap">
-        @if (!borradores.length) {
-          <p class="muted">No hay borradores. Un caso nuevo queda aquí hasta que un administrador lo publique.</p>
-        } @else if (!borradoresFiltrados.length) {
-          <p class="muted">Ningún borrador coincide con los filtros.</p>
-        } @else {
-          <table>
-            <thead>
-              <tr>
-                <th class="col-acciones">Acciones</th>
-                <th>Título</th>
-                <th>Hardware</th>
-                <th>Sistema</th>
-                <th>Estado</th>
-              </tr>
-            </thead>
-            <tbody>
-              @for (item of borradoresFiltrados; track item.id) {
-                <tr class="clickable" (click)="abrir(item)">
-                  <td (click)="$event.stopPropagation()">
-                    <div class="acciones">
-                      <button type="button" class="btn-accion ver" title="Ver" aria-label="Ver" (click)="abrir(item)">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                          <circle cx="12" cy="12" r="3" />
-                        </svg>
-                      </button>
-                      <button type="button" class="btn-accion editar" title="Editar" aria-label="Editar" (click)="editar(item, $event)">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                          <path d="M12 20h9" />
-                          <path d="M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4 12.5-12.5z" />
-                        </svg>
-                      </button>
-                      @if (esAdministrador()) {
-                        <button type="button" class="btn-accion publicar" title="Publicar" aria-label="Publicar" (click)="publicar(item)" [disabled]="publicandoId != null">
-                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                            <path d="M22 2L11 13" />
-                            <path d="M22 2l-7 20-4-9-9-4 20-7z" />
-                          </svg>
-                        </button>
-                      }
-                      @if (esAdministrador()) {
-                        <button type="button" class="btn-accion eliminar" title="Eliminar" aria-label="Eliminar" (click)="pedirEliminar(item, $event)" [disabled]="eliminando">
-                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                            <path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6" />
-                          </svg>
-                        </button>
-                      }
-                    </div>
-                  </td>
-                  <td><strong>{{ item.titulo }}</strong></td>
-                  <td>{{ item.hardwareNombre || '—' }}</td>
-                  <td>{{ item.sistemaNombre || '—' }}</td>
-                  <td>Borrador</td>
-                </tr>
+      <span>{{ borradoresFiltrados.length }} pendiente{{ borradoresFiltrados.length === 1 ? '' : 's' }}</span>
+    </div>
+
+    @if (!borradores.length) {
+      <p class="vacio-tarjetas">No hay borradores. Un caso nuevo queda aquí hasta que un administrador lo publique.</p>
+    } @else if (!borradoresFiltrados.length) {
+      <p class="vacio-tarjetas">Ningún borrador coincide con los filtros.</p>
+    } @else {
+      <ul class="tarjetas">
+        @for (item of borradoresFiltrados; track item.id; let i = $index) {
+          <li class="tarjeta" [style.animation-delay.ms]="i < 12 ? i * 40 : 0" (click)="abrir(item)">
+            <span [class]="'icono icono-' + iconoDe(item)">
+              <ng-container *ngTemplateOutlet="iconoTpl; context: { $implicit: iconoDe(item) }" />
+            </span>
+
+            <div class="cuerpo">
+              <span class="badge borrador">Borrador</span>
+              <h3>{{ item.titulo }}</h3>
+              @if (item.descripcion) {
+                <p class="resumen">{{ item.descripcion }}</p>
               }
-            </tbody>
-          </table>
+              <ng-container *ngTemplateOutlet="metaTpl; context: { $implicit: item, fecha: item.fechaModificacion || item.fechaCreacion }" />
+            </div>
+
+            <div class="lado" (click)="$event.stopPropagation()">
+              <div class="acciones">
+                <button type="button" class="btn-accion editar" title="Editar" aria-label="Editar" (click)="editar(item, $event)">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                    <path d="M12 20h9" />
+                    <path d="M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4 12.5-12.5z" />
+                  </svg>
+                </button>
+                @if (esAdministrador()) {
+                  <button type="button" class="btn-accion publicar" title="Publicar" aria-label="Publicar" (click)="publicar(item)" [disabled]="publicandoId != null">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                      <path d="M22 2L11 13" />
+                      <path d="M22 2l-7 20-4-9-9-4 20-7z" />
+                    </svg>
+                  </button>
+                  <button type="button" class="btn-accion eliminar" title="Eliminar" aria-label="Eliminar" (click)="pedirEliminar(item, $event)" [disabled]="eliminando">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                      <path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6" />
+                    </svg>
+                  </button>
+                }
+              </div>
+              <button type="button" class="btn-ver" (click)="abrir(item)">
+                Revisar
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M9 6l6 6-6 6" /></svg>
+              </button>
+            </div>
+          </li>
         }
-      </div>
-    </section>
+      </ul>
+    }
   }
 
   @if (pestana === 'publicados') {
-  <div class="meta">
-    <div>
-      <h2>Publicados</h2>
-      <p class="meta-hint">Casos listos para consultar. La búsqueda se aplica al escribir o al cambiar un filtro.</p>
+    <div class="meta">
+      <div>
+        <h2>{{ puedeGestionar() ? 'Publicados' : 'Guías disponibles' }}</h2>
+        <p class="meta-hint">
+          {{
+            puedeGestionar()
+              ? 'Casos listos para consultar. La búsqueda se aplica al escribir o al cambiar un filtro.'
+              : 'Escribe o elige un filtro y la lista se actualiza sola.'
+          }}
+        </p>
+      </div>
+      @if (!loading && buscado) {
+        <span>{{ resultados.length }} caso{{ resultados.length === 1 ? '' : 's' }}</span>
+      }
     </div>
-    @if (!loading && buscado) {
-      <span>{{ resultados.length }} caso{{ resultados.length === 1 ? '' : 's' }}</span>
-    }
-  </div>
 
-  <div class="tabla-wrap">
-    @if (!loading || resultados.length) {
-      <table>
-        <thead>
-          <tr>
-            <th class="col-acciones">Acciones</th>
-            <th>Título</th>
-            <th>Hardware</th>
-            <th>Sistema</th>
-            <th>Frecuencia</th>
-          </tr>
-        </thead>
-        <tbody>
-          @for (item of resultados; track item.id) {
-            <tr class="clickable" (click)="abrir(item)">
-              <td (click)="$event.stopPropagation()">
-                <div class="acciones">
-                  <button type="button" class="btn-accion ver" title="Ver" aria-label="Ver" (click)="abrir(item)">
+    @if (resultados.length || !loading) {
+      <ul class="tarjetas">
+        @for (item of resultados; track item.id; let i = $index) {
+          <li class="tarjeta" [style.animation-delay.ms]="i < 12 ? i * 40 : 0" (click)="abrir(item)">
+            <span [class]="'icono icono-' + iconoDe(item)">
+              <ng-container *ngTemplateOutlet="iconoTpl; context: { $implicit: iconoDe(item) }" />
+            </span>
+
+            <div class="cuerpo">
+              <span class="badge">Conocimiento</span>
+              <h3>{{ item.titulo }}</h3>
+              @if (descripcionDe(item.id); as resumen) {
+                <p class="resumen">{{ resumen }}</p>
+              }
+              <ng-container *ngTemplateOutlet="metaTpl; context: { $implicit: item, fecha: fechaDe(item.id) }" />
+            </div>
+
+            <div class="lado" (click)="$event.stopPropagation()">
+              <div class="acciones">
+                @if (puedeGestionar()) {
+                  <button type="button" class="btn-accion editar" title="Editar" aria-label="Editar" (click)="editar(item, $event)">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                      <circle cx="12" cy="12" r="3" />
+                      <path d="M12 20h9" />
+                      <path d="M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4 12.5-12.5z" />
                     </svg>
                   </button>
-                  @if (puedeGestionar()) {
-                    <button type="button" class="btn-accion editar" title="Editar" aria-label="Editar" (click)="editar(item, $event)">
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                        <path d="M12 20h9" />
-                        <path d="M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4 12.5-12.5z" />
-                      </svg>
-                    </button>
-                  }
-                  <button
-                    type="button"
-                    class="btn-accion fav"
-                    [class.on]="esFavorito(item.id)"
-                    [title]="esFavorito(item.id) ? 'Quitar favorito' : 'Agregar a favoritos'"
-                    [attr.aria-label]="esFavorito(item.id) ? 'Quitar favorito' : 'Agregar a favoritos'"
-                    (click)="toggleFavorito(item.id, item.titulo, $event)"
-                  >
-                    <svg viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
-                      <path d="M12 3.6l2.35 4.76 5.25.76-3.8 3.7.9 5.24L12 15.7l-4.7 2.46.9-5.24-3.8-3.7 5.25-.76L12 3.6z" />
+                }
+                @if (esAdministrador()) {
+                  <button type="button" class="btn-accion eliminar" title="Eliminar" aria-label="Eliminar" [disabled]="eliminando" (click)="pedirEliminar(item, $event)">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                      <path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6" />
                     </svg>
                   </button>
-                  @if (esAdministrador()) {
-                    <button
-                      type="button"
-                      class="btn-accion eliminar"
-                      title="Eliminar"
-                      aria-label="Eliminar"
-                      [disabled]="eliminando"
-                      (click)="pedirEliminar(item, $event)"
-                    >
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                        <path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6" />
-                      </svg>
-                    </button>
-                  }
-                </div>
-              </td>
-              <td>
-                <strong>{{ item.titulo }}</strong>
-              </td>
-              <td>{{ item.hardwareNombre || '—' }}</td>
-              <td>{{ item.sistemaNombre || '—' }}</td>
-              <td>{{ item.frecuenciaNombre || '—' }}</td>
-            </tr>
-          } @empty {
-            <tr>
-              <td colspan="5" class="vacio">No encontramos conocimientos que coincidan con tu búsqueda.</td>
-            </tr>
-          }
-        </tbody>
-      </table>
+                }
+                <button
+                  type="button"
+                  class="btn-estrella"
+                  [class.on]="esFavorito(item.id)"
+                  [title]="esFavorito(item.id) ? 'Quitar favorito' : 'Agregar a favoritos'"
+                  [attr.aria-label]="esFavorito(item.id) ? 'Quitar favorito' : 'Agregar a favoritos'"
+                  (click)="toggleFavorito(item.id, item.titulo, $event)"
+                >
+                  <svg viewBox="0 0 24 24" [attr.fill]="esFavorito(item.id) ? 'currentColor' : 'none'" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M12 3.6l2.35 4.76 5.25.76-3.8 3.7.9 5.24L12 15.7l-4.7 2.46.9-5.24-3.8-3.7 5.25-.76L12 3.6z" />
+                  </svg>
+                </button>
+              </div>
+              <button type="button" class="btn-ver" (click)="abrir(item)">
+                Ver solución
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M9 6l6 6-6 6" /></svg>
+              </button>
+            </div>
+          </li>
+        } @empty {
+          <li class="vacio-tarjetas">No encontramos conocimientos que coincidan con tu búsqueda.</li>
+        }
+      </ul>
     }
-  </div>
   }
 </section>
+
+<ng-template #iconoTpl let-tipo>
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    @switch (tipo) {
+      @case ('impresora') {
+        <path d="M6 9V3h12v6" />
+        <rect x="3" y="9" width="18" height="8" rx="2" />
+        <path d="M6 14h12v7H6z" />
+      }
+      @case ('pantalla') {
+        <rect x="3" y="4" width="18" height="12" rx="2" />
+        <path d="M8 20h8M12 16v4" />
+      }
+      @case ('red') {
+        <circle cx="18" cy="5" r="3" />
+        <circle cx="6" cy="12" r="3" />
+        <circle cx="18" cy="19" r="3" />
+        <path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4" />
+      }
+      @case ('servidor') {
+        <rect x="3" y="3" width="18" height="7" rx="2" />
+        <rect x="3" y="14" width="18" height="7" rx="2" />
+        <path d="M7 6.5h.01M7 17.5h.01" />
+      }
+      @default {
+        <path d="M14 3H6a2 2 0 00-2 2v14a2 2 0 002 2h12a2 2 0 002-2V9z" />
+        <path d="M14 3v6h6M8 13h8M8 17h5" />
+      }
+    }
+  </svg>
+</ng-template>
+
+<ng-template #metaTpl let-item let-fecha="fecha">
+  <ul class="datos">
+    <li>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+        <rect x="3" y="4" width="18" height="12" rx="2" />
+        <path d="M8 20h8M12 16v4" />
+      </svg>
+      Sistema: {{ item.sistemaNombre || '—' }}
+    </li>
+    <li>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+        <rect x="7" y="7" width="10" height="10" rx="1.5" />
+        <path d="M9 2v3M15 2v3M9 19v3M15 19v3M2 9h3M2 15h3M19 9h3M19 15h3" />
+      </svg>
+      Hardware: {{ item.hardwareNombre || '—' }}
+    </li>
+    <li>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+        <path d="M20.6 13.4l-7.2 7.2a2 2 0 01-2.8 0L3 13V3h10l7.6 7.6a2 2 0 010 2.8z" />
+        <circle cx="7.5" cy="7.5" r="1.5" />
+      </svg>
+      Frecuencia: {{ item.frecuenciaNombre || '—' }}
+    </li>
+    @if (fecha) {
+      <li>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+          <rect x="3" y="5" width="18" height="16" rx="2" />
+          <path d="M16 3v4M8 3v4M3 10h18" />
+        </svg>
+        Actualizado: {{ fecha | date: 'dd/MM/yyyy' }}
+      </li>
+    }
+  </ul>
+</ng-template>
 
 @if (pendienteQuitarFavorito) {
   <div class="confirm-capa">

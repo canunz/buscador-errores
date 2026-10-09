@@ -96,6 +96,10 @@ export class ClasificacionService {
    * 2) Lista base de /api/hardware (nombre + SO) enseguida
    * 3) Sistemas asociados en segundo plano (sin bloquear la tabla)
    */
+  hardwareEnSesion(): HardwareItem[] {
+    return (this.readSession() ?? []).filter((item) => !this.estaOculto(item.id));
+  }
+
   listarHardwareDetalle(force = false): Observable<HardwareItem[]> {
     if (!force && this.hardwareDetalleCache$) {
       return this.hardwareDetalleCache$;
@@ -113,11 +117,12 @@ export class ClasificacionService {
           sistemas: stale?.find((s) => s.id === h.id)?.sistemas ?? [],
         }));
 
-        if (!bases.length) {
+        const faltan = bases.filter((h) => !(stale?.find((s) => s.id === h.id)?.sistemas.length));
+        if (!bases.length || !faltan.length) {
           return of(initial);
         }
 
-        const enrich$ = from(bases).pipe(
+        const enrich$ = from(faltan).pipe(
           mergeMap(
             (h) =>
               this.sistemasDeHardware(h.id).pipe(
@@ -310,7 +315,7 @@ export class ClasificacionService {
                     }),
                     catchError(() => of([] as CatalogoRef[])),
                   ),
-                6,
+                2,
               ),
             )
             .subscribe({ error: () => undefined });
@@ -390,7 +395,7 @@ export class ClasificacionService {
 
   private readSession(): HardwareItem[] | null {
     try {
-      const raw = sessionStorage.getItem(this.storageKey);
+      const raw = sessionStorage.getItem(this.storageKey) ?? localStorage.getItem(this.storageKey);
       if (!raw) {
         return null;
       }
@@ -403,7 +408,9 @@ export class ClasificacionService {
 
   private writeSession(items: HardwareItem[]): void {
     try {
-      sessionStorage.setItem(this.storageKey, JSON.stringify(items));
+      const raw = JSON.stringify(items);
+      sessionStorage.setItem(this.storageKey, raw);
+      localStorage.setItem(this.storageKey, raw);
     } catch {
       // ignore
     }

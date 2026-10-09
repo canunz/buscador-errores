@@ -20,6 +20,7 @@ import { EjecucionChecklistComponent } from './features/ejecucion/ejecucion-chec
 import { ProcedimientoListaComponent } from './features/procedimiento/procedimiento-lista.component';
 import { ProcedimientoDetalleComponent } from './features/procedimiento/procedimiento-detalle.component';
 import { ProcedimientoFormComponent } from './features/procedimiento/procedimiento-form.component';
+import { NotificacionesComponent } from './features/notificaciones/notificaciones.component';
 import { FavoritosComponent } from './features/secciones/favoritos.component';
 import { ReportesComponent } from './features/secciones/reportes.component';
 
@@ -45,6 +46,7 @@ export const routes: Routes = [
       { path: 'conocimiento/nuevo', component: ConocimientoFormComponent, canActivate: [staffGuard] },
       { path: 'conocimiento/:id/editar', component: ConocimientoFormComponent, canActivate: [staffGuard] },
       { path: 'conocimiento/:id', component: ConocimientoDetalleComponent },
+      { path: 'notificaciones', component: NotificacionesComponent, canActivate: [staffGuard] },
       { path: 'ejecuciones', component: EjecucionesComponent, canActivate: [staffGuard] },
       { path: 'ejecuciones/:id', component: EjecucionChecklistComponent, canActivate: [staffGuard] },
       { path: 'favoritos', component: FavoritosComponent },

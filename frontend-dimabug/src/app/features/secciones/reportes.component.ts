@@ -2,11 +2,12 @@ import { DecimalPipe } from '@angular/common';
 import { Component, computed, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { CatalogoService } from '../../core/services/catalogo.service';
+import { AyudaFranjaComponent } from '../../shared/ui/ayuda-franja.component';
 
 @Component({
   selector: 'app-reportes',
   standalone: true,
-  imports: [DecimalPipe, RouterLink],
+  imports: [DecimalPipe, RouterLink, AyudaFranjaComponent],
   templateUrl: './reportes.component.html',
   styleUrl: './reportes.component.css',
 })
