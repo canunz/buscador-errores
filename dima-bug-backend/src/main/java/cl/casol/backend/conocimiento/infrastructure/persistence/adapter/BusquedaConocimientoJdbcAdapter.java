@@ -56,7 +56,7 @@ public class BusquedaConocimientoJdbcAdapter
                          WHERE cp.conocimiento_id = ?
                          ORDER BY cp.prueba_orden, p.prueba_id
                         """, 2, conocimientoId),
-                columna("SELECT solucion_descripcion FROM co_solucion WHERE conocimiento_id = ? ORDER BY solucion_orden, solucion_id", conocimientoId),
+                columnas("SELECT solucion_titulo, solucion_descripcion FROM co_solucion WHERE conocimiento_id = ? AND solucion_estado = 1 ORDER BY solucion_orden, solucion_id", 2, conocimientoId),
                 columnas("""
                         SELECT CASE WHEN r.responsable_estado = 1 THEN r.responsable_nombre END,
                                CASE WHEN r.responsable_estado = 1 THEN r.responsable_cargo END,
@@ -65,7 +65,7 @@ public class BusquedaConocimientoJdbcAdapter
                           JOIN co_solucion_asignacion a ON a.solucion_id = so.solucion_id
                           LEFT JOIN u_responsable r ON r.responsable_id = a.responsable_id
                           LEFT JOIN u_departamento d ON d.departamento_id = a.departamento_id
-                         WHERE so.conocimiento_id = ?
+                         WHERE so.conocimiento_id = ? AND so.solucion_estado = 1
                          ORDER BY so.solucion_orden, so.solucion_id, a.asignacion_principal DESC, a.asignacion_id
                         """, 3, conocimientoId),
                 columna("""

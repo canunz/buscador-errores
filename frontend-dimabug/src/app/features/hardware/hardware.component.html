@@ -8,6 +8,12 @@
       <h1>Hardware</h1>
       <span>{{ items.length }} equipo{{ items.length === 1 ? '' : 's' }} desde la base de datos</span>
     </div>
+    @if (esAdministrador()) {
+      <div class="hw-admin-actions">
+        <a routerLink="/admin/catalogo/hardware" class="btn-crear hw-admin-link">Administrar Hardware</a>
+        <span>Crear, editar y asociar Sistemas</span>
+      </div>
+    }
   </div>
 
   @if (error) {
@@ -34,11 +40,6 @@
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
                       <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
                       <circle cx="12" cy="12" r="3" />
-                    </svg>
-                  </button>
-                  <button type="button" class="btn-accion eliminar" title="Eliminar" aria-label="Eliminar" (click)="pedirEliminar(item)">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                      <path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6" />
                     </svg>
                   </button>
                 </div>
@@ -75,7 +76,7 @@
           <p>Hardware</p>
           <h2 id="hw-detalle-titulo">{{ detalle.nombre }}</h2>
         </div>
-        <button type="button" class="hw-modal-cerrar" (click)="cerrarDetalle()" aria-label="Cerrar">✕</button>
+        <button type="button" class="hw-modal-cerrar" (click)="cerrarDetalle()" aria-label="Cerrar"><span aria-hidden="true">✕</span></button>
       </header>
       <div class="hw-modal-cuerpo">
         <section class="hw-bloque">
@@ -97,19 +98,5 @@
         </section>
       </div>
     </article>
-  </div>
-}
-
-@if (pendienteEliminar) {
-  <div class="confirm-capa">
-    <div class="confirm-fondo" (click)="cancelarEliminar()"></div>
-    <div class="confirm-dialog" role="alertdialog" aria-modal="true" aria-labelledby="hw-eliminar-titulo">
-      <h2 id="hw-eliminar-titulo">¿Eliminar este hardware?</h2>
-      <p>{{ pendienteEliminar.nombre }} dejará de verse en este listado.</p>
-      <div class="confirm-acciones">
-        <button type="button" class="btn-cancelar" (click)="cancelarEliminar()">Cancelar</button>
-        <button type="button" class="btn-peligro" (click)="confirmarEliminar()">Eliminar</button>
-      </div>
-    </div>
   </div>
 }

@@ -21,6 +21,7 @@ public class ModuloEntity {
     private boolean activo;
 
     protected ModuloEntity() { }
+    public ModuloEntity(Integer id, SistemaEntity sistema, String nombre, boolean activo) { this.id=id; this.sistema=sistema; this.nombre=nombre; this.activo=activo; }
 
     public Integer getId() { return id; }
     public SistemaEntity getSistema() { return sistema; }

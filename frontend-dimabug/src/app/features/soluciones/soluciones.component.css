@@ -239,3 +239,12 @@
 :host-context(.tema-oscuro) .sol-page .nombre {
   color: #f8fafc;
 }
+
+.solucion-resumen { margin: 8px 0 0; white-space: pre-line; overflow-wrap: anywhere; }
+.sol-page small { display: block; margin-top: 6px; }
+.solucion-inactiva { font-weight: 700; color: #b91c1c; }
+.sol-page .estado-solucion { width: auto; min-width: 88px; padding: 6px 10px; }
+.autoservicio-control { display: block; margin-top: 8px; padding: 6px 10px; font: inherit; cursor: pointer; }
+.sol-page .toolbar { display: flex; gap: 12px; flex-wrap: wrap; }
+.sol-page button:disabled { opacity: 0.5; cursor: default; }
+@media (max-width: 720px) { .sol-page .toolbar { flex-direction: column; align-items: stretch; } }

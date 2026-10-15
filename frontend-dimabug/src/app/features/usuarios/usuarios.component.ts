@@ -1,3 +1,4 @@
+import { mensajeApiError } from '../../core/http/api-error';
 import { DatePipe } from '@angular/common';
 import { Component, HostListener, OnInit, inject } from '@angular/core';
 import { AbstractControl, FormBuilder, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
@@ -258,28 +259,6 @@ export class UsuariosComponent implements OnInit {
     }
   }
 
-  pedirEliminar(u: Usuario): void {
-    if (this.esCuentaActual(u)) {
-      return;
-    }
-    this.confirmacion = {
-      titulo: 'Eliminar usuario',
-      pregunta: '¿Estás seguro de eliminar a',
-      nombre: u.usuarioNombre,
-      nota: 'Dejará de verse en este listado.',
-      accion: 'Eliminar',
-      tono: 'peligro',
-      ejecutar: () => {
-        this.usuariosApi.ocultar(u.usuarioId);
-        this.usuarios = this.usuarios.filter((actual) => actual.usuarioId !== u.usuarioId);
-        if (this.detalle?.usuarioId === u.usuarioId) {
-          this.detalle = null;
-        }
-        this.success = `${u.usuarioNombre} fue eliminado del listado.`;
-      },
-    };
-  }
-
   toggleEstado(u: Usuario): void {
     if (this.esCuentaActual(u)) {
       return;
@@ -307,14 +286,6 @@ export class UsuariosComponent implements OnInit {
   }
 
   private aplicarEstado(u: Usuario, next: boolean): void {
-    const fallbackPut = () =>
-      this.usuariosApi.actualizar(u.usuarioId, {
-        usuarioNombre: u.usuarioNombre,
-        usuarioEmail: u.usuarioEmail,
-        rolId: u.rolId || u.rol?.rolId || 0,
-        usuarioEstado: next,
-      });
-
     this.mensajeCarga = next ? 'Activando usuario…' : 'Desactivando usuario…';
     this.cambiandoEstado = true;
     this.usuariosApi.cambiarEstado(u.usuarioId, next).subscribe({
@@ -323,20 +294,9 @@ export class UsuariosComponent implements OnInit {
         this.success = next ? `${u.usuarioNombre} quedó activo.` : `${u.usuarioNombre} quedó inactivo.`;
         this.cargar(true);
       },
-      error: () => {
-        fallbackPut().subscribe({
-          next: () => {
-            this.cambiandoEstado = false;
-            this.success = next
-              ? `${u.usuarioNombre} quedó activo.`
-              : `${u.usuarioNombre} quedó inactivo.`;
-            this.cargar(true);
-          },
-          error: () => {
-            this.cambiandoEstado = false;
-            this.error = 'No se pudo cambiar el estado.';
-          },
-        });
+      error: (err) => {
+        this.cambiandoEstado = false;
+        this.error = mensajeApiError(err, 'No se pudo cambiar el estado.');
       },
     });
   }

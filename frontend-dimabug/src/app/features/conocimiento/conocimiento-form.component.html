@@ -48,7 +48,7 @@
       <label>
         Hardware
         <select formControlName="hardwareId">
-          <option [ngValue]="null">Seleccione hardware</option>
+          <option [ngValue]="null">{{ hardwares.length ? 'Seleccione hardware' : 'Sin hardware disponible' }}</option>
           @for (item of hardwares; track item.id) {
             <option [ngValue]="item.id">{{ item.nombre }}</option>
           }

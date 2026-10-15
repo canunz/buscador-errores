@@ -25,6 +25,7 @@ export class ProcedimientoListaComponent implements OnInit {
   items: Procedimiento[] = [];
   loading = false;
   error = '';
+  avisoPublicacion = '';
   publicandoId: number | null = null;
   texto = '';
   estado: EstadoProcedimiento | null = null;
@@ -61,23 +62,17 @@ export class ProcedimientoListaComponent implements OnInit {
 
   publicar(item: Procedimiento, event: Event): void {
     event.stopPropagation();
-    if (!this.esAdministrador() || item.estado !== 'BORRADOR' || this.publicandoId != null) {
-      return;
-    }
-    this.publicandoId = item.id;
-    this.error = '';
-    this.procedimientos.cambiarEstado(item.id, 'PUBLICADO').subscribe({
-      next: (actualizado) => {
-        this.items = this.items.map((actual) => (actual.id === actualizado.id ? actualizado : actual));
-        this.publicandoId = null;
-      },
-      error: (err: Error) => {
-        this.publicandoId = null;
-        this.error = err.message;
-      },
+    if (!this.esAdministrador() || item.estado !== 'BORRADOR' || this.publicandoId != null) return;
+    this.publicandoId = item.id; this.error = ''; this.avisoPublicacion = '';
+    const enviar = () => this.procedimientos.cambiarEstado(item.id, 'PUBLICADO').subscribe({
+      next: actualizado => { this.items = this.items.map(p => p.id === actualizado.id ? actualizado : p); this.publicandoId = null; },
+      error: (e: Error) => { this.publicandoId = null; this.error = e.message; },
+    });
+    this.procedimientos.listarPasos(item.id, true).subscribe({
+      next: pasos => { if (!pasos.length) this.avisoPublicacion = 'Se permite publicar sin pasos. Para ejecutarlo se necesita al menos uno; PUBLICADO no admite edición de pasos.'; enviar(); },
+      error: () => { this.avisoPublicacion = 'No fue posible comprobar los pasos. La publicación está permitida; ejecutar requiere al menos un paso.'; enviar(); },
     });
   }
-
   private visibles(items: Procedimiento[]): Procedimiento[] {
     return this.puedeGestionar() ? items : items.filter((item) => item.estado === 'PUBLICADO');
   }

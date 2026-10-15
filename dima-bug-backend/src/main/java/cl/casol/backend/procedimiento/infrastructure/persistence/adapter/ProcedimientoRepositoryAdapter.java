@@ -11,6 +11,11 @@ import java.util.*;
 
 @Component
 public class ProcedimientoRepositoryAdapter implements ProcedimientoRepository {
+    @jakarta.persistence.PersistenceContext
+    private jakarta.persistence.EntityManager entityManager;
+    public void bloquear(Integer id) {
+        entityManager.find(cl.casol.backend.procedimiento.infrastructure.persistence.entity.ProcedimientoEntity.class,id,jakarta.persistence.LockModeType.PESSIMISTIC_WRITE);
+    }
     private final ProcedimientoJpaRepository repository;
     private final UsuarioJpaRepository usuarios;
     public ProcedimientoRepositoryAdapter(ProcedimientoJpaRepository repository, UsuarioJpaRepository usuarios) {

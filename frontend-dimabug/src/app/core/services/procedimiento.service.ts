@@ -131,7 +131,7 @@ export class ProcedimientoService {
           return of(stale);
         }
         this.listaCache$ = null;
-        return throwError(() => new Error(this.mensaje(err)));
+        return throwError(() => Object.assign(new Error(this.mensaje(err)), { status: err.status }));
       }),
     );
 
@@ -143,7 +143,7 @@ export class ProcedimientoService {
     return this.http.get<unknown>(`${this.base}/${id}`).pipe(
       map((res) => this.normalizeProcedimiento(res)),
       tap((item) => this.cacheProcedimientos.set(item.id, item)),
-      catchError((err: HttpErrorResponse) => throwError(() => new Error(this.mensaje(err)))),
+      catchError((err: HttpErrorResponse) => throwError(() => Object.assign(new Error(this.mensaje(err)), { status: err.status }))),
     );
   }
 
@@ -151,7 +151,7 @@ export class ProcedimientoService {
     return this.http.post<unknown>(this.base, this.cuerpoProcedimiento(request)).pipe(
       map((res) => this.normalizeProcedimiento(res)),
       tap((item) => this.recordar(item)),
-      catchError((err: HttpErrorResponse) => throwError(() => new Error(this.mensaje(err)))),
+      catchError((err: HttpErrorResponse) => throwError(() => Object.assign(new Error(this.mensaje(err)), { status: err.status }))),
     );
   }
 
@@ -159,7 +159,7 @@ export class ProcedimientoService {
     return this.http.put<unknown>(`${this.base}/${id}`, this.cuerpoProcedimiento(request)).pipe(
       map((res) => this.normalizeProcedimiento(res)),
       tap((item) => this.recordar(item)),
-      catchError((err: HttpErrorResponse) => throwError(() => new Error(this.mensaje(err)))),
+      catchError((err: HttpErrorResponse) => throwError(() => Object.assign(new Error(this.mensaje(err)), { status: err.status }))),
     );
   }
 
@@ -167,28 +167,22 @@ export class ProcedimientoService {
     return this.http.patch<unknown>(`${this.base}/${id}/estado`, { estado }).pipe(
       map((res) => this.normalizeProcedimiento(res)),
       tap((item) => this.recordar(item)),
-      catchError((err: HttpErrorResponse) => throwError(() => new Error(this.mensaje(err)))),
+      catchError((err: HttpErrorResponse) => throwError(() => Object.assign(new Error(this.mensaje(err)), { status: err.status }))),
     );
   }
 
-  listarPasos(procedimientoId: number): Observable<PasoProcedimiento[]> {
-    return this.compartir(
-      `pasos:${procedimientoId}`,
-      this.http.get<unknown>(`${this.base}/${procedimientoId}/pasos`).pipe(
-        map((res) => this.asArray(res).map((item) => this.normalizePaso(item))),
-        tap((pasos) => {
-          this.cachePasos.set(procedimientoId, pasos);
-          this.guardarPasos(procedimientoId, pasos);
-        }),
-        catchError((err: HttpErrorResponse) => throwError(() => new Error(this.mensaje(err)))),
-      ),
+  listarPasos(procedimientoId: number, force = false): Observable<PasoProcedimiento[]> {
+    const fuente = this.http.get<unknown>(`${this.base}/${procedimientoId}/pasos`).pipe(
+      map(res => this.asArray(res).map(item => this.normalizePaso(item))),
+      tap(pasos => { this.cachePasos.set(procedimientoId, pasos); this.guardarPasos(procedimientoId, pasos); }),
+      catchError((err: HttpErrorResponse) => throwError(() => Object.assign(new Error(this.mensaje(err)), { status: err.status }))),
     );
+    return force ? fuente : this.compartir(`pasos:${procedimientoId}`, fuente);
   }
-
   crearPaso(procedimientoId: number, request: GuardarPasoRequest): Observable<PasoProcedimiento> {
     return this.http.post<unknown>(`${this.base}/${procedimientoId}/pasos`, request).pipe(
       map((res) => this.normalizePaso(res)),
-      catchError((err: HttpErrorResponse) => throwError(() => new Error(this.mensaje(err)))),
+      catchError((err: HttpErrorResponse) => throwError(() => Object.assign(new Error(this.mensaje(err)), { status: err.status }))),
     );
   }
 
@@ -199,7 +193,7 @@ export class ProcedimientoService {
   ): Observable<PasoProcedimiento> {
     return this.http.put<unknown>(`${this.base}/${procedimientoId}/pasos/${pasoId}`, request).pipe(
       map((res) => this.normalizePaso(res)),
-      catchError((err: HttpErrorResponse) => throwError(() => new Error(this.mensaje(err)))),
+      catchError((err: HttpErrorResponse) => throwError(() => Object.assign(new Error(this.mensaje(err)), { status: err.status }))),
     );
   }
 
@@ -216,7 +210,7 @@ export class ProcedimientoService {
           this.cacheMateriales.set(pasoId, items);
           this.guardarMateriales(pasoId, items);
         }),
-        catchError((err: HttpErrorResponse) => throwError(() => new Error(this.mensaje(err)))),
+        catchError((err: HttpErrorResponse) => throwError(() => Object.assign(new Error(this.mensaje(err)), { status: err.status }))),
       ),
     );
   }
@@ -244,7 +238,7 @@ export class ProcedimientoService {
       .post<unknown>(`${this.base}/${procedimientoId}/pasos/${pasoId}/materiales`, request)
       .pipe(
         map((res) => this.normalizeMaterial(res)),
-        catchError((err: HttpErrorResponse) => throwError(() => new Error(this.mensaje(err)))),
+        catchError((err: HttpErrorResponse) => throwError(() => Object.assign(new Error(this.mensaje(err)), { status: err.status }))),
       );
   }
 
@@ -262,7 +256,7 @@ export class ProcedimientoService {
       )
       .pipe(
         map((res) => this.normalizeMaterial(res)),
-        catchError((err: HttpErrorResponse) => throwError(() => new Error(this.mensaje(err)))),
+        catchError((err: HttpErrorResponse) => throwError(() => Object.assign(new Error(this.mensaje(err)), { status: err.status }))),
       );
   }
 
@@ -283,7 +277,7 @@ export class ProcedimientoService {
           const actuales = this.cacheMateriales.get(pasoId);
           if (actuales) this.cacheMateriales.set(pasoId, actuales.filter((m) => m.id !== materialId));
         }),
-        catchError((err: HttpErrorResponse) => throwError(() => new Error(this.mensaje(err)))),
+        catchError((err: HttpErrorResponse) => throwError(() => Object.assign(new Error(this.mensaje(err)), { status: err.status }))),
       );
   }
 
@@ -297,7 +291,7 @@ export class ProcedimientoService {
       .put<unknown>(`${this.base}/${procedimientoId}/pasos/${pasoId}/materiales/${materialId}`, request)
       .pipe(
         map((res) => this.normalizeMaterial(res)),
-        catchError((err: HttpErrorResponse) => throwError(() => new Error(this.mensaje(err)))),
+        catchError((err: HttpErrorResponse) => throwError(() => Object.assign(new Error(this.mensaje(err)), { status: err.status }))),
       );
   }
 
@@ -437,7 +431,7 @@ export class ProcedimientoService {
       return 'El procedimiento o recurso solicitado no está disponible.';
     }
     if (err.status === 409) {
-      return 'Ya existe un paso con ese número en este procedimiento.';
+      return mensajeApiError(err, 'La operación entra en conflicto con los datos actuales.');
     }
     if (err.status === 401) {
       return mensajeApiError(err, 'Su sesión no es válida. Inicie sesión nuevamente.');

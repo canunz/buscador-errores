@@ -57,6 +57,22 @@
         </a>
 
         <p class="nav-label">Catálogos</p>
+        @if (isAdmin()) {
+          <a routerLink="/admin/catalogo/sistemas" routerLinkActive="activo" (click)="closeMenu()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <rect x="3" y="4" width="18" height="12" rx="2"/>
+              <path d="M8 20h8M12 16v4M7 8h10M7 12h6"/>
+            </svg>
+            Sistemas
+          </a>
+          <a routerLink="/admin/catalogo/modulos" routerLinkActive="activo" (click)="closeMenu()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
+              <rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>
+            </svg>
+            Módulos
+          </a>
+        }
         <a routerLink="/plataforma/hardware" routerLinkActive="activo" (click)="closeMenu()">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
             <rect x="3" y="4" width="18" height="12" rx="2"/>

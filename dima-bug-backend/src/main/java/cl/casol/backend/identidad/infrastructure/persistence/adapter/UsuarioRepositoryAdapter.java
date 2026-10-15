@@ -64,6 +64,11 @@ public class UsuarioRepositoryAdapter implements UsuarioRepository {
     }
 
     @Override
+    public List<Usuario> bloquearAdministradoresActivos() {
+        return usuarioJpaRepository.bloquearAdministradoresActivos().stream().map(UsuarioMapper::toDomain).toList();
+    }
+
+    @Override
     public Usuario guardar(Usuario usuario) {
         Usuario guardado = UsuarioMapper.toDomain(usuarioJpaRepository.save(UsuarioMapper.toEntity(usuario)));
         usuariosAutenticados.invalidar(guardado.getEmail());

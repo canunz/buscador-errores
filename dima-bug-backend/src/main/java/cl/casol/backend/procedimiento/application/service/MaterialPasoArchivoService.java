@@ -28,6 +28,8 @@ public class MaterialPasoArchivoService {
     }
     public void eliminar(Integer procedimientoId, Integer pasoId, Integer materialId) {
         archivos.eliminar(() -> {
+            procedimientos.bloquear(procedimientoId);
+        EdicionProcedimiento.exigirBorrador(procedimientos.buscarPorId(procedimientoId).orElseThrow(() -> new ProcedimientoNoEncontradoException(procedimientoId)));
             verificar(procedimientoId, pasoId);
             return materiales.buscarPorId(materialId)
                     .filter(m -> m.conocimientoId() == null && pasoId.equals(m.pasoId()))

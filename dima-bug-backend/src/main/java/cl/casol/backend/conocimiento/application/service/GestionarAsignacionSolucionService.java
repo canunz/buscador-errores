@@ -42,7 +42,7 @@ public class GestionarAsignacionSolucionService {
     @Transactional
     public SolucionAsignacion crear(Integer conocimientoId, Integer solucionId, Integer departamentoId,
             Integer responsableId, Boolean principal) {
-        validarPadres(conocimientoId, solucionId);
+        validarEscritura(conocimientoId, solucionId);
         Destinatarios destinatarios = validarDestinatarios(departamentoId, responsableId);
         SolucionAsignacion guardada = asignaciones.guardar(new SolucionAsignacion(null, solucionId,
                 destinatarios.responsable(), destinatarios.departamento(), principal == null || principal));
@@ -53,7 +53,7 @@ public class GestionarAsignacionSolucionService {
     @Transactional
     public SolucionAsignacion modificar(Integer conocimientoId, Integer solucionId, Integer asignacionId,
             Integer departamentoId, Integer responsableId, Boolean principal) {
-        validarPadres(conocimientoId, solucionId);
+        validarEscritura(conocimientoId, solucionId);
         SolucionAsignacion actual = asignaciones.buscarPorId(asignacionId)
                 .filter(asignacion -> solucionId.equals(asignacion.solucionId()))
                 .orElseThrow(() -> new AsignacionSolucionNoEncontradaException(asignacionId));
@@ -62,6 +62,15 @@ public class GestionarAsignacionSolucionService {
                 destinatarios.responsable(), destinatarios.departamento(), principal == null || principal));
         indexador.indexar(conocimientoId);
         return guardada;
+    }
+
+    private void validarEscritura(Integer conocimientoId, Integer solucionId) {
+        conocimientos.bloquear(conocimientoId);
+        validarPadres(conocimientoId, solucionId);
+        Solucion s = soluciones.bloquearPorConocimiento(conocimientoId).stream()
+                .filter(item -> item.id().equals(solucionId)).findFirst()
+                .orElseThrow(() -> new SolucionNoEncontradaException(solucionId));
+        if (!s.activo()) throw new SolucionInactivaException();
     }
 
     private void validarPadres(Integer conocimientoId, Integer solucionId) {

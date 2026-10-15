@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.*; import static org.mockito.Mock
 class MantenerMaterialPasoServiceTest {
     @Mock ProcedimientoRepository procedimientos; @Mock PasoRepository pasos; @Mock MaterialApoyoRepository materiales;
     MantenerMaterialPasoService service;
-    @BeforeEach void setUp(){MockitoAnnotations.openMocks(this);service=new MantenerMaterialPasoService(procedimientos,pasos,materiales);when(procedimientos.buscarPorId(1)).thenReturn(Optional.of(mock(Procedimiento.class)));when(pasos.buscarPorId(5)).thenReturn(Optional.of(new Paso(5,1,1,"X",false)));when(materiales.guardar(any())).thenAnswer(i->i.getArgument(0));}
+    @BeforeEach void setUp(){MockitoAnnotations.openMocks(this);service=new MantenerMaterialPasoService(procedimientos,pasos,materiales);when(procedimientos.buscarPorId(1)).thenReturn(Optional.of(new Procedimiento(1,"P","D",EstadoProcedimiento.BORRADOR,null,null,null,null)));when(pasos.buscarPorId(5)).thenReturn(Optional.of(new Paso(5,1,1,"X",false)));when(materiales.guardar(any())).thenAnswer(i->i.getArgument(0));}
     @Test void creaTodosLosTiposConXorCorrecto(){for(TipoMaterial tipo:TipoMaterial.values()){MaterialApoyo m=service.crear(1,5,"N",tipo,"url");assertNull(m.conocimientoId());assertEquals(5,m.pasoId());assertEquals(tipo,m.tipo());}}
     @Test void listaMaterialesDelPaso(){when(materiales.buscarPorPaso(5)).thenReturn(List.of(materialPaso(8)));assertEquals(1,service.listar(1,5).size());verify(materiales).buscarPorPaso(5);}
     @Test void modificaSinMoverDestino(){when(materiales.buscarPorId(8)).thenReturn(Optional.of(materialPaso(8)));MaterialApoyo m=service.modificar(1,5,8,"Nuevo",TipoMaterial.PDF,"u2");assertNull(m.conocimientoId());assertEquals(5,m.pasoId());}

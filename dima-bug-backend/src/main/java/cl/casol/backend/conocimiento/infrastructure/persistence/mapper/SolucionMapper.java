@@ -9,10 +9,10 @@ import cl.casol.backend.identidad.infrastructure.persistence.mapper.Organizacion
 public final class SolucionMapper {
     private SolucionMapper() { }
     public static Solucion toDomain(SolucionEntity e) {
-        return new Solucion(e.getId(), e.getConocimientoId(), e.getDescripcion(), e.getTipo(), e.getOrden());
+        return new Solucion(e.getId(), e.getConocimientoId(), e.getDescripcion(), e.getTipo(), e.getOrden(), e.getTitulo(), e.isActivo(), e.isAutoservicio());
     }
     public static SolucionEntity toEntity(Solucion s) {
-        return new SolucionEntity(s.id(), s.conocimientoId(), s.descripcion(), s.tipo(), s.orden());
+        return new SolucionEntity(s.id(), s.conocimientoId(), s.descripcion(), s.tipo(), s.orden(), s.titulo(), s.activo(), s.autoservicio());
     }
     public static SolucionAsignacion toDomain(SolucionAsignacionEntity e) {
         return new SolucionAsignacion(e.getId(), e.getSolucion().getId(),

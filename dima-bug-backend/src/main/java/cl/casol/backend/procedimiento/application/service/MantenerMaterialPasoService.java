@@ -24,13 +24,17 @@ public class MantenerMaterialPasoService {
     }
     @Transactional
     public MaterialApoyo crear(Integer procedimientoId,Integer pasoId,String nombre,TipoMaterial tipo,String url){
+        procedimientos.bloquear(procedimientoId);
         verificarPaso(procedimientoId,pasoId);
+        EdicionProcedimiento.exigirBorrador(procedimientos.buscarPorId(procedimientoId).orElseThrow(() -> new ProcedimientoNoEncontradoException(procedimientoId)));
         return materiales.guardar(new MaterialApoyo(null,null,pasoId,nombre,tipo,url));
     }
     @Transactional
     public MaterialApoyo modificar(Integer procedimientoId,Integer pasoId,Integer materialId,
             String nombre,TipoMaterial tipo,String url){
+        procedimientos.bloquear(procedimientoId);
         verificarPaso(procedimientoId,pasoId);
+        EdicionProcedimiento.exigirBorrador(procedimientos.buscarPorId(procedimientoId).orElseThrow(() -> new ProcedimientoNoEncontradoException(procedimientoId)));
         MaterialApoyo actual=materiales.buscarPorId(materialId)
                 .filter(m -> m.conocimientoId()==null && pasoId.equals(m.pasoId()))
                 .orElseThrow(() -> new MaterialApoyoNoEncontradoException(materialId));

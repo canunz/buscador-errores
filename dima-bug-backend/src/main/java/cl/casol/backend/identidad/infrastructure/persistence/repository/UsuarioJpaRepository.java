@@ -12,6 +12,10 @@ import java.util.Optional;
 public interface UsuarioJpaRepository
         extends JpaRepository<UsuarioEntity, Integer> {
 
+    @org.springframework.data.jpa.repository.Lock(jakarta.persistence.LockModeType.PESSIMISTIC_WRITE)
+    @Query("select u from UsuarioEntity u join fetch u.rol r where u.activo = true and upper(r.nombre) = 'ADMINISTRADOR' order by u.id")
+    java.util.List<UsuarioEntity> bloquearAdministradoresActivos();
+
     Optional<UsuarioEntity> findByEmail(String email);
 
     Optional<UsuarioEntity> findByEmailIgnoreCase(String email);

@@ -19,6 +19,9 @@ public class PruebaEntity {
     @Column(name = "prueba_estado", nullable = false)
     private boolean activa;
 
+    public PruebaEntity(Integer id, String descripcion, String resultadoEsperado, boolean activa) {
+        this.id=id; this.descripcion=descripcion; this.resultadoEsperado=resultadoEsperado; this.activa=activa;
+    }
     protected PruebaEntity() { }
 
     public Integer getId() { return id; }

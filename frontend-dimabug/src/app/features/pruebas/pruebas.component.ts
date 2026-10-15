@@ -1,110 +1,56 @@
 import { Component, DestroyRef, OnInit, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { Router } from '@angular/router';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { OrganizacionService } from '../../core/services/organizacion.service';
+import { AdminPruebasApiService } from '../../core/services/admin-pruebas-api.service';
+import { RespaldoPruebasLocalService } from '../../core/services/respaldo-pruebas-local.service';
+import { AuthService } from '../../core/services/auth.service';
 import { PruebaItem } from '../../core/models/catalogo.model';
 import { AyudaFranjaComponent } from '../../shared/ui/ayuda-franja.component';
 import { LoadingModalComponent } from '../../shared/ui/loading-modal.component';
-@Component({
-  selector: 'app-pruebas',
-  standalone: true,
-  imports: [LoadingModalComponent, AyudaFranjaComponent],
-  templateUrl: './pruebas.component.html',
-  styleUrls: ['../../shared/ui/catalogo-page.css', './pruebas.component.css'],
-})
+@Component({ selector: 'app-pruebas', standalone: true, imports: [ReactiveFormsModule, LoadingModalComponent, AyudaFranjaComponent],
+ templateUrl: './pruebas.component.html', styleUrls: ['../../shared/ui/catalogo-page.css', './pruebas.component.css'] })
 export class PruebasComponent implements OnInit {
-  private readonly organizacion = inject(OrganizacionService);
-  private readonly router = inject(Router);
-  private readonly destroyRef = inject(DestroyRef);
-
-  items: PruebaItem[] = [];
-  loading = false;
-  error = '';
-  detalle: PruebaItem | null = null;
-  pendienteEstado: PruebaItem | null = null;
-  pendienteEliminar: PruebaItem | null = null;
-
-  ver(item: PruebaItem): void {
-    this.detalle = item;
-  }
-
-  cerrarDetalle(): void {
-    this.detalle = null;
-  }
-
-  get titulo(): string {
-    return this.router.url.includes('procedimientos') ? 'Procedimientos' : 'Pruebas';
-  }
-
-  pedirCambioEstado(item: PruebaItem): void {
-    this.pendienteEstado = item;
-  }
-
-  cancelarEstado(): void {
-    this.pendienteEstado = null;
-  }
-
-  pedirEliminar(item: PruebaItem): void {
-    this.pendienteEliminar = item;
-  }
-
-  cancelarEliminar(): void {
-    this.pendienteEliminar = null;
-  }
-
-  confirmarEliminar(): void {
-    const item = this.pendienteEliminar;
-    if (!item) {
-      return;
-    }
-    this.organizacion.ocultarPrueba(item.id);
-    this.items = this.items.filter((actual) => actual.id !== item.id);
-    if (this.detalle?.id === item.id) {
-      this.detalle = null;
-    }
-    this.pendienteEliminar = null;
-  }
-
-  confirmarEstado(): void {
-    const item = this.pendienteEstado;
-    if (!item) {
-      return;
-    }
-    const activo = !item.activo;
-    this.organizacion.marcarPruebaActiva(item.id, activo);
-    this.items = this.items.map((actual) => (actual.id === item.id ? { ...actual, activo } : actual));
-    this.pendienteEstado = null;
-  }
-
-  ngOnInit(): void {
-    // Pintar de inmediato lo que ya esté en sesión.
-    const cached = this.organizacion.snapshotPruebas();
-    if (cached.length) {
-      this.items = cached.map((p) => ({
-        id: p.id,
-        descripcion: p.descripcion,
-        resultadoEsperado: p.resultadoEsperado,
-        activo: true,
-      }));
-    }
-    this.cargar();
-  }
-
-  cargar(): void {
-    this.loading = !this.items.length;
-    this.error = '';
-    this.organizacion
-      .listarPruebasDetalle(false)
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: (items) => {
-          this.items = items;
-          this.loading = false;
-        },
-        error: (err: Error) => {
-          this.error = err.message;
-          this.loading = false;
-        },
-      });
-  }
+ private readonly organizacion = inject(OrganizacionService);
+ private readonly api = inject(AdminPruebasApiService);
+ private readonly respaldo = inject(RespaldoPruebasLocalService);
+ private readonly destroyRef = inject(DestroyRef);
+ private readonly fb = inject(FormBuilder);
+ readonly esAdministrador = inject(AuthService).isAdmin;
+ readonly tieneDatosLocales = this.respaldo.inspeccionar().length > 0;
+ items: PruebaItem[] = []; detalle: PruebaItem | null = null; pendienteEstado: PruebaItem | null = null;
+ loading = false; saving = false; error = ''; formError = ''; mensaje = '';
+ formulario = false; editItem: PruebaItem | null = null;
+ form = this.fb.nonNullable.group({ descripcion: ['', [Validators.required, Validators.pattern(/\S/), Validators.maxLength(500)]], resultadoEsperado: ['', Validators.maxLength(500)] });
+ ngOnInit(): void { this.cargar(); }
+ ver(item: PruebaItem): void { this.detalle = item; }
+ cerrarDetalle(): void { if (!this.saving) this.detalle = null; }
+ cargar(): void {
+  this.loading = true; this.error = '';
+  const req = this.esAdministrador() ? this.api.listar() : this.organizacion.listarPruebasDetalle(true);
+  req.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({ next: items => { this.items = items; this.loading = false;
+    if (this.detalle) this.detalle = items.find(p => p.id === this.detalle!.id) ?? null; }, error: (e: Error) => { this.loading = false; this.error = e.message; } });
+ }
+ abrirFormulario(item?: PruebaItem): void {
+  if (!this.esAdministrador() || this.saving) return;
+  this.editItem = item ?? null; this.form.reset({ descripcion: item?.descripcion ?? '', resultadoEsperado: item?.resultadoEsperado ?? '' }); this.formError = ''; this.formulario = true;
+ }
+ cerrarFormulario(): void { if (!this.saving) this.formulario = false; }
+ guardar(): void {
+  if (!this.esAdministrador() || this.saving) return;
+  if (this.form.invalid) { this.form.markAllAsTouched(); this.formError = 'Descripción obligatoria. Máximo 500 caracteres por campo.'; return; }
+  const v = this.form.getRawValue(); this.saving = true; this.formError = ''; this.mensaje = '';
+  this.api.guardar(this.editItem?.id ?? null, v.descripcion, v.resultadoEsperado).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+   next: () => { this.saving = false; this.formulario = false; this.mensaje = 'Prueba guardada.'; this.cargar(); }, error: (e: Error) => { this.saving = false; this.formError = e.message; } });
+ }
+ pedirCambioEstado(item: PruebaItem): void { if (this.esAdministrador() && !this.saving) { this.pendienteEstado = item; this.formError = ''; } }
+ cancelarEstado(): void { if (!this.saving) this.pendienteEstado = null; }
+ confirmarEstado(): void {
+  const p = this.pendienteEstado; if (!p || !this.esAdministrador() || this.saving) return;
+  this.saving = true; this.formError = ''; this.mensaje = '';
+  this.api.estado(p.id, !p.activo).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({ next: () => {
+    this.saving = false; this.pendienteEstado = null; this.mensaje = 'Estado guardado. Se conservan las asociaciones históricas.'; this.cargar();
+   }, error: (e: Error) => { this.saving = false; this.formError = e.message; } });
+ }
+ respaldar(): void { if (this.esAdministrador()) this.respaldo.descargar(); }
 }

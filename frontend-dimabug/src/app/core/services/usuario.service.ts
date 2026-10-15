@@ -26,14 +26,13 @@ export class UsuarioService {
   private readonly base = apiUrl('/usuarios');
   private readonly rolesUrl = apiUrl('/roles');
   private readonly listaKey = 'dimabug.usuarios.lista.v1';
-  private readonly ocultosKey = 'dimabug.usuarios.ocultos.v1';
   private readonly rolesKey = 'dimabug.roles.lista.v1';
 
   private listaCache$: Observable<Usuario[]> | null = null;
   private rolesCache$: Observable<Rol[]> | null = null;
 
   listaEnSesion(): Usuario[] {
-    return (this.readUsuariosSession() ?? []).filter((usuario) => !this.estaOculto(usuario.usuarioId));
+    return this.readUsuariosSession() ?? [];
   }
 
   rolesEnSesion(): Rol[] {
@@ -61,25 +60,10 @@ export class UsuarioService {
     );
 
     this.listaCache$ = (stale?.length ? concat(of(stale), network$) : network$).pipe(
-      map((list) => list.filter((u) => !this.estaOculto(u.usuarioId))),
       tap((list) => this.writeUsuariosSession(list)),
       shareReplay(1),
     );
     return this.listaCache$;
-  }
-
-  ocultar(id: number): void {
-    const ids = this.leerOcultos();
-    if (!ids.includes(id)) {
-      try {
-        sessionStorage.setItem(this.ocultosKey, JSON.stringify([...ids, id]));
-      } catch {
-        // ignore
-      }
-    }
-    this.invalidateLista();
-    const list = (this.readUsuariosSession() ?? []).filter((u) => u.usuarioId !== id);
-    this.writeUsuariosSession(list);
   }
 
   obtener(id: number): Observable<Usuario> {
@@ -217,20 +201,6 @@ export class UsuarioService {
       rol,
       rolNombre: rol?.rolNombre ?? (u['rolNombre'] ? String(u['rolNombre']) : undefined),
     };
-  }
-
-  private estaOculto(id: number): boolean {
-    return this.leerOcultos().includes(id);
-  }
-
-  private leerOcultos(): number[] {
-    try {
-      const raw = sessionStorage.getItem(this.ocultosKey);
-      const parsed = raw ? (JSON.parse(raw) as number[]) : [];
-      return Array.isArray(parsed) ? parsed.map(Number).filter((item) => item > 0) : [];
-    } catch {
-      return [];
-    }
   }
 
   private readUsuariosSession(): Usuario[] | null {

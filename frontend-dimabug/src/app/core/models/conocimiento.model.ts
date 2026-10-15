@@ -90,6 +90,7 @@ export interface PruebaCatalogo {
 }
 
 export interface PruebaAsociada {
+  activa?: boolean;
   id: number;
   descripcion: string;
   resultadoEsperado: string;
@@ -108,6 +109,9 @@ export interface OrdenPruebaRequest {
 export type TipoSolucion = 'PASOS' | 'DERIVACION';
 
 export interface Solucion {
+  titulo: string | null;
+  activo: boolean;
+  autoservicio: boolean;
   id: number;
   descripcion: string;
   tipo: TipoSolucion;
@@ -115,6 +119,7 @@ export interface Solucion {
 }
 
 export interface SolucionRequest {
+  titulo: string;
   descripcion: string;
   tipo: TipoSolucion;
   orden: number;

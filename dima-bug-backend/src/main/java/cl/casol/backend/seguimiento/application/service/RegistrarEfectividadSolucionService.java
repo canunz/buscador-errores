@@ -31,7 +31,12 @@ public class RegistrarEfectividadSolucionService {
     @Transactional
     public DetalleResultadoSolucion registrar(Integer conocimientoId, Integer solucionId,
             boolean funciono, String comentario, String emailAutenticado) {
+        conocimientos.bloquear(conocimientoId);
         validarPertenencia(conocimientoId,solucionId,true);
+        Solucion s = soluciones.bloquearPorConocimiento(conocimientoId).stream()
+                .filter(item -> item.id().equals(solucionId)).findFirst()
+                .orElseThrow(() -> new SolucionNoEncontradaException(solucionId));
+        if (!s.activo()) throw new SolucionInactivaException();
         Usuario usuario=usuarios.buscarPorEmail(emailAutenticado)
                 .orElseThrow(UsuarioNoEncontradoException::new);
         ResultadoSolucion guardado=resultados.guardar(new ResultadoSolucion(null,solucionId,

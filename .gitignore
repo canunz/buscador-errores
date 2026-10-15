@@ -26,4 +26,4 @@ Thumbs.db
 .env
 .env.*
 !.env.example
-dima-bug-backend/src/main/resources/application.properties
+# application.properties contiene solo referencias al entorno; configuracion privada fuera del repo.

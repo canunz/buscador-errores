@@ -44,6 +44,7 @@ public class SecurityConfig {
                 )
 
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/api/admin/**").hasRole("ADMINISTRADOR")
                         .requestMatchers(HttpMethod.DELETE, "/api/conocimientos/*")
                         .hasRole("ADMINISTRADOR")
                         .requestMatchers(HttpMethod.GET,

@@ -11,6 +11,7 @@
   </div>
 
   <div class="toolbar">
+    <button type="button" class="btn-crear" (click)="openCreate()" [disabled]="operando">Añadir solución</button>
     <label class="search">
       <span class="sr">Buscar</span>
       <input
@@ -24,9 +25,10 @@
   </div>
 
   @if (error) {
-    <p class="alert">{{ error }}</p>
+    <p class="alert" role="alert">{{ error }}</p>
   }
 
+  @if (mensaje) { <p role="status">{{ mensaje }}</p> }
   <div class="tabla-wrap">
     @if (!loading) {
       <table>
@@ -36,6 +38,8 @@
             <th>Solución</th>
             <th>Tipo</th>
             <th>Conocimiento</th>
+            <th>Estado</th>
+            <th>Autoservicio</th>
           </tr>
         </thead>
         <tbody>
@@ -49,30 +53,42 @@
                       <circle cx="12" cy="12" r="3" />
                     </svg>
                   </button>
-                  <button type="button" class="btn-accion editar" title="Editar" aria-label="Editar" (click)="openEdit(item)">
+                  <button type="button" class="btn-accion editar" title="Editar" aria-label="Editar" (click)="openEdit(item)" [disabled]="item.activo === false || operando">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
                       <path d="M12 20h9" />
                       <path d="M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4 12.5-12.5z" />
                     </svg>
                   </button>
-                  <button type="button" class="btn-accion eliminar" title="Eliminar" aria-label="Eliminar" (click)="pedirEliminar(item)">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                      <path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6" />
-                    </svg>
-                  </button>
+                  @if (esAdministrador()) {
+                    <button type="button" class="btn-accion estado-solucion" (click)="pedirEstado(item)" [disabled]="operando">
+                      {{ item.activo === false ? 'Reactivar' : 'Desactivar' }}
+                    </button>
+                  }
                 </div>
               </td>
               <td>
                 <strong class="nombre">{{ item.nombre }}</strong>
+                @if (!item.titulo) { <small>Sin título registrado</small> }
+                <p class="solucion-resumen">{{ recortar(item.descripcion || item.pasos) }}</p>
               </td>
               <td>
                 <span class="tipo-pill">{{ item.tipo === 'DERIVACION' ? 'Derivación' : 'Pasos a seguir' }}</span>
               </td>
               <td>{{ item.conocimientoTitulo || '—' }}</td>
+              <td><span [class.solucion-inactiva]="item.activo === false">{{ item.activo === false ? 'Inactiva' : 'Activa' }}</span></td>
+              <td>
+                <span>{{ item.autoservicio ? 'Habilitado' : 'Deshabilitado' }}</span>
+                @if (item.activo === false && item.autoservicio) { <small>No disponible mientras esté inactiva</small> }
+                @if (esAdministrador()) {
+                  <button type="button" class="autoservicio-control" [disabled]="operando" (click)="cambiarAutoservicio(item)">
+                    {{ item.autoservicio ? 'Deshabilitar autoservicio' : 'Habilitar autoservicio' }}
+                  </button>
+                }
+              </td>
             </tr>
           } @empty {
             <tr>
-              <td colspan="4" class="vacio">No hay soluciones registradas en la base de datos.</td>
+              <td colspan="6" class="vacio">No hay soluciones registradas en la base de datos.</td>
             </tr>
           }
         </tbody>
@@ -81,15 +97,22 @@
   </div>
 </section>
 
-@if (pendienteEliminar) {
+@if (pendienteEstado) {
   <div class="confirm-capa">
-    <div class="confirm-fondo" (click)="cancelarEliminar()"></div>
-    <div class="confirm-dialog" role="alertdialog" aria-modal="true" aria-labelledby="sol-eliminar-titulo">
-      <h2 id="sol-eliminar-titulo">¿Eliminar esta solución?</h2>
-      <p>{{ pendienteEliminar.nombre }} dejará de verse en este listado.</p>
+    <div class="confirm-fondo"></div>
+    <div class="confirm-dialog" role="alertdialog" aria-modal="true" aria-labelledby="sol-estado-titulo">
+      <h2 id="sol-estado-titulo">{{ pendienteEstado.activo === false ? 'Reactivar' : 'Desactivar' }} solución</h2>
+      <p>{{ pendienteEstado.nombre }}</p>
+      <p>Se conservan las asignaciones y los resultados históricos.</p>
+      @if (pendienteEstado.activo === false && pendienteEstado.autoservicio) {
+        <p class="alert" role="status">Esta solución conserva el autoservicio habilitado. Al reactivarla volverá a ser elegible para autoservicio si el conocimiento está publicado.</p>
+      }
+      @if (error) { <p class="alert" role="alert">{{ error }}</p> }
       <div class="confirm-acciones">
-        <button type="button" class="btn-cancelar" (click)="cancelarEliminar()">Cancelar</button>
-        <button type="button" class="btn-peligro" (click)="confirmarEliminar()">Eliminar</button>
+        <button type="button" class="btn-cancelar" (click)="cancelarEstado()" [disabled]="operando">Cancelar</button>
+        <button type="button" class="btn-peligro" (click)="confirmarEstado()" [disabled]="operando">
+          {{ operando ? 'Guardando…' : pendienteEstado.activo === false ? 'Reactivar' : 'Desactivar' }}
+        </button>
       </div>
     </div>
   </div>
@@ -107,6 +130,7 @@
         <button type="button" class="detalle-modal-cerrar" (click)="cerrarDetalle()" aria-label="Cerrar">✕</button>
       </header>
       <div class="detalle-modal-cuerpo">
+        <section class="detalle-bloque"><h3>Estado</h3><p>{{ detalle.activo === false ? 'Inactiva' : 'Activa' }}</p></section>
         <section class="detalle-bloque">
           <h3>Tipo</h3>
           <p class="detalle-texto">{{ detalle.tipo === 'DERIVACION' ? 'Derivación' : 'Pasos a seguir' }}</p>
@@ -117,7 +141,7 @@
         </section>
         @if (detalle.pasos) {
           <section class="detalle-bloque">
-            <h3>Detalle</h3>
+            <h3>Instrucciones</h3>
             <p class="detalle-texto">{{ detalle.pasos }}</p>
           </section>
         }
@@ -166,7 +190,12 @@
           </select>
         </label>
         <label class="full">
-          Solución
+          Título *
+          <input formControlName="titulo" maxlength="150" required placeholder="Título descriptivo de la solución" />
+          @if (form.controls.titulo.touched && form.controls.titulo.invalid) { <small role="alert">El título es obligatorio y admite máximo 150 caracteres.</small> }
+        </label>
+        <label class="full">
+          Instrucciones *
           <textarea formControlName="descripcion" rows="4" placeholder="Describe los pasos o la derivación"></textarea>
         </label>
         <label class="full">
@@ -177,7 +206,7 @@
           </select>
         </label>
         <div class="form-actions full">
-          <button type="button" class="btn-sec" (click)="closeModal()">Cancelar</button>
+          <button type="button" class="btn-sec" (click)="closeModal()" [disabled]="saving">Cancelar</button>
           <button type="submit" class="btn-crear" [disabled]="saving">
             {{ saving ? 'Guardando…' : 'Guardar' }}
           </button>

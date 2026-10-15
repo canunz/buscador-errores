@@ -19,6 +19,8 @@ public interface UsuarioRepository {
 
     boolean existePorEmailYIdDistinto(String email, Integer id);
 
+    List<Usuario> bloquearAdministradoresActivos();
+
     Usuario guardar(Usuario usuario);
 
 }

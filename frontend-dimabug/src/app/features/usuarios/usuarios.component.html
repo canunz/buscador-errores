@@ -84,14 +84,7 @@
                       </svg>
                     </span>
                   }
-                  @if (!esCuentaActual(u)) {
-                    <button type="button" class="btn-accion eliminar" title="Eliminar" aria-label="Eliminar" (click)="pedirEliminar(u)">
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                        <path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6" />
-                      </svg>
-                      <span class="sr">Eliminar</span>
-                    </button>
-                  }
+
                 </div>
               </td>
               <td>{{ u.usuarioNombre }}</td>

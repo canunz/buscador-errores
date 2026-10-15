@@ -25,6 +25,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest({ProcedimientoController.class,PasoController.class,MaterialPasoController.class})
 @Import({SecurityConfig.class,JwtAuthenticationFilter.class,GlobalExceptionHandler.class})
 class Hu05SecurityIntegrationTest {
+    @MockitoBean cl.casol.backend.procedimiento.application.service.MaterialPasoArchivoService archivoService;
+
+    @org.springframework.test.context.bean.override.mockito.MockitoBean
+    private cl.casol.backend.identidad.infrastructure.security.UsuarioAutenticadoCache usuarioAutenticadoCache;
+
+    @org.springframework.test.context.bean.override.mockito.MockitoBean
+    private cl.casol.backend.shared.application.service.VisibilidadContenidoService visibilidadContenidoService;
+
     @Autowired MockMvc mvc;
     @MockitoBean MantenerProcedimientoService procedimientos;
     @MockitoBean MantenerPasoService pasos;

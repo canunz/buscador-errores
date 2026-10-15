@@ -16,6 +16,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
+@org.springframework.transaction.annotation.Transactional
 public class AdministrarUsuariosService {
 
     private final UsuarioRepository usuarioRepository;
@@ -54,6 +55,7 @@ public class AdministrarUsuariosService {
     }
 
     public Usuario modificar(Integer id, String nombre, String email, Integer rolId, String password) {
+        List<Usuario> administradores = usuarioRepository.bloquearAdministradoresActivos();
         Usuario actual = buscarPorId(id);
         String correo = email == null ? "" : email.trim().toLowerCase();
         if (usuarioRepository.existePorEmailYIdDistinto(correo, id)) {
@@ -61,6 +63,7 @@ public class AdministrarUsuariosService {
         }
 
         Rol rol = obtenerRolActivo(rolId);
+        protegerUltimoAdministrador(actual, actual.isActivo(), rol, administradores);
         String passwordHash = actual.getPasswordHash();
         if (password != null && !password.isBlank()) {
             passwordHash = passwordEncoder.codificar(password.trim());
@@ -86,16 +89,25 @@ public class AdministrarUsuariosService {
     }
 
     public Usuario cambiarEstado(Integer id, boolean activo, String emailAutenticado) {
+        List<Usuario> administradores = usuarioRepository.bloquearAdministradoresActivos();
         Usuario actual = buscarPorId(id);
         if (!activo && actual.getEmail().equalsIgnoreCase(emailAutenticado)) {
             throw new AutoDesactivacionException();
         }
 
+        protegerUltimoAdministrador(actual, activo, actual.getRol(), administradores);
         Usuario modificado = new Usuario(
                 actual.getId(), actual.getRol(), actual.getNombre(), actual.getEmail(),
                 actual.getPasswordHash(), activo, actual.getFechaCreacion(), LocalDateTime.now()
         );
         return usuarioRepository.guardar(modificado);
+    }
+
+    private void protegerUltimoAdministrador(Usuario actual, boolean activo, Rol rol, List<Usuario> administradores) {
+        if (actual.isActivo() && "ADMINISTRADOR".equalsIgnoreCase(actual.getRol().getNombre().trim())
+                && (!activo || !"ADMINISTRADOR".equalsIgnoreCase(rol.getNombre().trim()))
+                && administradores.stream().noneMatch(u -> !u.getId().equals(actual.getId())))
+            throw new cl.casol.backend.identidad.domain.exception.UltimoAdministradorException();
     }
 
     private Rol obtenerRolActivo(Integer rolId) {

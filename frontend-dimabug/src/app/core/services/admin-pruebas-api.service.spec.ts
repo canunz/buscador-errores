@@ -1,0 +1,20 @@
+import { TestBed } from '@angular/core/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting, HttpTestingController } from '@angular/common/http/testing';
+import { AdminPruebasApiService } from './admin-pruebas-api.service';
+import { OrganizacionService } from './organizacion.service';
+import { ProcedimientoService } from './procedimiento.service';
+describe('QA013 API Pruebas y errores Pasos', () => {
+ let http: HttpTestingController; let api: AdminPruebasApiService; let invalidar: jasmine.Spy;
+ const respuesta = { id: 1, descripcion: 'Ping', resultadoEsperado: null, activa: false };
+ beforeEach(() => { invalidar = jasmine.createSpy(); TestBed.configureTestingModule({ providers: [provideHttpClient(), provideHttpClientTesting(), { provide: OrganizacionService, useValue: { invalidarPruebas: invalidar } }] }); http = TestBed.inject(HttpTestingController); api = TestBed.inject(AdminPruebasApiService); });
+ afterEach(() => http.verify());
+ it('consulta activas e inactivas', () => { api.listar().subscribe(p => expect(p[0].activo).toBeFalse()); http.expectOne('/api/admin/pruebas').flush([respuesta]); });
+ it('alta por POST sin estado inyectado ni éxito anterior a respuesta', () => { let listo = false; api.guardar(null, ' Ping ', '').subscribe(() => listo = true); const r = http.expectOne('/api/admin/pruebas'); expect(r.request.method).toBe('POST'); expect(r.request.body).toEqual({ descripcion: 'Ping', resultadoEsperado: null }); expect(listo).toBeFalse(); expect(invalidar).not.toHaveBeenCalled(); r.flush(respuesta); expect(listo).toBeTrue(); expect(invalidar).toHaveBeenCalled(); });
+ it('edita por PUT preservando estado en el contrato', () => { api.guardar(1, 'Ping', 'OK').subscribe(); const r = http.expectOne('/api/admin/pruebas/1'); expect(r.request.method).toBe('PUT'); expect(r.request.body.activa).toBeUndefined(); r.flush(respuesta); });
+ it('desactiva por PATCH', () => { api.estado(1, false).subscribe(); const r = http.expectOne('/api/admin/pruebas/1/estado'); expect(r.request.body).toEqual({ activa: false }); expect(r.request.method).toBe('PATCH'); r.flush(respuesta); });
+ it('reactiva por PATCH', () => { api.estado(1, true).subscribe(); const r = http.expectOne('/api/admin/pruebas/1/estado'); expect(r.request.body.activa).toBeTrue(); r.flush({ ...respuesta, activa: true }); });
+ it('propaga error y no invalida ante fallo', () => { let error = ''; api.estado(1, false).subscribe({ error: e => error = e.message }); http.expectOne('/api/admin/pruebas/1/estado').flush({ message: 'Conflicto de integridad' }, { status: 409, statusText: 'Conflict' }); expect(error).toContain('integridad'); expect(invalidar).not.toHaveBeenCalled(); });
+ it('Pasos conserva mensaje de integridad 409', () => { let error = ''; TestBed.inject(ProcedimientoService).crearPaso(1, { orden: 1, instruccion: 'X', esCritico: false }).subscribe({ error: e => error = e.message }); http.expectOne('/api/procedimientos/1/pasos').flush({ message: 'Conflicto con datos existentes' }, { status: 409, statusText: 'Conflict' }); expect(error).toBe('Conflicto con datos existentes'); });
+ it('Pasos muestra rechazo de edición PUBLICADO 400', () => { let error = ''; TestBed.inject(ProcedimientoService).actualizarPaso(1, 5, { orden: 1, instruccion: 'X', esCritico: false }).subscribe({ error: e => error = e.message }); http.expectOne('/api/procedimientos/1/pasos/5').flush({ message: 'El procedimiento publicado no puede modificarse' }, { status: 400, statusText: 'Bad Request' }); expect(error).toContain('publicado'); });
+});

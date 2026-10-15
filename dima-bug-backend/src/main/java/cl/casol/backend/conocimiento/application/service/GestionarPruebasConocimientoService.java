@@ -35,12 +35,13 @@ public class GestionarPruebasConocimientoService {
 
     public List<ConocimientoPrueba> listarPorConocimiento(Integer conocimientoId) {
         verificarConocimiento(conocimientoId);
-        return asociaciones.buscarActivasPorConocimientoOrdenadas(conocimientoId);
+        return asociaciones.buscarPorConocimientoOrdenadas(conocimientoId);
     }
 
     @Transactional
     public ConocimientoPrueba asociar(Integer conocimientoId, Integer pruebaId, Integer orden) {
         verificarConocimiento(conocimientoId);
+        pruebas.bloquear(pruebaId);
         Prueba prueba = pruebas.buscarActivaPorId(pruebaId)
                 .orElseThrow(() -> new PruebaNoEncontradaException(pruebaId));
         if (asociaciones.existe(conocimientoId, pruebaId)) {

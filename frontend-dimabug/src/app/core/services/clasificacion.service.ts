@@ -46,6 +46,17 @@ export class ClasificacionService {
     frecuenciasDisponibles: false,
   };
 
+  invalidarCatalogos(): void {
+    this.hardwareDetalleCache$ = null;
+    this.hardwareListaCache$ = null;
+    this.frecuenciasCache$ = null;
+    this.sistemasCache.clear(); this.modulosCache.clear();
+    this.tree = { hardwares: [], sistemasByHardware: {}, modulosBySistema: {}, frecuencias: [], frecuenciasDisponibles: false };
+    for (const key of [this.treeKey, this.storageKey, this.ocultosKey]) {
+      sessionStorage.removeItem(key); localStorage.removeItem(key);
+    }
+  }
+
   /** Lectura síncrona desde caché local (instantánea para los selects). */
   snapshotHardware(): CatalogoRef[] {
     return this.tree.hardwares;
@@ -68,7 +79,7 @@ export class ClasificacionService {
 
   listarHardware(force = false): Observable<CatalogoRef[]> {
     const stale = this.tree.hardwares;
-    if (!force && this.hardwareListaCache$) {
+    if (!force && this.hardwareListaCache$ && this.tree.hardwares.length > 0) {
       return this.hardwareListaCache$;
     }
 
@@ -79,7 +90,7 @@ export class ClasificacionService {
       }),
       catchError((err) => {
         this.hardwareListaCache$ = null;
-        if (stale.length) {
+        if (!force && stale.length) {
           return of(stale);
         }
         return throwError(() => err);
@@ -97,7 +108,7 @@ export class ClasificacionService {
    * 3) Sistemas asociados en segundo plano (sin bloquear la tabla)
    */
   hardwareEnSesion(): HardwareItem[] {
-    return (this.readSession() ?? []).filter((item) => !this.estaOculto(item.id));
+    return this.readSession() ?? [];
   }
 
   listarHardwareDetalle(force = false): Observable<HardwareItem[]> {
@@ -154,26 +165,11 @@ export class ClasificacionService {
     );
 
     this.hardwareDetalleCache$ = (stale?.length ? concat(of(stale), network$) : network$).pipe(
-      map((items) => items.filter((item) => !this.estaOculto(item.id))),
       tap((items) => this.writeSession(items)),
       shareReplay(1),
     );
 
     return this.hardwareDetalleCache$;
-  }
-
-  ocultarHardware(id: number): void {
-    const ids = this.leerOcultos();
-    if (!ids.includes(id)) {
-      try {
-        sessionStorage.setItem(this.ocultosKey, JSON.stringify([...ids, id]));
-      } catch {
-        // ignore
-      }
-    }
-    this.hardwareDetalleCache$ = null;
-    const actual = this.readSession() ?? [];
-    this.writeSession(actual.filter((item) => item.id !== id));
   }
 
   sistemasDeHardware(hardwareId: number, force = false): Observable<CatalogoRef[]> {
@@ -199,7 +195,7 @@ export class ClasificacionService {
       }),
       catchError((err) => {
         this.sistemasCache.delete(hardwareId);
-        if (stale.length) {
+        if (!force && stale.length) {
           return of(stale);
         }
         return throwError(() => err);
@@ -255,7 +251,7 @@ export class ClasificacionService {
       }),
       catchError((err) => {
         this.modulosCache.delete(sistemaId);
-        if (stale.length) {
+        if (!force && stale.length) {
           return of(stale);
         }
         return throwError(() => err);
@@ -377,20 +373,6 @@ export class ClasificacionService {
       }
     }
     return [];
-  }
-
-  private estaOculto(id: number): boolean {
-    return this.leerOcultos().includes(id);
-  }
-
-  private leerOcultos(): number[] {
-    try {
-      const raw = sessionStorage.getItem(this.ocultosKey);
-      const parsed = raw ? (JSON.parse(raw) as number[]) : [];
-      return Array.isArray(parsed) ? parsed.map(Number).filter((item) => item > 0) : [];
-    } catch {
-      return [];
-    }
   }
 
   private readSession(): HardwareItem[] | null {

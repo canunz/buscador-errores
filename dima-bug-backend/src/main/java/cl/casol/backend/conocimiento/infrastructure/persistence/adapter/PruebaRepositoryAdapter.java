@@ -10,6 +10,8 @@ import java.util.Optional;
 
 @Component
 public class PruebaRepositoryAdapter implements PruebaRepository {
+    @jakarta.persistence.PersistenceContext private jakarta.persistence.EntityManager em;
+    public void bloquear(Integer id) { var p=em.find(cl.casol.backend.conocimiento.infrastructure.persistence.entity.PruebaEntity.class,id,jakarta.persistence.LockModeType.PESSIMISTIC_WRITE); if(p!=null) em.refresh(p,jakarta.persistence.LockModeType.PESSIMISTIC_WRITE); }
     private final PruebaJpaRepository repository;
 
     public PruebaRepositoryAdapter(PruebaJpaRepository repository) { this.repository = repository; }

@@ -17,7 +17,7 @@ import java.util.List;
 public class ProcedimientoController {
     private final MantenerProcedimientoService service;
     public ProcedimientoController(MantenerProcedimientoService service){this.service=service;}
-    @GetMapping public List<ProcedimientoResponse> listar(){return service.listar().stream().map(ProcedimientoResponse::from).toList();}
+    @GetMapping public List<ProcedimientoResponse> listar(Authentication a){return service.listarVisibles(a.getAuthorities().stream().anyMatch(r -> java.util.Set.of("ROLE_ADMINISTRADOR","ROLE_TECNICO","ROLE_SOPORTE").contains(r.getAuthority()))).stream().map(ProcedimientoResponse::from).toList();}
     @GetMapping("/{id}") public ProcedimientoResponse buscar(@PathVariable Integer id){return ProcedimientoResponse.from(service.buscar(id));}
     @PostMapping @ResponseStatus(HttpStatus.CREATED)
     public ProcedimientoResponse crear(@Valid @RequestBody GuardarProcedimientoRequest r,Authentication a){return ProcedimientoResponse.from(service.crear(r.nombre(),r.descripcion(),a.getName()));}

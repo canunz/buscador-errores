@@ -33,7 +33,7 @@ function nombreRol(usuario: Usuario | null | undefined): string {
 
 export function esAdministrador(usuario: Usuario | null | undefined): boolean {
   const nombre = nombreRol(usuario);
-  return nombre === 'administrador' || nombre === 'admin';
+  return nombre === 'administrador';
 }
 
 export function esSoporte(usuario: Usuario | null | undefined): boolean {

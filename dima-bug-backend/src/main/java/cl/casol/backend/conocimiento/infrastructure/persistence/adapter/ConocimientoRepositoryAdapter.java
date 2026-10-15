@@ -47,6 +47,15 @@ public class ConocimientoRepositoryAdapter implements ConocimientoRepository {
         return repository.findById(id).map(ConocimientoMapper::toDomain);
     }
 
+    @jakarta.persistence.PersistenceContext
+    private jakarta.persistence.EntityManager entityManager;
+
+    @Override
+    public void bloquear(Integer id) {
+        repository.bloquearPorId(id).ifPresent(c ->
+                entityManager.refresh(c, jakarta.persistence.LockModeType.PESSIMISTIC_WRITE));
+    }
+
     @Override
     public Conocimiento guardar(Conocimiento c) {
         HardwareEntity hw = c.getHardware() == null ? null : hardware.getReferenceById(c.getHardware().id());

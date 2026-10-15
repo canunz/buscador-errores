@@ -1,3 +1,4 @@
+import { cambiosProcedimientoGuard } from './features/procedimiento/cambios-procedimiento.guard';
 import { Routes } from '@angular/router';
 import { adminGuard, authGuard, guestGuard, staffGuard } from './core/guards/auth.guard';
 import { ShellLayoutComponent } from './shared/layout/shell-layout.component';
@@ -38,9 +39,9 @@ export const routes: Routes = [
       { path: 'departamentos', component: DepartamentosComponent, canActivate: [staffGuard] },
       { path: 'pruebas', component: PruebasComponent, canActivate: [staffGuard] },
       { path: 'procedimientos', component: ProcedimientoListaComponent },
-      { path: 'procedimientos/nuevo', component: ProcedimientoFormComponent, canActivate: [staffGuard] },
-      { path: 'procedimientos/:id/editar', component: ProcedimientoFormComponent, canActivate: [staffGuard] },
-      { path: 'procedimientos/:id', component: ProcedimientoDetalleComponent },
+      { path: 'procedimientos/nuevo', component: ProcedimientoFormComponent, canActivate: [staffGuard], canDeactivate: [cambiosProcedimientoGuard] },
+      { path: 'procedimientos/:id/editar', component: ProcedimientoFormComponent, canActivate: [staffGuard], canDeactivate: [cambiosProcedimientoGuard] },
+      { path: 'procedimientos/:id', component: ProcedimientoDetalleComponent, canDeactivate: [cambiosProcedimientoGuard] },
       { path: 'soluciones', component: SolucionesComponent, canActivate: [staffGuard] },
       { path: 'conocimiento', component: ConocimientoComponent },
       { path: 'conocimiento/nuevo', component: ConocimientoFormComponent, canActivate: [staffGuard] },

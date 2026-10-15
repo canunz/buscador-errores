@@ -7,6 +7,7 @@ import java.util.List;
 
 public interface ConocimientoPruebaJpaRepository
         extends JpaRepository<ConocimientoPruebaEntity, ConocimientoPruebaId> {
+    List<ConocimientoPruebaEntity> findByIdConocimientoIdOrderByOrdenAscIdPruebaIdAsc(Integer conocimientoId);
     List<ConocimientoPruebaEntity> findByIdConocimientoIdAndPruebaActivaTrueOrderByOrdenAsc(
             Integer conocimientoId);
 }

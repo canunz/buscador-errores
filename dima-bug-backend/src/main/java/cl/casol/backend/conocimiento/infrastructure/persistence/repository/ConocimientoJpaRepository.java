@@ -9,6 +9,10 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface ConocimientoJpaRepository extends JpaRepository<ConocimientoEntity, Integer> {
+    @org.springframework.data.jpa.repository.Lock(jakarta.persistence.LockModeType.PESSIMISTIC_WRITE)
+    @Query("select c from ConocimientoEntity c where c.id = :id")
+    java.util.Optional<ConocimientoEntity> bloquearPorId(@Param("id") Integer id);
+
     @Query("""
             select c from ConocimientoEntity c
             left join fetch c.hardware

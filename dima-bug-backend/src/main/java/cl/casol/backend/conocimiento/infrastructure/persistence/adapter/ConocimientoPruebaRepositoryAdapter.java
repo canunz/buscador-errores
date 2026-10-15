@@ -12,6 +12,7 @@ import java.util.Optional;
 
 @Component
 public class ConocimientoPruebaRepositoryAdapter implements ConocimientoPruebaRepository {
+    public List<ConocimientoPrueba> buscarPorConocimientoOrdenadas(Integer id) { return repository.findByIdConocimientoIdOrderByOrdenAscIdPruebaIdAsc(id).stream().map(PruebaMapper::toDomain).toList(); }
     private final ConocimientoPruebaJpaRepository repository;
     private final PruebaJpaRepository pruebas;
 

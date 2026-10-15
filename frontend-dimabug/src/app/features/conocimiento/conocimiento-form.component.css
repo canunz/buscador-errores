@@ -27,7 +27,17 @@
 }
 
 .form-page .franja {
-  align-items: flex-start;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+.form-page .franja > div { min-width: 0; }
+.form-page .franja > div > span { display: block; line-height: 1.5; }
+.form-page .btn-ghost { display: inline-flex; flex-shrink: 0; white-space: nowrap; }
+@media (max-width: 720px) {
+  .form-page .franja { flex-direction: column; align-items: flex-start; }
+  .form-page .btn-ghost { align-self: flex-start; }
 }
 
 .btn-ghost {

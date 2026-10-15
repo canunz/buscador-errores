@@ -7,5 +7,7 @@ import java.util.Optional;
 public interface SolucionRepository {
     List<Solucion> buscarPorConocimientoOrdenadas(Integer conocimientoId);
     Optional<Solucion> buscarPorId(Integer id);
+    List<Solucion> buscarActivasPorConocimiento(Integer conocimientoId);
+    List<Solucion> bloquearPorConocimiento(Integer conocimientoId);
     Solucion guardar(Solucion solucion);
 }

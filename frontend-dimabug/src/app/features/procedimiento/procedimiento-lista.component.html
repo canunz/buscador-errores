@@ -1,6 +1,7 @@
 <app-loading-modal [visible]="loading" mensaje="Cargando" />
 
 <section class="pl">
+  @if (avisoPublicacion) { <p role="status">{{ avisoPublicacion }}</p> }
   <header class="franja">
     <app-ayuda-franja titulo="Procedimientos" detalle="Procedimiento operativo: secuencia de pasos, material de apoyo y estado (borrador o publicado). La ejecución se registra en Mis ejecuciones." />
     <div class="franja-deco" aria-hidden="true">
@@ -122,7 +123,7 @@
 
           <div class="card-pie" (click)="$event.stopPropagation()">
             <div class="acciones">
-              @if (puedeGestionar()) {
+              @if (puedeGestionar() && item.estado === 'BORRADOR') {
                 <a class="btn-icono" [routerLink]="['/procedimientos', item.id, 'editar']" title="Editar" aria-label="Editar">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
                     <path d="M12 20h9" />

@@ -22,6 +22,14 @@ public class DepartamentoContactoEntity {
     @Column(name = "contacto_estado", nullable = false)
     private boolean activo;
 
+    @Version
+    @Column(name = "contacto_version", nullable = false)
+    private Long version;
+
+    public DepartamentoContactoEntity(Integer id, Integer departamentoId, String tipo, String valor, boolean activo, Long version) {
+        this.id=id; this.departamentoId=departamentoId; this.tipo=tipo; this.valor=valor; this.activo=activo; this.version=version;
+    }
+    public Long getVersion() { return version; }
     protected DepartamentoContactoEntity() { }
 
     public Integer getId() { return id; }

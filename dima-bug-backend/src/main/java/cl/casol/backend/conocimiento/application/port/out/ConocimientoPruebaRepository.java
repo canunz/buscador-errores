@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ConocimientoPruebaRepository {
+    List<ConocimientoPrueba> buscarPorConocimientoOrdenadas(Integer conocimientoId);
     List<ConocimientoPrueba> buscarActivasPorConocimientoOrdenadas(Integer conocimientoId);
     Optional<ConocimientoPrueba> buscarPorIds(Integer conocimientoId, Integer pruebaId);
     boolean existe(Integer conocimientoId, Integer pruebaId);
