@@ -18,12 +18,12 @@ public class SolucionController {
     @PostMapping @ResponseStatus(HttpStatus.CREATED)
     public SolucionResponse crear(@PathVariable Integer conocimientoId,
             @Valid @RequestBody GuardarSolucionRequest request) {
-        return SolucionResponse.from(service.crear(conocimientoId, request.descripcion(), request.tipo(), request.orden()));
+        return SolucionResponse.from(service.crear(conocimientoId, request.descripcion(), request.tipo(), request.orden(), request.titulo()));
     }
     @PutMapping("/{solucionId}")
     public SolucionResponse modificar(@PathVariable Integer conocimientoId, @PathVariable Integer solucionId,
             @Valid @RequestBody GuardarSolucionRequest request) {
         return SolucionResponse.from(service.modificar(conocimientoId, solucionId,
-                request.descripcion(), request.tipo(), request.orden()));
+                request.descripcion(), request.tipo(), request.orden(), request.titulo()));
     }
 }

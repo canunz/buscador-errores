@@ -9,6 +9,7 @@ import { AuthService } from './auth.service';
 import { ConocimientoService } from './conocimiento.service';
 import { EjecucionService } from './ejecucion.service';
 import { ProcedimientoService } from './procedimiento.service';
+import { TicketAvisosService } from './ticket-avisos.service';
 
 export interface Aviso {
   id: string;
@@ -24,31 +25,53 @@ export class NotificacionService {
   private readonly ejecuciones = inject(EjecucionService);
   private readonly conocimientos = inject(ConocimientoService);
   private readonly procedimientos = inject(ProcedimientoService);
+  private readonly ticketAvisos = inject(TicketAvisosService);
 
   propiasAhora(): Aviso[] {
+    const tickets = this.ticketAvisos.enCache();
+    const yo = this.auth.usuario();
+    if (!yo || !esStaff(yo)) {
+      return tickets.length ? tickets : this.leerCopia();
+    }
     const ejecuciones = this.ejecuciones.listaEnSesion();
     const conocimientos = this.conocimientos.listaEnSesion();
     const procedimientos = this.procedimientos.listaEnSesion();
-    if (!ejecuciones.length && !conocimientos.length && !procedimientos.length) {
+    if (!ejecuciones.length && !conocimientos.length && !procedimientos.length && !tickets.length) {
       return this.leerCopia();
     }
-    const avisos = this.armar(ejecuciones, conocimientos, procedimientos);
+    const avisos = this.unir(tickets, this.armar(ejecuciones, conocimientos, procedimientos));
     this.guardarCopia(avisos);
     return avisos;
   }
 
   propias(): Observable<Aviso[]> {
     const ahora = this.propiasAhora();
-    const red = forkJoin({
-      ejecuciones: this.ejecuciones.listar().pipe(catchError(() => of(this.ejecuciones.listaEnSesion()))),
-      conocimientos: this.conocimientos.listar().pipe(catchError(() => of(this.conocimientos.listaEnSesion()))),
-      procedimientos: this.procedimientos.listar().pipe(catchError(() => of(this.procedimientos.listaEnSesion()))),
-    }).pipe(
-      map(({ ejecuciones, conocimientos, procedimientos }) => this.armar(ejecuciones, conocimientos, procedimientos)),
+    const yo = this.auth.usuario();
+    const red = (!yo || !esStaff(yo)
+      ? this.ticketAvisos.avisos()
+      : forkJoin({
+          ejecuciones: this.ejecuciones.listar().pipe(catchError(() => of(this.ejecuciones.listaEnSesion()))),
+          conocimientos: this.conocimientos.listar().pipe(catchError(() => of(this.conocimientos.listaEnSesion()))),
+          procedimientos: this.procedimientos.listar().pipe(catchError(() => of(this.procedimientos.listaEnSesion()))),
+          tickets: this.ticketAvisos.avisos(),
+        }).pipe(
+          map(({ ejecuciones, conocimientos, procedimientos, tickets }) =>
+            this.unir(tickets, this.armar(ejecuciones, conocimientos, procedimientos)),
+          ),
+        )
+    ).pipe(
       tap((avisos) => this.guardarCopia(avisos)),
-      catchError(() => of(ahora)),
+      catchError(() => of(ahora.length ? ahora : this.ticketAvisos.enCache())),
     );
     return concat(of(ahora), red);
+  }
+
+  private unir(tickets: Aviso[], otros: Aviso[]): Aviso[] {
+    const porId = new Map<string, Aviso>();
+    for (const aviso of [...tickets, ...otros]) {
+      porId.set(aviso.id, aviso);
+    }
+    return [...porId.values()].sort((a, b) => (b.fecha || '').localeCompare(a.fecha || ''));
   }
 
   private claveCopia(): string {

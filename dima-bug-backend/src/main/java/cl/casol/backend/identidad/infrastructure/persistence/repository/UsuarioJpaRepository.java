@@ -4,6 +4,8 @@ import cl.casol.backend.identidad.infrastructure.persistence.entity.UsuarioEntit
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 //Antes Entity Paso 4: Habla con JPA. Gracias a eso Spring nos entrega automáticamente métodos
@@ -11,6 +13,13 @@ import java.util.Optional;
 
 public interface UsuarioJpaRepository
         extends JpaRepository<UsuarioEntity, Integer> {
+
+    @org.springframework.data.jpa.repository.Lock(jakarta.persistence.LockModeType.PESSIMISTIC_WRITE)
+    @Query("select u from UsuarioEntity u join fetch u.rol r where u.activo = true and upper(r.nombre) = 'ADMINISTRADOR' order by u.id")
+    java.util.List<UsuarioEntity> bloquearAdministradoresActivos();
+
+    @Query("select u from UsuarioEntity u join fetch u.rol where u.id in :ids")
+    List<UsuarioEntity> buscarPorIdsConRol(@Param("ids") Collection<Integer> ids);
 
     Optional<UsuarioEntity> findByEmail(String email);
 

@@ -3,7 +3,9 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
 import { CatalogoService } from '../../core/services/catalogo.service';
-import { ErrorItem, FRECUENCIAS } from '../../core/models/catalogo.model';
+import { ClasificacionService } from '../../core/services/clasificacion.service';
+import { CatalogoRef } from '../../core/models/conocimiento.model';
+import { ErrorItem } from '../../core/models/catalogo.model';
 import { AyudaFranjaComponent } from '../../shared/ui/ayuda-franja.component';
 @Component({
   selector: 'app-error-nuevo',
@@ -20,7 +22,12 @@ export class ErrorNuevoComponent implements OnInit {
 
   readonly puedeGestionar = this.auth.isStaff;
 
-  readonly frecuencias = FRECUENCIAS;
+  private readonly clasificacion = inject(ClasificacionService);
+  hardware: CatalogoRef[] = [];
+  frecuencias: string[] = [];
+  sistemas: string[] = [];
+  catalogoError = '';
+  catalogoLoading = false;
   modalOpen = false;
   editId: number | null = null;
   success = '';
@@ -42,19 +49,23 @@ export class ErrorNuevoComponent implements OnInit {
 
   ngOnInit(): void {
     this.refrescarLista();
+    this.catalogoLoading = true;
+    this.clasificacion.listarHardware(true).subscribe({
+      next: items => { this.hardware = items; this.catalogoLoading = false; },
+      error: (err: Error) => { this.catalogoError = err.message; this.catalogoLoading = false; },
+    });
+    this.clasificacion.listarFrecuencias(true).subscribe(data => this.frecuencias = data.items.map(f => f.nombre));
+    this.form.controls.hardwareId.valueChanges.subscribe(id => {
+      this.form.controls.sistema.setValue(''); this.sistemas = [];
+      if (id) this.clasificacion.sistemasDeHardware(Number(id), true).subscribe({
+        next: items => this.sistemas = items.map(s => s.nombre),
+        error: (err: Error) => this.catalogoError = err.message,
+      });
+    });
     if (!this.puedeGestionar()) {
       const yo = this.auth.usuario();
       this.form.controls.usuarioContexto.setValue(yo?.usuarioNombre || yo?.usuarioEmail || '');
     }
-  }
-
-  get hardware() {
-    return this.catalogo.hardware();
-  }
-
-  get sistemas(): string[] {
-    const id = Number(this.form.controls.hardwareId.value) || null;
-    return this.catalogo.sistemasDeHardware(id);
   }
 
   nombreHardware(id: number | null): string {

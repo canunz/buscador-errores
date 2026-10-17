@@ -10,7 +10,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @Component
 public class UsuarioAutenticadoCache {
 
-    private static final long VIGENCIA_MS = 45_000;
+    private static final long VIGENCIA_MS = 300_000;
 
     private final ConcurrentHashMap<String, Entrada> entradas = new ConcurrentHashMap<>();
 

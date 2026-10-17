@@ -136,6 +136,7 @@ export class ConocimientoDetalleComponent implements OnInit {
   });
 
   solucionForm = this.fb.nonNullable.group({
+    titulo: ['', [Validators.required, Validators.pattern(/\S/), Validators.maxLength(150)]],
     descripcion: ['', Validators.required],
     tipo: this.fb.nonNullable.control<TipoSolucion>('PASOS'),
     orden: [1, [Validators.required, Validators.min(1)]],
@@ -254,7 +255,6 @@ export class ConocimientoDetalleComponent implements OnInit {
     const sintomas = this.conocimientosApi.leerSeccion<typeof this.sintomas>(`sintomas:${id}`);
     const causas = this.conocimientosApi.leerSeccion<typeof this.causas>(`causas:${id}`);
     const pruebas = this.conocimientosApi.leerSeccion<typeof this.pruebas>(`pruebas:${id}`);
-    const soluciones = this.conocimientosApi.leerSeccion<typeof this.soluciones>(`soluciones:${id}`);
     const materiales = this.conocimientosApi.leerSeccion<typeof this.materiales>(`materiales:${id}`);
     if (sintomas) {
       this.sintomas = sintomas;
@@ -267,10 +267,6 @@ export class ConocimientoDetalleComponent implements OnInit {
     if (pruebas) {
       this.pruebas = pruebas;
       this.loadingPruebas = false;
-    }
-    if (soluciones) {
-      this.soluciones = soluciones;
-      this.loadingSoluciones = false;
     }
     if (materiales) {
       this.materiales = materiales;
@@ -395,8 +391,9 @@ export class ConocimientoDetalleComponent implements OnInit {
     if (seccion === 'materiales') {
       this.resetMaterialFormulario();
     }
-    if (seccion === 'pruebas' && !this.pruebasCatalogo.length) {
-      this.organizacion.listarPruebas().subscribe({
+    if (seccion === 'pruebas') {
+      this.pruebasCatalogo = [];
+      this.organizacion.listarPruebas(true).subscribe({
         next: (items) => (this.pruebasCatalogo = items),
         error: (err: Error) => (this.sectionError = err.message),
       });
@@ -612,89 +609,60 @@ export class ConocimientoDetalleComponent implements OnInit {
 
   guardarPrueba(): void {
     const id = this.conocimientoId;
-    if (!id || this.pruebaForm.invalid) {
-      this.pruebaForm.markAllAsTouched();
-      return;
-    }
+    if (!id || !this.puedeGestionar() || this.saving === 'pruebas') return;
+    if (this.pruebaForm.invalid) { this.pruebaForm.markAllAsTouched(); return; }
     const value = this.pruebaForm.getRawValue();
-    if (value.pruebaId == null) {
-      this.sectionError = 'Seleccione una prueba del catálogo.';
-      return;
-    }
-    const catalogo = this.pruebasCatalogo.find((item) => item.id === value.pruebaId);
-    const orden = this.nextOrden(this.pruebas);
-    const temporal = -Date.now();
-    const previo = this.pruebas;
-    this.pruebas = [
-      ...this.pruebas,
-      {
-        id: temporal,
-        descripcion: catalogo?.descripcion || 'Prueba',
-        resultadoEsperado: catalogo?.resultadoEsperado || '',
-        orden,
-      },
-    ];
-    this.publicarLista(`pruebas:${id}`, this.pruebas);
-    this.formAbierto.pruebas = false;
-    this.pruebaForm.reset({ pruebaId: null, orden: this.nextOrden(this.pruebas) });
-    this.ok('Prueba asociada.');
-    this.conocimientosApi.asociarPrueba(id, { pruebaId: value.pruebaId, orden }).subscribe({
-      next: (creada) => {
-        this.pruebas = this.pruebas.map((item) => (item.id === temporal ? creada : item));
+    if (value.pruebaId == null) return;
+    this.saving = 'pruebas'; this.sectionError = ''; this.sectionSuccess = '';
+    this.conocimientosApi.asociarPrueba(id, { pruebaId: value.pruebaId, orden: this.nextOrden(this.pruebas) }).subscribe({
+      next: creada => {
+        this.saving = null;
+        this.pruebas = [...this.pruebas, creada];
         this.publicarLista(`pruebas:${id}`, this.pruebas);
+        this.formAbierto.pruebas = false; this.cancelarPrueba(); this.ok('Prueba asociada.');
       },
-      error: (err: Error) => {
-        this.pruebas = previo;
-        this.publicarLista(`pruebas:${id}`, previo);
-        this.fail(err);
-      },
+      error: (err: Error) => { this.saving = null; this.fail(err); },
     });
   }
-
   cancelarPrueba(): void {
     this.pruebaForm.reset({ pruebaId: null, orden: this.nextOrden(this.pruebas) });
   }
 
   guardarSolucion(): void {
     const id = this.conocimientoId;
-    if (!id || this.solucionForm.invalid) {
+    if (!id || this.solucionForm.invalid || this.saving === 'soluciones') {
       this.solucionForm.markAllAsTouched();
       return;
     }
-    const request = this.solucionForm.getRawValue();
-    const previo = this.soluciones;
+    const raw = this.solucionForm.getRawValue();
+    const request = { ...raw, titulo: raw.titulo.trim(), descripcion: raw.descripcion.trim() };
     const editando = this.editSolucionId;
-    const temporal = editando ?? -Date.now();
-    this.soluciones =
-      editando != null
-        ? this.soluciones.map((item) => (item.id === editando ? { ...item, ...request } : item))
-        : [...this.soluciones, { id: temporal, descripcion: request.descripcion, tipo: request.tipo, orden: request.orden }];
-    this.publicarLista(`soluciones:${id}`, this.soluciones);
-    this.editSolucionId = null;
-    this.formAbierto.soluciones = false;
-    this.solucionForm.reset({ descripcion: '', tipo: 'PASOS', orden: this.nextOrden(this.soluciones) });
-    this.ok(editando != null ? 'Solución actualizada.' : 'Solución agregada.');
-    const req$ =
-      editando != null
-        ? this.conocimientosApi.modificarSolucion(id, editando, request)
-        : this.conocimientosApi.crearSolucion(id, request);
+    this.saving = 'soluciones';
+    const req$ = editando != null
+      ? this.conocimientosApi.modificarSolucion(id, editando, request)
+      : this.conocimientosApi.crearSolucion(id, request);
     req$.subscribe({
-      next: (creada) => {
-        this.soluciones = this.soluciones.map((item) => (item.id === temporal ? creada : item));
+      next: (guardada) => {
+        this.saving = null;
+        this.soluciones = editando != null
+          ? this.soluciones.map(item => item.id === editando ? guardada : item)
+          : [...this.soluciones, guardada];
         this.publicarLista(`soluciones:${id}`, this.soluciones);
+        this.editSolucionId = null;
+        this.formAbierto.soluciones = false;
+        this.solucionForm.reset({ titulo: '', descripcion: '', tipo: 'PASOS', orden: this.nextOrden(this.soluciones) });
+        this.ok(editando != null ? 'Solución actualizada.' : 'Solución agregada.');
       },
-      error: (err: Error) => {
-        this.soluciones = previo;
-        this.publicarLista(`soluciones:${id}`, previo);
-        this.fail(err);
-      },
+      error: (err: Error) => { this.saving = null; this.fail(err); },
     });
   }
 
   editarSolucion(item: Solucion): void {
+    if (!item.activo) return;
     this.formAbierto.soluciones = true;
     this.editSolucionId = item.id;
     this.solucionForm.setValue({
+      titulo: item.titulo || '',
       descripcion: item.descripcion,
       tipo: item.tipo,
       orden: item.orden,
@@ -703,7 +671,7 @@ export class ConocimientoDetalleComponent implements OnInit {
 
   cancelarSolucion(): void {
     this.editSolucionId = null;
-    this.solucionForm.reset({ descripcion: '', tipo: 'PASOS', orden: this.nextOrden(this.soluciones) });
+    this.solucionForm.reset({ titulo: '', descripcion: '', tipo: 'PASOS', orden: this.nextOrden(this.soluciones) });
   }
 
   abrirAsignacion(solucionId: number, asignacion?: AsignacionSolucion): void {

@@ -39,7 +39,7 @@ class GestionarPruebasConocimientoServiceTest {
 
     @Test void listaAsociacionesActivasOrdenadasCuandoConocimientoExiste() {
         when(conocimientos.buscarPorId(4)).thenReturn(Optional.of(conocimiento));
-        when(asociaciones.buscarActivasPorConocimientoOrdenadas(4)).thenReturn(List.of(
+        when(asociaciones.buscarPorConocimientoOrdenadas(4)).thenReturn(List.of(
                 new ConocimientoPrueba(4, prueba, 1),
                 new ConocimientoPrueba(4, new Prueba(5, "Traceroute", null, true), 2)));
         assertEquals(List.of(1, 2), service.listarPorConocimiento(4).stream()
@@ -48,7 +48,7 @@ class GestionarPruebasConocimientoServiceTest {
 
     @Test void conocimientoSinPruebasDevuelveListaVacia() {
         when(conocimientos.buscarPorId(4)).thenReturn(Optional.of(conocimiento));
-        when(asociaciones.buscarActivasPorConocimientoOrdenadas(4)).thenReturn(List.of());
+        when(asociaciones.buscarPorConocimientoOrdenadas(4)).thenReturn(List.of());
         assertTrue(service.listarPorConocimiento(4).isEmpty());
     }
 
@@ -119,5 +119,14 @@ class GestionarPruebasConocimientoServiceTest {
     private void prepararConocimientoYPrueba() {
         when(conocimientos.buscarPorId(4)).thenReturn(Optional.of(conocimiento));
         when(pruebas.buscarActivaPorId(3)).thenReturn(Optional.of(prueba));
+    }
+    @Test void historialIncluyePruebaInactivaConSuOrden() {
+        when(conocimientos.buscarPorId(4)).thenReturn(Optional.of(conocimiento));
+        when(asociaciones.buscarPorConocimientoOrdenadas(4)).thenReturn(List.of(new ConocimientoPrueba(4,new Prueba(3,"Ping","Responde",false),2)));
+        var r=service.listarPorConocimiento(4).getFirst();assertFalse(r.prueba().activa());assertEquals(2,r.orden());assertEquals("Responde",r.prueba().resultadoEsperado());
+    }
+    @Test void nuevaAsociacionBloqueaAntesDeConsultarDisponibilidad() {
+        prepararConocimientoYPrueba();when(asociaciones.guardar(any())).thenAnswer(i->i.getArgument(0));service.asociar(4,3,1);
+        var orden=inOrder(pruebas);orden.verify(pruebas).bloquear(3);orden.verify(pruebas).buscarActivaPorId(3);
     }
 }

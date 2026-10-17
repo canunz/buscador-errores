@@ -1,171 +1,66 @@
-<app-loading-modal [visible]="loading" mensaje="Cargando" />
-
+<app-loading-modal [visible]="loading" mensaje="Cargando Departamentos" />
 <section class="cat-page dep-page">
-  <div class="franja">
-    <app-ayuda-franja titulo="Departamentos" detalle="Catálogo de áreas organizacionales. Se usa al asignar responsables de una solución." />
-    <div>
-      <p>Catálogos</p>
-      <h1>Departamentos</h1>
-      <span>{{ items.length }} departamento{{ items.length === 1 ? '' : 's' }} desde la base de datos</span>
-    </div>
+  <div class="franja"><app-ayuda-franja titulo="Departamentos" detalle="Áreas organizacionales y sus contactos. Los cambios administrativos se guardan en el sistema." />
+    <div><p>Catálogos</p><h1>Departamentos</h1><span>{{ items.length }} departamentos</span></div>
+    @if (esAdministrador()) { <button type="button" class="btn-crear" (click)="abrirDepartamento()" [disabled]="saving || loading">Añadir Departamento</button> }
   </div>
-
-  @if (error) {
-    <p class="alert">{{ error }}</p>
+  @if (esAdministrador() && tieneDatosLocales) {
+    <div class="dep-respaldo"><p>Hay datos anteriores en este navegador. Puede descargarlos como respaldo; no se importarán automáticamente al sistema.</p>
+      <button type="button" (click)="respaldarDatosLocales()">Respaldar datos locales anteriores</button></div>
   }
-
-  <div class="tabla-wrap">
-    @if (items.length || !loading) {
-      <table>
-        <thead>
-          <tr>
-            <th class="col-acciones">Acciones</th>
-            <th>Departamento</th>
-            <th>Contactos</th>
-            <th>Responsables</th>
-            <th>Estado</th>
-          </tr>
-        </thead>
-        <tbody>
-          @for (item of items; track item.id) {
-            <tr>
-              <td>
-                <div class="acciones">
-                  <button type="button" class="btn-accion ver" title="Ver detalle" aria-label="Ver detalle" (click)="ver(item)">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                      <circle cx="12" cy="12" r="3" />
-                    </svg>
-                  </button>
-                  <button
-                    type="button"
-                    class="btn-accion estado"
-                    [class.off]="!item.activo"
-                    [title]="item.activo ? 'Desactivar' : 'Activar'"
-                    [attr.aria-label]="item.activo ? 'Desactivar' : 'Activar'"
-                    (click)="pedirCambioEstado(item)"
-                  >
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                      <path d="M12 3v10" />
-                      <path d="M8.5 7.5a6 6 0 106.9 0" />
-                    </svg>
-                  </button>
-                  <button type="button" class="btn-accion eliminar" title="Eliminar" aria-label="Eliminar" (click)="pedirEliminar(item)">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                      <path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6" />
-                    </svg>
-                  </button>
-                </div>
-              </td>
-              <td><strong class="nombre">{{ item.nombre }}</strong></td>
-              <td>
-                <div class="chips">
-                  @for (c of item.contactos; track c.numero) {
-                    @if (c.activo) {
-                      <span class="chip">{{ c.tipo }}: {{ c.numero }}</span>
-                    }
-                  } @empty {
-                    <span class="muted">Sin contactos</span>
-                  }
-                </div>
-              </td>
-              <td>
-                <div class="chips">
-                  @for (r of item.responsables; track r) {
-                    <span class="chip">{{ r }}</span>
-                  } @empty {
-                    <span class="muted">Sin responsables</span>
-                  }
-                </div>
-              </td>
-              <td>
-                <span class="estado" [class.activo]="item.activo" [class.inactivo]="!item.activo">
-                  {{ item.activo ? 'Activo' : 'Inactivo' }}
-                </span>
-              </td>
-            </tr>
-          } @empty {
-            <tr>
-              <td colspan="5" class="vacio">No hay departamentos en la base de datos.</td>
-            </tr>
-          }
-        </tbody>
-      </table>
-    }
-  </div>
+  @if (error) { <p class="alert" role="alert">{{ error }} <button type="button" (click)="cargar()">Reintentar</button></p> }
+  @if (mensaje) { <p role="status">{{ mensaje }}</p> }
+  <div class="tabla-wrap"><table><thead><tr><th>Acciones</th><th>Departamento</th><th>Contactos</th><th>Responsables</th><th>Estado</th></tr></thead><tbody>
+    @for (d of items; track d.id) {
+      <tr><td><div class="acciones"><button type="button" class="btn-accion ver" (click)="ver(d)" aria-label="Ver detalle">Ver</button>
+        @if (esAdministrador()) { <button type="button" (click)="abrirDepartamento(d)" [disabled]="saving">Editar</button><button type="button" (click)="pedirEstado(d)" [disabled]="saving">{{ d.activo ? 'Desactivar' : 'Reactivar' }}</button> }
+      </div></td><td><strong>{{ d.nombre }}</strong></td><td>
+        @if (d.errorDetalle) { <span role="alert">{{ d.errorDetalle }}</span> }
+        @for (c of d.contactos; track c.id) { <span class="chip">{{ c.tipo }}: {{ c.valor }} · {{ c.activo ? d.activo ? 'Activo' : 'Activo, no disponible' : 'Inactivo' }}</span> } @empty { @if (!d.errorDetalle) { <span>Sin contactos</span> } }
+      </td><td>@for (r of d.responsables; track $index) { <span class="chip">{{ r }}</span> } @empty { <span>{{ d.activo ? 'Sin responsables' : 'Consulta operacional disponible al reactivar' }}</span> }</td>
+      <td>{{ d.activo ? 'Activo' : 'Inactivo' }}</td></tr>
+    } @empty { <tr><td colspan="5">{{ error ? 'No se pudo consultar el catálogo.' : loading ? 'Cargando…' : 'No hay Departamentos disponibles.' }}</td></tr> }
+  </tbody></table></div>
 </section>
-
 @if (detalle) {
-  <div class="detalle-modal" role="dialog" aria-modal="true" aria-labelledby="dep-detalle-titulo">
-    <div class="detalle-modal-fondo" (click)="cerrarDetalle()"></div>
-    <article class="detalle-modal-card">
-      <header class="detalle-modal-franja">
-        <div>
-          <p>Departamento</p>
-          <h2 id="dep-detalle-titulo">{{ detalle.nombre }}</h2>
-        </div>
-        <button type="button" class="detalle-modal-cerrar" (click)="cerrarDetalle()" aria-label="Cerrar">✕</button>
-      </header>
-      <div class="detalle-modal-cuerpo">
-        <section class="detalle-bloque">
-          <h3>Estado</h3>
-          <p class="detalle-texto">{{ detalle.activo ? 'Activo' : 'Inactivo' }}</p>
-        </section>
-        <section class="detalle-bloque">
-          <h3>Contactos</h3>
-          @if (detalle.contactos.length) {
-            <ul class="detalle-lista">
-              @for (c of detalle.contactos; track c.numero) {
-                <li>{{ c.tipo }}: {{ c.numero }}{{ c.activo ? '' : ' (inactivo)' }}</li>
-              }
-            </ul>
-          } @else {
-            <p class="detalle-vacio">Sin contactos registrados.</p>
-          }
-        </section>
-        <section class="detalle-bloque">
-          <h3>Responsables</h3>
-          @if (detalle.responsables.length) {
-            <ul class="detalle-lista">
-              @for (r of detalle.responsables; track r) {
-                <li>{{ r }}</li>
-              }
-            </ul>
-          } @else {
-            <p class="detalle-vacio">Sin responsables asignados.</p>
-          }
-        </section>
-      </div>
-    </article>
-  </div>
+  <div class="detalle-modal" role="dialog" aria-modal="true" aria-labelledby="dep-detalle-titulo"><div class="detalle-modal-fondo"></div><article class="detalle-modal-card">
+    <header class="detalle-modal-franja"><div><p>Departamento</p><h2 id="dep-detalle-titulo">{{ detalle.nombre }}</h2></div><button type="button" class="detalle-modal-cerrar" aria-label="Cerrar detalle" (click)="cerrarDetalle()">✕</button></header>
+    <div class="detalle-modal-cuerpo"><p>Estado: {{ detalle.activo ? 'Activo' : 'Inactivo' }}</p>
+      @if (detalle.errorDetalle) { <p class="alert" role="alert">{{ detalle.errorDetalle }}</p> }
+      <section class="detalle-bloque"><h3>Contactos</h3>
+        @if (esAdministrador()) { <button type="button" (click)="abrirContacto(detalle)" [disabled]="saving">Añadir Contacto</button> }
+        <ul class="detalle-lista">@for (c of detalle.contactos; track c.id) {
+          <li>{{ c.tipo }}: {{ c.valor }} · {{ c.activo ? c.disponible ? 'Activo' : 'Activo, no disponible' : 'Inactivo' }}
+            @if (esAdministrador()) { <div class="dep-contacto-acciones"><button type="button" (click)="abrirContacto(detalle,c)" [disabled]="saving">Editar Contacto</button>
+              <button type="button" (click)="pedirEstado(detalle,c)" [disabled]="saving || (!detalle.activo && !c.activo)">{{ c.activo ? 'Desactivar Contacto' : 'Reactivar Contacto' }}</button></div> }
+          </li>
+        } @empty { <li>Sin contactos registrados.</li> }</ul>
+        @if (!detalle.activo) { <p>Los contactos conservan sus estados individuales, pero no están disponibles operacionalmente.</p> }
+      </section><section class="detalle-bloque"><h3>Responsables</h3>@for (r of detalle.responsables; track $index) { <p>{{ r }}</p> }</section>
+    </div></article></div>
 }
-
-@if (pendienteEliminar) {
-  <div class="confirm-capa">
-    <div class="confirm-fondo" (click)="cancelarEliminar()"></div>
-    <div class="confirm-dialog" role="alertdialog" aria-modal="true" aria-labelledby="dep-eliminar-titulo">
-      <h2 id="dep-eliminar-titulo">¿Eliminar este departamento?</h2>
-      <p>{{ pendienteEliminar.nombre }} dejará de verse en este listado.</p>
-      <div class="confirm-acciones">
-        <button type="button" class="btn-cancelar" (click)="cancelarEliminar()">Cancelar</button>
-        <button type="button" class="btn-peligro" (click)="confirmarEliminar()">Eliminar</button>
-      </div>
-    </div>
-  </div>
+@if (formularioDepartamento || formularioContacto) {
+  <div class="modal dep-form-modal" role="dialog" aria-modal="true" aria-labelledby="dep-form-titulo"><div class="modal-backdrop"></div><div class="modal-dialog modal-pro">
+    <header class="modal-head"><h2 id="dep-form-titulo">{{ formularioContacto ? formularioContacto.contacto ? 'Editar Contacto' : 'Añadir Contacto' : editDepartamento ? 'Editar Departamento' : 'Añadir Departamento' }}</h2></header>
+    @if (formError) { <p class="alert" role="alert">{{ formError }}</p> }
+    @if (formularioContacto) {
+      <form [formGroup]="contactoForm" (ngSubmit)="guardarContacto()" class="form-grid"><label class="full">Tipo *<input formControlName="tipo" maxlength="50" required /></label><label class="full">Valor *<input formControlName="valor" maxlength="100" required /></label>
+        @if (!formularioContacto.contacto) { <label class="switch-row full">Activo<input type="checkbox" formControlName="activo" /></label> }
+        @if (!formularioContacto.departamento.activo) { <p class="full">Departamento inactivo: el nuevo Contacto debe guardarse inactivo.</p> }
+        <div class="form-actions full"><button type="button" (click)="formularioContacto = null" [disabled]="saving">Cancelar</button><button type="submit" [disabled]="saving">{{ saving ? 'Guardando…' : 'Guardar Contacto' }}</button></div>
+      </form>
+    } @else {
+      <form [formGroup]="departamentoForm" (ngSubmit)="guardarDepartamento()" class="form-grid"><label class="full">Nombre *<input formControlName="nombre" maxlength="255" required /></label>
+        <div class="form-actions full"><button type="button" (click)="formularioDepartamento = false" [disabled]="saving">Cancelar</button><button type="submit" [disabled]="saving">{{ saving ? 'Guardando…' : 'Guardar Departamento' }}</button></div></form>
+    }
+  </div></div>
 }
-
 @if (pendienteEstado) {
-  <div class="confirm-capa">
-    <div class="confirm-fondo" (click)="cancelarEstado()"></div>
-    <div class="confirm-dialog" role="alertdialog" aria-modal="true" aria-labelledby="dep-estado-titulo">
-      <h2 id="dep-estado-titulo">{{ pendienteEstado.activo ? '¿Desactivar este departamento?' : '¿Activar este departamento?' }}</h2>
-      <p>{{ pendienteEstado.nombre }} quedará {{ pendienteEstado.activo ? 'inactivo' : 'activo' }}.</p>
-      <div class="confirm-acciones">
-        <button type="button" class="btn-cancelar" (click)="cancelarEstado()">Cancelar</button>
-        <button type="button" class="btn-peligro" (click)="confirmarEstado()">
-          {{ pendienteEstado.activo ? 'Desactivar' : 'Activar' }}
-        </button>
-      </div>
-    </div>
-  </div>
+  <div class="confirm-capa dep-confirm-modal"><div class="confirm-fondo"></div><div class="confirm-dialog" role="alertdialog" aria-modal="true" aria-labelledby="dep-estado-titulo">
+    <h2 id="dep-estado-titulo">{{ (pendienteEstado.contacto?.activo ?? pendienteEstado.departamento.activo) ? 'Desactivar' : 'Reactivar' }} {{ pendienteEstado.contacto ? 'Contacto' : 'Departamento' }}</h2>
+    <p>Se conservan los registros y las referencias históricas. Los contactos mantienen su estado individual.</p>
+    @if (!pendienteEstado.contacto && !pendienteEstado.departamento.activo) { <p>Los contactos que siguen activos volverán a estar disponibles al reactivar el Departamento.</p> }
+    @if (formError) { <p class="alert" role="alert">{{ formError }}</p> }
+    <div class="confirm-acciones"><button type="button" (click)="pendienteEstado = null" [disabled]="saving">Cancelar</button><button type="button" (click)="confirmarEstado()" [disabled]="saving">{{ saving ? 'Guardando…' : 'Confirmar' }}</button></div>
+  </div></div>
 }

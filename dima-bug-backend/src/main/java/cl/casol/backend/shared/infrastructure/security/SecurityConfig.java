@@ -44,6 +44,14 @@ public class SecurityConfig {
                 )
 
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/api/admin/**").hasRole("ADMINISTRADOR")
+                        // Módulo de tickets: los permisos finos por rol se validan en cada caso de uso.
+                        .requestMatchers("/api/tickets", "/api/tickets/**")
+                        .hasAnyRole("ADMINISTRADOR", "TECNICO", "SOPORTE", "USUARIO")
+                        .requestMatchers(HttpMethod.GET, "/api/etiquetas")
+                        .hasAnyRole("ADMINISTRADOR", "TECNICO", "SOPORTE", "USUARIO")
+                        // Las etiquetas las crea soporte al momento de etiquetar un ticket.
+                        .requestMatchers("/api/etiquetas", "/api/etiquetas/**").hasAnyRole("SOPORTE", "TECNICO")
                         .requestMatchers(HttpMethod.DELETE, "/api/conocimientos/*")
                         .hasRole("ADMINISTRADOR")
                         .requestMatchers(HttpMethod.GET,

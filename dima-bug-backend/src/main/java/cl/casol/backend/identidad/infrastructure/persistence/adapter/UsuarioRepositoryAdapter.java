@@ -33,16 +33,33 @@ public class UsuarioRepositoryAdapter implements UsuarioRepository {
             return Optional.empty();
         }
 
+        Optional<Usuario> cacheado = usuariosAutenticados.obtener(valor);
+        if (cacheado.isPresent()) {
+            return cacheado;
+        }
+
         return usuarioJpaRepository
                 .findByEmailIgnoreCase(valor)
                 .or(() -> usuarioJpaRepository.findByEmail(valor))
                 .or(() -> valor.contains("@") ? Optional.empty() : usuarioJpaRepository.findByIdentificador(valor))
-                .map(UsuarioMapper::toDomain);
+                .map(UsuarioMapper::toDomain)
+                .map(usuario -> {
+                    usuariosAutenticados.guardar(valor, usuario);
+                    return usuario;
+                });
     }
 
     @Override
     public Optional<Usuario> buscarPorId(Integer id) {
         return usuarioJpaRepository.findById(id).map(UsuarioMapper::toDomain);
+    }
+
+    @Override
+    public List<Usuario> buscarPorIds(java.util.Collection<Integer> ids) {
+        if (ids == null || ids.isEmpty()) {
+            return List.of();
+        }
+        return usuarioJpaRepository.buscarPorIdsConRol(ids).stream().map(UsuarioMapper::toDomain).toList();
     }
 
     @Override
@@ -61,6 +78,11 @@ public class UsuarioRepositoryAdapter implements UsuarioRepository {
         String valor = email == null ? "" : email.trim();
         return usuarioJpaRepository.existsByEmailIgnoreCaseAndIdNot(valor, id)
                 || usuarioJpaRepository.existsByEmailAndIdNot(valor, id);
+    }
+
+    @Override
+    public List<Usuario> bloquearAdministradoresActivos() {
+        return usuarioJpaRepository.bloquearAdministradoresActivos().stream().map(UsuarioMapper::toDomain).toList();
     }
 
     @Override

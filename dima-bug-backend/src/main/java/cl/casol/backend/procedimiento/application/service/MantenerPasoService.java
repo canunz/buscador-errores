@@ -24,7 +24,8 @@ public class MantenerPasoService {
 
     @Transactional
     public Paso crear(Integer procedimientoId, Integer orden, String instruccion, boolean esCritico) {
-        verificarProcedimiento(procedimientoId);
+        procedimientos.bloquear(procedimientoId);
+        EdicionProcedimiento.exigirBorrador(procedimientos.buscarPorId(procedimientoId).orElseThrow(() -> new ProcedimientoNoEncontradoException(procedimientoId)));
         if (pasos.existeOrden(procedimientoId, orden)) {
             throw new OrdenPasoDuplicadoException(procedimientoId, orden);
         }
@@ -34,7 +35,8 @@ public class MantenerPasoService {
     @Transactional
     public Paso modificar(Integer procedimientoId, Integer pasoId, Integer orden,
             String instruccion, boolean esCritico) {
-        verificarProcedimiento(procedimientoId);
+        procedimientos.bloquear(procedimientoId);
+        EdicionProcedimiento.exigirBorrador(procedimientos.buscarPorId(procedimientoId).orElseThrow(() -> new ProcedimientoNoEncontradoException(procedimientoId)));
         Paso actual = pasos.buscarPorId(pasoId)
                 .filter(p -> procedimientoId.equals(p.procedimientoId()))
                 .orElseThrow(() -> new PasoNoEncontradoException(pasoId));

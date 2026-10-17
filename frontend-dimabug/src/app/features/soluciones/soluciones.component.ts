@@ -2,6 +2,7 @@ import { Component, DestroyRef, OnInit, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
+import { AuthService } from '../../core/services/auth.service';
 import { ConocimientoService } from '../../core/services/conocimiento.service';
 import { SolucionItem } from '../../core/models/catalogo.model';
 import { Conocimiento, TipoSolucion } from '../../core/models/conocimiento.model';
@@ -15,6 +16,7 @@ import { LoadingModalComponent } from '../../shared/ui/loading-modal.component';
   styleUrls: ['../../shared/ui/catalogo-page.css', './soluciones.component.css'],
 })
 export class SolucionesComponent implements OnInit {
+  readonly esAdministrador = inject(AuthService).isAdmin;
   private readonly conocimientos = inject(ConocimientoService);
   private readonly route = inject(ActivatedRoute);
   private readonly destroyRef = inject(DestroyRef);
@@ -30,7 +32,9 @@ export class SolucionesComponent implements OnInit {
   modalOpen = false;
   editItem: SolucionItem | null = null;
   detalle: SolucionItem | null = null;
-  pendienteEliminar: SolucionItem | null = null;
+  pendienteEstado: SolucionItem | null = null;
+  operando = false;
+  mensaje = '';
 
   ver(item: SolucionItem): void {
     this.detalle = item;
@@ -42,6 +46,7 @@ export class SolucionesComponent implements OnInit {
 
   form = this.fb.nonNullable.group({
     conocimientoId: [0, Validators.min(1)],
+    titulo: ['', [Validators.required, Validators.pattern(/\S/), Validators.maxLength(150)]],
     descripcion: ['', Validators.required],
     tipo: ['PASOS' as TipoSolucion, Validators.required],
   });
@@ -52,7 +57,7 @@ export class SolucionesComponent implements OnInit {
       return this.items;
     }
     return this.items.filter((item) =>
-      [item.nombre, item.pasos, item.anexos, item.asignaciones.join(' '), item.conocimientoTitulo || '']
+      [item.nombre, item.descripcion || '', item.pasos, item.anexos, item.asignaciones.join(' '), item.conocimientoTitulo || '']
         .join(' ')
         .toLowerCase()
         .includes(term),
@@ -68,11 +73,12 @@ export class SolucionesComponent implements OnInit {
     this.error = '';
     let first = true;
     this.conocimientos
-      .listarSolucionesCatalogo(force)
+      .listarSolucionesCatalogo(force, this.esAdministrador())
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (items) => {
           this.items = items;
+          if (this.detalle) this.detalle = items.find(item => this.trackKey(item) === this.trackKey(this.detalle!)) ?? null;
           if (first) {
             first = false;
             this.loading = false;
@@ -89,20 +95,21 @@ export class SolucionesComponent implements OnInit {
     this.editItem = null;
     this.form.controls.conocimientoId.enable();
     this.formError = '';
-    this.form.reset({ conocimientoId: 0, descripcion: '', tipo: 'PASOS' });
+    this.form.reset({ conocimientoId: 0, titulo: '', descripcion: '', tipo: 'PASOS' });
     this.modalOpen = true;
     this.cargarGuias();
   }
 
   openEdit(item: SolucionItem): void {
-    if (!item.conocimientoId) {
+    if (!item.conocimientoId || item.activo === false) {
       return;
     }
     this.editItem = item;
     this.formError = '';
     this.form.reset({
       conocimientoId: item.conocimientoId,
-      descripcion: item.nombre,
+      titulo: item.titulo || '',
+      descripcion: item.descripcion ?? item.pasos,
       tipo: item.tipo === 'DERIVACION' ? 'DERIVACION' : 'PASOS',
     });
     this.form.controls.conocimientoId.disable();
@@ -110,28 +117,42 @@ export class SolucionesComponent implements OnInit {
     this.cargarGuias();
   }
 
-  pedirEliminar(item: SolucionItem): void {
-    this.pendienteEliminar = item;
+  pedirEstado(item: SolucionItem): void {
+    if (this.esAdministrador() && !this.operando) this.pendienteEstado = item;
   }
 
-  cancelarEliminar(): void {
-    this.pendienteEliminar = null;
+  cancelarEstado(): void {
+    if (!this.operando) this.pendienteEstado = null;
   }
 
-  confirmarEliminar(): void {
-    const item = this.pendienteEliminar;
-    if (!item) {
-      return;
-    }
-    this.conocimientos.ocultarSolucionCatalogo(item.conocimientoId ?? 0, item.id);
-    this.items = this.items.filter((actual) => this.trackKey(actual) !== this.trackKey(item));
-    if (this.detalle && this.trackKey(this.detalle) === this.trackKey(item)) {
-      this.detalle = null;
-    }
-    this.pendienteEliminar = null;
+  confirmarEstado(): void {
+    const item = this.pendienteEstado;
+    if (!item?.conocimientoId || !this.esAdministrador() || this.operando) return;
+    this.operando = true; this.error = ''; this.mensaje = '';
+    const activo = item.activo === false;
+    this.conocimientos.cambiarEstadoSolucion(item.conocimientoId, item.id, activo)
+      .pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+        next: () => {
+          this.operando = false; this.pendienteEstado = null;
+          this.mensaje = activo ? 'Solución reactivada.' : 'Solución desactivada. Se conserva su historial.';
+          this.cargar(true);
+        },
+        error: (err: Error) => { this.operando = false; this.error = err.message; },
+      });
+  }
+
+  cambiarAutoservicio(item: SolucionItem): void {
+    if (!item.conocimientoId || !this.esAdministrador() || this.operando) return;
+    this.operando = true; this.error = ''; this.mensaje = '';
+    this.conocimientos.cambiarAutoservicioSolucion(item.conocimientoId, item.id, !item.autoservicio)
+      .pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+        next: () => { this.operando = false; this.mensaje = 'Clasificación de autoservicio actualizada.'; this.cargar(true); },
+        error: (err: Error) => { this.operando = false; this.error = err.message; },
+      });
   }
 
   closeModal(): void {
+    if (this.saving) return;
     this.modalOpen = false;
     this.editItem = null;
     this.form.controls.conocimientoId.enable();
@@ -148,10 +169,11 @@ export class SolucionesComponent implements OnInit {
   }
 
   save(): void {
+    if (this.saving) return;
     this.formError = '';
     if (this.form.invalid) {
       this.form.markAllAsTouched();
-      this.formError = 'Elige un conocimiento y escribe la solución.';
+      this.formError = 'Elige un conocimiento, completa el título (máximo 150 caracteres) y las instrucciones.';
       return;
     }
     const raw = this.form.getRawValue();
@@ -159,6 +181,7 @@ export class SolucionesComponent implements OnInit {
     const editando = this.editItem;
     const orden = editando?.orden || this.items.filter((item) => item.conocimientoId === conocimientoId).length + 1;
     const request = {
+      titulo: raw.titulo.trim(),
       descripcion: raw.descripcion.trim(),
       tipo: raw.tipo,
       orden,

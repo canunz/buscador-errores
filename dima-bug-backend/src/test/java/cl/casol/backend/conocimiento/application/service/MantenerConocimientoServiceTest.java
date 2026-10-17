@@ -27,6 +27,7 @@ class MantenerConocimientoServiceTest {
     private FrecuenciaRepository frecuencias;
     private UsuarioRepository usuarios;
     private IndexarConocimientoService indexador;
+    private cl.casol.backend.conocimiento.application.port.out.SolucionRepository soluciones;
     private MantenerConocimientoService service;
 
     @BeforeEach
@@ -35,12 +36,26 @@ class MantenerConocimientoServiceTest {
         sistemas = mock(SistemaRepository.class); modulos = mock(ModuloRepository.class);
         frecuencias = mock(FrecuenciaRepository.class); usuarios = mock(UsuarioRepository.class);
         indexador = mock(IndexarConocimientoService.class);
+        soluciones = mock(cl.casol.backend.conocimiento.application.port.out.SolucionRepository.class);
+        when(soluciones.bloquearPorConocimiento(1)).thenReturn(java.util.List.of(new cl.casol.backend.conocimiento.domain.Solucion(1,1,"D",cl.casol.backend.conocimiento.domain.TipoSolucion.PASOS,1)));
         service = new MantenerConocimientoService(conocimientos, hardware, sistemas, modulos, frecuencias, usuarios,
-                indexador);
+                indexador, soluciones);
         when(conocimientos.guardar(any())).thenAnswer(invocation -> invocation.getArgument(0));
         when(usuarios.buscarPorEmail("tecnico@dimarsa.cl")).thenReturn(Optional.of(usuario()));
     }
 
+    @Test void editarDescripcionConservaClasificacionInactivaExistente() {
+        Hardware h=new Hardware(1,"PC",null,false);
+        Conocimiento actual=new Conocimiento(1,"T","D",EstadoConocimiento.BORRADOR,h,null,null,null,null,usuario(),java.time.LocalDateTime.now(),null,null);
+        when(conocimientos.buscarPorId(1)).thenReturn(Optional.of(actual));
+        Conocimiento guardado=service.modificar(1,"Nuevo","D",1,null,null,null,null,"tecnico@dimarsa.cl");
+        assertSame(h,guardado.getHardware());verifyNoInteractions(hardware,sistemas,modulos,frecuencias);
+    }
+    @Test void rechazaSistemaNoAsociadoAlHardware() {
+        when(hardware.buscarActivoPorId(1)).thenReturn(Optional.of(new Hardware(1,"PC",null,true)));
+        assertThrows(ClasificacionInvalidaException.class, () -> service.crear("T","D",1,2,null,null,null,"tecnico@dimarsa.cl"));
+        verify(conocimientos,never()).guardar(any());
+    }
     @Test
     void crearSiempreIniciaComoBorradorYTomaCreadorAutenticado() {
         Conocimiento creado = service.crear("Título", "Descripción", null, null, null, null, null,
@@ -55,6 +70,7 @@ class MantenerConocimientoServiceTest {
     void validaTodasLasClasificacionesActivas() {
         when(hardware.buscarActivoPorId(1)).thenReturn(Optional.of(new Hardware(1, "PC", null, true)));
         when(sistemas.buscarActivoPorId(2)).thenReturn(Optional.of(new Sistema(2, "Comercial", null, true)));
+        when(hardware.buscarSistemasActivosPorHardware(1)).thenReturn(java.util.List.of(new Sistema(2,"Comercial",null,true)));
         when(modulos.buscarActivoPorId(3)).thenReturn(Optional.of(new Modulo(3, 2, "Bodega", true)));
         when(frecuencias.buscarActivaPorId(4)).thenReturn(Optional.of(new Frecuencia(4, "DIARIO", true)));
 
@@ -73,6 +89,7 @@ class MantenerConocimientoServiceTest {
     @Test
     void rechazaModuloDeOtroSistema() {
         when(sistemas.buscarActivoPorId(2)).thenReturn(Optional.of(new Sistema(2, "Comercial", null, true)));
+        when(hardware.buscarSistemasActivosPorHardware(1)).thenReturn(java.util.List.of(new Sistema(2,"Comercial",null,true)));
         when(modulos.buscarActivoPorId(3)).thenReturn(Optional.of(new Modulo(3, 9, "Otro", true)));
         assertThrows(ClasificacionInvalidaException.class, () -> service.crear(
                 "Título", "Descripción", null, 2, 3, null, null, "tecnico@dimarsa.cl"));
@@ -154,5 +171,19 @@ class MantenerConocimientoServiceTest {
     private Conocimiento conocimiento() {
         return new Conocimiento(1, "Título", "Descripción", EstadoConocimiento.BORRADOR,
                 null, null, null, null, null, usuario(), java.time.LocalDateTime.now(), null, null);
+    }
+    @Test void noPublicaSinSolucionesActivas() {
+        when(conocimientos.buscarPorId(1)).thenReturn(Optional.of(conocimiento()));
+        when(soluciones.bloquearPorConocimiento(1)).thenReturn(java.util.List.of());
+        assertThrows(cl.casol.backend.conocimiento.domain.exception.UltimaSolucionActivaException.class,
+                () -> service.cambiarEstado(1,EstadoConocimiento.PUBLICADO,"tecnico@dimarsa.cl"));
+        verify(conocimientos,never()).guardar(any());
+    }
+    @Test void noPublicaConSoloInactivas() {
+        when(conocimientos.buscarPorId(1)).thenReturn(Optional.of(conocimiento()));
+        when(soluciones.bloquearPorConocimiento(1)).thenReturn(java.util.List.of(
+                new cl.casol.backend.conocimiento.domain.Solucion(8,1,"D",cl.casol.backend.conocimiento.domain.TipoSolucion.PASOS,1,null,false,false)));
+        assertThrows(cl.casol.backend.conocimiento.domain.exception.UltimaSolucionActivaException.class,
+                () -> service.cambiarEstado(1,EstadoConocimiento.PUBLICADO,"tecnico@dimarsa.cl"));
     }
 }

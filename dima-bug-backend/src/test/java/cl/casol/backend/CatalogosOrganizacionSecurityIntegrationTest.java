@@ -27,6 +27,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(controllers = {FrecuenciaController.class, DepartamentoController.class})
 @Import({SecurityConfig.class, JwtAuthenticationFilter.class, GlobalExceptionHandler.class})
 class CatalogosOrganizacionSecurityIntegrationTest {
+    @org.springframework.test.context.bean.override.mockito.MockitoBean
+    private cl.casol.backend.identidad.infrastructure.security.UsuarioAutenticadoCache usuarioAutenticadoCache;
+
+    @org.springframework.test.context.bean.override.mockito.MockitoBean
+    private cl.casol.backend.shared.application.service.VisibilidadContenidoService visibilidadContenidoService;
+
     @Autowired MockMvc mockMvc;
     @MockitoBean ConsultarFrecuenciasService frecuenciasService;
     @MockitoBean ConsultarOrganizacionService organizacionService;

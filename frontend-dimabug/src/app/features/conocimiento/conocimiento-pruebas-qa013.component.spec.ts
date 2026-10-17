@@ -1,0 +1,20 @@
+import { TestBed } from '@angular/core/testing';
+import { ActivatedRoute, provideRouter } from '@angular/router';
+import { of, Subject, throwError } from 'rxjs';
+import { ConocimientoDetalleComponent } from './conocimiento-detalle.component';
+import { ConocimientoService } from '../../core/services/conocimiento.service';
+import { AuthService } from '../../core/services/auth.service';
+import { OrganizacionService } from '../../core/services/organizacion.service';
+import { FavoritosService } from '../../core/services/favoritos.service';
+import { PruebaAsociada } from '../../core/models/conocimiento.model';
+describe('QA013 asociación de Pruebas', () => {
+ let api: any; let org: any; let c: ConocimientoDetalleComponent;
+ const p: PruebaAsociada = { id: 3, descripcion: 'Ping', resultadoEsperado: 'OK', orden: 1, activa: true };
+ beforeEach(() => { api = jasmine.createSpyObj('api', ['asociarPrueba','recordarSeccion']); org = jasmine.createSpyObj('org', ['listarPruebas']); org.listarPruebas.and.returnValue(of([]));
+   TestBed.configureTestingModule({ providers: [provideRouter([]), { provide: ActivatedRoute, useValue: { paramMap: of() } }, { provide: ConocimientoService, useValue: api }, { provide: AuthService, useValue: { isAdmin: () => true, isStaff: () => true } }, { provide: OrganizacionService, useValue: org }, { provide: FavoritosService, useValue: {} }] });
+   c = TestBed.createComponent(ConocimientoDetalleComponent).componentInstance; c.item = { id: 4 } as any; c.formAbierto.pruebas = true; c.pruebaForm.patchValue({ pruebaId: 3 }); });
+ it('no anuncia éxito ni cambia lista antes de HTTP', () => { const respuesta = new Subject<PruebaAsociada>(); api.asociarPrueba.and.returnValue(respuesta); c.guardarPrueba(); expect(c.pruebas).toEqual([]); expect(c.formAbierto.pruebas).toBeTrue(); expect(c.sectionSuccess).toBe(''); expect(api.recordarSeccion).not.toHaveBeenCalled(); respuesta.next(p); expect(c.pruebas).toEqual([p]); expect(c.formAbierto.pruebas).toBeFalse(); expect(c.sectionSuccess).toContain('asociada'); });
+ it('error mantiene selección y formulario', () => { api.asociarPrueba.and.returnValue(throwError(() => new Error('Prueba inactiva'))); c.guardarPrueba(); expect(c.pruebaForm.controls.pruebaId.value).toBe(3); expect(c.formAbierto.pruebas).toBeTrue(); expect(c.pruebas).toEqual([]); expect(c.sectionError).toContain('inactiva'); });
+ it('no duplica POST mientras espera', () => { api.asociarPrueba.and.returnValue(new Subject<PruebaAsociada>()); c.guardarPrueba(); c.guardarPrueba(); expect(api.asociarPrueba.calls.count()).toBe(1); });
+ it('selector refresca catálogo operativo cada vez', () => { c.pruebasCatalogo = [{ id: 99, descripcion: 'Antigua', resultadoEsperado: '' }]; c.abrirFormulario('pruebas'); expect(org.listarPruebas).toHaveBeenCalledWith(true); expect(c.pruebasCatalogo).toEqual([]); });
+});

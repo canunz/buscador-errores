@@ -1,58 +1,70 @@
 <app-loading-modal [visible]="loading" mensaje="Cargando" />
 
-<section class="cat-page">
-  <div class="franja">
-    <app-ayuda-franja titulo="Mis ejecuciones" detalle="Instancias de un procedimiento iniciado. Permite marcar pasos y cerrar la ejecución." />
+<section class="tk-pagina">
+  <header class="tk-franja">
+    <app-ayuda-franja titulo="Mis ejecuciones" detalle="Cada vez que inicias un procedimiento queda una ejecución. Aquí retomas las que están en curso y revisas las terminadas." />
     <div>
-      <p>Operaciones</p>
+      <span class="tk-chip-rol">Operaciones</span>
       <h1>Mis ejecuciones</h1>
-      <span>Instancias de procedimientos iniciados. Abre una fila para revisar los pasos marcados.</span>
+      <p>Retoma un procedimiento en curso o revisa lo que quedó registrado en cada paso.</p>
     </div>
-    <a routerLink="/procedimientos" class="btn-crear">Ver procedimientos</a>
-  </div>
+    <a routerLink="/procedimientos" class="tk-btn tk-btn-blanco">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14" /></svg>
+      Iniciar un procedimiento
+    </a>
+  </header>
 
   @if (error) {
-    <p class="muted pad">{{ error }}</p>
+    <div class="tk-alerta" role="alert"><span>{{ error }}</span></div>
   }
 
-  <div class="tabla-wrap">
-    @if (items.length || !loading) {
-      <table>
-        <thead>
-          <tr>
-            <th class="col-acciones">Acciones</th>
-            <th>Procedimiento</th>
-            <th>Estado</th>
-            <th>Inicio</th>
-            <th>Fin</th>
-          </tr>
-        </thead>
-        <tbody>
-          @for (item of items; track item.id) {
-            <tr>
-              <td>
-                <a class="act ver" [routerLink]="['/ejecuciones', item.id]" (click)="preparar(item.id, true)">Ver</a>
-              </td>
-              <td><strong>{{ nombre(item.procedimientoId) }}</strong></td>
-              <td>
-                <span
-                  class="estado"
-                  [class.activo]="item.estado === 'COMPLETADA'"
-                  [class.warn]="item.estado === 'EN_CURSO'"
-                >
-                  {{ etiqueta(item.estado) }}
-                </span>
-              </td>
-              <td>{{ item.fechaInicio ? (item.fechaInicio | date: 'dd/MM/yyyy HH:mm') : '—' }}</td>
-              <td>{{ item.fechaFin ? (item.fechaFin | date: 'dd/MM/yyyy HH:mm') : '—' }}</td>
-            </tr>
-          } @empty {
-            <tr>
-              <td colspan="5" class="vacio">No hay ejecuciones para mostrar.</td>
-            </tr>
-          }
-        </tbody>
-      </table>
+  <div class="ex-pestanas" role="tablist">
+    @for (p of pestanas; track p.clave) {
+      <button type="button" role="tab" [class.activa]="filtro === p.clave" [attr.aria-selected]="filtro === p.clave" (click)="filtro = p.clave">
+        {{ p.etiqueta }}
+        <span>{{ contar(p.clave) }}</span>
+      </button>
+    }
+  </div>
+
+  <div class="tk-card ex-lista">
+    @if (loading && !items.length) {
+      <div class="tk-esqueleto"></div>
+      <div class="tk-esqueleto"></div>
+      <div class="tk-esqueleto"></div>
+    } @else {
+      @for (item of visibles; track item.id) {
+        <a class="ex-fila" [routerLink]="['/ejecuciones', item.id]" (click)="preparar(item.id, true)" (mouseenter)="preparar(item.id)">
+          <span class="ex-icono" [attr.data-estado]="item.estado" aria-hidden="true">
+            @if (item.estado === 'COMPLETADA') {
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12l5 5L20 7" /></svg>
+            } @else if (item.estado === 'CANCELADA') {
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 6l12 12M18 6L6 18" /></svg>
+            } @else {
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9" /><path d="M10 8.5l5 3.5-5 3.5z" fill="currentColor" /></svg>
+            }
+          </span>
+          <span class="ex-texto">
+            <strong>{{ nombre(item.procedimientoId) }}</strong>
+            <small>
+              Inicio {{ item.fechaInicio ? (item.fechaInicio | date: 'dd/MM/yyyy HH:mm') : '—' }}
+              @if (item.fechaFin) {
+                · Fin {{ item.fechaFin | date: 'dd/MM/yyyy HH:mm' }}
+              }
+            </small>
+          </span>
+          <span [class]="'tk-badge ' + claseEstado(item.estado)">{{ etiqueta(item.estado) }}</span>
+          <span class="tk-btn" [class.tk-btn-primario]="item.estado === 'EN_CURSO'" [class.tk-btn-sec]="item.estado !== 'EN_CURSO'">
+            {{ item.estado === 'EN_CURSO' ? 'Continuar' : 'Ver registro' }}
+          </span>
+        </a>
+      } @empty {
+        <div class="tk-vacio">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="5" y="3" width="14" height="18" rx="2" /><path d="M9 8h6M9 12h6M9 16h3" /></svg>
+          <strong>{{ items.length ? 'No hay ejecuciones en esta pestaña' : 'Aún no has iniciado procedimientos' }}</strong>
+          <span>Abre un procedimiento publicado y pulsa «Iniciar procedimiento».</span>
+        </div>
+      }
     }
   </div>
 </section>

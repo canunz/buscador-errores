@@ -484,3 +484,18 @@
     display: inline-flex;
   }
 }
+
+.avisos-todas {
+  display: block;
+  padding: 11px 16px;
+  border-top: 1px solid #eef2f7;
+  color: #1e4fd6;
+  font-size: 13px;
+  font-weight: 700;
+  text-align: center;
+  text-decoration: none;
+}
+
+.avisos-todas:hover { background: #f4f7ff; }
+.app-shell.tema-oscuro .avisos-todas { border-color: #1f2a3d; color: #93c5fd; }
+.app-shell.tema-oscuro .avisos-todas:hover { background: #16264d; }

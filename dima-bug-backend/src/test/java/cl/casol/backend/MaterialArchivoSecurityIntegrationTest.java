@@ -32,6 +32,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         MaterialApoyoController.class,MaterialPasoController.class})
 @Import({SecurityConfig.class,JwtAuthenticationFilter.class,GlobalExceptionHandler.class})
 class MaterialArchivoSecurityIntegrationTest {
+    @org.springframework.test.context.bean.override.mockito.MockitoBean
+    private cl.casol.backend.identidad.infrastructure.security.UsuarioAutenticadoCache usuarioAutenticadoCache;
+
+    @org.springframework.test.context.bean.override.mockito.MockitoBean
+    private cl.casol.backend.shared.application.service.VisibilidadContenidoService visibilidadContenidoService;
+
     static final String CONOCIMIENTO = "/api/conocimientos/1/materiales";
     static final String PASO = "/api/procedimientos/1/pasos/2/materiales";
     static final byte[] PDF = "%PDF-1.7\ncontenido".getBytes();

@@ -1,3 +1,5 @@
+<p role="status">{{ catalogoLoading ? "Cargando catálogos…" : "" }}</p>
+@if (catalogoError) { <p class="alert" role="alert">{{ catalogoError }}</p> }
 @if (!puedeGestionar()) {
   <section class="aviso-page">
     <header class="aviso-hero">

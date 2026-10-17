@@ -1,4 +1,6 @@
-import { Routes } from '@angular/router';
+import { cambiosProcedimientoGuard } from './features/procedimiento/cambios-procedimiento.guard';
+import { inject } from '@angular/core';
+import { Router, Routes } from '@angular/router';
 import { adminGuard, authGuard, guestGuard, staffGuard } from './core/guards/auth.guard';
 import { ShellLayoutComponent } from './shared/layout/shell-layout.component';
 import { LoginComponent } from './features/auth/login/login.component';
@@ -23,6 +25,7 @@ import { ProcedimientoFormComponent } from './features/procedimiento/procedimien
 import { NotificacionesComponent } from './features/notificaciones/notificaciones.component';
 import { FavoritosComponent } from './features/secciones/favoritos.component';
 import { ReportesComponent } from './features/secciones/reportes.component';
+import { AuthService } from './core/services/auth.service';
 
 export const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'inicio' },
@@ -38,15 +41,15 @@ export const routes: Routes = [
       { path: 'departamentos', component: DepartamentosComponent, canActivate: [staffGuard] },
       { path: 'pruebas', component: PruebasComponent, canActivate: [staffGuard] },
       { path: 'procedimientos', component: ProcedimientoListaComponent },
-      { path: 'procedimientos/nuevo', component: ProcedimientoFormComponent, canActivate: [staffGuard] },
-      { path: 'procedimientos/:id/editar', component: ProcedimientoFormComponent, canActivate: [staffGuard] },
-      { path: 'procedimientos/:id', component: ProcedimientoDetalleComponent },
+      { path: 'procedimientos/nuevo', component: ProcedimientoFormComponent, canActivate: [staffGuard], canDeactivate: [cambiosProcedimientoGuard] },
+      { path: 'procedimientos/:id/editar', component: ProcedimientoFormComponent, canActivate: [staffGuard], canDeactivate: [cambiosProcedimientoGuard] },
+      { path: 'procedimientos/:id', component: ProcedimientoDetalleComponent, canDeactivate: [cambiosProcedimientoGuard] },
       { path: 'soluciones', component: SolucionesComponent, canActivate: [staffGuard] },
       { path: 'conocimiento', component: ConocimientoComponent },
       { path: 'conocimiento/nuevo', component: ConocimientoFormComponent, canActivate: [staffGuard] },
       { path: 'conocimiento/:id/editar', component: ConocimientoFormComponent, canActivate: [staffGuard] },
       { path: 'conocimiento/:id', component: ConocimientoDetalleComponent },
-      { path: 'notificaciones', component: NotificacionesComponent, canActivate: [staffGuard] },
+      { path: 'notificaciones', component: NotificacionesComponent },
       { path: 'ejecuciones', component: EjecucionesComponent, canActivate: [staffGuard] },
       { path: 'ejecuciones/:id', component: EjecucionChecklistComponent, canActivate: [staffGuard] },
       { path: 'favoritos', component: FavoritosComponent },
@@ -55,6 +58,27 @@ export const routes: Routes = [
       { path: 'admin', component: AdminComponent, canActivate: [adminGuard] },
       { path: 'admin/catalogo/:tipo', component: AdminCatalogoComponent, canActivate: [adminGuard] },
       { path: 'usuarios', component: UsuariosComponent, canActivate: [adminGuard] },
+      {
+        path: 'tickets',
+        loadComponent: () => import('./features/tickets/mis-tickets.component').then((m) => m.MisTicketsComponent),
+        // Soporte y administración trabajan desde la bandeja.
+        canActivate: [() => (inject(AuthService).isStaff() ? inject(Router).createUrlTree(['/tickets/bandeja']) : true)],
+      },
+      {
+        path: 'tickets/nuevo',
+        loadComponent: () => import('./features/tickets/crear-ticket.component').then((m) => m.CrearTicketComponent),
+        // El administrador gestiona tickets, no los reporta.
+        canActivate: [() => (inject(AuthService).isAdmin() ? inject(Router).createUrlTree(['/tickets/bandeja']) : true)],
+      },
+      {
+        path: 'tickets/bandeja',
+        loadComponent: () => import('./features/tickets/bandeja-soporte.component').then((m) => m.BandejaSoporteComponent),
+        canActivate: [staffGuard],
+      },
+      {
+        path: 'tickets/:id',
+        loadComponent: () => import('./features/tickets/detalle-ticket.component').then((m) => m.DetalleTicketComponent),
+      },
     ],
   },
   { path: '**', redirectTo: 'inicio' },

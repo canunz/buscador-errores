@@ -299,6 +299,7 @@
                   <div class="test-top">
                     <span class="num">{{ p.orden }}</span>
                     <strong>{{ p.descripcion }}</strong>
+                    @if (p.activa === false) { <span>Inactiva · referencia histórica</span> }
                   </div>
                   <p class="expected"><span>Resultado esperado</span>{{ p.resultadoEsperado || 'No indicado' }}</p>
                 </li>
@@ -360,7 +361,9 @@
                 <div class="solution-top">
                   <span class="num">{{ s.orden }}</span>
                   <div>
-                    <strong>{{ s.descripcion }}</strong>
+                    <strong>{{ s.titulo || 'Solución sin título' }}</strong>
+                    <span class="tipo">Activa</span>
+                    <p>{{ s.descripcion }}</p>
                     <span class="tipo" [class.derivacion]="s.tipo === 'DERIVACION'">
                       {{ s.tipo === 'DERIVACION' ? 'Derivación' : 'Pasos a seguir' }}
                     </span>
@@ -474,6 +477,12 @@
               <div class="form-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="modal-solucion-titulo">
                 <h2 id="modal-solucion-titulo">{{ editSolucionId ? 'Editar solución' : 'Agregar solución' }}</h2>
                 <form class="editor en-modal" [formGroup]="solucionForm" (ngSubmit)="guardarSolucion()">
+                  @if (sectionError) { <p class="alert full" role="alert">{{ sectionError }}</p> }
+                  <label class="full">
+                    <span>Título <span class="req">*</span></span>
+                    <input formControlName="titulo" maxlength="150" required placeholder="Título descriptivo" />
+                    @if (solucionForm.controls.titulo.touched && solucionForm.controls.titulo.invalid) { <small role="alert">Título obligatorio, máximo 150 caracteres.</small> }
+                  </label>
                   <label class="full">
                     <span>Qué debe hacer el técnico <span class="req">*</span></span>
                     <input type="text" formControlName="descripcion" placeholder="Ej: reinstalar componente WINDOW y validar Bodega" />

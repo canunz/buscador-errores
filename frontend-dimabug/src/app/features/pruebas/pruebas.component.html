@@ -1,131 +1,29 @@
-<app-loading-modal [visible]="loading" mensaje="Cargando" />
-
+<app-loading-modal [visible]="loading" mensaje="Cargando Pruebas" />
 <section class="cat-page pr-page">
-  <div class="franja">
-    <app-ayuda-franja titulo="Pruebas" detalle="Catálogo de pruebas de verificación. Se asocian a un conocimiento para comprobar una causa." />
-    <div>
-      <p>Catálogos</p>
-      <h1>{{ titulo }}</h1>
-      <span>{{ items.length }} {{ titulo === 'Procedimientos' ? 'procedimiento' : 'prueba' }}{{ items.length === 1 ? '' : 's' }} desde la base de datos</span>
-    </div>
-  </div>
-
-  @if (error) {
-    <p class="alert">{{ error }}</p>
-  }
-
-  <div class="tabla-wrap">
-    @if (!loading) {
-      <table>
-        <thead>
-          <tr>
-            <th class="col-acciones">Acciones</th>
-            <th>{{ titulo === 'Procedimientos' ? 'Procedimiento' : 'Prueba' }}</th>
-            <th>Resultado esperado</th>
-            <th>Estado</th>
-          </tr>
-        </thead>
-        <tbody>
-          @for (item of items; track item.id) {
-            <tr>
-              <td>
-                <div class="acciones">
-                  <button type="button" class="btn-accion ver" title="Ver detalle" aria-label="Ver detalle" (click)="ver(item)">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                      <circle cx="12" cy="12" r="3" />
-                    </svg>
-                  </button>
-                  <button
-                    type="button"
-                    class="btn-accion estado"
-                    [class.off]="!item.activo"
-                    [title]="item.activo ? 'Desactivar' : 'Activar'"
-                    [attr.aria-label]="item.activo ? 'Desactivar' : 'Activar'"
-                    (click)="pedirCambioEstado(item)"
-                  >
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                      <path d="M12 3v10" />
-                      <path d="M8.5 7.5a6 6 0 106.9 0" />
-                    </svg>
-                  </button>
-                  <button type="button" class="btn-accion eliminar" title="Eliminar" aria-label="Eliminar" (click)="pedirEliminar(item)">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                      <path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6" />
-                    </svg>
-                  </button>
-                </div>
-              </td>
-              <td><strong class="nombre">{{ item.descripcion }}</strong></td>
-              <td><p class="resultado">{{ item.resultadoEsperado || '—' }}</p></td>
-              <td>
-                <span class="estado" [class.activo]="item.activo" [class.inactivo]="!item.activo">
-                  {{ item.activo ? 'Activa' : 'Inactiva' }}
-                </span>
-              </td>
-            </tr>
-          } @empty {
-            <tr>
-              <td colspan="4" class="vacio">No hay registros en la base de datos.</td>
-            </tr>
-          }
-        </tbody>
-      </table>
-    }
-  </div>
+ <div class="franja"><app-ayuda-franja titulo="Pruebas" detalle="Pruebas de diagnóstico reutilizables. Las asociaciones históricas se conservan al desactivar." />
+  <div><p>Catálogos</p><h1>Pruebas</h1><span>{{ items.length }} pruebas consultadas</span></div>
+  @if (esAdministrador()) { <button type="button" class="btn-crear" (click)="abrirFormulario()" [disabled]="saving || loading">Añadir Prueba</button> }
+ </div>
+ @if (esAdministrador() && tieneDatosLocales) { <div class="pr-respaldo"><p>Hay datos anteriores de este navegador. No se importan al sistema.</p><button type="button" (click)="respaldar()">Respaldar datos locales anteriores</button></div> }
+ @if (error) { <p role="alert" class="alert">{{ error }} <button type="button" (click)="cargar()">Reintentar</button></p> }
+ @if (mensaje) { <p role="status">{{ mensaje }}</p> }
+ <div class="tabla-wrap"><table><thead><tr><th>Acciones</th><th>Prueba</th><th>Resultado esperado</th><th>Estado</th></tr></thead><tbody>
+ @for (p of items; track p.id) { <tr><td><div class="acciones"><button type="button" (click)="ver(p)">Ver</button>
+  @if (esAdministrador()) { <button type="button" (click)="abrirFormulario(p)" [disabled]="saving || loading">Editar</button><button type="button" (click)="pedirCambioEstado(p)" [disabled]="saving || loading">{{ p.activo ? 'Desactivar' : 'Reactivar' }}</button> }
+ </div></td><td>{{ p.descripcion }}</td><td>{{ p.resultadoEsperado || 'No indicado' }}</td><td>{{ p.activo ? 'Activa' : 'Inactiva' }}</td></tr>
+ } @empty { <tr><td colspan="4">{{ loading ? 'Cargando…' : error ? 'No se pudo consultar el catálogo.' : 'No hay pruebas disponibles.' }}</td></tr> }
+ </tbody></table></div>
 </section>
-
-@if (detalle) {
-  <div class="detalle-modal" role="dialog" aria-modal="true" aria-labelledby="prueba-detalle-titulo">
-    <div class="detalle-modal-fondo" (click)="cerrarDetalle()"></div>
-    <article class="detalle-modal-card">
-      <header class="detalle-modal-franja">
-        <div>
-          <p>{{ titulo === 'Procedimientos' ? 'Procedimiento' : 'Prueba' }}</p>
-          <h2 id="prueba-detalle-titulo">{{ detalle.descripcion }}</h2>
-        </div>
-        <button type="button" class="detalle-modal-cerrar" (click)="cerrarDetalle()" aria-label="Cerrar">✕</button>
-      </header>
-      <div class="detalle-modal-cuerpo">
-        <section class="detalle-bloque">
-          <h3>Estado</h3>
-          <p class="detalle-texto">{{ detalle.activo ? 'Activa' : 'Inactiva' }}</p>
-        </section>
-        <section class="detalle-bloque">
-          <h3>Resultado esperado</h3>
-          <p class="detalle-texto">{{ detalle.resultadoEsperado || 'Sin resultado esperado registrado.' }}</p>
-        </section>
-      </div>
-    </article>
-  </div>
-}
-
-@if (pendienteEliminar) {
-  <div class="confirm-capa">
-    <div class="confirm-fondo" (click)="cancelarEliminar()"></div>
-    <div class="confirm-dialog" role="alertdialog" aria-modal="true" aria-labelledby="prueba-eliminar-titulo">
-      <h2 id="prueba-eliminar-titulo">¿Eliminar este registro?</h2>
-      <p>{{ pendienteEliminar.descripcion }} dejará de verse en este listado.</p>
-      <div class="confirm-acciones">
-        <button type="button" class="btn-cancelar" (click)="cancelarEliminar()">Cancelar</button>
-        <button type="button" class="btn-peligro" (click)="confirmarEliminar()">Eliminar</button>
-      </div>
-    </div>
-  </div>
-}
-
-@if (pendienteEstado) {
-  <div class="confirm-capa">
-    <div class="confirm-fondo" (click)="cancelarEstado()"></div>
-    <div class="confirm-dialog" role="alertdialog" aria-modal="true" aria-labelledby="prueba-estado-titulo">
-      <h2 id="prueba-estado-titulo">{{ pendienteEstado.activo ? '¿Desactivar esta prueba?' : '¿Activar esta prueba?' }}</h2>
-      <p>{{ pendienteEstado.descripcion }} quedará {{ pendienteEstado.activo ? 'inactiva' : 'activa' }}.</p>
-      <div class="confirm-acciones">
-        <button type="button" class="btn-cancelar" (click)="cancelarEstado()">Cancelar</button>
-        <button type="button" class="btn-peligro" (click)="confirmarEstado()">
-          {{ pendienteEstado.activo ? 'Desactivar' : 'Activar' }}
-        </button>
-      </div>
-    </div>
-  </div>
-}
+@if (detalle) { <div class="detalle-modal" role="dialog" aria-modal="true" aria-labelledby="pr-detalle"><div class="detalle-modal-fondo" (click)="cerrarDetalle()"></div><article class="detalle-modal-card">
+ <header class="detalle-modal-franja"><h2 id="pr-detalle">{{ detalle.descripcion }}</h2><button type="button" aria-label="Cerrar detalle" (click)="cerrarDetalle()">✕</button></header>
+ <div class="detalle-modal-cuerpo"><h3>Resultado esperado</h3><p>{{ detalle.resultadoEsperado || 'No indicado' }}</p><p>{{ detalle.activo ? 'Activa' : 'Inactiva' }}</p></div></article></div> }
+@if (formulario) { <div class="modal pr-form-modal" role="dialog" aria-modal="true" aria-labelledby="pr-form-titulo"><div class="modal-backdrop"></div><div class="modal-dialog modal-pro">
+ <header class="modal-head"><h2 id="pr-form-titulo">{{ editItem ? 'Editar Prueba' : 'Añadir Prueba' }}</h2><button type="button" aria-label="Cerrar formulario" (click)="cerrarFormulario()" [disabled]="saving">✕</button></header>
+ @if (formError) { <p role="alert" class="alert">{{ formError }}</p> }
+ <form [formGroup]="form" (ngSubmit)="guardar()" class="form-grid"><label class="full">Descripción *<textarea formControlName="descripcion" maxlength="500" required></textarea></label><label class="full">Resultado esperado<textarea formControlName="resultadoEsperado" maxlength="500"></textarea></label>
+ <p class="full">Esta prueba se reutiliza: editarla actualiza los datos mostrados en todos los conocimientos asociados.</p>
+ <div class="form-actions full"><button type="button" (click)="cerrarFormulario()" [disabled]="saving">Cancelar</button><button type="submit" [disabled]="saving">{{ saving ? 'Guardando…' : 'Guardar' }}</button></div></form></div></div> }
+@if (pendienteEstado) { <div class="confirm-capa" role="alertdialog" aria-modal="true" aria-labelledby="pr-estado"><div class="confirm-fondo"></div><div class="confirm-dialog">
+ <h2 id="pr-estado">{{ pendienteEstado.activo ? 'Desactivar' : 'Reactivar' }} Prueba</h2><p>{{ pendienteEstado.descripcion }}</p><p>Se conservan todas sus asociaciones. Al desactivar, no podrá seleccionarse para nuevas asociaciones.</p>
+ @if (formError) { <p role="alert" class="alert">{{ formError }}</p> }
+ <div class="confirm-acciones"><button type="button" (click)="cancelarEstado()" [disabled]="saving">Cancelar</button><button type="button" (click)="confirmarEstado()" [disabled]="saving">{{ saving ? 'Guardando…' : 'Confirmar' }}</button></div></div></div> }

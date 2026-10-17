@@ -1,0 +1,192 @@
+<section class="tk-pagina">
+  <header class="tk-franja">
+    <div>
+      <span class="tk-chip-rol">Soporte TI</span>
+      <h1>Reportar un problema</h1>
+      <p>Cuéntanos qué pasa. Mientras escribes el título te mostramos soluciones que ya existen.</p>
+    </div>
+    <a [routerLink]="volverA" class="tk-btn tk-btn-blanco">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M15 18l-6-6 6-6" /></svg>
+      Volver
+    </a>
+  </header>
+
+  @if (error) {
+    <p class="tk-alerta" role="alert">{{ error }} <button type="button" (click)="error = ''" aria-label="Cerrar">×</button></p>
+  }
+
+  <div class="ct-grid">
+    <form class="tk-card ct-form" [formGroup]="form" (ngSubmit)="enviar()" novalidate>
+      <div class="ct-paso">
+        <span class="ct-num">1</span>
+        <div>
+          <h2>¿Qué está pasando?</h2>
+          <p>Un título corto y claro ayuda a encontrar la solución más rápido.</p>
+        </div>
+      </div>
+
+      <label class="tk-campo">
+        <span class="ct-etq">Título <b aria-hidden="true">*</b> <small>{{ largoTitulo }}/{{ maxTitulo }}</small></span>
+        <input
+          type="text"
+          formControlName="titulo"
+          [maxlength]="maxTitulo"
+          placeholder="Ej: La impresora de bodega no imprime"
+          autocomplete="off"
+          [attr.aria-invalid]="invalido('titulo')"
+        />
+        @if (invalido('titulo')) {
+          <span class="tk-error-campo">Escribe un título para el problema.</span>
+        }
+      </label>
+
+      <label class="tk-campo">
+        <span class="ct-etq">Descripción <b aria-hidden="true">*</b></span>
+        <textarea
+          formControlName="descripcion"
+          rows="5"
+          placeholder="¿Qué intentabas hacer? ¿Qué mensaje aparece? ¿Desde cuándo pasa?"
+          [attr.aria-invalid]="invalido('descripcion')"
+        ></textarea>
+        @if (invalido('descripcion')) {
+          <span class="tk-error-campo">Describe brevemente el problema.</span>
+        }
+      </label>
+
+      <div class="tk-campo">
+        <span class="ct-etq">Capturas o videos <small>(opcional, ayudan mucho a soporte)</small></span>
+        <app-selector-adjuntos
+          texto="Adjuntar captura, video o PDF"
+          [archivos]="archivos"
+          (archivosChange)="archivos = $event"
+          [deshabilitado]="enviando"
+        />
+      </div>
+
+      <div class="ct-paso">
+        <span class="ct-num">2</span>
+        <div>
+          <h2>¿Qué tan urgente es?</h2>
+          <p>Elige la opción que mejor describe el impacto.</p>
+        </div>
+      </div>
+
+      <div class="ct-prioridades" role="radiogroup" aria-label="Prioridad">
+        @for (p of prioridades; track p) {
+          <button
+            type="button"
+            role="radio"
+            [class]="'ct-prioridad ' + prioridadInfo[p].clase"
+            [class.on]="form.controls.prioridad.value === p"
+            [attr.aria-checked]="form.controls.prioridad.value === p"
+            (click)="elegirPrioridad(p)"
+          >
+            <strong>{{ prioridadInfo[p].label }}</strong>
+            <span>{{ prioridadInfo[p].ayuda }}</span>
+          </button>
+        }
+      </div>
+
+      <div class="ct-paso">
+        <span class="ct-num">3</span>
+        <div>
+          <h2>¿Dónde ocurre? <small>(opcional)</small></h2>
+          <p>Si sabes el equipo o sistema, indícalo para derivarlo mejor.</p>
+        </div>
+      </div>
+
+      <div class="ct-cascada">
+        <label class="tk-campo">
+          Hardware
+          <select formControlName="hardwareId">
+            <option [ngValue]="null">{{ hardwares.length ? 'Selecciona hardware' : 'Sin hardware disponible' }}</option>
+            @for (item of hardwares; track item.id) {
+              <option [ngValue]="item.id">{{ item.nombre }}</option>
+            }
+          </select>
+        </label>
+        <label class="tk-campo">
+          Sistema
+          <select formControlName="sistemaId">
+            <option [ngValue]="null">{{ form.controls.hardwareId.value ? 'Selecciona sistema' : 'Primero elige hardware' }}</option>
+            @for (item of sistemas; track item.id) {
+              <option [ngValue]="item.id">{{ item.nombre }}</option>
+            }
+          </select>
+        </label>
+        <label class="tk-campo">
+          Módulo
+          <select formControlName="moduloId">
+            <option [ngValue]="null">
+              {{ !form.controls.sistemaId.value ? 'Primero elige sistema' : modulos.length ? 'Selecciona módulo' : 'Sin módulos' }}
+            </option>
+            @for (item of modulos; track item.id) {
+              <option [ngValue]="item.id">{{ item.nombre }}</option>
+            }
+          </select>
+        </label>
+      </div>
+
+      <footer class="ct-acciones">
+        <a [routerLink]="volverA" class="tk-btn tk-btn-sec">Cancelar</a>
+        <button type="submit" class="tk-btn tk-btn-primario" [disabled]="enviando">
+          @if (enviando) {
+            <span class="ct-spinner" aria-hidden="true"></span> {{ subiendoArchivos ? "Subiendo archivos…" : "Enviando…" }}
+          } @else {
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" /></svg>
+            Crear ticket
+          }
+        </button>
+      </footer>
+    </form>
+
+    <aside class="ct-aside">
+      <div class="tk-card ct-sugerencias" aria-live="polite">
+        <div class="ct-sug-cabeza">
+          <span class="ct-sug-icono" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18h6M10 22h4M12 2a7 7 0 00-4 12.7V17h8v-2.3A7 7 0 0012 2z" /></svg>
+          </span>
+          <div>
+            <h2>¿Es alguno de estos?</h2>
+            <p>Soluciones publicadas parecidas a tu problema.</p>
+          </div>
+        </div>
+
+        @if (buscandoSugerencias) {
+          <div class="ct-sug-lista">
+            <div class="tk-esqueleto"></div>
+            <div class="tk-esqueleto"></div>
+          </div>
+        } @else if (sugerencias.length) {
+          <ul class="ct-sug-lista">
+            @for (s of sugerencias; track s.id) {
+              <li>
+                <a [routerLink]="['/conocimiento', s.id]" target="_blank" rel="noopener">
+                  <strong>{{ s.titulo }}</strong>
+                  @if (ubicacion(s)) {
+                    <span>{{ ubicacion(s) }}</span>
+                  }
+                  <em>Ver solución ↗</em>
+                </a>
+              </li>
+            }
+          </ul>
+          <p class="ct-sug-nota">Si alguna te sirvió, no necesitas crear el ticket.</p>
+        } @else if (textoBuscado.length >= 3) {
+          <p class="ct-sug-vacio">No encontramos soluciones parecidas. Crea el ticket y soporte te ayudará.</p>
+        } @else {
+          <p class="ct-sug-vacio">Escribe al menos 3 letras en el título para ver sugerencias.</p>
+        }
+      </div>
+
+      <div class="tk-card ct-consejos">
+        <h3>Para una respuesta más rápida</h3>
+        <ul>
+          <li>Copia el mensaje de error tal como aparece.</li>
+          <li>Indica si le pasa a más personas.</li>
+          <li>Cuenta qué intentaste antes de reportarlo.</li>
+        </ul>
+      </div>
+    </aside>
+  </div>
+</section>

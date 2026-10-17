@@ -32,6 +32,27 @@ class AdministrarUsuariosServiceTest {
     private final AdministrarUsuariosService service =
             new AdministrarUsuariosService(usuarioRepository, rolRepository, passwordEncoder);
 
+    @Test void noDesactivaUltimoAdministrador() {
+        Usuario admin=usuario(1,"admin@x.cl",true,rol(1,"ADMINISTRADOR",true));
+        when(usuarioRepository.buscarPorId(1)).thenReturn(Optional.of(admin));
+        when(usuarioRepository.bloquearAdministradoresActivos()).thenReturn(java.util.List.of(admin));
+        assertThrows(cl.casol.backend.identidad.domain.exception.UltimoAdministradorException.class,()->service.cambiarEstado(1,false,"otro@x.cl"));
+        verify(usuarioRepository,never()).guardar(org.mockito.ArgumentMatchers.any());
+    }
+    @Test void noDegradaUltimoAdministrador() {
+        Usuario admin=usuario(1,"admin@x.cl",true,rol(1,"ADMINISTRADOR",true));
+        when(usuarioRepository.buscarPorId(1)).thenReturn(Optional.of(admin));
+        when(usuarioRepository.bloquearAdministradoresActivos()).thenReturn(java.util.List.of(admin));
+        when(rolRepository.buscarPorId(2)).thenReturn(Optional.of(rol(2,"TECNICO",true)));
+        assertThrows(cl.casol.backend.identidad.domain.exception.UltimoAdministradorException.class,()->service.modificar(1,"A","admin@x.cl",2,null));
+    }
+    @Test void permiteDesactivarCuandoExisteOtroAdministrador() {
+        Usuario admin=usuario(1,"admin@x.cl",true,rol(1,"ADMINISTRADOR",true));
+        when(usuarioRepository.buscarPorId(1)).thenReturn(Optional.of(admin));
+        when(usuarioRepository.bloquearAdministradoresActivos()).thenReturn(java.util.List.of(admin,usuario(2,"otro@x.cl",true,rol(1,"ADMINISTRADOR",true))));
+        when(usuarioRepository.guardar(org.mockito.ArgumentMatchers.any())).thenAnswer(i->i.getArgument(0));
+        assertFalse(service.cambiarEstado(1,false,"otro@x.cl").isActivo());
+    }
     @Test
     void creaUsuarioActivoConPasswordCodificada() {
         Rol rol = rol(2, "TECNICO", true);

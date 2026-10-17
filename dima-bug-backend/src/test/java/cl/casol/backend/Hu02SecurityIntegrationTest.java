@@ -38,6 +38,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(controllers = {UsuarioController.class, RolController.class})
 @Import({SecurityConfig.class, JwtAuthenticationFilter.class, GlobalExceptionHandler.class})
 class Hu02SecurityIntegrationTest {
+    @org.springframework.test.context.bean.override.mockito.MockitoBean
+    private cl.casol.backend.identidad.infrastructure.security.UsuarioAutenticadoCache usuarioAutenticadoCache;
+
+    @org.springframework.test.context.bean.override.mockito.MockitoBean
+    private cl.casol.backend.shared.application.service.VisibilidadContenidoService visibilidadContenidoService;
+
 
     @Autowired
     private MockMvc mockMvc;

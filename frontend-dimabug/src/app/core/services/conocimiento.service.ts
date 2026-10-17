@@ -46,6 +46,10 @@ import {
 } from '../models/conocimiento.model';
 
 export type SolucionCatalogoItem = {
+  titulo: string | null;
+  descripcion: string;
+  activo: boolean;
+  autoservicio: boolean;
   id: number;
   nombre: string;
   pasos: string;
@@ -62,8 +66,6 @@ export class ConocimientoService {
   private readonly http = inject(HttpClient);
   private readonly base = apiUrl('/conocimientos');
   private readonly listaStorageKey = 'dimabug.conocimientos.lista.v1';
-  private readonly solucionesCatalogoKey = 'dimabug.soluciones.catalogo.v1';
-  private readonly solucionesOcultasKey = 'dimabug.soluciones.ocultas.v1';
 
   private listaCache$: Observable<Conocimiento[]> | null = null;
   private detalleCache = new Map<number, Conocimiento>();
@@ -74,7 +76,6 @@ export class ConocimientoService {
   private readonly seccionMarca = new Map<string, number>();
   private readonly colaGuia: number[] = [];
   private guiaEnCurso = false;
-  private solucionesCatalogoCache$: Observable<SolucionCatalogoItem[]> | null = null;
 
   /** Lectura síncrona de la última lista, para pintar la pantalla sin esperar la red. */
   listaEnSesion(): Conocimiento[] {
@@ -348,111 +349,74 @@ export class ConocimientoService {
   }
 
   listarSoluciones(conocimientoId: number, force = false): Observable<Solucion[]> {
-    return this.getCached(
-      `soluciones:${conocimientoId}`,
-      () =>
-        this.http.get<unknown>(`${this.base}/${conocimientoId}/soluciones`).pipe(
-          map((res) =>
-            this.asArray(res)
-              .map((item) => this.normalizeSolucion(item))
-              .sort((a, b) => a.orden - b.orden),
-          ),
-          catchError((err: HttpErrorResponse) =>
-            throwError(() => new Error(mensajeApiError(err, 'No fue posible cargar las soluciones.'))),
-          ),
-        ),
-      force,
+    // La actividad se consulta siempre al servidor; no se devuelve una solución desactivada desde caché.
+    const key = `soluciones:${conocimientoId}`;
+    const marca = this.seccionMarca.get(key) ?? 0;
+    return this.http.get<unknown>(`${this.base}/${conocimientoId}/soluciones`).pipe(
+      map(res => this.asArray(res).map(item => this.normalizeSolucion(item))
+        .filter(item => item.activo).sort((a, b) => a.orden - b.orden)),
+      tap(items => this.guardarSeccion(key, items, marca)),
+      catchError((err: HttpErrorResponse) => throwError(() => new Error(mensajeApiError(err, 'No fue posible cargar las soluciones.')))),
     );
   }
 
-  /**
-   * Agrega soluciones de todos los conocimientos (no existe /api/soluciones global).
-   * Caché de sesión al instante; en frío acumula por lotes sin esperar el total.
-   */
-  listarSolucionesCatalogo(force = false): Observable<SolucionCatalogoItem[]> {
-    if (!force && this.solucionesCatalogoCache$) {
-      return this.solucionesCatalogoCache$;
-    }
+  listarSolucionesAdministrativas(conocimientoId: number): Observable<Solucion[]> {
+    return this.http.get<unknown>(apiUrl(`/admin/conocimientos/${conocimientoId}/soluciones`)).pipe(
+      map(res => this.asArray(res).map(item => this.normalizeSolucion(item)).sort((a, b) => a.orden - b.orden)),
+      catchError((err: HttpErrorResponse) => throwError(() => new Error(mensajeApiError(err, 'No fue posible cargar la administración de soluciones.')))),
+    );
+  }
 
-    const stale = !force ? this.readSolucionesSession() : null;
-
-    const mapSoluciones = (c: Conocimiento) =>
-      this.listarSoluciones(c.id).pipe(
-        map((sols) =>
-          sols.map((s) => ({
-            id: s.id,
-            nombre: s.descripcion,
-            pasos: s.tipo === 'DERIVACION' ? 'Derivación' : 'Pasos a seguir',
-            anexos: c.titulo,
-            asignaciones: [] as string[],
-            conocimientoId: c.id,
-            conocimientoTitulo: c.titulo,
-            orden: s.orden,
-            tipo: s.tipo,
-          })),
-        ),
-        catchError(() => of([] as SolucionCatalogoItem[])),
-      );
-
-    const fromConocimientos = (conocimientos: Conocimiento[], progressive: boolean) => {
-      if (!conocimientos.length) {
-        return of([] as SolucionCatalogoItem[]);
-      }
-      const batches$ = from(conocimientos).pipe(mergeMap((c) => mapSoluciones(c), 4));
-      if (progressive) {
-        return batches$.pipe(scan((acc, batch) => acc.concat(batch), [] as SolucionCatalogoItem[]));
-      }
-      return batches$.pipe(
-        toArray(),
-        map((groups) => groups.flat()),
-      );
-    };
-
-    const network$ = this.listar().pipe(
+  listarSolucionesCatalogo(force = false, administrativo = false): Observable<SolucionCatalogoItem[]> {
+    return this.listar(force).pipe(
       take(1),
-      switchMap((conocimientos) => fromConocimientos(conocimientos, !stale?.length)),
-      catchError((err: HttpErrorResponse | Error) => {
-        if (stale?.length) {
-          return of(stale);
-        }
-        this.solucionesCatalogoCache$ = null;
-        const message =
-          err instanceof Error ? err.message : mensajeApiError(err, 'No fue posible cargar las soluciones.');
-        return throwError(() => new Error(message));
-      }),
+      switchMap(conocimientos => conocimientos.length ? from(conocimientos).pipe(
+        mergeMap(c => (administrativo ? this.listarSolucionesAdministrativas(c.id) : this.listarSoluciones(c.id, true)).pipe(
+          map(sols => sols.map(s => ({
+            id: s.id, titulo: s.titulo, descripcion: s.descripcion,
+            nombre: s.titulo?.trim() || this.resumenSolucion(s.descripcion),
+            pasos: s.descripcion, anexos: c.titulo, asignaciones: [] as string[],
+            conocimientoId: c.id, conocimientoTitulo: c.titulo, orden: s.orden,
+            tipo: s.tipo, activo: s.activo, autoservicio: s.autoservicio,
+          }))),
+        ), 4),
+        toArray(), map(groups => groups.flat()),
+      ) : of([] as SolucionCatalogoItem[])),
     );
-
-    this.solucionesCatalogoCache$ = (stale?.length ? concat(of(stale), network$) : network$).pipe(
-      map((items) => items.filter((item) => !this.solucionOculta(item))),
-      tap((items) => this.writeSolucionesSession(items)),
-      shareReplay(1),
-    );
-
-    return this.solucionesCatalogoCache$;
   }
 
-  ocultarSolucionCatalogo(conocimientoId: number, id: number): void {
-    const clave = `${conocimientoId}-${id}`;
-    const ids = this.leerSolucionesOcultas();
-    if (!ids.includes(clave)) {
-      try {
-        sessionStorage.setItem(this.solucionesOcultasKey, JSON.stringify([...ids, clave]));
-      } catch {
-        // ignore
-      }
-    }
-    this.solucionesCatalogoCache$ = null;
-    const actual = this.readSolucionesSession() ?? [];
-    this.writeSolucionesSession(actual.filter((item) => `${item.conocimientoId}-${item.id}` !== clave));
+  cambiarEstadoSolucion(conocimientoId: number, solucionId: number, activo: boolean): Observable<Solucion> {
+    return this.cambiarAdministracionSolucion(conocimientoId, solucionId, 'estado', { activo });
+  }
+
+  cambiarAutoservicioSolucion(conocimientoId: number, solucionId: number, autoservicio: boolean): Observable<Solucion> {
+    return this.cambiarAdministracionSolucion(conocimientoId, solucionId, 'autoservicio', { autoservicio });
+  }
+
+  private cambiarAdministracionSolucion(conocimientoId: number, solucionId: number,
+      campo: 'estado' | 'autoservicio', datos: { activo: boolean } | { autoservicio: boolean }): Observable<Solucion> {
+    return this.http.patch<unknown>(apiUrl(`/admin/conocimientos/${conocimientoId}/soluciones/${solucionId}/${campo}`), datos).pipe(
+      map(res => this.normalizeSolucion(res)),
+      tap(() => this.invalidarSoluciones(conocimientoId)),
+      catchError((err: HttpErrorResponse) => throwError(() => new Error(mensajeApiError(err, 'No fue posible actualizar la solución.')))),
+    );
+  }
+
+  private invalidarSoluciones(conocimientoId: number): void {
+    const key = `soluciones:${conocimientoId}`;
+    this.seccionMarca.set(key, (this.seccionMarca.get(key) ?? 0) + 1);
+    this.clearSeccion(key);
+  }
+
+  private resumenSolucion(descripcion: string): string {
+    const primera = descripcion.trim().split(/\r?\n/)[0] || 'Solución sin título';
+    return primera.length > 150 ? `${primera.slice(0, 147)}…` : primera;
   }
 
   crearSolucion(conocimientoId: number, request: SolucionRequest): Observable<Solucion> {
     return this.http.post<unknown>(`${this.base}/${conocimientoId}/soluciones`, request).pipe(
       map((res) => this.normalizeSolucion(res)),
-      tap(() => {
-        this.solucionesCatalogoCache$ = null;
-        sessionStorage.removeItem(this.solucionesCatalogoKey);
-      }),
+      tap(() => this.invalidarSoluciones(conocimientoId)),
       catchError((err: HttpErrorResponse) =>
         throwError(() => new Error(mensajeApiError(err, 'No fue posible crear la solución.'))),
       ),
@@ -466,10 +430,7 @@ export class ConocimientoService {
   ): Observable<Solucion> {
     return this.http.put<unknown>(`${this.base}/${conocimientoId}/soluciones/${solucionId}`, request).pipe(
       map((res) => this.normalizeSolucion(res)),
-      tap(() => {
-        this.solucionesCatalogoCache$ = null;
-        sessionStorage.removeItem(this.solucionesCatalogoKey);
-      }),
+      tap(() => this.invalidarSoluciones(conocimientoId)),
       catchError((err: HttpErrorResponse) =>
         throwError(() => new Error(mensajeApiError(err, 'No fue posible actualizar la solución.'))),
       ),
@@ -745,7 +706,7 @@ export class ConocimientoService {
   }
 
   private claveSeccion(key: string): string {
-    return `dimabug.seccion.${key}`;
+    return `dimabug.seccion.${key.startsWith('soluciones:') ? 'qa009.' : ''}${key}`;
   }
 
   private clearSeccion(key: string): void {
@@ -822,17 +783,11 @@ export class ConocimientoService {
   private retirarDeCache(id: number): void {
     this.retirados.add(id);
     this.listaCache$ = null;
-    this.solucionesCatalogoCache$ = null;
     this.detalleCache.delete(id);
 
     const list = this.readListaSession();
     if (list) {
       this.writeListaSession(list.filter((item) => item.id !== id));
-    }
-
-    const soluciones = this.readSolucionesSession();
-    if (soluciones) {
-      this.writeSolucionesSession(soluciones.filter((item) => item.conocimientoId !== id));
     }
 
     for (const seccion of ['sintomas', 'causas', 'pruebas', 'soluciones', 'materiales']) {
@@ -955,41 +910,6 @@ export class ConocimientoService {
       sessionStorage.setItem(this.listaStorageKey, JSON.stringify(items));
     } catch {
       // quota / private mode: ignore
-    }
-  }
-
-  private solucionOculta(item: SolucionCatalogoItem): boolean {
-    return this.leerSolucionesOcultas().includes(`${item.conocimientoId}-${item.id}`);
-  }
-
-  private leerSolucionesOcultas(): string[] {
-    try {
-      const raw = sessionStorage.getItem(this.solucionesOcultasKey);
-      const parsed = raw ? (JSON.parse(raw) as string[]) : [];
-      return Array.isArray(parsed) ? parsed.map(String) : [];
-    } catch {
-      return [];
-    }
-  }
-
-  private readSolucionesSession(): SolucionCatalogoItem[] | null {
-    try {
-      const raw = sessionStorage.getItem(this.solucionesCatalogoKey);
-      if (!raw) {
-        return null;
-      }
-      const parsed = JSON.parse(raw) as SolucionCatalogoItem[];
-      return Array.isArray(parsed) ? parsed : null;
-    } catch {
-      return null;
-    }
-  }
-
-  private writeSolucionesSession(items: SolucionCatalogoItem[]): void {
-    try {
-      sessionStorage.setItem(this.solucionesCatalogoKey, JSON.stringify(items));
-    } catch {
-      // ignore
     }
   }
 
@@ -1116,6 +1036,7 @@ export class ConocimientoService {
       descripcion: String(r['descripcion'] ?? ''),
       resultadoEsperado: String(r['resultadoEsperado'] ?? ''),
       orden: Number(r['orden'] ?? 0),
+      activa: r['activa'] == null ? true : Boolean(r['activa']),
     };
   }
 
@@ -1123,6 +1044,9 @@ export class ConocimientoService {
     const r = (raw ?? {}) as Record<string, unknown>;
     const tipo = String(r['tipo'] ?? 'PASOS').toUpperCase() as TipoSolucion;
     return {
+      titulo: r['titulo'] == null ? null : String(r['titulo']),
+      activo: r['activo'] == null ? true : Boolean(r['activo']),
+      autoservicio: r['autoservicio'] == null ? false : Boolean(r['autoservicio']),
       id: Number(r['id'] ?? 0),
       descripcion: String(r['descripcion'] ?? ''),
       tipo: tipo === 'DERIVACION' ? 'DERIVACION' : 'PASOS',

@@ -1,0 +1,99 @@
+<section class="rt" aria-labelledby="rt-titulo">
+  <div class="rt-cabeza">
+    <div>
+      <p class="rt-eyebrow">Tickets</p>
+      <h2 id="rt-titulo">{{ textos[vista].titulo }}</h2>
+    </div>
+    <div class="rt-acciones">
+      @if (vista !== 'admin') {
+        <a routerLink="/tickets/nuevo" class="tk-btn" [class.tk-btn-primario]="vista === 'usuario'" [class.tk-btn-sec]="vista !== 'usuario'">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M12 5v14M5 12h14" /></svg>
+          {{ vista === 'usuario' ? 'Reportar un problema' : 'Nuevo ticket' }}
+        </a>
+      }
+      <a [routerLink]="rutaLista" class="tk-btn" [class.tk-btn-primario]="vista !== 'usuario'" [class.tk-btn-sec]="vista === 'usuario'">
+        {{ vista === 'admin' ? 'Ver todos los tickets' : vista === 'soporte' ? 'Ir a la bandeja' : 'Ver mis tickets' }}
+      </a>
+    </div>
+  </div>
+
+  @if (sinServicio && !cargando) {
+    <p class="rt-aviso">Los tickets no están disponibles en este momento. Intenta más tarde.</p>
+  }
+
+  <div class="rt-indicadores">
+    @for (i of indicadores; track i.clave) {
+      <button type="button" class="rt-indicador" [attr.data-tono]="i.tono" [class.rt-alerta]="i.alerta" (click)="irA(i)">
+        <span class="rt-etiqueta">{{ i.etiqueta }}</span>
+        <strong>{{ i.valor ?? '–' }}</strong>
+        <span class="rt-detalle">{{ i.detalle }}</span>
+      </button>
+    } @empty {
+      @for (n of [1, 2, 3, 4]; track n) {
+        <div class="tk-esqueleto rt-esqueleto"></div>
+      }
+    }
+  </div>
+
+  @if (!cargando && !sinServicio) {
+    <div class="rt-columnas" [class.rt-dos]="vista === 'admin'">
+      <div class="tk-card rt-lista">
+        <h3>{{ textos[vista].lista }}</h3>
+        @if (lista.length) {
+          <ul>
+            @for (t of lista; track t.id) {
+              <li>
+                <button type="button" (click)="abrir(t)" [class.rt-critico]="t.prioridad === 'CRITICA'">
+                  <span class="tk-codigo">{{ t.codigo }}</span>
+                  <span class="rt-titulo">{{ t.titulo }}</span>
+                  @if (vista === 'usuario') {
+                    <span [class]="'tk-badge ' + estadoInfo[t.estado].clase">{{ estadoUsuario(t.estado) }}</span>
+                  } @else {
+                    <span [class]="'tk-badge ' + prioridadInfo[t.prioridad].clase">{{ prioridadInfo[t.prioridad].label }}</span>
+                  }
+                  <span class="rt-meta" [title]="larga(t.fechaCreacion)">
+                    @if (vista === 'admin') {
+                      {{ t.solicitante?.nombre || '—' }} · {{ relativa(t.fechaCreacion) }}
+                    } @else if (vista === 'soporte') {
+                      {{ estadoInfo[t.estado].label }}
+                    } @else {
+                      {{ textoUsuario(t) }}
+                    }
+                  </span>
+                </button>
+              </li>
+            }
+          </ul>
+        } @else {
+          <p class="rt-vacio">{{ textos[vista].vacio }}</p>
+        }
+      </div>
+
+      @if (vista === 'admin') {
+        <div class="tk-card rt-lista">
+          <h3>Carga de cada técnico</h3>
+          @if (carga.length) {
+            <ul class="rt-carga">
+              @for (c of carga; track c.nombre) {
+                <li>
+                  <div class="rt-carga-texto">
+                    <strong>{{ c.nombre }}</strong>
+                    <span>
+                      {{ c.activos }} activo{{ c.activos === 1 ? '' : 's' }}
+                      @if (c.criticos) {
+                        · <b class="rt-carga-critico">{{ c.criticos }} crítico{{ c.criticos === 1 ? '' : 's' }}</b>
+                      }
+                    </span>
+                  </div>
+                  <span class="rt-barra"><span [style.width.%]="c.ancho"></span></span>
+                </li>
+              }
+            </ul>
+          } @else {
+            <p class="rt-vacio">Ningún técnico tiene tickets activos.</p>
+          }
+        </div>
+      }
+    </div>
+  }
+</section>

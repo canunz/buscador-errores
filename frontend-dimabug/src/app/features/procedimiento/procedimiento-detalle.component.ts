@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, inject } from '@angular/core';
+import { Component, HostListener, OnInit, ViewChild, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import {
@@ -62,10 +62,23 @@ export class ProcedimientoDetalleComponent implements OnInit {
   materialAEliminar: { pasoId: number; material: MaterialPaso } | null = null;
   eliminandoMaterial = false;
   aviso = '';
+  avisoPublicacion = '';
+  recargaPasosPendiente = false;
+  pasoPorVerificar = false;
+  verificandoPaso = false;
+  private pasoInicial = { orden: 1, instruccion: '', esCritico: false };
+  private intentoPaso: { id: number | null; orden: number; instruccion: string; esCritico: boolean } | null = null;
+  operacionEnCurso(): boolean { return this.guardandoPaso || this.verificandoPaso || this.guardandoMaterial || this.publicando || this.eliminandoMaterial; }
+  tieneCambiosPendientes(): boolean {
+    return this.pasoPorVerificar || (this.pasoAbierto && (this.orden !== this.pasoInicial.orden || this.instruccion !== this.pasoInicial.instruccion || this.esCritico !== this.pasoInicial.esCritico));
+  }
+  @HostListener('window:beforeunload', ['$event']) antesDeSalir(event: BeforeUnloadEvent): void {
+    if (this.operacionEnCurso() || this.tieneCambiosPendientes()) { event.preventDefault(); event.returnValue = ''; }
+  }
 
   ngOnInit(): void {
     const id = Number(this.route.snapshot.paramMap.get('id'));
-    if (!id) {
+    if (!Number.isInteger(id) || id < 1 || id > 2147483647) {
       this.error = 'El procedimiento o recurso solicitado no está disponible.';
       this.loading = false;
       this.cargaInicial = false;
@@ -114,49 +127,72 @@ export class ProcedimientoDetalleComponent implements OnInit {
   }
 
   abrirPaso(paso?: PasoProcedimiento): void {
+    if (!this.puedeGestionar() || this.item?.estado !== 'BORRADOR' || this.operacionEnCurso()) return;
+    if (this.tieneCambiosPendientes()) { this.error = 'Conserve o descarte el paso pendiente antes de abrir otro.'; return; }
     this.pasoAbierto = true;
     this.editPasoId = paso?.id ?? null;
     this.orden = paso?.orden ?? this.siguienteOrden();
     this.instruccion = paso?.instruccion ?? '';
     this.esCritico = paso?.esCritico ?? false;
+    this.pasoInicial = { orden: this.orden, instruccion: this.instruccion, esCritico: this.esCritico };
+    this.intentoPaso = null;
     this.error = '';
   }
 
   cerrarPaso(): void {
-    if (this.guardandoPaso) return;
-    this.pasoAbierto = false;
-    this.editPasoId = null;
+    if (this.guardandoPaso || this.verificandoPaso) return;
+    if (this.tieneCambiosPendientes() && !window.confirm('¿Descartar los datos pendientes del paso? Los registros confirmados del procedimiento se conservan.')) return;
+    this.pasoAbierto = false; this.editPasoId = null; this.pasoPorVerificar = false; this.intentoPaso = null;
   }
-
   guardarPaso(): void {
-    if (!this.item || this.guardandoPaso || !this.instruccion.trim() || this.orden < 1) {
-      this.error = 'El orden debe ser mayor que cero y la instrucción no puede quedar vacía.';
-      return;
-    }
-    const request = {
-      orden: Number(this.orden),
-      instruccion: this.instruccion.trim(),
-      esCritico: this.esCritico,
-    };
-    this.guardandoPaso = true;
-    this.error = '';
-    const esNuevo = !this.editPasoId;
-    const llamada = this.editPasoId
-      ? this.procedimientos.actualizarPaso(this.item.id, this.editPasoId, request)
-      : this.procedimientos.crearPaso(this.item.id, request);
+    if (this.guardandoPaso || this.verificandoPaso) return;
+    if (!this.puedeGestionar() || this.item?.estado !== 'BORRADOR') { this.error = 'Solo se pueden editar pasos de un procedimiento en BORRADOR.'; return; }
+    if (!Number.isInteger(this.item.id) || this.item.id < 1 || (this.editPasoId != null && (!Number.isInteger(this.editPasoId) || this.editPasoId < 1))) { this.error = 'El identificador del procedimiento o paso no es válido.'; return; }
+    if (this.pasoPorVerificar) { this.verificarPasoPendiente(); return; }
+    if (!this.instruccion.trim()) { this.error = 'La instrucción del paso es obligatoria.'; return; }
+    if (!Number.isInteger(Number(this.orden)) || Number(this.orden) < 1 || Number(this.orden) > 2147483647) { this.error = 'El orden debe ser un entero positivo válido para el Backend.'; return; }
+    const request = { orden: Number(this.orden), instruccion: this.instruccion.trim(), esCritico: this.esCritico };
+    this.intentoPaso = { ...request, id: this.editPasoId }; this.aviso = ''; this.guardandoPaso = true; this.error = '';
+    const llamada = this.editPasoId ? this.procedimientos.actualizarPaso(this.item.id, this.editPasoId, request) : this.procedimientos.crearPaso(this.item.id, request);
     llamada.subscribe({
-      next: () => {
+      next: paso => { this.guardandoPaso = false; this.confirmarPaso(paso); },
+      error: (e: Error & { status?: number }) => {
         this.guardandoPaso = false;
-        this.cerrarPaso();
-        this.recargarPasos(esNuevo);
-      },
-      error: (err: Error) => {
-        this.guardandoPaso = false;
-        this.error = err.message;
+        this.pasoPorVerificar = e.status == null || e.status === 0 || e.status >= 500 || e.status === 409;
+        this.error = `Procedimiento ${this.item!.id} conservado; ${this.pasos.length} pasos confirmados en esta pantalla. El paso de orden ${request.orden} no quedó confirmado por esta solicitud; sus datos permanecen en el formulario. ${e.message}`;
       },
     });
   }
-
+  private confirmarPaso(paso: PasoProcedimiento): void {
+    const esNuevo = this.intentoPaso?.id == null;
+    this.pasos = [...this.pasos.filter(p => p.id !== paso.id), paso].sort((a, b) => a.orden - b.orden);
+    this.aviso = `Paso guardado: ID ${paso.id}, orden ${paso.orden}. El procedimiento ${this.item!.id} conserva sus registros confirmados.`;
+    this.error = ''; this.pasoPorVerificar = false; this.intentoPaso = null; this.pasoAbierto = false; this.editPasoId = null;
+    this.recargarPasos(esNuevo);
+  }
+  verificarPasoPendiente(): void {
+    if (!this.item || !this.intentoPaso || this.verificandoPaso || this.guardandoPaso) return;
+    const intento = this.intentoPaso; this.verificandoPaso = true;
+    this.procedimientos.listarPasos(this.item.id, true).subscribe({
+      next: pasos => {
+        this.verificandoPaso = false; this.pasos = pasos;
+        const encontrado = pasos.find(p => intento.id == null ? p.orden === intento.orden : p.id === intento.id);
+        if (encontrado && encontrado.orden === intento.orden && encontrado.instruccion === intento.instruccion && encontrado.esCritico === intento.esCritico) {
+          this.pasoPorVerificar = false; this.intentoPaso = null; this.pasoAbierto = false; this.editPasoId = null;
+          this.error = ''; this.aviso = `El servidor contiene el paso ID ${encontrado.id}, orden ${encontrado.orden}, con los datos enviados. No se reenviará la operación.`;
+          this.recargaPasosPendiente = false;
+        } else if (encontrado && intento.id == null) {
+          this.error = 'El orden ya está ocupado por otro paso. Sus datos se conservan; revise el registro y corrija el orden antes de guardar.';
+          this.pasoPorVerificar = false; this.intentoPaso = null;
+        } else {
+          this.error = 'La consulta no confirmó los datos enviados. Se conservó el formulario. Revise los datos y pulse Guardar para reintentar sobre este mismo BORRADOR.';
+          this.pasoPorVerificar = false; this.intentoPaso = null;
+        }
+      },
+      error: (e: Error) => { this.verificandoPaso = false; this.error = `No fue posible verificar el paso. No se reenviará mientras no se consulte el servidor. ${e.message}`; },
+    });
+  }
+  reintentarRecargaPasos(): void { this.recargarPasos(); }
   esMaterialLocal(material: MaterialPaso): boolean {
     return esUrlDescargaAutenticada(material.url);
   }
@@ -289,6 +325,8 @@ export class ProcedimientoDetalleComponent implements OnInit {
 
   publicar(): void {
     if (!this.item || !this.esAdministrador() || this.item.estado !== 'BORRADOR' || this.publicando) return;
+    if (this.operacionEnCurso() || this.tieneCambiosPendientes()) { this.error = 'Guarde o descarte el paso pendiente antes de publicar.'; return; }
+    this.avisoPublicacion = this.pasos.length === 0 ? 'Se permite publicar sin pasos. Para ejecutarlo será necesario al menos uno; un PUBLICADO no admite edición de pasos.' : '';
     this.publicando = true;
     this.error = '';
     this.procedimientos.cambiarEstado(this.item.id, 'PUBLICADO').subscribe({
@@ -411,17 +449,13 @@ export class ProcedimientoDetalleComponent implements OnInit {
   }
 
   private recargarPasos(irAlUltimo = false): void {
-    if (!this.item) return;
-    const id = this.item.id;
-    this.procedimientos.listarPasos(id).subscribe({
-      next: (pasos) => {
-        this.aplicarPasos(id, pasos, false);
-        if (irAlUltimo) this.pasoIndex = Math.max(0, pasos.length - 1);
-      },
-      error: (err: Error) => (this.error = err.message),
+    if (!this.item || this.cargandoPasos) return;
+    const id = this.item.id; this.cargandoPasos = true;
+    this.procedimientos.listarPasos(id, true).subscribe({
+      next: pasos => { this.cargandoPasos = false; this.recargaPasosPendiente = false; this.error = ''; this.aplicarPasos(id, pasos, false); if (irAlUltimo) this.pasoIndex = Math.max(0, pasos.length - 1); },
+      error: (e: Error) => { this.cargandoPasos = false; this.recargaPasosPendiente = true; this.error = `No se actualizó el listado. Los pasos confirmados se conservan y no deben volver a crearse. Reintente solo la consulta. ${e.message}`; },
     });
   }
-
   private ponerMateriales(pasoId: number, items: MaterialPaso[]): void {
     this.materiales = { ...this.materiales, [pasoId]: items };
     this.procedimientos.fijarMateriales(pasoId, items);

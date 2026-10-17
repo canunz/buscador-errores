@@ -40,7 +40,7 @@ class EliminarMaterialApoyoTest {
 
     @BeforeEach void preparar() {
         when(conocimientos.buscarPorId(1)).thenReturn(Optional.of(mock(Conocimiento.class)));
-        when(procedimientos.buscarPorId(1)).thenReturn(Optional.of(mock(Procedimiento.class)));
+        when(procedimientos.buscarPorId(1)).thenReturn(Optional.of(new Procedimiento(1,"P","D",EstadoProcedimiento.BORRADOR,null,null,null,null)));
         when(pasos.buscarPorId(2)).thenReturn(Optional.of(new Paso(2,1,1,"X",false)));
     }
     @ParameterizedTest @ValueSource(strings={"conocimiento-enlace","conocimiento-local","paso-enlace","paso-local"})

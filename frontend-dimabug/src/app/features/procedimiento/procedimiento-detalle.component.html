@@ -20,6 +20,9 @@
       <p class="alert success">{{ aviso }}</p>
     }
 
+    @if (recargaPasosPendiente) { <button type="button" (click)="reintentarRecargaPasos()" [disabled]="cargandoPasos">Actualizar listado de pasos confirmados</button> }
+    @if (avisoPublicacion) { <p role="status">{{ avisoPublicacion }}</p> }
+    @if (esAdministrador() && item.estado === 'BORRADOR' && !cargandoPasos && pasos.length === 0) { <p role="note">Puede publicar sin pasos. Sin embargo, no podrá ejecutarlo hasta tener al menos uno. Los procedimientos publicados no admiten edición de pasos.</p> }
     <header class="hero">
       <div class="hero-deco" aria-hidden="true">
         <span class="blob blob-a"></span>
@@ -43,7 +46,7 @@
           }
           @if (puedeGestionar()) {
             <div class="hero-destaco">
-              <a class="hero-btn secundario" [routerLink]="['/procedimientos', item.id, 'editar']">Editar</a>
+              @if (item.estado === 'BORRADOR') { <a class="hero-btn secundario" [routerLink]="['/procedimientos', item.id, 'editar']">Editar</a> }
               @if (esAdministrador() && item.estado === 'BORRADOR') {
                 <button type="button" class="hero-btn publish" (click)="publicar()" [disabled]="publicando">
                   {{ publicando ? 'Publicando…' : 'Publicar' }}
@@ -102,7 +105,7 @@
           Siga estos pasos en orden para realizar la tarea.
         }
       </p>
-      @if (puedeGestionar()) {
+      @if (puedeGestionar() && item.estado === 'BORRADOR') {
         <button type="button" class="add-btn" (click)="abrirPaso()">+ Paso</button>
       }
     </div>
@@ -146,10 +149,10 @@
           <section class="guide entra" [class.warn]="paso.esCritico">
             <header class="guide-head">
               <div>
-                <p class="step-label">Paso {{ paso.orden }} de {{ pasos.length }}</p>
+                <p class="step-label">Paso {{ pasoIndex + 1 }} de {{ pasos.length }} · Orden {{ paso.orden }}</p>
                 <h2>Qué hacer</h2>
               </div>
-              @if (puedeGestionar()) {
+              @if (puedeGestionar() && item.estado === 'BORRADOR') {
                 <button type="button" class="icon-btn" title="Editar paso" aria-label="Editar paso" (click)="abrirPaso(paso)">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
                     <path d="M12 20h9" />
@@ -172,7 +175,7 @@
 
             <div class="apoyo-head">
               <h3 class="sub">Apoyo para este paso</h3>
-              @if (puedeGestionar()) {
+              @if (puedeGestionar() && item.estado === 'BORRADOR') {
                 <button type="button" class="link-btn" (click)="abrirMaterial(paso.id)">+ Agregar material</button>
               }
             </div>
@@ -197,7 +200,7 @@
                         } @else if (material.id > 0 && material.url) {
                           <a class="open-btn" [href]="material.url" target="_blank" rel="noopener noreferrer">Abrir enlace</a>
                         }
-                        @if (puedeGestionar() && material.id > 0) {
+                        @if (puedeGestionar() && item.estado === 'BORRADOR' && material.id > 0) {
                           <button type="button" class="icon-btn" title="Editar material" aria-label="Editar material" (click)="abrirMaterial(paso.id, material)">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
                               <path d="M12 20h9" />
@@ -205,7 +208,7 @@
                             </svg>
                           </button>
                         }
-                        @if (puedeGestionar() && material.id > 0) {
+                        @if (puedeGestionar() && item.estado === 'BORRADOR' && material.id > 0) {
                           <button type="button" class="icon-btn peligro" title="Eliminar material" aria-label="Eliminar material" (click)="pedirEliminarMaterial(paso.id, material)">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
                               <path d="M4 7h16" />
@@ -261,22 +264,24 @@
     <div class="form-modal-fondo" (click)="cerrarPaso()"></div>
     <div class="form-modal-dialog" role="dialog" aria-modal="true">
       <h2>{{ editPasoId ? 'Editar paso' : 'Agregar paso' }}</h2>
+      @if (error) { <p class="alert error" role="alert">{{ error }}</p> }
+      @if (pasoPorVerificar) { <p>Los datos del intento anterior se conservan. Verifique su resultado antes de reintentar.</p><button type="button" (click)="verificarPasoPendiente()" [disabled]="verificandoPaso">Verificar en servidor</button> }
       <form class="editor" (ngSubmit)="guardarPaso()">
         <label>
           Orden *
-          <input name="orden" type="number" min="1" [(ngModel)]="orden" />
+          <input name="orden" type="number" min="1" step="1" [(ngModel)]="orden" [disabled]="guardandoPaso || verificandoPaso || pasoPorVerificar" />
         </label>
         <label>
           Instrucción *
-          <textarea name="instruccion" rows="4" [(ngModel)]="instruccion" placeholder="Describa qué debe hacer el técnico en este paso."></textarea>
+          <textarea name="instruccion" rows="4" [(ngModel)]="instruccion" [disabled]="guardandoPaso || verificandoPaso || pasoPorVerificar" placeholder="Describa qué debe hacer el técnico en este paso."></textarea>
         </label>
         <label class="check">
-          <input name="critico" type="checkbox" [(ngModel)]="esCritico" />
+          <input name="critico" type="checkbox" [(ngModel)]="esCritico" [disabled]="guardandoPaso || verificandoPaso || pasoPorVerificar" />
           Paso crítico: debe verificarse antes de continuar
         </label>
         <div class="fila">
-          <button type="button" class="btn-cancelar" (click)="cerrarPaso()" [disabled]="guardandoPaso">Cancelar</button>
-          <button type="submit" class="btn-primario" [disabled]="guardandoPaso">
+          <button type="button" class="btn-cancelar" (click)="cerrarPaso()" [disabled]="guardandoPaso || verificandoPaso">Cancelar</button>
+          <button type="submit" class="btn-primario" [disabled]="guardandoPaso || verificandoPaso">
             {{ guardandoPaso ? 'Guardando…' : (editPasoId ? 'Guardar paso' : 'Agregar paso') }}
           </button>
         </div>

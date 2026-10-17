@@ -1,0 +1,185 @@
+<section class="tk-pagina">
+  <header class="tk-franja">
+    <div>
+      <span class="tk-chip-rol">{{ esAdmin ? 'Administración' : 'Soporte' }}</span>
+      <h1>{{ esAdmin ? 'Supervisión de tickets' : 'Bandeja de soporte' }}</h1>
+      <p>
+        {{
+          esAdmin
+            ? 'Revisa el avance de todos los tickets y quién los atiende. Si hace falta, asígnalos o reasígnalos a un técnico.'
+            : 'Todos los tickets en un solo lugar. Toma los abiertos, responde y convierte lo resuelto en conocimiento.'
+        }}
+      </p>
+    </div>
+    <div class="bs-acciones-franja">
+      @if (!esAdmin) {
+        <a routerLink="/tickets/nuevo" class="tk-btn tk-btn-blanco">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M12 5v14M5 12h14" /></svg>
+          Nuevo ticket
+        </a>
+      }
+    </div>
+  </header>
+
+  <div class="bs-estados" role="tablist" aria-label="Filtrar por estado">
+    <button type="button" role="tab" class="bs-estado todos" [class.on]="estado === null" [attr.aria-selected]="estado === null" (click)="elegirEstado(null)">
+      <span>Todos</span>
+      <strong>{{ conteos.TODOS ?? '–' }}</strong>
+      <small>Todos los estados</small>
+    </button>
+    @for (e of estados; track e) {
+      <button
+        type="button"
+        role="tab"
+        [class]="'bs-estado ' + estadoInfo[e].clase"
+        [class.on]="estado === e"
+        [attr.aria-selected]="estado === e"
+        (click)="elegirEstado(e)"
+      >
+        <span>{{ estadoInfo[e].label }}</span>
+        <strong>{{ conteos[e] ?? '–' }}</strong>
+        <small>{{ ayudaEstado[e] }}</small>
+      </button>
+    }
+  </div>
+
+  @if (criticosActivos > 0 && prioridad !== 'CRITICA') {
+    <button type="button" class="bs-criticos" (click)="verCriticos()">
+      <span class="bs-criticos-icono" aria-hidden="true">!</span>
+      <span>
+        <strong>{{ criticosActivos }} ticket{{ criticosActivos === 1 ? '' : 's' }} crítico{{ criticosActivos === 1 ? '' : 's' }}</strong>
+        sin cerrar. Atiéndelos primero.
+      </span>
+      <em>Ver críticos →</em>
+    </button>
+  }
+
+  @if (aviso) {
+    <p class="tk-alerta ok" role="status">{{ aviso }} <button type="button" (click)="aviso = ''" aria-label="Cerrar">×</button></p>
+  }
+  @if (error) {
+    <p class="tk-alerta" role="alert">{{ error }} <button type="button" (click)="error = ''" aria-label="Cerrar">×</button></p>
+  }
+
+  <div class="tk-card bs-panel">
+    <div class="bs-filtros">
+      <label class="bs-buscador">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="8" /><path d="M21 21l-4.35-4.35" /></svg>
+        <input type="search" [(ngModel)]="texto" (ngModelChange)="buscar($event)" placeholder="Buscar código, título o descripción" aria-label="Buscar" />
+      </label>
+      <select class="tk-input" [(ngModel)]="prioridad" (ngModelChange)="recargarDesdeInicio()" aria-label="Prioridad">
+        <option [ngValue]="null">Toda prioridad</option>
+        @for (p of prioridades; track p) {
+          <option [ngValue]="p">{{ prioridadInfo[p].label }}</option>
+        }
+      </select>
+      <select class="tk-input" [(ngModel)]="etiquetaId" (ngModelChange)="recargarDesdeInicio()" aria-label="Etiqueta">
+        <option [ngValue]="null">Toda etiqueta</option>
+        @for (e of etiquetas; track e.id) {
+          <option [ngValue]="e.id">{{ e.nombre }}</option>
+        }
+      </select>
+      <select class="tk-input" [(ngModel)]="asignadoId" (ngModelChange)="recargarDesdeInicio()" aria-label="Asignado">
+        <option [ngValue]="null">Cualquier técnico</option>
+        @if (miId) {
+          <option [ngValue]="miId">Asignados a mí</option>
+        }
+        @for (t of tecnicos; track t.id) {
+          @if (t.id !== miId) {
+            <option [ngValue]="t.id">{{ t.nombre }}</option>
+          }
+        }
+      </select>
+      @if (hayFiltros) {
+        <button type="button" class="bs-limpiar" (click)="limpiarFiltros()">Limpiar filtros</button>
+      }
+    </div>
+
+    <div class="bs-tabla-wrap">
+      <table class="bs-tabla">
+        <thead>
+          <tr>
+            <th>Código</th>
+            <th>Ticket</th>
+            <th>Solicitante</th>
+            <th>Prioridad</th>
+            <th>Estado</th>
+            <th>Asignado</th>
+            <th>Actualizado</th>
+          </tr>
+        </thead>
+        <tbody>
+          @if (cargando && !items.length) {
+            @for (i of [1, 2, 3, 4, 5]; track i) {
+              <tr class="bs-fila-carga"><td colspan="7"><div class="tk-esqueleto"></div></td></tr>
+            }
+          } @else if (errorCarga) {
+            <tr class="bs-fila-carga">
+              <td colspan="7">
+                <div class="bs-error-carga" role="alert">
+                  <span class="bs-error-icono" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01" /><path d="M10.3 3.9L1.8 18a2 2 0 001.7 3h17a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z" /></svg>
+                  </span>
+                  <strong>No pudimos cargar los tickets</strong>
+                  <p>{{ errorCarga }}</p>
+                  <button type="button" class="tk-btn tk-btn-sec" (click)="reintentar()">Reintentar</button>
+                </div>
+              </td>
+            </tr>
+          } @else {
+            @for (t of items; track t.id) {
+              <tr tabindex="0" (click)="abrir(t)" (keydown.enter)="abrir(t)" [class.bs-critica]="t.prioridad === 'CRITICA'">
+                <td><span class="tk-codigo">{{ t.codigo }}</span></td>
+                <td class="bs-col-ticket">
+                  <strong>{{ t.titulo }}</strong>
+                  @if (t.etiquetas.length) {
+                    <span class="tk-etiquetas">
+                      @for (e of t.etiquetas; track e.id) {
+                        <span class="tk-etiqueta" [style.background]="e.color" [style.color]="colorTexto(e.color)">{{ e.nombre }}</span>
+                      }
+                    </span>
+                  }
+                </td>
+                <td>{{ t.solicitante?.nombre || '—' }}</td>
+                <td><span [class]="'tk-badge ' + prioridadInfo[t.prioridad].clase">{{ prioridadInfo[t.prioridad].label }}</span></td>
+                <td><span [class]="'tk-badge ' + estadoInfo[t.estado].clase">{{ estadoInfo[t.estado].label }}</span></td>
+                <td>
+                  @if (t.asignado) {
+                    <span class="bs-asignado">{{ t.asignado.nombre }}</span>
+                  } @else if (t.estado === 'ABIERTO' && !esAdmin) {
+                    <button type="button" class="bs-tomar" (click)="tomar(t, $event)" [disabled]="tomando === t.id">
+                      {{ tomando === t.id ? 'Tomando…' : 'Tomar' }}
+                    </button>
+                  } @else {
+                    <span class="bs-sin">Sin asignar</span>
+                  }
+                </td>
+                <td class="bs-fecha" [title]="larga(t.fechaActualizacion)">{{ relativa(t.fechaActualizacion) }}</td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="7">
+                  <div class="tk-vacio">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M22 12h-6l-2 3h-4l-2-3H2" /><path d="M5.45 5.11L2 12v6a2 2 0 002 2h16a2 2 0 002-2v-6l-3.45-6.89A2 2 0 0016.76 4H7.24a2 2 0 00-1.79 1.11z" /></svg>
+                    <strong>No hay tickets aquí</strong>
+                    <span>{{ hayFiltros || estado ? 'Prueba con otros filtros.' : 'Cuando alguien reporte un problema aparecerá en esta bandeja.' }}</span>
+                  </div>
+                </td>
+              </tr>
+            }
+          }
+        </tbody>
+      </table>
+    </div>
+
+    @if (totalPaginas > 1) {
+      <nav class="tk-paginador" aria-label="Paginación">
+        <span>{{ total }} ticket{{ total === 1 ? '' : 's' }} · página {{ pagina + 1 }} de {{ totalPaginas }}</span>
+        <div>
+          <button type="button" class="tk-btn tk-btn-sec" (click)="irAPagina(pagina - 1)" [disabled]="pagina === 0">Anterior</button>
+          <button type="button" class="tk-btn tk-btn-sec" (click)="irAPagina(pagina + 1)" [disabled]="pagina + 1 >= totalPaginas">Siguiente</button>
+        </div>
+      </nav>
+    }
+  </div>
+</section>

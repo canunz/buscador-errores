@@ -9,5 +9,6 @@ public interface ConocimientoRepository {
     List<Conocimiento> buscarTodos();
     Optional<Conocimiento> buscarPorId(Integer id);
     Optional<Conocimiento> buscarPorIdIncluidoEliminado(Integer id);
+    void bloquear(Integer id);
     Conocimiento guardar(Conocimiento conocimiento);
 }

@@ -3,7 +3,6 @@ import {
   ConocimientoBusqueda,
   DepartamentoItem,
   ErrorItem,
-  HardwareItem,
   PruebaItem,
   SolucionItem,
 } from '../models/catalogo.model';
@@ -11,7 +10,6 @@ import {
 const KEY = 'dimabug.catalogos.v2';
 
 interface CatalogoState {
-  hardware: HardwareItem[];
   departamentos: DepartamentoItem[];
   pruebas: PruebaItem[];
   soluciones: SolucionItem[];
@@ -157,12 +155,6 @@ const CONOCIMIENTOS: ConocimientoBusqueda[] = [
 
 const SEED: CatalogoState = {
   nextId: 20,
-  hardware: [
-    { id: 1, nombre: 'PC', so: 'Windows', sistemas: ['Jadima', 'Google Apps'] },
-    { id: 2, nombre: 'POS', so: 'Windows', sistemas: ['Jadima', 'Comercial'] },
-    { id: 3, nombre: 'Impresora', so: '', sistemas: ['Impresión fiscal'] },
-    { id: 4, nombre: 'PDA', so: '', sistemas: ['Data'] },
-  ],
   departamentos: [
     {
       id: 3,
@@ -224,19 +216,10 @@ export class CatalogoService {
     };
   }
 
-  hardware = () => this.state().hardware;
   departamentos = () => this.state().departamentos;
   pruebas = () => this.state().pruebas;
   soluciones = () => this.state().soluciones;
   errores = () => this.state().errores;
-
-  guardarHardware(item: Omit<HardwareItem, 'id'> & { id?: number }): void {
-    this.mutate('hardware', item);
-  }
-
-  eliminarHardware(id: number): void {
-    this.remove('hardware', id);
-  }
 
   guardarDepartamento(item: Omit<DepartamentoItem, 'id'> & { id?: number }): void {
     this.mutate('departamentos', item);
@@ -284,14 +267,7 @@ export class CatalogoService {
     return saved;
   }
 
-  sistemasDeHardware(hardwareId: number | null): string[] {
-    if (!hardwareId) {
-      return this.state().hardware.flatMap((h) => h.sistemas);
-    }
-    return this.state().hardware.find((h) => h.id === hardwareId)?.sistemas ?? [];
-  }
-
-  private mutate<K extends keyof Pick<CatalogoState, 'hardware' | 'departamentos' | 'pruebas' | 'soluciones'>>(
+  private mutate<K extends keyof Pick<CatalogoState, 'departamentos' | 'pruebas' | 'soluciones'>>(
     key: K,
     item: { id?: number } & Record<string, unknown>,
   ): void {
@@ -308,7 +284,7 @@ export class CatalogoService {
     } as CatalogoState);
   }
 
-  private remove(key: 'hardware' | 'departamentos' | 'pruebas' | 'soluciones', id: number): void {
+  private remove(key: 'departamentos' | 'pruebas' | 'soluciones', id: number): void {
     const current = this.state();
     this.write({
       ...current,

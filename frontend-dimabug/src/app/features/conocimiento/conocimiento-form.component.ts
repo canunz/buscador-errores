@@ -2,7 +2,7 @@ import { Component, OnInit, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { forkJoin, of } from 'rxjs';
-import { CatalogoRef, ConocimientoRequest } from '../../core/models/conocimiento.model';
+import { CatalogoRef, Conocimiento, ConocimientoRequest } from '../../core/models/conocimiento.model';
 import { ClasificacionService } from '../../core/services/clasificacion.service';
 import { ConocimientoService } from '../../core/services/conocimiento.service';
 import { AyudaFranjaComponent } from '../../shared/ui/ayuda-franja.component';
@@ -35,6 +35,7 @@ export class ConocimientoFormComponent implements OnInit {
   sistemas: CatalogoRef[] = [];
   modulos: CatalogoRef[] = [];
   frecuencias: CatalogoRef[] = [];
+  private actual: Conocimiento | null = null;
 
   form = this.fb.nonNullable.group({
     titulo: ['', Validators.required],
@@ -94,15 +95,19 @@ export class ConocimientoFormComponent implements OnInit {
   private cargarInicial(): void {
     this.loading = !!this.editId;
 
-    this.clasificacion.listarHardware().subscribe({
-      next: (hardwares) => (this.hardwares = hardwares),
+    this.clasificacion.listarHardware(true).subscribe({
+      next: (hardwares) => {
+        this.hardwares = hardwares;
+        this.conservarReferencias();
+      },
       error: (err: Error) => (this.error = err.message),
     });
 
-    this.clasificacion.listarFrecuencias().subscribe({
+    this.clasificacion.listarFrecuencias(true).subscribe({
       next: (frecuencias) => {
         this.frecuencias = frecuencias.items;
         this.frecuenciasDisponibles = frecuencias.disponible;
+        this.conservarReferencias();
       },
     });
 
@@ -112,6 +117,8 @@ export class ConocimientoFormComponent implements OnInit {
 
     this.conocimientos.obtenerPorId(this.editId, true).subscribe({
       next: (actual) => {
+        this.actual = actual;
+        this.conservarReferencias();
         this.form.patchValue(
           {
             titulo: actual.titulo,
@@ -151,6 +158,7 @@ export class ConocimientoFormComponent implements OnInit {
     if (sistemaId) {
       this.modulos = this.clasificacion.snapshotModulos(sistemaId);
     }
+    this.conservarReferencias();
 
     const sistemas$ = this.clasificacion.sistemasDeHardware(hardwareId);
     const modulos$ = sistemaId ? this.clasificacion.modulosDeSistema(sistemaId) : of([] as CatalogoRef[]);
@@ -158,27 +166,19 @@ export class ConocimientoFormComponent implements OnInit {
     forkJoin({ sistemas: sistemas$, modulos: modulos$ }).subscribe({
       next: ({ sistemas, modulos }) => {
         this.sistemas = sistemas;
-        if (sistemaId && !sistemas.some((item) => item.id === sistemaId)) {
-          this.form.controls.sistemaId.setValue(null, { emitEvent: false });
-          this.form.controls.moduloId.setValue(null, { emitEvent: false });
-          this.modulos = [];
-          this.loading = false;
-          return;
-        }
         if (!sistemaId) {
           this.modulos = [];
           this.loading = false;
           return;
         }
         this.modulos = modulos;
-        if (moduloId && !modulos.some((item) => item.id === moduloId)) {
-          this.form.controls.moduloId.setValue(null, { emitEvent: false });
-        }
+        this.conservarReferencias();
         this.loading = false;
       },
       error: (err: Error) => {
         this.loading = false;
         this.error = err.message;
+        this.conservarReferencias();
       },
     });
   }
@@ -229,5 +229,21 @@ export class ConocimientoFormComponent implements OnInit {
       frecuenciaId: v.frecuenciaId,
       comentario: v.comentario.trim() ? v.comentario.trim() : null,
     };
+  }
+
+  private conservarReferencias(): void {
+    const actual = this.actual;
+    if (!actual) return;
+    const incluir = (lista: CatalogoRef[], id: number | null, nombre: string) =>
+      id && !lista.some(item => item.id === id) ? [...lista, { id, nombre: `${nombre} (referencia existente)` }] : lista;
+    this.hardwares = incluir(this.hardwares, actual.hardwareId, actual.hardwareNombre);
+    this.frecuencias = incluir(this.frecuencias, actual.frecuenciaId, actual.frecuenciaNombre);
+    this.frecuenciasDisponibles ||= this.frecuencias.length > 0;
+    if (this.form.controls.hardwareId.value === actual.hardwareId) {
+      this.sistemas = incluir(this.sistemas, actual.sistemaId, actual.sistemaNombre);
+      if (this.form.controls.sistemaId.value === actual.sistemaId) {
+        this.modulos = incluir(this.modulos, actual.moduloId, actual.moduloNombre);
+      }
+    }
   }
 }

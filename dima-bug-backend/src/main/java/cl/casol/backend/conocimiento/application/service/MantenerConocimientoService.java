@@ -26,10 +26,11 @@ public class MantenerConocimientoService {
     private final FrecuenciaRepository frecuencias;
     private final UsuarioRepository usuarios;
     private final IndexarConocimientoService indexador;
+    private final cl.casol.backend.conocimiento.application.port.out.SolucionRepository soluciones;
 
     public MantenerConocimientoService(ConocimientoRepository conocimientos, HardwareRepository hardware,
             SistemaRepository sistemas, ModuloRepository modulos, FrecuenciaRepository frecuencias,
-            UsuarioRepository usuarios, IndexarConocimientoService indexador) {
+            UsuarioRepository usuarios, IndexarConocimientoService indexador, cl.casol.backend.conocimiento.application.port.out.SolucionRepository soluciones) {
         this.conocimientos = conocimientos;
         this.hardware = hardware;
         this.sistemas = sistemas;
@@ -37,6 +38,7 @@ public class MantenerConocimientoService {
         this.frecuencias = frecuencias;
         this.usuarios = usuarios;
         this.indexador = indexador;
+        this.soluciones = soluciones;
     }
 
     public List<Conocimiento> listar() { return conocimientos.buscarTodos(); }
@@ -62,8 +64,15 @@ public class MantenerConocimientoService {
     public Conocimiento modificar(Integer id, String titulo, String descripcion, Integer hardwareId,
             Integer sistemaId, Integer moduloId, Integer frecuenciaId, String comentario,
             String emailAutenticado) {
+        conocimientos.bloquear(id);
         Conocimiento actual = buscar(id);
-        Clasificacion clasificacion = validarClasificacion(hardwareId, sistemaId, moduloId, frecuenciaId);
+        boolean mismaClasificacion = java.util.Objects.equals(hardwareId, actual.getHardware()==null?null:actual.getHardware().id())
+                && java.util.Objects.equals(sistemaId, actual.getSistema()==null?null:actual.getSistema().id())
+                && java.util.Objects.equals(moduloId, actual.getModulo()==null?null:actual.getModulo().id())
+                && java.util.Objects.equals(frecuenciaId, actual.getFrecuencia()==null?null:actual.getFrecuencia().id());
+        Clasificacion clasificacion = mismaClasificacion
+                ? new Clasificacion(actual.getHardware(),actual.getSistema(),actual.getModulo(),actual.getFrecuencia())
+                : validarClasificacion(hardwareId, sistemaId, moduloId, frecuenciaId);
         Usuario usuario = obtenerUsuario(emailAutenticado);
         Conocimiento guardado = conocimientos.guardar(new Conocimiento(actual.getId(), titulo, descripcion, actual.getEstado(),
                 clasificacion.hardware(), clasificacion.sistema(), clasificacion.modulo(),
@@ -75,7 +84,11 @@ public class MantenerConocimientoService {
 
     @Transactional
     public Conocimiento cambiarEstado(Integer id, EstadoConocimiento estado, String emailAutenticado) {
+        conocimientos.bloquear(id);
         Conocimiento actual = buscar(id);
+        if (estado == EstadoConocimiento.PUBLICADO
+                && soluciones.bloquearPorConocimiento(id).stream().noneMatch(cl.casol.backend.conocimiento.domain.Solucion::activo))
+            throw new cl.casol.backend.conocimiento.domain.exception.UltimaSolucionActivaException();
         Usuario usuario = obtenerUsuario(emailAutenticado);
         Conocimiento guardado = conocimientos.guardar(new Conocimiento(actual.getId(), actual.getTitulo(),
                 actual.getDescripcion(), estado, actual.getHardware(), actual.getSistema(), actual.getModulo(),
@@ -87,6 +100,7 @@ public class MantenerConocimientoService {
 
     @Transactional
     public void eliminar(Integer id, String emailAutenticado) {
+        conocimientos.bloquear(id);
         Conocimiento actual = conocimientos.buscarPorIdIncluidoEliminado(id)
                 .orElseThrow(() -> new ConocimientoNoEncontradoException(id));
         if (actual.getEstado() == EstadoConocimiento.ELIMINADO) return;
@@ -107,6 +121,8 @@ public class MantenerConocimientoService {
             Integer moduloId, Integer frecuenciaId) {
         Hardware hardwareEncontrado = hardwareId == null ? null : hardware.buscarActivoPorId(hardwareId)
                 .orElseThrow(() -> invalida("Hardware inexistente o inactivo"));
+        if (hardwareId != null && sistemaId != null && hardware.buscarSistemasActivosPorHardware(hardwareId).stream().noneMatch(s -> sistemaId.equals(s.id())))
+            throw invalida("El sistema no está asociado al hardware informado");
         Sistema sistemaEncontrado = sistemaId == null ? null : sistemas.buscarActivoPorId(sistemaId)
                 .orElseThrow(() -> invalida("Sistema inexistente o inactivo"));
         Modulo moduloEncontrado = null;

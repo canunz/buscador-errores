@@ -1,0 +1,107 @@
+<section class="tk-pagina">
+  <header class="tk-franja">
+    <div>
+      <span class="tk-chip-rol">Soporte TI</span>
+      <h1>Mis tickets</h1>
+      <p>Revisa en qué va cada problema que reportaste y responde a soporte cuando te lo pida.</p>
+    </div>
+    <a routerLink="/tickets/nuevo" class="tk-btn tk-btn-blanco">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M12 5v14M5 12h14" /></svg>
+      Nuevo ticket
+    </a>
+  </header>
+
+  @if (porConfirmar > 0) {
+    <button type="button" class="mt-aviso" (click)="elegirEstado('RESUELTO')">
+      <span class="mt-aviso-icono" aria-hidden="true">✓</span>
+      <span>
+        <strong>{{ porConfirmar }} ticket{{ porConfirmar === 1 ? '' : 's' }} resuelto{{ porConfirmar === 1 ? '' : 's' }}</strong>
+        esperando tu confirmación. Cuéntanos si quedó solucionado.
+      </span>
+      <em>Revisar →</em>
+    </button>
+  }
+
+  <div class="tk-card mt-panel">
+    <div class="mt-barra">
+      <div class="mt-pestanas" role="tablist" aria-label="Filtrar por estado">
+        @for (p of pestanas; track p.label) {
+          <button
+            type="button"
+            role="tab"
+            class="mt-pestana"
+            [class.on]="estado === p.estado"
+            [attr.aria-selected]="estado === p.estado"
+            (click)="elegirEstado(p.estado)"
+          >
+            {{ p.label }}
+          </button>
+        }
+      </div>
+      <label class="mt-buscador">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="8" /><path d="M21 21l-4.35-4.35" /></svg>
+        <input type="search" [(ngModel)]="texto" (ngModelChange)="buscar($event)" placeholder="Buscar por código o título" aria-label="Buscar tickets" />
+      </label>
+    </div>
+
+    @if (error) {
+      <p class="tk-alerta mt-margen" role="alert">{{ error }}</p>
+    }
+
+    @if (cargando && !items.length) {
+      <div class="mt-lista">
+        @for (i of [1, 2, 3, 4]; track i) {
+          <div class="tk-esqueleto"></div>
+        }
+      </div>
+    } @else if (items.length === 0) {
+      <div class="tk-vacio">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M4 7h16M4 12h10M4 17h7" /><circle cx="18" cy="17" r="3" /></svg>
+        <strong>{{ estado || texto ? 'No hay tickets con ese filtro' : 'Aún no has reportado problemas' }}</strong>
+        <span>Cuando crees un ticket aparecerá aquí con su estado.</span>
+        @if (!estado && !texto) {
+          <a routerLink="/tickets/nuevo" class="tk-btn tk-btn-primario">Reportar un problema</a>
+        }
+      </div>
+    } @else {
+      <ul class="mt-lista">
+        @for (t of items; track t.id) {
+          <li>
+            <button type="button" class="mt-item" (click)="abrir(t)" [class.mt-destacado]="t.estado === 'RESUELTO'">
+              <span class="mt-principal">
+                <span class="mt-linea">
+                  <span class="tk-codigo">{{ t.codigo }}</span>
+                  <span [class]="'tk-badge ' + prioridadInfo[t.prioridad].clase">{{ prioridadInfo[t.prioridad].label }}</span>
+                </span>
+                <strong class="mt-titulo">{{ t.titulo }}</strong>
+                @if (t.etiquetas.length) {
+                  <span class="tk-etiquetas">
+                    @for (e of t.etiquetas; track e.id) {
+                      <span class="tk-etiqueta" [style.background]="e.color" [style.color]="colorTexto(e.color)">{{ e.nombre }}</span>
+                    }
+                  </span>
+                }
+              </span>
+              <span class="mt-meta">
+                <span [class]="'tk-badge ' + estadoInfo[t.estado].clase">{{ estadoInfo[t.estado].label }}</span>
+                <span class="mt-fecha" [title]="corta(t.fechaCreacion)">Creado {{ relativa(t.fechaCreacion) }}</span>
+                <span class="mt-asignado">{{ t.asignado?.nombre || 'Sin asignar' }}</span>
+              </span>
+              <svg class="mt-flecha" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9 18l6-6-6-6" /></svg>
+            </button>
+          </li>
+        }
+      </ul>
+    }
+
+    @if (totalPaginas > 1) {
+      <nav class="tk-paginador" aria-label="Paginación">
+        <span>{{ total }} ticket{{ total === 1 ? '' : 's' }} · página {{ pagina + 1 }} de {{ totalPaginas }}</span>
+        <div>
+          <button type="button" class="tk-btn tk-btn-sec" (click)="irAPagina(pagina - 1)" [disabled]="pagina === 0">Anterior</button>
+          <button type="button" class="tk-btn tk-btn-sec" (click)="irAPagina(pagina + 1)" [disabled]="pagina + 1 >= totalPaginas">Siguiente</button>
+        </div>
+      </nav>
+    }
+  </div>
+</section>

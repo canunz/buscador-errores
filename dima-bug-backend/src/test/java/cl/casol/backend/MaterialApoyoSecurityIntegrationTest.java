@@ -24,6 +24,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(controllers=MaterialApoyoController.class)
 @Import({SecurityConfig.class,JwtAuthenticationFilter.class,GlobalExceptionHandler.class})
 class MaterialApoyoSecurityIntegrationTest {
+    @MockitoBean cl.casol.backend.conocimiento.application.service.MaterialConocimientoArchivoService archivoService;
+
+    @org.springframework.test.context.bean.override.mockito.MockitoBean
+    private cl.casol.backend.identidad.infrastructure.security.UsuarioAutenticadoCache usuarioAutenticadoCache;
+
+    @org.springframework.test.context.bean.override.mockito.MockitoBean
+    private cl.casol.backend.shared.application.service.VisibilidadContenidoService visibilidadContenidoService;
+
  @Autowired MockMvc mvc; @MockitoBean MantenerMaterialApoyoService service;
  @MockitoBean TokenServicePort tokens; @MockitoBean UsuarioRepository usuarios;
  @Test void getConMateriales200Dto() throws Exception { auth("t","TECNICO"); when(service.listar(4)).thenReturn(List.of(

@@ -66,16 +66,21 @@ public class GlobalExceptionHandler {
             AsociacionPruebaNoEncontradaException.class, SolucionNoEncontradaException.class,
             AsignacionSolucionNoEncontradaException.class, ResponsableNoEncontradoException.class,
             MaterialApoyoNoEncontradoException.class, ProcedimientoNoEncontradoException.class,
-            PasoNoEncontradoException.class, EjecucionNoEncontradaException.class,
+            cl.casol.backend.identidad.domain.exception.ContactoDepartamentoNoEncontradoException.class, PasoNoEncontradoException.class, EjecucionNoEncontradaException.class,
             EjecucionPasoNoEncontradoException.class})
     public ResponseEntity<Map<String, String>> handleNoEncontrado(RuntimeException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", ex.getMessage()));
     }
 
-    @ExceptionHandler({EmailDuplicadoException.class, PruebaYaAsociadaException.class,
-            OrdenPasoDuplicadoException.class})
+    @ExceptionHandler({cl.casol.backend.conocimiento.domain.exception.PruebaConflictoException.class, cl.casol.backend.identidad.domain.exception.OrganizacionConflictoException.class, cl.casol.backend.identidad.domain.exception.UltimoAdministradorException.class, cl.casol.backend.catalogo.domain.exception.CatalogoConflictoException.class, EmailDuplicadoException.class, PruebaYaAsociadaException.class,
+            OrdenPasoDuplicadoException.class, cl.casol.backend.conocimiento.domain.exception.UltimaSolucionActivaException.class, cl.casol.backend.conocimiento.domain.exception.SolucionInactivaException.class})
     public ResponseEntity<Map<String, String>> handleConflicto(RuntimeException ex) {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("message", ex.getMessage()));
+    }
+
+    @ExceptionHandler(org.springframework.orm.ObjectOptimisticLockingFailureException.class)
+    public ResponseEntity<Map<String,String>> handleVersion(Exception ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("message","El registro cambió en otra sesión. Recarga y revisa los cambios"));
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
@@ -84,10 +89,10 @@ public class GlobalExceptionHandler {
                 .body(Map.of("message", "El registro entra en conflicto con datos existentes"));
     }
 
-    @ExceptionHandler({RolInactivoException.class, AutoDesactivacionException.class,
+    @ExceptionHandler({cl.casol.backend.conocimiento.domain.exception.PruebaInvalidaException.class, cl.casol.backend.identidad.domain.exception.OrganizacionInvalidaException.class, cl.casol.backend.catalogo.domain.exception.CatalogoInvalidoException.class, RolInactivoException.class, AutoDesactivacionException.class,
             ClasificacionInvalidaException.class, AsignacionSolucionInvalidaException.class,
             EstadoProcedimientoInvalidoException.class, ReglaEjecucionException.class,
-            EstadoConocimientoNoEvaluableException.class})
+            EstadoConocimientoNoEvaluableException.class, cl.casol.backend.conocimiento.domain.exception.TituloSolucionInvalidoException.class})
     public ResponseEntity<Map<String, String>> handleReglaNegocio(RuntimeException ex) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", ex.getMessage()));
     }

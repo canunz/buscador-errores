@@ -1,7 +1,7 @@
 import { DatePipe } from '@angular/common';
 import { Component, OnInit, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { Ejecucion } from '../../core/models/ejecucion.model';
+import { Ejecucion, EstadoEjecucion } from '../../core/models/ejecucion.model';
 import { Procedimiento } from '../../core/models/procedimiento.model';
 import { EjecucionService } from '../../core/services/ejecucion.service';
 import { ProcedimientoService } from '../../core/services/procedimiento.service';
@@ -13,7 +13,7 @@ import { LoadingModalComponent } from '../../shared/ui/loading-modal.component';
   standalone: true,
   imports: [DatePipe, RouterLink, LoadingModalComponent, AyudaFranjaComponent],
   templateUrl: './ejecuciones.component.html',
-  styleUrl: '../../shared/ui/catalogo-page.css',
+  styleUrls: ['../tickets/tickets-comun.css', './ejecuciones.component.css'],
 })
 export class EjecucionesComponent implements OnInit {
   private readonly ejecuciones = inject(EjecucionService);
@@ -23,6 +23,38 @@ export class EjecucionesComponent implements OnInit {
   nombres: Record<number, string> = {};
   loading = false;
   error = '';
+  filtro: EstadoEjecucion | 'TODAS' = 'TODAS';
+
+  readonly pestanas: { clave: EstadoEjecucion | 'TODAS'; etiqueta: string }[] = [
+    { clave: 'TODAS', etiqueta: 'Todas' },
+    { clave: 'EN_CURSO', etiqueta: 'En curso' },
+    { clave: 'COMPLETADA', etiqueta: 'Completadas' },
+    { clave: 'CANCELADA', etiqueta: 'Canceladas' },
+  ];
+
+  /** En curso primero; dentro de cada grupo, la más reciente arriba. */
+  get visibles(): Ejecucion[] {
+    const lista = this.filtro === 'TODAS' ? this.items : this.items.filter((item) => item.estado === this.filtro);
+    return [...lista].sort(
+      (a, b) =>
+        Number(b.estado === 'EN_CURSO') - Number(a.estado === 'EN_CURSO') ||
+        String(b.fechaInicio ?? '').localeCompare(String(a.fechaInicio ?? '')),
+    );
+  }
+
+  contar(clave: EstadoEjecucion | 'TODAS'): number {
+    return clave === 'TODAS' ? this.items.length : this.items.filter((item) => item.estado === clave).length;
+  }
+
+  claseEstado(estado: string): string {
+    if (estado === 'COMPLETADA') {
+      return 'est-resuelto';
+    }
+    if (estado === 'CANCELADA') {
+      return 'est-cancelado';
+    }
+    return 'est-espera';
+  }
 
   ngOnInit(): void {
     this.items = this.ejecuciones.listaEnSesion();

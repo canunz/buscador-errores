@@ -1,8 +1,9 @@
-import { Component, HostListener, computed, inject } from '@angular/core';
+import { Component, DestroyRef, HostListener, computed, inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
-import { filter } from 'rxjs';
+import { Observable, catchError, concat, filter, interval, of } from 'rxjs';
 import { AuthService } from '../../core/services/auth.service';
-import { NotificacionService } from '../../core/services/notificacion.service';
+import { Aviso, NotificacionService } from '../../core/services/notificacion.service';
 import { ConocimientoService } from '../../core/services/conocimiento.service';
 import { EjecucionService } from '../../core/services/ejecucion.service';
 import { ClasificacionService } from '../../core/services/clasificacion.service';
@@ -44,26 +45,29 @@ export class ShellLayoutComponent {
   menuOpen = false;
   usuarioMenuOpen = false;
   sinLeer = 0;
+  avisos: Aviso[] = [];
+  leidas = new Set<string>();
+  avisosAbiertos = false;
+  private ultimaRevision = Date.now();
   temaOscuro = localStorage.getItem('dimabug-tema') === 'oscuro';
 
   constructor() {
     this.applyTema();
-    this.procedimientos.listar().subscribe({ error: () => undefined });
-    this.conocimientos.listar().subscribe({ error: () => undefined });
-    this.ejecuciones.listar().subscribe({ error: () => undefined });
-    this.clasificacion.listarHardwareDetalle().subscribe({ error: () => undefined });
-    this.organizacion.listarDepartamentosDetalle().subscribe({ error: () => undefined });
-    if (this.isAdmin()) {
-      this.usuariosApi.listar().subscribe({ error: () => undefined });
-      this.usuariosApi.listarRoles().subscribe({ error: () => undefined });
-    }
-    if (this.isStaff()) {
-      this.inicio.dashboard().subscribe({ error: () => undefined });
-    }
-    this.cargarConteo();
+    // El resto de pantallas se precarga después, de a una, para no frenar la que estás viendo.
+    setTimeout(() => this.precargarEnSegundoPlano(), 8000);
+    setTimeout(() => this.cargarConteo(), 8000);
+    // Revisa cada minuto si hay tickets nuevos o cambios para la campana.
+    interval(60_000)
+      .pipe(takeUntilDestroyed(inject(DestroyRef)))
+      .subscribe(() => this.cargarConteo());
     this.fadeIn = !this.esInicio(this.router.url);
     this.router.events.pipe(filter((event): event is NavigationEnd => event instanceof NavigationEnd)).subscribe((event) => {
       this.fadeIn = !this.esInicio(event.urlAfterRedirects);
+      this.avisosAbiertos = false;
+      // Al cambiar de pantalla revisa novedades, sin repetir consultas seguidas.
+      if (Date.now() - this.ultimaRevision > 45_000) {
+        this.cargarConteo();
+      }
     });
   }
 
@@ -86,16 +90,45 @@ export class ShellLayoutComponent {
     this.usuarioMenuOpen = !this.usuarioMenuOpen;
   }
 
-  abrirNotificaciones(event: Event): void {
-    event.stopPropagation();
+  alternarAvisos(): void {
     this.usuarioMenuOpen = false;
-    const url = this.router.serializeUrl(this.router.createUrlTree(['/notificaciones']));
-    window.open(url, '_blank', 'noopener');
+    this.avisosAbiertos = !this.avisosAbiertos;
+    if (this.avisosAbiertos) {
+      this.cargarConteo();
+    }
+  }
+
+  abrirAviso(aviso: Aviso): void {
+    this.leidas.add(aviso.id);
+    this.guardarLeidas();
+    this.avisosAbiertos = false;
+    if (this.router.url.split('?')[0] === aviso.ruta) {
+      // Ya estás en esa pantalla: se actualiza con lo último en vez de quedar igual.
+      window.dispatchEvent(new Event('focus'));
+      return;
+    }
+    this.router.navigateByUrl(aviso.ruta);
+  }
+
+  marcarTodasLeidas(): void {
+    this.avisos.forEach((aviso) => this.leidas.add(aviso.id));
+    this.guardarLeidas();
+  }
+
+  private guardarLeidas(): void {
+    const id = this.usuario()?.usuarioId ?? 0;
+    try {
+      localStorage.setItem(`dimabug.notif.leidas.${id}`, JSON.stringify([...this.leidas]));
+    } catch {
+      // Si no se puede guardar, igual se actualiza el contador en pantalla.
+    }
+    this.sinLeer = this.avisos.filter((aviso) => !this.leidas.has(aviso.id)).length;
   }
 
   @HostListener('document:click')
   closeUsuarioMenu(): void {
     this.usuarioMenuOpen = false;
+    this.avisosAbiertos = false;
   }
 
   @HostListener('window:focus')
@@ -103,11 +136,27 @@ export class ShellLayoutComponent {
     this.cargarConteo();
   }
 
-  private cargarConteo(): void {
-    if (!this.isStaff()) {
-      this.sinLeer = 0;
-      return;
+  private precargarEnSegundoPlano(): void {
+    const enTickets = this.router.url.includes('/tickets');
+    const tareas: Observable<unknown>[] = [
+      this.procedimientos.listar(),
+      this.conocimientos.listar(),
+      this.ejecuciones.listar(),
+    ];
+    if (!enTickets) {
+      tareas.push(this.clasificacion.listarHardwareDetalle(), this.organizacion.listarDepartamentosDetalle());
     }
+    if (this.isAdmin()) {
+      tareas.push(this.usuariosApi.listar(), this.usuariosApi.listarRoles());
+    }
+    if (this.isStaff()) {
+      tareas.push(this.inicio.dashboard());
+    }
+    concat(...tareas.map((tarea) => tarea.pipe(catchError(() => of(null))))).subscribe();
+  }
+
+  private cargarConteo(): void {
+    this.ultimaRevision = Date.now();
     const id = this.usuario()?.usuarioId ?? 0;
     let leidas = new Set<string>();
     try {
@@ -117,7 +166,9 @@ export class ShellLayoutComponent {
     } catch {
       leidas = new Set();
     }
+    this.leidas = leidas;
     this.notificaciones.propias().subscribe((avisos) => {
+      this.avisos = avisos;
       this.sinLeer = avisos.filter((aviso) => !leidas.has(aviso.id)).length;
     });
   }

@@ -1,37 +1,18 @@
-<app-loading-modal [visible]="loading || guardando" [mensaje]="guardando ? 'Guardando' : 'Cargando'" />
-
-<section class="formulario">
-  <p class="crumb">
-    <a routerLink="/procedimientos">Procedimientos</a>
-    <span>/</span>
-    {{ editId ? 'Editar' : 'Nuevo' }}
-  </p>
-
-  <h1>{{ editId ? 'Editar procedimiento' : 'Nuevo procedimiento' }}</h1>
-  <p class="ayuda">Queda en borrador. La publicación la hace un administrador desde el detalle.</p>
-
-  @if (!loading) {
-    <form [formGroup]="form" (ngSubmit)="guardar()">
-      <label>
-        Nombre <span class="req">*</span>
-        <input type="text" formControlName="nombre" maxlength="150" />
-        @if (form.controls.nombre.touched && form.controls.nombre.invalid) {
-          <span class="alerta">El nombre es obligatorio.</span>
-        }
-      </label>
-      <label>
-        Descripción
-        <textarea rows="4" formControlName="descripcion"></textarea>
-      </label>
-      @if (error) {
-        <p class="alerta">{{ error }}</p>
-      }
-      <div class="acciones">
-        <a routerLink="/procedimientos">Cancelar</a>
-        <button type="submit" [disabled]="guardando">
-          {{ guardando ? 'Guardando…' : 'Guardar' }}
-        </button>
-      </div>
-    </form>
-  }
+<app-loading-modal [visible]="loading || guardando" [mensaje]="guardando ? 'Guardando borrador' : 'Cargando'" />
+<section class="pf">
+ <header class="franja"><div><p class="crumb"><a routerLink="/procedimientos">Procedimientos</a> / {{ editId ? 'Editar' : 'Nuevo' }}</p><h1>{{ editId ? 'Editar procedimiento' : 'Nuevo procedimiento' }}</h1><p>Guarde el BORRADOR y continúe agregando pasos desde su detalle. La publicación la hace un administrador.</p></div></header>
+ @if (error) { <p class="alerta" role="alert">{{ error }}</p> }
+ @if (mensaje) { <p role="status">{{ mensaje }}</p> }
+ @if (!cargaValida && !loading && !identificadorInvalido && editId) { <button type="button" class="btn-guardar" (click)="cargar()">Reintentar carga</button> }
+ @if (creacionIncierta) { <p>El alta podría haberse confirmado aunque no llegó la respuesta. No se reenviará automáticamente.</p><a routerLink="/procedimientos">Revisar procedimientos existentes</a> }
+ @if (confirmadoId) { <button type="button" class="btn-guardar" (click)="irAlDetalle()">Continuar en procedimiento {{ confirmadoId }}</button> }
+ @if (cargaValida && !loading) {
+ <form class="tarjeta" [formGroup]="form" (ngSubmit)="guardar()">
+  <div class="campo"><label for="procedimiento-nombre">Nombre <span class="req">*</span></label><div class="control"><input id="procedimiento-nombre" type="text" formControlName="nombre" maxlength="150" /></div>
+   @if (form.controls.nombre.touched && errorNombre) { <span class="campo-error" role="alert">{{ errorNombre }}</span> }
+  </div>
+  <div class="campo"><label for="procedimiento-descripcion">Descripción (opcional)</label><div class="control area"><textarea id="procedimiento-descripcion" rows="4" formControlName="descripcion"></textarea></div></div>
+  <div class="acciones"><a class="btn-cancelar" routerLink="/procedimientos">Cancelar</a><button class="btn-guardar" type="submit" [disabled]="guardando || soloLectura || creacionIncierta">{{ guardando ? 'Guardando…' : editId ? 'Guardar cambios' : 'Guardar borrador y continuar' }}</button></div>
+ </form>
+ }
 </section>

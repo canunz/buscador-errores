@@ -23,6 +23,10 @@ public class MantenerProcedimientoService {
 
     public List<Procedimiento> listar() { return procedimientos.buscarTodos(); }
 
+    public List<Procedimiento> listarVisibles(boolean staff) {
+        return listar().stream().filter(p -> staff || p.estado()==EstadoProcedimiento.PUBLICADO).toList();
+    }
+
     public Procedimiento buscar(Integer id) {
         return procedimientos.buscarPorId(id)
                 .orElseThrow(() -> new ProcedimientoNoEncontradoException(id));
@@ -37,7 +41,9 @@ public class MantenerProcedimientoService {
 
     @Transactional
     public Procedimiento modificar(Integer id, String nombre, String descripcion, String emailAutenticado) {
+        procedimientos.bloquear(id);
         Procedimiento actual = buscar(id);
+        EdicionProcedimiento.exigirBorrador(actual);
         Usuario usuario = obtenerUsuario(emailAutenticado);
         return procedimientos.guardar(new Procedimiento(actual.id(), nombre, descripcion, actual.estado(),
                 actual.creadoPor(), actual.fechaCreacion(), usuario, LocalDateTime.now()));
@@ -45,6 +51,7 @@ public class MantenerProcedimientoService {
 
     @Transactional
     public Procedimiento publicar(Integer id, String emailAutenticado) {
+        procedimientos.bloquear(id);
         Procedimiento actual = buscar(id);
         if (actual.estado() != EstadoProcedimiento.BORRADOR) {
             throw new EstadoProcedimientoInvalidoException("Solo se puede publicar un procedimiento en BORRADOR");

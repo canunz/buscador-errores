@@ -12,7 +12,7 @@ import { LoadingModalComponent } from '../../shared/ui/loading-modal.component';
   standalone: true,
   imports: [DatePipe, FormsModule, RouterLink, LoadingModalComponent],
   templateUrl: './ejecucion-checklist.component.html',
-  styleUrl: './ejecucion-checklist.component.css',
+  styleUrls: ['../tickets/tickets-comun.css', './ejecucion-checklist.component.css'],
 })
 export class EjecucionChecklistComponent implements OnInit {
   private readonly ejecuciones = inject(EjecucionService);
@@ -51,6 +51,10 @@ export class EjecucionChecklistComponent implements OnInit {
 
   get cumplidos(): number {
     return this.pasos.filter((paso) => paso.cumplido).length;
+  }
+
+  get criticos(): number {
+    return this.pasos.filter((paso) => paso.esCritico).length;
   }
 
   get porcentaje(): number {
@@ -104,6 +108,9 @@ export class EjecucionChecklistComponent implements OnInit {
     );
     this.ejecuciones.fijarPasos(ejecucionId, this.pasos);
     this.error = '';
+    if (cumplido) {
+      this.avanzarAlPendiente();
+    }
     this.ejecuciones
       .actualizarPaso(ejecucionId, paso.ejecucionPasoId, {
         cumplido,
@@ -170,6 +177,18 @@ export class EjecucionChecklistComponent implements OnInit {
           this.error = err.message;
         },
       });
+  }
+
+  /** Al marcar un paso, pasa solo al siguiente que falte (si queda alguno). */
+  private avanzarAlPendiente(): void {
+    const total = this.pasos.length;
+    for (let salto = 1; salto <= total; salto++) {
+      const indice = (this.pasoActual - 1 + salto) % total;
+      if (!this.pasos[indice].cumplido) {
+        this.pasoActual = indice + 1;
+        return;
+      }
+    }
   }
 
   completar(): void {

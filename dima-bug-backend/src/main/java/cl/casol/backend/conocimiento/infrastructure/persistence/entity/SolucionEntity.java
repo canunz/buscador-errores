@@ -14,6 +14,19 @@ public class SolucionEntity {
     @Column(name = "solucion_tipo", nullable = false) private TipoSolucion tipo;
     @Column(name = "solucion_orden", nullable = false) private Integer orden;
 
+    @Column(name = "solucion_titulo", length = 150) private String titulo;
+    @Column(name = "solucion_estado", nullable = false) private boolean activo = true;
+    @Column(name = "solucion_autoservicio", nullable = false) private boolean autoservicio;
+
+    public SolucionEntity(Integer id, Integer conocimientoId, String descripcion, TipoSolucion tipo,
+            Integer orden, String titulo, boolean activo, boolean autoservicio) {
+        this(id, conocimientoId, descripcion, tipo, orden);
+        this.titulo = titulo; this.activo = activo; this.autoservicio = autoservicio;
+    }
+    public String getTitulo() { return titulo; }
+    public boolean isActivo() { return activo; }
+    public boolean isAutoservicio() { return autoservicio; }
+
     protected SolucionEntity() { }
     public SolucionEntity(Integer id, Integer conocimientoId, String descripcion, TipoSolucion tipo, Integer orden) {
         this.id = id; this.conocimientoId = conocimientoId; this.descripcion = descripcion;

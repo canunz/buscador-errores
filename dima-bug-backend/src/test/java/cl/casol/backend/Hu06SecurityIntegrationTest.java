@@ -25,6 +25,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(EjecucionController.class)
 @Import({SecurityConfig.class,JwtAuthenticationFilter.class,GlobalExceptionHandler.class})
 class Hu06SecurityIntegrationTest {
+    @org.springframework.test.context.bean.override.mockito.MockitoBean
+    private cl.casol.backend.identidad.infrastructure.security.UsuarioAutenticadoCache usuarioAutenticadoCache;
+
+    @org.springframework.test.context.bean.override.mockito.MockitoBean
+    private cl.casol.backend.shared.application.service.VisibilidadContenidoService visibilidadContenidoService;
+
  @Autowired MockMvc mvc; @MockitoBean GestionarEjecucionService service;
  @MockitoBean TokenServicePort tokens; @MockitoBean UsuarioRepository usuarios;
  @Test void todosLosEndpointsSinJwtSon401() throws Exception {mvc.perform(get("/api/ejecuciones")).andExpect(status().isUnauthorized());mvc.perform(get("/api/ejecuciones/1")).andExpect(status().isUnauthorized());mvc.perform(post("/api/procedimientos/1/ejecuciones")).andExpect(status().isUnauthorized());mvc.perform(patch("/api/ejecuciones/1/completar")).andExpect(status().isUnauthorized());}

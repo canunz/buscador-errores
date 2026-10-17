@@ -28,6 +28,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(controllers = {PruebaController.class, ConocimientoPruebaController.class})
 @Import({SecurityConfig.class, JwtAuthenticationFilter.class, GlobalExceptionHandler.class})
 class PruebaSecurityIntegrationTest {
+    @org.springframework.test.context.bean.override.mockito.MockitoBean
+    private cl.casol.backend.identidad.infrastructure.security.UsuarioAutenticadoCache usuarioAutenticadoCache;
+
+    @org.springframework.test.context.bean.override.mockito.MockitoBean
+    private cl.casol.backend.shared.application.service.VisibilidadContenidoService visibilidadContenidoService;
+
     @Autowired MockMvc mockMvc;
     @MockitoBean GestionarPruebasConocimientoService service;
     @MockitoBean TokenServicePort tokenService;
@@ -73,7 +79,7 @@ class PruebaSecurityIntegrationTest {
                 .andExpect(status().isOk()).andExpect(jsonPath("$[0].id").value(1))
                 .andExpect(jsonPath("$[0].orden").value(1)).andExpect(jsonPath("$[1].orden").value(2))
                 .andExpect(jsonPath("$[0].conocimientoId").doesNotExist())
-                .andExpect(jsonPath("$[0].activa").doesNotExist());
+                .andExpect(jsonPath("$[0].activa").value(true));
     }
 
     @Test void conocimientoSinPruebasDevuelve200Vacio() throws Exception {

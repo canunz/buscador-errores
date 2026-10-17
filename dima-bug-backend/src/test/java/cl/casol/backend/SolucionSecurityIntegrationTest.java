@@ -21,12 +21,19 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@WebMvcTest(controllers={SolucionController.class,SolucionAsignacionController.class})
+@WebMvcTest(controllers={SolucionController.class,SolucionAsignacionController.class,AdminSolucionController.class})
 @Import({SecurityConfig.class,JwtAuthenticationFilter.class,GlobalExceptionHandler.class})
 class SolucionSecurityIntegrationTest {
+    @org.springframework.test.context.bean.override.mockito.MockitoBean
+    private cl.casol.backend.identidad.infrastructure.security.UsuarioAutenticadoCache usuarioAutenticadoCache;
+
+    @org.springframework.test.context.bean.override.mockito.MockitoBean
+    private cl.casol.backend.shared.application.service.VisibilidadContenidoService visibilidadContenidoService;
+
  @Autowired MockMvc mvc; @MockitoBean MantenerSolucionService soluciones;
  @MockitoBean GestionarAsignacionSolucionService asignaciones; @MockitoBean TokenServicePort tokens;
  @MockitoBean UsuarioRepository usuarios;
+ @MockitoBean AdministrarSolucionService administracion;
  @Test void getSoluciones200Ordenadas() throws Exception { auth("t","TECNICO"); when(soluciones.listar(4)).thenReturn(List.of(
    new Solucion(1,4,"A",TipoSolucion.PASOS,1),new Solucion(2,4,"B",TipoSolucion.DERIVACION,2)));
    mvc.perform(get("/api/conocimientos/4/soluciones").header("Authorization","Bearer t")).andExpect(status().isOk())
@@ -36,21 +43,21 @@ class SolucionSecurityIntegrationTest {
    mvc.perform(get("/api/conocimientos/4/soluciones").header("Authorization","Bearer a")).andExpect(status().isOk()).andExpect(content().json("[]")); }
  @Test void getSolucionesPadre404() throws Exception { auth("t","TECNICO"); when(soluciones.listar(404)).thenThrow(new ConocimientoNoEncontradoException(404));
    mvc.perform(get("/api/conocimientos/404/soluciones").header("Authorization","Bearer t")).andExpect(status().isNotFound()); }
- @Test void postPasos201() throws Exception { auth("t","TECNICO"); when(soluciones.crear(4,"Paso",TipoSolucion.PASOS,1)).thenReturn(new Solucion(1,4,"Paso",TipoSolucion.PASOS,1));
-   postSol("{\"descripcion\":\"Paso\",\"tipo\":\"PASOS\",\"orden\":1}",201); }
- @Test void postDerivacion201() throws Exception { auth("t","TECNICO"); when(soluciones.crear(4,"Derivar",TipoSolucion.DERIVACION,1)).thenReturn(new Solucion(1,4,"Derivar",TipoSolucion.DERIVACION,1));
-   postSol("{\"descripcion\":\"Derivar\",\"tipo\":\"DERIVACION\",\"orden\":1}",201); }
- @Test void postDefaults() throws Exception { auth("t","TECNICO"); when(soluciones.crear(4,"Paso",null,null)).thenReturn(new Solucion(1,4,"Paso",TipoSolucion.PASOS,1));
-   mvc.perform(post("/api/conocimientos/4/soluciones").header("Authorization","Bearer t").contentType(MediaType.APPLICATION_JSON).content("{\"descripcion\":\"Paso\"}"))
+ @Test void postPasos201() throws Exception { auth("t","TECNICO"); when(soluciones.crear(4,"Paso",TipoSolucion.PASOS,1,"Título")).thenReturn(new Solucion(1,4,"Paso",TipoSolucion.PASOS,1));
+   postSol("{\"titulo\":\"Título\",\"descripcion\":\"Paso\",\"tipo\":\"PASOS\",\"orden\":1}",201); }
+ @Test void postDerivacion201() throws Exception { auth("t","TECNICO"); when(soluciones.crear(4,"Derivar",TipoSolucion.DERIVACION,1,"Título")).thenReturn(new Solucion(1,4,"Derivar",TipoSolucion.DERIVACION,1));
+   postSol("{\"titulo\":\"Título\",\"descripcion\":\"Derivar\",\"tipo\":\"DERIVACION\",\"orden\":1}",201); }
+ @Test void postDefaults() throws Exception { auth("t","TECNICO"); when(soluciones.crear(4,"Paso",null,null,"Título")).thenReturn(new Solucion(1,4,"Paso",TipoSolucion.PASOS,1));
+   mvc.perform(post("/api/conocimientos/4/soluciones").header("Authorization","Bearer t").contentType(MediaType.APPLICATION_JSON).content("{\"titulo\":\"Título\",\"descripcion\":\"Paso\"}"))
     .andExpect(status().isCreated()).andExpect(jsonPath("$.tipo").value("PASOS")).andExpect(jsonPath("$.orden").value(1)); }
- @Test void postDescripcionVacia400() throws Exception { auth("t","TECNICO"); postSol("{\"descripcion\":\"  \"}",400); }
- @Test void postTipoInvalido400() throws Exception { auth("t","TECNICO"); postSol("{\"descripcion\":\"X\",\"tipo\":\"OTRO\"}",400); }
- @Test void postOrdenInvalido400() throws Exception { auth("t","TECNICO"); postSol("{\"descripcion\":\"X\",\"orden\":0}",400); }
- @Test void putValido200() throws Exception { auth("t","TECNICO"); when(soluciones.modificar(4,8,"Nueva",TipoSolucion.PASOS,2)).thenReturn(new Solucion(8,4,"Nueva",TipoSolucion.PASOS,2));
-   mvc.perform(put("/api/conocimientos/4/soluciones/8").header("Authorization","Bearer t").contentType(MediaType.APPLICATION_JSON).content("{\"descripcion\":\"Nueva\",\"tipo\":\"PASOS\",\"orden\":2}"))
+ @Test void postDescripcionVacia400() throws Exception { auth("t","TECNICO"); postSol("{\"titulo\":\"Título\",\"descripcion\":\"  \"}",400); }
+ @Test void postTipoInvalido400() throws Exception { auth("t","TECNICO"); postSol("{\"titulo\":\"Título\",\"descripcion\":\"X\",\"tipo\":\"OTRO\"}",400); }
+ @Test void postOrdenInvalido400() throws Exception { auth("t","TECNICO"); postSol("{\"titulo\":\"Título\",\"descripcion\":\"X\",\"orden\":0}",400); }
+ @Test void putValido200() throws Exception { auth("t","TECNICO"); when(soluciones.modificar(4,8,"Nueva",TipoSolucion.PASOS,2,"Título")).thenReturn(new Solucion(8,4,"Nueva",TipoSolucion.PASOS,2));
+   mvc.perform(put("/api/conocimientos/4/soluciones/8").header("Authorization","Bearer t").contentType(MediaType.APPLICATION_JSON).content("{\"titulo\":\"Título\",\"descripcion\":\"Nueva\",\"tipo\":\"PASOS\",\"orden\":2}"))
     .andExpect(status().isOk()).andExpect(jsonPath("$.orden").value(2)); }
- @Test void putSolucionInexistente404() throws Exception { auth("t","TECNICO"); when(soluciones.modificar(4,8,"X",TipoSolucion.PASOS,1)).thenThrow(new SolucionNoEncontradaException(8)); putSol(4,8,404); }
- @Test void putSolucionAjena404() throws Exception { auth("t","TECNICO"); when(soluciones.modificar(4,9,"X",TipoSolucion.PASOS,1)).thenThrow(new SolucionNoEncontradaException(9)); putSol(4,9,404); }
+ @Test void putSolucionInexistente404() throws Exception { auth("t","TECNICO"); when(soluciones.modificar(4,8,"X",TipoSolucion.PASOS,1,"Título")).thenThrow(new SolucionNoEncontradaException(8)); putSol(4,8,404); }
+ @Test void putSolucionAjena404() throws Exception { auth("t","TECNICO"); when(soluciones.modificar(4,9,"X",TipoSolucion.PASOS,1,"Título")).thenThrow(new SolucionNoEncontradaException(9)); putSol(4,9,404); }
  @Test void getAsignaciones200() throws Exception { auth("t","TECNICO"); Departamento d=new Departamento(1,"Soporte TI",true); Responsable r=new Responsable(5,1,"Juan",null,null,true);
    when(asignaciones.listar(4,8)).thenReturn(List.of(new SolucionAsignacion(1,8,null,d,true),new SolucionAsignacion(2,8,r,d,false)));
    mvc.perform(get("/api/conocimientos/4/soluciones/8/asignaciones").header("Authorization","Bearer t")).andExpect(status().isOk())
@@ -75,9 +82,73 @@ class SolucionSecurityIntegrationTest {
  private void postAsignacionOk(Integer d,Integer r) throws Exception { auth("t","TECNICO"); Departamento dep=d==null?null:new Departamento(d,"TI",true); Responsable res=r==null?null:new Responsable(r,1,"Juan",null,null,true);
    when(asignaciones.crear(4,8,d,r,true)).thenReturn(new SolucionAsignacion(10,8,res,dep,true)); postAsig("{\"departamentoId\":"+d+",\"responsableId\":"+r+",\"principal\":true}",201); }
  private void postSol(String body,int s)throws Exception{mvc.perform(post("/api/conocimientos/4/soluciones").header("Authorization","Bearer t").contentType(MediaType.APPLICATION_JSON).content(body)).andExpect(status().is(s));}
- private void putSol(int c,int id,int s)throws Exception{mvc.perform(put("/api/conocimientos/{c}/soluciones/{id}",c,id).header("Authorization","Bearer t").contentType(MediaType.APPLICATION_JSON).content("{\"descripcion\":\"X\",\"tipo\":\"PASOS\",\"orden\":1}")).andExpect(status().is(s));}
+ private void putSol(int c,int id,int s)throws Exception{mvc.perform(put("/api/conocimientos/{c}/soluciones/{id}",c,id).header("Authorization","Bearer t").contentType(MediaType.APPLICATION_JSON).content("{\"titulo\":\"Título\",\"descripcion\":\"X\",\"tipo\":\"PASOS\",\"orden\":1}")).andExpect(status().is(s));}
  private void getAsig(int c,int id,int s)throws Exception{mvc.perform(get("/api/conocimientos/{c}/soluciones/{id}/asignaciones",c,id).header("Authorization","Bearer t")).andExpect(status().is(s));}
  private void postAsig(String b,int s)throws Exception{mvc.perform(post("/api/conocimientos/4/soluciones/8/asignaciones").header("Authorization","Bearer t").contentType(MediaType.APPLICATION_JSON).content(b)).andExpect(status().is(s));}
  private void putAsig(int sol,int id,String b,int s)throws Exception{mvc.perform(put("/api/conocimientos/4/soluciones/{sol}/asignaciones/{id}",sol,id).header("Authorization","Bearer t").contentType(MediaType.APPLICATION_JSON).content(b)).andExpect(status().is(s));}
  private void auth(String token,String rol){String email=rol.toLowerCase()+"@x.cl";when(tokens.esValido(token)).thenReturn(true);when(tokens.obtenerEmail(token)).thenReturn(email);Rol r=new Rol(1,rol,null,true,null,null);when(usuarios.buscarPorEmail(email)).thenReturn(Optional.of(new Usuario(1,r,"U",email,"h",true,null,null)));}
+ @Test void administradorListaInactivas() throws Exception {
+   auth("a","ADMINISTRADOR"); when(administracion.listar(4)).thenReturn(List.of(new Solucion(8,4,"D",TipoSolucion.PASOS,1,null,false,true)));
+   mvc.perform(get("/api/admin/conocimientos/4/soluciones").header("Authorization","Bearer a"))
+      .andExpect(status().isOk()).andExpect(jsonPath("$[0].activo").value(false)).andExpect(jsonPath("$[0].autoservicio").value(true));
+ }
+ @Test void administradorCambiaEstadoYAutoservicio() throws Exception {
+   auth("a","ADMINISTRADOR");
+   when(administracion.cambiarEstado(4,8,false)).thenReturn(new Solucion(8,4,"D",TipoSolucion.PASOS,1,null,false,true));
+   when(administracion.cambiarAutoservicio(4,8,true)).thenReturn(new Solucion(8,4,"D",TipoSolucion.PASOS,1,null,true,true));
+   mvc.perform(patch("/api/admin/conocimientos/4/soluciones/8/estado").header("Authorization","Bearer a")
+      .contentType(MediaType.APPLICATION_JSON).content("{\"activo\":false}")).andExpect(status().isOk());
+   mvc.perform(patch("/api/admin/conocimientos/4/soluciones/8/autoservicio").header("Authorization","Bearer a")
+      .contentType(MediaType.APPLICATION_JSON).content("{\"autoservicio\":true}")).andExpect(status().isOk());
+ }
+ @org.junit.jupiter.params.ParameterizedTest
+ @org.junit.jupiter.params.provider.ValueSource(strings={"TECNICO","SOPORTE","USUARIO"})
+ void soloAdministradorPuedeAdministrar(String rol) throws Exception {
+   auth("t",rol);
+   mvc.perform(get("/api/admin/conocimientos/4/soluciones").header("Authorization","Bearer t")).andExpect(status().isForbidden());
+   for(String ruta:List.of("estado","autoservicio"))
+     mvc.perform(patch("/api/admin/conocimientos/4/soluciones/8/"+ruta).header("Authorization","Bearer t")
+       .contentType(MediaType.APPLICATION_JSON).content("{\""+(ruta.equals("estado")?"activo":"autoservicio")+"\":true}"))
+       .andExpect(status().isForbidden());
+   org.mockito.Mockito.verifyNoInteractions(administracion);
+ }
+ @Test void rn08Devuelve409ConMensaje() throws Exception {
+   auth("a","ADMINISTRADOR"); when(administracion.cambiarEstado(4,8,false)).thenThrow(new UltimaSolucionActivaException());
+   mvc.perform(patch("/api/admin/conocimientos/4/soluciones/8/estado").header("Authorization","Bearer a")
+     .contentType(MediaType.APPLICATION_JSON).content("{\"activo\":false}"))
+     .andExpect(status().isConflict()).andExpect(jsonPath("$.message").value(org.hamcrest.Matchers.containsString("RN-08")));
+ }
+ @Test void administrativosSinToken401() throws Exception {
+   mvc.perform(get("/api/admin/conocimientos/4/soluciones")).andExpect(status().isUnauthorized());
+   mvc.perform(patch("/api/admin/conocimientos/4/soluciones/8/autoservicio").contentType(MediaType.APPLICATION_JSON)
+     .content("{\"autoservicio\":true}")).andExpect(status().isUnauthorized());
+ }
+ @Test void booleanosAdministrativosObligatorios() throws Exception {
+   auth("a","ADMINISTRADOR");
+   for(String ruta:List.of("estado","autoservicio")) mvc.perform(patch("/api/admin/conocimientos/4/soluciones/8/"+ruta)
+     .header("Authorization","Bearer a").contentType(MediaType.APPLICATION_JSON).content("{}"))
+     .andExpect(status().isBadRequest());
+   org.mockito.Mockito.verifyNoInteractions(administracion);
+ }
+ @org.junit.jupiter.params.ParameterizedTest
+ @org.junit.jupiter.params.provider.ValueSource(strings={"activo","autoservicio","solucion_estado","solucion_autoservicio"})
+ void camposAdministrativosNoAdmitidosEnPostPut(String campo) throws Exception {
+   auth("t","TECNICO"); String json="{\"titulo\":\"Título\",\"descripcion\":\"D\",\""+campo+"\":true}";
+   mvc.perform(post("/api/conocimientos/4/soluciones").header("Authorization","Bearer t")
+     .contentType(MediaType.APPLICATION_JSON).content(json)).andExpect(status().isBadRequest());
+   mvc.perform(put("/api/conocimientos/4/soluciones/8").header("Authorization","Bearer t")
+     .contentType(MediaType.APPLICATION_JSON).content(json)).andExpect(status().isBadRequest());
+   org.mockito.Mockito.verifyNoInteractions(soluciones);
+ }
+ @Test void tituloObligatorioEnPostPutYLongitudMaxima() throws Exception {
+   auth("t","TECNICO");
+   for(String titulo:List.of("","  ","x".repeat(151))) {
+     String json="{\"titulo\":\""+titulo+"\",\"descripcion\":\"D\"}";
+     mvc.perform(post("/api/conocimientos/4/soluciones").header("Authorization","Bearer t")
+       .contentType(MediaType.APPLICATION_JSON).content(json)).andExpect(status().isBadRequest());
+     mvc.perform(put("/api/conocimientos/4/soluciones/8").header("Authorization","Bearer t")
+       .contentType(MediaType.APPLICATION_JSON).content(json)).andExpect(status().isBadRequest());
+   }
+   postSol("{\"descripcion\":\"D\"}",400); org.mockito.Mockito.verifyNoInteractions(soluciones);
+ }
 }

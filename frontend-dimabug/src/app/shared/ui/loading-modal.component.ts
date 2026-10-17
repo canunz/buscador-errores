@@ -15,6 +15,8 @@ import { Component, Input } from '@angular/core';
           <span class="loading-modal__espera">Espere un momento</span>
         </div>
       </div>
+    } @else if (visible) {
+      <div class="loading-barra" role="progressbar" aria-busy="true" [attr.aria-label]="mensaje"><span></span></div>
     }
   `,
   styles: [
@@ -99,6 +101,32 @@ import { Component, Input } from '@angular/core';
         color: #94a3b8;
       }
 
+      .loading-barra {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 9999;
+        height: 3px;
+        overflow: hidden;
+        background: rgba(30, 79, 214, 0.12);
+        pointer-events: none;
+      }
+
+      .loading-barra span {
+        position: absolute;
+        inset: 0 auto 0 0;
+        width: 40%;
+        background: linear-gradient(90deg, #1e4fd6, #6b93ff);
+        border-radius: 3px;
+        animation: loading-barra 1s ease-in-out infinite;
+      }
+
+      @keyframes loading-barra {
+        from { transform: translateX(-100%); }
+        to { transform: translateX(260%); }
+      }
+
       :host-context(.tema-oscuro) .loading-modal__spinner {
         border-color: rgba(234, 240, 254, 0.16);
         border-top-color: #6b93ff;
@@ -111,8 +139,11 @@ export class LoadingModalComponent {
   @Input() visible = false;
   @Input() mensaje = 'Cargando';
 
-  /** La carga inicial no tapa la pantalla. El modal queda para guardar o eliminar. */
+  /**
+   * Las cargas nunca tapan la pantalla: se muestra una barra fina arriba y el contenido
+   * sigue disponible. El modal queda solo para guardar, eliminar, completar o cancelar.
+   */
   get bloquea(): boolean {
-    return this.visible && this.mensaje !== 'Cargando';
+    return this.visible && !this.mensaje.startsWith('Cargando');
   }
 }

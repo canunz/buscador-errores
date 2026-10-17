@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ProcedimientoRepository {
+    void bloquear(Integer id);
     List<Procedimiento> buscarTodos();
     Optional<Procedimiento> buscarPorId(Integer id);
     Procedimiento guardar(Procedimiento procedimiento);

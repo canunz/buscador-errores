@@ -19,6 +19,23 @@
         </svg>
         Conocimiento
       </a>
+      @if (isStaff()) {
+        <a routerLink="/tickets/bandeja" routerLinkActive="activo" (click)="closeMenu()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 12h-6l-2 3h-4l-2-3H2"/>
+            <path d="M5.45 5.11L2 12v6a2 2 0 002 2h16a2 2 0 002-2v-6l-3.45-6.89A2 2 0 0016.76 4H7.24a2 2 0 00-1.79 1.11z"/>
+          </svg>
+          {{ isAdmin() ? 'Supervisión de tickets' : 'Bandeja de soporte' }}
+        </a>
+      } @else {
+        <a routerLink="/tickets" routerLinkActive="activo" (click)="closeMenu()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 8a2 2 0 012-2h14a2 2 0 012 2v2a2 2 0 000 4v2a2 2 0 01-2 2H5a2 2 0 01-2-2v-2a2 2 0 000-4V8z"/>
+            <path d="M14 6v12" stroke-dasharray="2 2"/>
+          </svg>
+          Mis tickets
+        </a>
+      }
       <a routerLink="/favoritos" routerLinkActive="activo" (click)="closeMenu()">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
           <path d="M12 3.6l2.35 4.76 5.25.76-3.8 3.7.9 5.24L12 15.7l-4.7 2.46.9-5.24-3.8-3.7 5.25-.76L12 3.6z"/>
@@ -57,6 +74,22 @@
         </a>
 
         <p class="nav-label">Catálogos</p>
+        @if (isAdmin()) {
+          <a routerLink="/admin/catalogo/sistemas" routerLinkActive="activo" (click)="closeMenu()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <rect x="3" y="4" width="18" height="12" rx="2"/>
+              <path d="M8 20h8M12 16v4M7 8h10M7 12h6"/>
+            </svg>
+            Sistemas
+          </a>
+          <a routerLink="/admin/catalogo/modulos" routerLinkActive="activo" (click)="closeMenu()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
+              <rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>
+            </svg>
+            Módulos
+          </a>
+        }
         <a routerLink="/plataforma/hardware" routerLinkActive="activo" (click)="closeMenu()">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
             <rect x="3" y="4" width="18" height="12" rx="2"/>
@@ -111,11 +144,12 @@
     <header>
       <button type="button" class="menu-toggle" (click)="toggleMenu()" aria-label="Menú">☰</button>
       <div class="header-actions">
-        @if (isStaff()) {
+        <div class="avisos" (click)="$event.stopPropagation()">
           <button
             type="button"
             class="tema-toggle campana"
-            (click)="abrirNotificaciones($event)"
+            (click)="alternarAvisos()"
+            [attr.aria-expanded]="avisosAbiertos"
             aria-label="Notificaciones"
             title="Notificaciones"
           >
@@ -127,7 +161,32 @@
               <span class="campana-cuenta">{{ sinLeer > 9 ? '9+' : sinLeer }}</span>
             }
           </button>
-        }
+          @if (avisosAbiertos) {
+            <div class="avisos-panel" role="dialog" aria-label="Notificaciones">
+              <header>
+                <strong>Notificaciones</strong>
+                @if (sinLeer > 0) {
+                  <button type="button" (click)="marcarTodasLeidas()">Marcar todas como leídas</button>
+                }
+              </header>
+              @if (avisos.length) {
+                <ul>
+                  @for (aviso of avisos.slice(0, 8); track aviso.id) {
+                    <li>
+                      <button type="button" [class.nueva]="!leidas.has(aviso.id)" (click)="abrirAviso(aviso)">
+                        <strong>{{ aviso.titulo }}</strong>
+                        <span>{{ aviso.detalle }}</span>
+                      </button>
+                    </li>
+                  }
+                </ul>
+              } @else {
+                <p class="avisos-vacio">No tienes notificaciones por ahora.</p>
+              }
+              <a class="avisos-todas" routerLink="/notificaciones" (click)="avisosAbiertos = false">Ver todas</a>
+            </div>
+          }
+        </div>
         <button
           type="button"
           class="tema-toggle"

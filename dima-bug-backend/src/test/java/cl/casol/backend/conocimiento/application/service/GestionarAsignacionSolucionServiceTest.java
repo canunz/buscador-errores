@@ -20,7 +20,7 @@ class GestionarAsignacionSolucionServiceTest {
         asignaciones=mock(SolucionAsignacionRepository.class); departamentos=mock(DepartamentoRepository.class);
         responsables=mock(ResponsableRepository.class); indexador=mock(IndexarConocimientoService.class); service=new GestionarAsignacionSolucionService(
                 conocimientos,soluciones,asignaciones,departamentos,responsables,indexador); }
-    void padres() { when(conocimientos.buscarPorId(4)).thenReturn(Optional.of(mock(Conocimiento.class)));
+    void padres() { when(soluciones.bloquearPorConocimiento(4)).thenReturn(List.of(new Solucion(8,4,"S",TipoSolucion.DERIVACION,1))); when(conocimientos.buscarPorId(4)).thenReturn(Optional.of(mock(Conocimiento.class)));
         when(soluciones.buscarPorId(8)).thenReturn(Optional.of(new Solucion(8,4,"S",TipoSolucion.DERIVACION,1))); }
     @Test void listaOrdenadaPrincipalLuegoId() { padres(); when(asignaciones.buscarPorSolucionOrdenadas(8)).thenReturn(List.of(
             new SolucionAsignacion(2,8,responsable,depto,true),new SolucionAsignacion(3,8,null,depto,false)));
@@ -58,4 +58,16 @@ class GestionarAsignacionSolucionServiceTest {
     @Test void asignacionDeOtraSolucion() { padres(); when(asignaciones.buscarPorId(10)).thenReturn(Optional.of(
             new SolucionAsignacion(10,99,null,depto,true)));
         assertThrows(AsignacionSolucionNoEncontradaException.class,()->service.modificar(4,8,10,1,null,true)); }
+    @Test void inactivaNoRecibeAsignacionesNiCambios() { padres();
+        when(soluciones.bloquearPorConocimiento(4)).thenReturn(List.of(new Solucion(8,4,"D",TipoSolucion.PASOS,1,null,false,false)));
+        assertThrows(SolucionInactivaException.class,()->service.crear(4,8,1,null,true));
+        assertThrows(SolucionInactivaException.class,()->service.modificar(4,8,1,1,null,true));
+        verifyNoInteractions(asignaciones);
+    }
+    @Test void inactivaConservaConsultaDeAsignaciones() { padres();
+        when(soluciones.buscarPorId(8)).thenReturn(Optional.of(new Solucion(8,4,"D",TipoSolucion.PASOS,1,null,false,false)));
+        SolucionAsignacion a=new SolucionAsignacion(1,8,null,depto,true);
+        when(asignaciones.buscarPorSolucionOrdenadas(8)).thenReturn(List.of(a));
+        assertEquals(List.of(a),service.listar(4,8));
+    }
 }

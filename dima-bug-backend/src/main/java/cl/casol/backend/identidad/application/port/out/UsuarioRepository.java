@@ -4,6 +4,7 @@ package cl.casol.backend.identidad.application.port.out;
 //Podría ser MySQL, PostgreSQL, una API externa,
 
 import cl.casol.backend.identidad.domain.Usuario;
+import java.util.Collection;
 import java.util.Optional;
 import java.util.List;
 
@@ -13,11 +14,15 @@ public interface UsuarioRepository {
 
     Optional<Usuario> buscarPorId(Integer id);
 
+    List<Usuario> buscarPorIds(Collection<Integer> ids);
+
     List<Usuario> buscarTodos();
 
     boolean existePorEmail(String email);
 
     boolean existePorEmailYIdDistinto(String email, Integer id);
+
+    List<Usuario> bloquearAdministradoresActivos();
 
     Usuario guardar(Usuario usuario);
 

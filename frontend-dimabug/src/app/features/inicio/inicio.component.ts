@@ -10,6 +10,7 @@ import { EscalaConocimiento, FrecuenteItem, InicioDashboard, InicioService } fro
 import { primerNombre } from '../../core/models/usuario.model';
 import { LoadingModalComponent } from '../../shared/ui/loading-modal.component';
 import { TendenciaLineaComponent } from './tendencia-linea.component';
+import { ResumenTicketsComponent } from '../tickets/resumen-tickets.component';
 
 interface Kpi {
   clave: 'unicos' | 'diario' | 'semanal' | 'frecuente';
@@ -29,7 +30,7 @@ const MESES = [
 @Component({
   selector: 'app-inicio',
   standalone: true,
-  imports: [DatePipe, ReactiveFormsModule, TendenciaLineaComponent, LoadingModalComponent],
+  imports: [DatePipe, ReactiveFormsModule, TendenciaLineaComponent, LoadingModalComponent, ResumenTicketsComponent],
   templateUrl: './inicio.component.html',
   styleUrl: './inicio.component.css',
 })
@@ -72,10 +73,16 @@ export class InicioComponent implements OnInit, OnDestroy {
   });
 
   ngOnInit(): void {
-    this.conocimientos.listar().subscribe({
-      next: () => this.actualizarCoincidencias(),
-      error: () => undefined,
-    });
+    if (this.conocimientos.listaEnSesion().length) {
+      this.actualizarCoincidencias();
+    }
+    // La búsqueda del inicio se actualiza después, para no frenar los tickets.
+    setTimeout(() => {
+      this.conocimientos.listar().subscribe({
+        next: () => this.actualizarCoincidencias(),
+        error: () => undefined,
+      });
+    }, 8000);
     if (!this.isStaff()) {
       this.dashboard = {
         conocimientos: 0,
@@ -89,7 +96,7 @@ export class InicioComponent implements OnInit, OnDestroy {
     if (this.dashboard?.escala) {
       this.mostrarKpis(this.dashboard.escala, false);
     }
-    this.inicioApi.dashboard().subscribe({
+    setTimeout(() => this.inicioApi.dashboard().subscribe({
       next: (data) => {
         this.dashboard = data;
         if (data.escala) {
@@ -101,7 +108,7 @@ export class InicioComponent implements OnInit, OnDestroy {
           this.error = 'No se pudo cargar el panel operativo.';
         }
       },
-    });
+    }), 8000);
   }
 
   ngOnDestroy(): void {
