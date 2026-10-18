@@ -62,6 +62,7 @@ class EscenarioTickets {
                 estado == EstadoTicket.RESUELTO ? "Se cambió el tóner" : null,
                 LocalDateTime.now(), LocalDateTime.now(), null, null, Set.of(), List.of(), List.of());
         when(tickets.buscarPorId(100L)).thenReturn(Optional.of(ticket));
+        when(tickets.solicitanteDe(100L)).thenReturn(Optional.of(USUARIO.id()));
         return ticket;
     }
 }

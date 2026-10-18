@@ -37,6 +37,7 @@ export const routes: Routes = [
     canActivate: [authGuard],
     children: [
       { path: 'inicio', component: InicioComponent },
+      { path: 'chatbot', loadComponent: () => import('./features/chatbot/chatbot.component').then(m => m.ChatbotComponent) },
       { path: 'plataforma/hardware', component: HardwareComponent, canActivate: [staffGuard] },
       { path: 'departamentos', component: DepartamentosComponent, canActivate: [staffGuard] },
       { path: 'pruebas', component: PruebasComponent, canActivate: [staffGuard] },

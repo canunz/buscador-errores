@@ -1,0 +1,29 @@
+<main class="chatbot-page">
+  <section class="chatbot-card" aria-labelledby="chatbot-title">
+    <header class="chatbot-header">
+      <span class="avatar" aria-hidden="true">D</span>
+      <div><h1 id="chatbot-title">Asistente DimaBug</h1><p><span class="estado"></span> Base de Conocimiento</p></div>
+    </header>
+    <div class="conversacion" #conversacion aria-live="polite" [attr.aria-busy]="enviando">
+      @for (mensaje of mensajes; track $index) {
+        <article class="mensaje" [class.usuario]="mensaje.autor === 'usuario'">
+          <div class="burbuja"><p>{{ mensaje.texto }}</p>
+            @for (solucion of mensaje.soluciones ?? []; track $index) {
+              <section class="solucion"><small>{{ solucion.conocimiento }}</small>
+                @if (solucion.titulo) { <h2>{{ solucion.titulo }}</h2> }
+                <p>{{ solucion.solucion }}</p>
+              </section>
+            }
+          </div>
+        </article>
+      }
+      @if (enviando) { <article class="mensaje"><div class="burbuja escribiendo" aria-label="Buscando soluciones"><span></span><span></span><span></span></div></article> }
+    </div>
+    <form class="composer" [formGroup]="form" (ngSubmit)="enviar()">
+      <label for="consulta-chatbot" class="sr-only">Describe tu problema</label>
+      <textarea id="consulta-chatbot" formControlName="consulta" maxlength="300" rows="2" placeholder="Describe el problema…" (keydown.enter)="$event.preventDefault(); enviar()"></textarea>
+      <button type="submit" aria-label="Enviar consulta" [disabled]="enviando || form.invalid">➜</button>
+      <span class="contador">{{ form.controls.consulta.value.length }}/300</span>
+    </form>
+  </section>
+</main>

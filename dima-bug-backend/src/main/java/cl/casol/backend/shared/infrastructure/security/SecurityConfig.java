@@ -45,6 +45,8 @@ public class SecurityConfig {
 
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/admin/**").hasRole("ADMINISTRADOR")
+                        .requestMatchers(HttpMethod.POST, "/api/chatbot/consultas")
+                        .hasAnyRole("ADMINISTRADOR", "TECNICO", "SOPORTE", "USUARIO")
                         // Módulo de tickets: los permisos finos por rol se validan en cada caso de uso.
                         .requestMatchers("/api/tickets", "/api/tickets/**")
                         .hasAnyRole("ADMINISTRADOR", "TECNICO", "SOPORTE", "USUARIO")
