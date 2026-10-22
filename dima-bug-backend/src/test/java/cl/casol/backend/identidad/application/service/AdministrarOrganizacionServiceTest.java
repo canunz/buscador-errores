@@ -69,4 +69,19 @@ class AdministrarOrganizacionServiceTest {
     @Test void desactivaContactoBajoPadreInactivoSinCambiarPadre() { padre(false); hijo(true); assertFalse(service.estadoContacto(1,4,false,3L).activo()); verify(repo,never()).guardarDepartamento(any()); }
     @Test void contactoObsoletoNoSobrescribe() { padre(true); hijo(true); assertThrows(OrganizacionConflictoException.class,()->service.editarContacto(1,4,"Anexo","619",2L)); }
     @Test void ordenBloqueoGlobalLuegoPadre() { padre(true); hijo(true); service.estadoContacto(1,4,false,3L); var orden=inOrder(repo); orden.verify(repo).bloquearEscrituras(); orden.verify(repo).bloquearDepartamento(1); }
+
+    @Test void conservaLiteralmenteTipoHistoricoAlEditarValor() {
+        padre(true); var historico=new ContactoDepartamentoAdministrativo(4,1," Anexo antiguo ","61-A",true,3L);
+        when(repo.buscarContacto(4)).thenReturn(Optional.of(historico)); when(repo.listarContactos(1)).thenReturn(List.of(historico));
+        assertEquals(" Anexo antiguo ",service.editarContacto(1,4," Anexo antiguo ","61-B",3L).tipo());
+    }
+    @Test void departamento100Aceptado101RechazadoSinGuardar() {
+        assertEquals(100,service.crear("D".repeat(100)).nombre().length());
+        clearInvocations(repo);
+        assertThrows(OrganizacionInvalidaException.class,()->service.crear("D".repeat(101)));
+        padre(true);
+        assertThrows(OrganizacionInvalidaException.class,()->service.editar(1,"D".repeat(101),2L));
+        verify(repo,never()).guardarDepartamento(any());
+    }
+
 }

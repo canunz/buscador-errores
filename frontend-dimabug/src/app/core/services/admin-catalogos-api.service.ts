@@ -18,6 +18,9 @@ export class AdminCatalogosApiService {
   listar(tipo: TipoCatalogoAdmin): Observable<CatalogoAdmin[]> {
     return this.http.get<CatalogoAdmin[]>(this.url(tipo)).pipe(this.errores());
   }
+  obtener(tipo: TipoCatalogoAdmin, id: number): Observable<CatalogoAdmin> {
+    return this.http.get<CatalogoAdmin>(`${this.url(tipo)}/${id}`).pipe(this.errores());
+  }
   guardar(tipo: TipoCatalogoAdmin, id: number | null, datos: CatalogoAdminRequest): Observable<CatalogoAdmin> {
     const request = id === null ? this.http.post<CatalogoAdmin>(this.url(tipo), datos)
       : this.http.put<CatalogoAdmin>(`${this.url(tipo)}/${id}`, datos);

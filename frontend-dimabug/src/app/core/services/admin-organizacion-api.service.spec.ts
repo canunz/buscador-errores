@@ -24,4 +24,16 @@ describe('Administración persistente de organización', () => {
     const r = http.expectOne(r => r.method === 'POST'); expect(r.request.body.activo).toBeFalse(); r.flush({}); });
   it('reactiva contacto con versión', () => { api.estadoContacto(1, 4, true, 3).subscribe(); const r = http.expectOne(r => r.url.endsWith('/1/contactos/4/estado'));
     expect(r.request.body).toEqual({ activo: true, version: 3 }); r.flush({}); });
+
+  it('consulta responsables filtrados por departamento', () => { api.responsables(1).subscribe(); const r=http.expectOne(r=>r.url.endsWith('/admin/responsables')); expect(r.request.params.get('departamentoId')).toBe('1'); r.flush([]); });
+  it('crea responsable con departamento obligatorio', () => { api.guardarResponsable(1,null,{nombre:'Ana',cargo:'TI',contacto:'00123'}).subscribe(); const r=http.expectOne(r=>r.method==='POST'); expect(r.request.body.departamentoId).toBe(1); r.flush({}); expect(invalidar).toHaveBeenCalled(); });
+  it('edita responsable con huella sin enviar pertenencia ni estado', () => {
+    const actual={id:4,departamentoId:1,nombre:'Ana',activo:true,revision:'a'.repeat(64)};
+    api.guardarResponsable(1,actual,{nombre:'Bea',cargo:'',contacto:''}).subscribe(); const r=http.expectOne(r=>r.method==='PUT');
+    expect(r.request.body).toEqual({nombre:'Bea',cargo:'',contacto:'',revision:actual.revision}); r.flush({});
+  });
+  it('no reintenta responsable ante conflicto y no invalida caché', () => {
+    api.estadoResponsable({id:4,departamentoId:1,nombre:'Ana',activo:true,revision:'a'.repeat(64)},false).subscribe({error:e=>expect(e.message).toContain('Recarga')});
+    const r=http.expectOne(r=>r.method==='PATCH'); r.flush({message:'Recarga'},{status:409,statusText:'Conflict'}); expect(invalidar).not.toHaveBeenCalled();
+  });
 });

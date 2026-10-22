@@ -4,7 +4,7 @@ import { Observable, catchError, tap, throwError } from 'rxjs';
 import { apiUrl } from '../config/api';
 import { mensajeApiError } from '../http/api-error';
 import { OrganizacionService } from './organizacion.service';
-import { DepartamentoAdmin, ContactoDepartamentoAdmin } from '../models/organizacion-admin.model';
+import { DepartamentoAdmin, ContactoDepartamentoAdmin, ResponsableAdmin } from '../models/organizacion-admin.model';
 @Injectable({ providedIn: 'root' })
 export class AdminOrganizacionApiService {
   private readonly http = inject(HttpClient);
@@ -29,6 +29,19 @@ export class AdminOrganizacionApiService {
   }
   estadoContacto(padre: number, id: number, activo: boolean, version: number): Observable<ContactoDepartamentoAdmin> {
     return this.http.patch<ContactoDepartamentoAdmin>(`${this.base}/${padre}/contactos/${id}/estado`, { activo, version }).pipe(tap(() => this.organizacion.invalidarDepartamentos()), this.errores());
+  }
+  responsables(departamentoId: number): Observable<ResponsableAdmin[]> {
+    return this.http.get<ResponsableAdmin[]>(apiUrl('/admin/responsables'), { params: { departamentoId } }).pipe(this.errores());
+  }
+  guardarResponsable(departamentoId: number, actual: ResponsableAdmin | null, datos: { nombre: string; cargo: string; contacto: string }): Observable<ResponsableAdmin> {
+    const url = apiUrl('/admin/responsables');
+    const req = actual ? this.http.put<ResponsableAdmin>(`${url}/${actual.id}`, { ...datos, revision: actual.revision })
+      : this.http.post<ResponsableAdmin>(url, { ...datos, departamentoId });
+    return req.pipe(tap(() => this.organizacion.invalidarDepartamentos()), this.errores());
+  }
+  estadoResponsable(actual: ResponsableAdmin, activo: boolean): Observable<ResponsableAdmin> {
+    return this.http.patch<ResponsableAdmin>(apiUrl(`/admin/responsables/${actual.id}/estado`), { activo, revision: actual.revision })
+      .pipe(tap(() => this.organizacion.invalidarDepartamentos()), this.errores());
   }
   private errores<T>() { return catchError<T, Observable<never>>((err: HttpErrorResponse) => throwError(() => new Error(mensajeApiError(err, 'No fue posible guardar o consultar la organización.')))); }
 }

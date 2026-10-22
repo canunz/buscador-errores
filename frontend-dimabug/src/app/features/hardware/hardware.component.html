@@ -11,6 +11,7 @@
     @if (esAdministrador()) {
       <div class="hw-admin-actions">
         <a routerLink="/admin/catalogo/hardware" class="btn-crear hw-admin-link">Administrar Hardware</a>
+        <a routerLink="/admin/catalogo/sistemas">Todos los Sistemas</a>
         <span>Crear, editar y asociar Sistemas</span>
       </div>
     }
@@ -85,15 +86,29 @@
         </section>
         <section class="hw-bloque">
           <h3>Sistemas asociados</h3>
-          <p class="hw-cuenta">{{ detalle.sistemas.length }} sistema{{ detalle.sistemas.length === 1 ? '' : 's' }} en este equipo</p>
-          @if (detalle.sistemas.length) {
+          @if (cargandoSistemas) { <p role="status">Cargando sistemas…</p> }
+          @if (errorSistemas) { <p class="alert" role="alert">{{ errorSistemas }} <button type="button" (click)="ver(detalle)">Reintentar consulta</button></p> }
+          @if (!cargandoSistemas && !errorSistemas) {
+          <p class="hw-cuenta">{{ sistemasDetalle.length }} sistemas en este equipo</p>
+          @if (sistemasDetalle.length) {
             <ul class="hw-sistemas">
-              @for (sistema of detalle.sistemas; track sistema) {
-                <li>{{ sistema }}</li>
+              @for (sistema of sistemasDetalle; track sistema.id) {
+                <li>
+                  @if (esAdministrador()) {
+                    <a class="sistema-accion" routerLink="/admin/catalogo/sistemas" [queryParams]="{ editarId: sistema.id, hardwareId: detalle.id }">{{ sistema.nombre }}{{ sistema.activo === false ? ' (inactivo)' : '' }}</a>
+                  } @else { <span>{{ sistema.nombre }}</span> }
+                </li>
               }
             </ul>
           } @else {
             <p class="hw-vacio">Este hardware no tiene sistemas asociados.</p>
+          }
+          }
+          @if (esAdministrador()) {
+            <nav class="hw-contexto" aria-label="Administración de sistemas del Hardware">
+              <a routerLink="/admin/catalogo/hardware" [queryParams]="{ editarId: detalle.id, hardwareId: detalle.id }">Asociar o desasociar Sistemas</a>
+              <a routerLink="/admin/catalogo/sistemas" [queryParams]="{ crear: '1', hardwareId: detalle.id }">Crear sistema y asociar</a>
+            </nav>
           }
         </section>
       </div>

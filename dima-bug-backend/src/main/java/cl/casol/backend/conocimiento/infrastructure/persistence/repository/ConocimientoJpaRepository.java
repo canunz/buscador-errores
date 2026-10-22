@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface ConocimientoJpaRepository extends JpaRepository<ConocimientoEntity, Integer> {
     @org.springframework.data.jpa.repository.Lock(jakarta.persistence.LockModeType.PESSIMISTIC_WRITE)
@@ -28,6 +29,21 @@ public interface ConocimientoJpaRepository extends JpaRepository<ConocimientoEnt
             order by c.fechaCreacion desc
             """)
     List<ConocimientoEntity> listarConRelaciones(@Param("estado") EstadoConocimiento estado);
+
+    @Query("""
+            select c from ConocimientoEntity c
+            left join fetch c.hardware
+            left join fetch c.sistema
+            left join fetch c.modulo modulo
+            left join fetch modulo.sistema
+            left join fetch c.frecuencia
+            join fetch c.creadoPor creador
+            join fetch creador.rol
+            left join fetch c.modificadoPor modificador
+            left join fetch modificador.rol
+            where c.id = :id
+            """)
+    Optional<ConocimientoEntity> buscarConRelacionesPorId(@Param("id") Integer id);
 
     @Query("select c.id, c.titulo, c.estado from ConocimientoEntity c where c.id = :id and c.estado <> :eliminado")
     java.util.List<Object[]> resumenPorId(@Param("id") Integer id, @Param("eliminado") EstadoConocimiento eliminado);

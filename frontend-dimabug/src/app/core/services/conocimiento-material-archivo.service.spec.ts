@@ -108,4 +108,17 @@ describe('ConocimientoService materiales archivo', () => {
     );
     expect(mensaje).toContain('supera 10 MB');
   });
+
+  it('catálogo transversal consulta solo conocimientos publicados',()=>{
+    service.listarMaterialesCatalogo().subscribe(items=>{expect(items.length).toBe(1);expect(items[0].conocimientoId).toBe(1);expect(items[0].conocimientoTitulo).toBe('Origen');});
+    http.expectOne('/api/conocimientos').flush([{id:1,titulo:'Origen',estado:'PUBLICADO'},{id:2,titulo:'Privado',estado:'BORRADOR'}]);
+    http.expectOne('/api/conocimientos/1/materiales').flush([{id:3,nombre:'Manual',tipo:'PDF',url:'/api/conocimientos/1/materiales/3/archivo'}]);http.expectNone('/api/conocimientos/2/materiales');
+  });
+  it('reutilización solo transmite IDs y devuelve referencia del destino',()=>{
+    service.reutilizarMaterial(4,1,3).subscribe(m=>expect(m.id).toBe(99));const req=http.expectOne('/api/conocimientos/4/materiales/reutilizaciones');
+    expect(req.request.method).toBe('POST');expect(req.request.body).toEqual({conocimientoOrigenId:1,materialOrigenId:3});req.flush({id:99,nombre:'Manual',tipo:'PDF',url:'/api/conocimientos/4/materiales/99/archivo'});
+  });
+  it('no reintenta reutilización fallida',()=>{
+    service.reutilizarMaterial(4,1,3).subscribe({error:e=>expect(e.message).toContain('ya contiene')});http.expectOne('/api/conocimientos/4/materiales/reutilizaciones').flush({message:'ya contiene ese archivo'},{status:409,statusText:'Conflict'});
+  });
 });

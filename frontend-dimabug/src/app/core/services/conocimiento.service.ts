@@ -367,9 +367,10 @@ export class ConocimientoService {
     );
   }
 
-  listarSolucionesCatalogo(force = false, administrativo = false): Observable<SolucionCatalogoItem[]> {
+  listarSolucionesCatalogo(force = false, administrativo = false, soloPublicados = false): Observable<SolucionCatalogoItem[]> {
     return this.listar(force).pipe(
       take(1),
+      map(conocimientos => soloPublicados ? conocimientos.filter(c => c.estado === 'PUBLICADO') : conocimientos),
       switchMap(conocimientos => conocimientos.length ? from(conocimientos).pipe(
         mergeMap(c => (administrativo ? this.listarSolucionesAdministrativas(c.id) : this.listarSoluciones(c.id, true)).pipe(
           map(sols => sols.map(s => ({
@@ -421,6 +422,18 @@ export class ConocimientoService {
         throwError(() => new Error(mensajeApiError(err, 'No fue posible crear la solución.'))),
       ),
     );
+  }
+
+  copiarSolucion(destinoId: number, origenId: number, solucionId: number, confirmarAutoservicio = false): Observable<Solucion> {
+    return this.http.post<unknown>(apiUrl(`/admin/conocimientos/${destinoId}/soluciones/copias`), {
+      conocimientoOrigenId: origenId, solucionOrigenId: solucionId, confirmarAutoservicio,
+    }).pipe(map(res => this.normalizeSolucion(res)), tap(() => this.invalidarSoluciones(destinoId)),
+      catchError((err: HttpErrorResponse) => {
+        const defecto = err.status === 403 ? 'Solo ADMINISTRADOR puede copiar soluciones.'
+          : err.status === 409 ? 'La copia entra en conflicto con una solución existente. Recarga el destino.'
+          : 'No fue posible copiar la solución.';
+        return throwError(() => new Error(err.status === 403 ? defecto : mensajeApiError(err, defecto)));
+      }));
   }
 
   modificarSolucion(
@@ -528,6 +541,20 @@ export class ConocimientoService {
         ),
       force,
     );
+  }
+
+  listarMaterialesCatalogo(): Observable<(MaterialApoyo & { conocimientoId: number; conocimientoTitulo: string })[]> {
+    return this.listar(true).pipe(take(1), map(items => items.filter(c => c.estado === 'PUBLICADO')),
+      switchMap(items => items.length ? from(items).pipe(mergeMap(c => this.listarMateriales(c.id, true).pipe(
+        map(materiales => materiales.map(m => ({ ...m, conocimientoId: c.id, conocimientoTitulo: c.titulo })))), 4),
+        toArray(), map(groups => groups.flat())) : of([])));
+  }
+  reutilizarMaterial(destinoId: number, origenId: number, materialId: number): Observable<MaterialApoyo> {
+    return this.http.post<unknown>(`${this.base}/${destinoId}/materiales/reutilizaciones`, {
+      conocimientoOrigenId: origenId, materialOrigenId: materialId,
+    }).pipe(map(res => this.normalizeMaterial(res)),
+      tap(() => this.clearSeccion(`materiales:${destinoId}`)),
+      catchError((e: HttpErrorResponse) => throwError(() => new Error(mensajeApiError(e, 'No fue posible reutilizar el material.')))));
   }
 
   crearMaterial(conocimientoId: number, request: MaterialRequest): Observable<MaterialApoyo> {

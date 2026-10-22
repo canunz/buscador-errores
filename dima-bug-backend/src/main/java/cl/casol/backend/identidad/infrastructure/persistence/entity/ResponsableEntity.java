@@ -26,6 +26,12 @@ public class ResponsableEntity {
     private boolean activo;
 
     protected ResponsableEntity() { }
+    public ResponsableEntity(Integer departamentoId, String nombre, String cargo, String contacto, boolean activo) {
+        this.departamentoId = departamentoId; actualizar(nombre, cargo, contacto, activo);
+    }
+    public void actualizar(String nombre, String cargo, String contacto, boolean activo) {
+        this.nombre = nombre; this.cargo = cargo; this.contacto = contacto; this.activo = activo;
+    }
     public Integer getId() { return id; }
     public Integer getDepartamentoId() { return departamentoId; }
     public String getNombre() { return nombre; }

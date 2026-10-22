@@ -3,12 +3,21 @@
   <div class="franja">
     <app-ayuda-franja titulo="Administración de catálogos" detalle="Los cambios se guardan en el sistema. Desactivar conserva los registros y sus referencias históricas." />
     <p class="crumb"><a routerLink="/admin">Administración</a></p>
+    <nav class="catalogo-contexto" aria-label="Navegación de catálogos">
+      @if (hardwareOrigenId) { <a routerLink="/plataforma/hardware" [queryParams]="{ hardwareId: hardwareOrigenId }">Volver al Hardware de origen</a> }
+      <a routerLink="/admin/catalogo/sistemas" [queryParams]="{ hardwareId: hardwareOrigenId }">Todos los Sistemas</a>
+      @if (tipo === 'modulos' && sistemaContextoId) {
+        <a routerLink="/admin/catalogo/sistemas" [queryParams]="{ editarId: sistemaContextoId, hardwareId: hardwareOrigenId }">Volver al Sistema</a>
+        <a routerLink="/admin/catalogo/modulos">Todos los Módulos</a>
+      }
+    </nav>
     <div class="franja-row"><div><h1>{{ disponible ? titulos[tipo] : 'Pendiente de implementación' }}</h1><p class="lead">{{ items.length }} registros</p></div>
-      @if (disponible) { <button class="btn-crear" type="button" (click)="abrir()" [disabled]="loading || saving">Añadir</button> }
+      @if (disponible) { <button class="btn-crear" type="button" (click)="abrir()" [disabled]="loading || saving">{{ crearYAsociar ? 'Crear sistema y asociar' : 'Añadir' }}</button> }
     </div>
   </div>
   @if (!disponible) { <p>Este catálogo queda pendiente para un Sprint posterior.</p> }
   @if (error) { <p class="alert" role="alert">{{ error }} <button type="button" (click)="recargar()">Reintentar</button></p> }
+  @if (mensaje) { <p class="catalogo-mensaje" role="status">{{ mensaje }}</p> }
   @if (disponible && !loading) {
     @if (tipo === 'modulos') {
       <div class="modulos-filtros" [formGroup]="filtrosModulos" role="group" aria-label="Filtros de Módulos">
@@ -23,6 +32,7 @@
     <div class="tabla-wrap"><table><thead><tr><th>Acciones</th><th>Nombre</th><th>Detalle</th><th>Estado</th></tr></thead>
       <tbody>@for (item of itemsVisibles; track item.id) {
         <tr><td><div class="acts"><button class="act edit" type="button" (click)="abrir(item)" [disabled]="saving">Editar</button>
+          @if (tipo === 'sistemas') { <a class="act" routerLink="/admin/catalogo/modulos" [queryParams]="{ sistemaId: item.id, hardwareId: hardwareOrigenId }">Módulos</a> }
           <button class="act" type="button" (click)="pendienteEstado = item" [disabled]="saving">{{ item.activo ? 'Desactivar' : 'Activar' }}</button></div></td>
           <td><strong>{{ item.nombre }}</strong></td><td>
             @switch (tipo) {
@@ -43,6 +53,9 @@
   <div class="confirm-capa"><div class="confirm-fondo"></div><div class="confirm-dialog" role="alertdialog" aria-modal="true" aria-labelledby="estado-titulo">
     <h2 id="estado-titulo">{{ pendienteEstado.activo ? 'Desactivar' : 'Activar' }} {{ pendienteEstado.nombre }}</h2>
     <p>Se conserva el registro y su historial. Los inactivos no se ofrecen en nuevas selecciones.</p>
+    @if (tipo === 'sistemas' && pendienteEstado.activo && hardwareDelSistema(pendienteEstado.id).length > 1) {
+      <p class="catalogo-advertencia" role="alert">Sistema compartido por {{ hardwareDelSistema(pendienteEstado.id).length }} Hardware. Desactivarlo también afecta sus selecciones en los otros equipos.</p>
+    }
     <div class="confirm-acciones"><button type="button" (click)="pendienteEstado = null" [disabled]="saving">Cancelar</button><button type="button" (click)="confirmarEstado()" [disabled]="saving">{{ saving ? 'Guardando…' : 'Confirmar' }}</button></div>
   </div></div>
 }
@@ -56,7 +69,16 @@
     </header>
     <form [formGroup]="form" (ngSubmit)="guardar()" class="form-grid">
       @if (formError) { <p class="alert full" role="alert">{{ formError }}</p> }
-      <label class="full">Nombre *<input formControlName="nombre" [attr.maxlength]="tipo === 'modulos' ? 120 : 100" required /></label>
+      @if (tipo === 'sistemas' && editId && hardwareDelSistema(editId).length > 1) {
+        <p class="catalogo-advertencia full" role="alert">Sistema compartido por {{ hardwareDelSistema(editId).length }} Hardware. Editarlo o desactivarlo afecta a todos ellos.</p>
+      }
+      @if (crearYAsociar && editId === null && (sistemaCreado || creacionSinConfirmar)) {
+        <div class="full recuperacion-sistema">
+          <a routerLink="/admin/catalogo/sistemas" [queryParams]="{ hardwareId: hardwareOrigenId }">Recuperar desde Todos los Sistemas</a>
+          @if (sistemaCreado) { <button type="button" (click)="reintentarAsociacion()" [disabled]="saving">Reintentar solo la asociación del sistema {{ sistemaCreado.id }}</button> }
+        </div>
+      }
+      <label class="full">Nombre *<input formControlName="nombre" [readonly]="crearYAsociar && editId === null && (sistemaCreado !== null || creacionSinConfirmar)" [attr.maxlength]="tipo === 'frecuencias' ? 50 : tipo === 'modulos' ? 120 : 100" required /></label>
       @if (tipo === 'hardware') {
         <label class="full">Sistema operativo<input formControlName="sistemaOperativo" maxlength="150" /></label>
         <fieldset class="full hw-admin-systems" aria-describedby="hw-sistemas-ayuda">
@@ -70,9 +92,12 @@
       }
       @if (tipo === 'sistemas') { <label class="full">Descripción<textarea formControlName="descripcion" maxlength="255"></textarea></label> }
       @if (tipo === 'modulos') { <label class="full">Sistema *<select formControlName="sistemaId" required><option [ngValue]="null">Selecciona un sistema</option>@for (s of sistemas; track s.id) { <option [ngValue]="s.id" [disabled]="!puedeElegirSistemaModulo(s)">{{ s.nombre }} {{ s.activo ? '' : '(inactivo)' }}</option> }</select></label> }
+      @if (tipo === 'modulos' && enContexto) { <p class="full">El sistema del módulo se conserva en este flujo. Los módulos nuevos pertenecen al sistema seleccionado.</p> }
+      @if (tipo === 'sistemas' && editId) { <a class="full" routerLink="/admin/catalogo/modulos" [queryParams]="{ sistemaId: editId, hardwareId: hardwareOrigenId }">Módulos de este Sistema</a> }
+      @if (hardwareOrigenId) { <a class="full" routerLink="/plataforma/hardware" [queryParams]="{ hardwareId: hardwareOrigenId }">Volver al Hardware de origen</a> }
       @if (tipo === 'frecuencias') { <label class="full">Orden *<input type="number" formControlName="orden" min="1" required /></label> }
       <label class="switch-row full">Activo<input type="checkbox" formControlName="activo" /></label>
-      <div class="form-actions full"><button type="button" class="btn-sec" (click)="modalOpen = false" [disabled]="saving">Cancelar</button><button type="submit" class="btn-crear" [disabled]="saving">{{ saving ? 'Guardando…' : 'Guardar' }}</button></div>
+      <div class="form-actions full"><button type="button" class="btn-sec" (click)="modalOpen = false" [disabled]="saving">{{ sistemaCreado ? 'Cerrar' : 'Cancelar' }}</button><button type="submit" class="btn-crear" [disabled]="saving || (crearYAsociar && editId === null && (sistemaCreado !== null || creacionSinConfirmar))">{{ saving ? 'Guardando…' : crearYAsociar && editId === null ? 'Crear y asociar' : 'Guardar' }}</button></div>
     </form>
   </div></div>
 }

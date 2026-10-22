@@ -16,10 +16,10 @@ function fakeFile(name: string, type: string, size = 12): File {
 }
 
 describe('material-archivo', () => {
-  it('admite adjunto para PDF, IMAGEN y VIDEO', () => {
+  it('admite archivo PDF/IMAGEN y conserva VIDEO solo como enlace', () => {
     expect(admiteUploadLocal('PDF')).toBeTrue();
     expect(admiteUploadLocal('IMAGEN')).toBeTrue();
-    expect(admiteUploadLocal('VIDEO')).toBeTrue();
+    expect(admiteUploadLocal('VIDEO')).toBeFalse();
     expect(admiteUploadLocal('ENLACE')).toBeFalse();
   });
 
@@ -37,7 +37,7 @@ describe('material-archivo', () => {
     expect(mimeCompatibleConTipo('IMAGEN', 'image/jpeg')).toBeTrue();
     expect(mimeCompatibleConTipo('IMAGEN', 'image/webp')).toBeTrue();
     expect(mimeCompatibleConTipo('IMAGEN', 'application/pdf')).toBeFalse();
-    expect(mimeCompatibleConTipo('VIDEO', 'video/mp4')).toBeTrue();
+    expect(mimeCompatibleConTipo('VIDEO', 'video/mp4')).toBeFalse();
     expect(mimeCompatibleConTipo('VIDEO', 'application/pdf')).toBeFalse();
   });
 
@@ -131,10 +131,10 @@ describe('material-archivo', () => {
     ).toContain('pdf');
   });
 
-  it('en VIDEO exige URL o archivo, y ENLACE solo URL', () => {
+  it('en VIDEO y ENLACE exige URL y rechaza vídeo local', () => {
     expect(
       validarMaterialFormulario({ nombre: 'V', tipo: 'VIDEO', origen: 'enlace', url: '' }),
-    ).toContain('URL o adjunte');
+    ).toContain('URL');
     expect(
       validarMaterialFormulario({
         nombre: 'V',
@@ -150,7 +150,7 @@ describe('material-archivo', () => {
         origen: 'archivo',
         archivo: fakeFile('clip.mp4', 'video/mp4'),
       }),
-    ).toBeNull();
+    ).toContain('mediante enlace');
     expect(
       validarMaterialFormulario({
         nombre: 'E',
@@ -211,4 +211,21 @@ describe('material-archivo', () => {
     expect(click).toHaveBeenCalled();
     expect(revoke).toHaveBeenCalledWith('blob:local');
   });
+  it('rechaza URLs externas que imitan rutas de descarga internas', () => {
+    const http = { get: jasmine.createSpy('get') } as unknown as HttpClient;
+    for (const url of [
+      'https://tercero.invalid/api/conocimientos/1/materiales/2/archivo',
+      '//tercero.invalid/api/procedimientos/1/pasos/2/materiales/3/archivo',
+      '/externo?url=/api/conocimientos/1/materiales/2/archivo',
+      '/api/conocimientos/1/materiales/2/archivo/otra-ruta',
+    ]) {
+      expect(esUrlDescargaAutenticada(url)).withContext(url).toBeFalse();
+      expect(() => descargarMaterialAutenticado(http, url, 'Manual', 'PDF')).toThrow();
+    }
+    expect(http.get).not.toHaveBeenCalled();
+  });
+  it('admite descarga absoluta del mismo backend con consulta', () => {
+    expect(esUrlDescargaAutenticada(location.origin + '/api/conocimientos/1/materiales/2/archivo?download=1')).toBeTrue();
+  });
+
 });

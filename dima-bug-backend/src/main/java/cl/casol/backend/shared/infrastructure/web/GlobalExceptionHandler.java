@@ -72,7 +72,7 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", ex.getMessage()));
     }
 
-    @ExceptionHandler({cl.casol.backend.conocimiento.domain.exception.PruebaConflictoException.class, cl.casol.backend.identidad.domain.exception.OrganizacionConflictoException.class, cl.casol.backend.identidad.domain.exception.UltimoAdministradorException.class, cl.casol.backend.catalogo.domain.exception.CatalogoConflictoException.class, EmailDuplicadoException.class, PruebaYaAsociadaException.class,
+    @ExceptionHandler({cl.casol.backend.conocimiento.domain.exception.MaterialDuplicadoException.class, cl.casol.backend.conocimiento.domain.exception.SolucionDuplicadaException.class, cl.casol.backend.conocimiento.domain.exception.PruebaConflictoException.class, cl.casol.backend.identidad.domain.exception.OrganizacionConflictoException.class, cl.casol.backend.identidad.domain.exception.UltimoAdministradorException.class, cl.casol.backend.catalogo.domain.exception.CatalogoConflictoException.class, EmailDuplicadoException.class, PruebaYaAsociadaException.class,
             OrdenPasoDuplicadoException.class, cl.casol.backend.conocimiento.domain.exception.UltimaSolucionActivaException.class, cl.casol.backend.conocimiento.domain.exception.SolucionInactivaException.class})
     public ResponseEntity<Map<String, String>> handleConflicto(RuntimeException ex) {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("message", ex.getMessage()));
@@ -89,7 +89,7 @@ public class GlobalExceptionHandler {
                 .body(Map.of("message", "El registro entra en conflicto con datos existentes"));
     }
 
-    @ExceptionHandler({cl.casol.backend.conocimiento.domain.exception.PruebaInvalidaException.class, cl.casol.backend.identidad.domain.exception.OrganizacionInvalidaException.class, cl.casol.backend.catalogo.domain.exception.CatalogoInvalidoException.class, RolInactivoException.class, AutoDesactivacionException.class,
+    @ExceptionHandler({cl.casol.backend.conocimiento.domain.exception.CopiaSolucionInvalidaException.class, cl.casol.backend.conocimiento.domain.exception.PruebaInvalidaException.class, cl.casol.backend.identidad.domain.exception.OrganizacionInvalidaException.class, cl.casol.backend.catalogo.domain.exception.CatalogoInvalidoException.class, RolInactivoException.class, AutoDesactivacionException.class,
             ClasificacionInvalidaException.class, AsignacionSolucionInvalidaException.class,
             EstadoProcedimientoInvalidoException.class, ReglaEjecucionException.class,
             EstadoConocimientoNoEvaluableException.class, cl.casol.backend.conocimiento.domain.exception.TituloSolucionInvalidoException.class})

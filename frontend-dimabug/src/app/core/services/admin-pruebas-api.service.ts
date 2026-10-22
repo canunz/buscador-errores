@@ -21,5 +21,5 @@ export class AdminPruebasApiService {
     return this.http.patch<PruebaRespuesta>(`${this.base}/${id}/estado`, { activa }).pipe(map(p => this.normalizar(p)), tap(() => this.organizacion.invalidarPruebas()), this.errores());
   }
   private normalizar(p: PruebaRespuesta): PruebaItem { return { id: p.id, descripcion: p.descripcion, resultadoEsperado: p.resultadoEsperado ?? '', activo: p.activa }; }
-  private errores<T>() { return catchError<T, Observable<never>>((e: HttpErrorResponse) => throwError(() => new Error(mensajeApiError(e, 'No fue posible consultar o guardar la prueba.')))); }
+  private errores<T>() { return catchError<T, Observable<never>>((e: HttpErrorResponse) => throwError(() => Object.assign(new Error(mensajeApiError(e, 'No fue posible consultar o guardar la prueba.')), { status: e.status }))); }
 }

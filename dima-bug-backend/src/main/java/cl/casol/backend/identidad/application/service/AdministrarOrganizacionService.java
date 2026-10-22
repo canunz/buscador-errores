@@ -46,7 +46,8 @@ public class AdministrarOrganizacionService {
     }
     @Transactional public ContactoDepartamentoAdministrativo editarContacto(Integer padre,Integer id,String tipo,String valor,Long version) {
         bloquear(padre); var c=contacto(padre,id); version(c.version(),version);
-        String t=texto(tipo,50,"Tipo"),v=texto(valor,100,"Valor"); unicoContacto(padre,t,v,id);
+        String t=Objects.equals(c.tipo(),tipo) ? c.tipo() : texto(tipo,50,"Tipo");
+        String v=texto(valor,100,"Valor"); unicoContacto(padre,t,v,id);
         return repo.guardarContacto(new ContactoDepartamentoAdministrativo(id,padre,t,v,c.activo(),c.version()));
     }
     @Transactional public ContactoDepartamentoAdministrativo estadoContacto(Integer padre,Integer id,boolean activo,Long version) {
@@ -55,7 +56,7 @@ public class AdministrarOrganizacionService {
         return c.activo()==activo ? c : repo.guardarContacto(new ContactoDepartamentoAdministrativo(id,padre,c.tipo(),c.valor(),activo,c.version()));
     }
     private void bloquear(Integer id) { repo.bloquearEscrituras(); repo.bloquearDepartamento(id); }
-    private String nombre(String n) { return texto(n,255,"Nombre"); }
+    private String nombre(String n) { return texto(n,100,"Nombre"); }
     private String texto(String texto,int limite,String campo) {
         if(texto==null || texto.isBlank() || texto.length()>limite)
             throw new OrganizacionInvalidaException(campo+" obligatorio; máximo "+limite+" caracteres");

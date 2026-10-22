@@ -13,17 +13,17 @@
   <div class="tabla-wrap"><table><thead><tr><th>Acciones</th><th>Departamento</th><th>Contactos</th><th>Responsables</th><th>Estado</th></tr></thead><tbody>
     @for (d of items; track d.id) {
       <tr><td><div class="acciones"><button type="button" class="btn-accion ver" (click)="ver(d)" aria-label="Ver detalle">Ver</button>
-        @if (esAdministrador()) { <button type="button" (click)="abrirDepartamento(d)" [disabled]="saving">Editar</button><button type="button" (click)="pedirEstado(d)" [disabled]="saving">{{ d.activo ? 'Desactivar' : 'Reactivar' }}</button> }
+        @if (esAdministrador()) { <button type="button" class="btn-secundario" (click)="abrirDepartamento(d)" [disabled]="saving">Editar</button><button type="button" class="btn-secundario" (click)="pedirEstado(d)" [disabled]="saving">{{ d.activo ? 'Desactivar' : 'Reactivar' }}</button> }
       </div></td><td><strong>{{ d.nombre }}</strong></td><td>
         @if (d.errorDetalle) { <span role="alert">{{ d.errorDetalle }}</span> }
         @for (c of d.contactos; track c.id) { <span class="chip">{{ c.tipo }}: {{ c.valor }} · {{ c.activo ? d.activo ? 'Activo' : 'Activo, no disponible' : 'Inactivo' }}</span> } @empty { @if (!d.errorDetalle) { <span>Sin contactos</span> } }
-      </td><td>@for (r of d.responsables; track $index) { <span class="chip">{{ r }}</span> } @empty { <span>{{ d.activo ? 'Sin responsables' : 'Consulta operacional disponible al reactivar' }}</span> }</td>
-      <td>{{ d.activo ? 'Activo' : 'Inactivo' }}</td></tr>
+      </td><td>@for (r of d.responsables; track $index) { <span class="chip">{{ r.nombre }}</span> } @empty { <span>Sin responsables</span> }</td>
+      <td><span class="estado" [class.activo]="d.activo" [class.inactivo]="!d.activo">{{ d.activo ? 'Activo' : 'Inactivo' }}</span></td></tr>
     } @empty { <tr><td colspan="5">{{ error ? 'No se pudo consultar el catálogo.' : loading ? 'Cargando…' : 'No hay Departamentos disponibles.' }}</td></tr> }
   </tbody></table></div>
 </section>
 @if (detalle) {
-  <div class="detalle-modal" role="dialog" aria-modal="true" aria-labelledby="dep-detalle-titulo"><div class="detalle-modal-fondo"></div><article class="detalle-modal-card">
+  <div class="detalle-modal" role="dialog" aria-modal="true" aria-labelledby="dep-detalle-titulo"><div class="detalle-modal-fondo" (click)="cerrarDetalle()"></div><article class="detalle-modal-card">
     <header class="detalle-modal-franja"><div><p>Departamento</p><h2 id="dep-detalle-titulo">{{ detalle.nombre }}</h2></div><button type="button" class="detalle-modal-cerrar" aria-label="Cerrar detalle" (click)="cerrarDetalle()">✕</button></header>
     <div class="detalle-modal-cuerpo"><p>Estado: {{ detalle.activo ? 'Activo' : 'Inactivo' }}</p>
       @if (detalle.errorDetalle) { <p class="alert" role="alert">{{ detalle.errorDetalle }}</p> }
@@ -36,31 +36,62 @@
           </li>
         } @empty { <li>Sin contactos registrados.</li> }</ul>
         @if (!detalle.activo) { <p>Los contactos conservan sus estados individuales, pero no están disponibles operacionalmente.</p> }
-      </section><section class="detalle-bloque"><h3>Responsables</h3>@for (r of detalle.responsables; track $index) { <p>{{ r }}</p> }</section>
+      </section><section class="detalle-bloque"><div class="dep-seccion-cabecera"><h3>Responsables</h3>
+        @if (esAdministrador()) { <button type="button" class="btn-crear" (click)="abrirResponsable(detalle)" [disabled]="saving || !detalle.activo">Añadir responsable</button> }
+      </div>
+      @if (!detalle.activo) { <p>Los responsables conservan su estado y sus referencias históricas. Reactiva el departamento para añadir o activar responsables.</p> }
+      <div class="dep-tabla-detalle"><table><thead><tr><th>Nombre</th><th>Cargo</th><th>Contacto</th><th>Estado</th>@if (esAdministrador()) { <th>Acciones</th> }</tr></thead><tbody>
+        @for (r of detalle.responsables; track r.id) {
+          <tr><td>{{ r.nombre }}</td><td>{{ r.cargo || '—' }}</td><td>{{ r.contacto || '—' }}</td><td>{{ r.activo ? 'Activo' : 'Inactivo' }}</td>
+          @if (esAdministrador()) { <td><div class="acciones"><button type="button" (click)="abrirResponsable(detalle,r)" [disabled]="saving">Editar responsable</button>
+            <button type="button" (click)="pedirEstado(detalle,undefined,r)" [disabled]="saving || (!detalle.activo && !r.activo)">{{ r.activo ? 'Desactivar responsable' : 'Reactivar responsable' }}</button></div></td> }
+          </tr>
+        } @empty { <tr><td [attr.colspan]="esAdministrador() ? 5 : 4">Sin responsables registrados.</td></tr> }
+      </tbody></table></div></section>
     </div></article></div>
 }
 @if (formularioDepartamento || formularioContacto) {
   <div class="modal dep-form-modal" role="dialog" aria-modal="true" aria-labelledby="dep-form-titulo"><div class="modal-backdrop"></div><div class="modal-dialog modal-pro">
     <header class="modal-head"><h2 id="dep-form-titulo">{{ formularioContacto ? formularioContacto.contacto ? 'Editar Contacto' : 'Añadir Contacto' : editDepartamento ? 'Editar Departamento' : 'Añadir Departamento' }}</h2></header>
-    @if (formError) { <p class="alert" role="alert">{{ formError }}</p> }
+    @if (formError) { <p class="alert" role="alert">{{ formError }} <button type="button" (click)="descartarYRecargar()" [disabled]="saving">Descartar cambios y recargar</button></p> }
     @if (formularioContacto) {
-      <form [formGroup]="contactoForm" (ngSubmit)="guardarContacto()" class="form-grid"><label class="full">Tipo *<input formControlName="tipo" maxlength="50" required /></label><label class="full">Valor *<input formControlName="valor" maxlength="100" required /></label>
+      <form [formGroup]="contactoForm" (ngSubmit)="guardarContacto()" class="form-grid"><label class="full">Tipo *<select formControlName="tipo" required>
+        @for (tipo of tiposContacto; track tipo) { <option [value]="tipo">{{ tipo }}</option> }
+        @if (tipoHistorico) { <option [value]="tipoHistorico">{{ tipoHistorico }} (histórico)</option> }
+      </select></label><label class="full">{{ etiquetaValor }} *<input type="text" formControlName="valor" maxlength="100" [placeholder]="ejemploValor" required />
+      <small>Ejemplo: {{ ejemploValor }}</small></label>
+      @if (tipoHistorico && contactoForm.controls.tipo.value === tipoHistorico) { <p class="full">Se conservará literalmente el tipo histórico. Selecciona otro tipo solo si deseas cambiarlo.</p> }
         @if (!formularioContacto.contacto) { <label class="switch-row full">Activo<input type="checkbox" formControlName="activo" /></label> }
         @if (!formularioContacto.departamento.activo) { <p class="full">Departamento inactivo: el nuevo Contacto debe guardarse inactivo.</p> }
         <div class="form-actions full"><button type="button" (click)="formularioContacto = null" [disabled]="saving">Cancelar</button><button type="submit" [disabled]="saving">{{ saving ? 'Guardando…' : 'Guardar Contacto' }}</button></div>
       </form>
     } @else {
-      <form [formGroup]="departamentoForm" (ngSubmit)="guardarDepartamento()" class="form-grid"><label class="full">Nombre *<input formControlName="nombre" maxlength="255" required /></label>
+      <form [formGroup]="departamentoForm" (ngSubmit)="guardarDepartamento()" class="form-grid"><label class="full">Nombre *<input formControlName="nombre" maxlength="100" required /></label>
         <div class="form-actions full"><button type="button" (click)="formularioDepartamento = false" [disabled]="saving">Cancelar</button><button type="submit" [disabled]="saving">{{ saving ? 'Guardando…' : 'Guardar Departamento' }}</button></div></form>
     }
   </div></div>
 }
 @if (pendienteEstado) {
   <div class="confirm-capa dep-confirm-modal"><div class="confirm-fondo"></div><div class="confirm-dialog" role="alertdialog" aria-modal="true" aria-labelledby="dep-estado-titulo">
-    <h2 id="dep-estado-titulo">{{ (pendienteEstado.contacto?.activo ?? pendienteEstado.departamento.activo) ? 'Desactivar' : 'Reactivar' }} {{ pendienteEstado.contacto ? 'Contacto' : 'Departamento' }}</h2>
-    <p>Se conservan los registros y las referencias históricas. Los contactos mantienen su estado individual.</p>
-    @if (!pendienteEstado.contacto && !pendienteEstado.departamento.activo) { <p>Los contactos que siguen activos volverán a estar disponibles al reactivar el Departamento.</p> }
-    @if (formError) { <p class="alert" role="alert">{{ formError }}</p> }
+    <h2 id="dep-estado-titulo">{{ (pendienteEstado.responsable?.activo ?? pendienteEstado.contacto?.activo ?? pendienteEstado.departamento.activo) ? 'Desactivar' : 'Reactivar' }} {{ pendienteEstado.responsable ? 'Responsable' : pendienteEstado.contacto ? 'Contacto' : 'Departamento' }}</h2>
+    <p>Se conservan los registros y las referencias históricas. Los contactos y responsables mantienen su estado individual.</p>
+    @if (!pendienteEstado.contacto && !pendienteEstado.responsable && !pendienteEstado.departamento.activo) { <p>Los contactos que siguen activos volverán a estar disponibles al reactivar el Departamento.</p> }
+    @if (formError) { <p class="alert" role="alert">{{ formError }} <button type="button" (click)="descartarYRecargar()" [disabled]="saving">Descartar cambios y recargar</button></p> }
     <div class="confirm-acciones"><button type="button" (click)="pendienteEstado = null" [disabled]="saving">Cancelar</button><button type="button" (click)="confirmarEstado()" [disabled]="saving">{{ saving ? 'Guardando…' : 'Confirmar' }}</button></div>
+  </div></div>
+}
+
+@if (formularioResponsable) {
+  <div class="modal dep-form-modal" role="dialog" aria-modal="true" aria-labelledby="responsable-form-titulo"><div class="modal-backdrop"></div><div class="modal-dialog modal-pro">
+    <header class="modal-head"><h2 id="responsable-form-titulo">{{ formularioResponsable.responsable ? 'Editar responsable' : 'Añadir responsable' }}</h2></header>
+    <p class="dep-aviso">Departamento: {{ formularioResponsable.departamento.nombre }}. La pertenencia no se puede cambiar desde este formulario.</p>
+    @if (formError) { <p class="alert" role="alert">{{ formError }} <button type="button" (click)="descartarYRecargar()" [disabled]="saving">Descartar cambios y recargar</button></p> }
+    <form [formGroup]="responsableForm" (ngSubmit)="guardarResponsable()" class="form-grid">
+      <label class="full">Nombre *<input formControlName="nombre" maxlength="160" required /></label>
+      <label class="full">Cargo<input formControlName="cargo" maxlength="120" /></label>
+      <label class="full">Contacto<input type="text" formControlName="contacto" maxlength="160" /></label>
+      @if (formularioResponsable.responsable) { <p class="full">Los cambios actualizarán el responsable conservando sus asignaciones históricas.</p> }
+      <div class="form-actions full"><button type="button" (click)="formularioResponsable = null" [disabled]="saving">Cancelar</button><button type="submit" [disabled]="saving">{{ saving ? 'Guardando…' : 'Guardar responsable' }}</button></div>
+    </form>
   </div></div>
 }

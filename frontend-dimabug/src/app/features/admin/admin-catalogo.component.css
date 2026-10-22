@@ -274,5 +274,9 @@ strong {
 .modulos-filtros select { max-width: 100%; }
 .modulos-filtros button { cursor: pointer; }
 .modulos-resultados { margin: 0; padding: 10px 0; }
+.catalogo-contexto, .recuperacion-sistema { display: flex; flex-wrap: wrap; gap: 12px; margin: 12px 0; }
+.catalogo-contexto a { color: inherit; text-underline-offset: 3px; }
+.catalogo-advertencia { border-left: 4px solid #b45309; background: #fffbeb; color: #78350f; padding: 12px; border-radius: 8px; }
+.catalogo-mensaje { padding: 12px; background: #ecfdf5; color: #065f46; border-radius: 8px; }
 :host-context(.tema-oscuro) .modulos-filtros select, :host-context(.tema-oscuro) .modulos-filtros button { background: #111827; color: #e5e7eb; border-color: #475569; }
 @media (max-width: 720px) { .modulos-filtros { flex-direction: column; align-items: stretch; } }

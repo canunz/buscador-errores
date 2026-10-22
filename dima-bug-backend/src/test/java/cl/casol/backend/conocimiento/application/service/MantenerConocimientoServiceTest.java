@@ -186,4 +186,11 @@ class MantenerConocimientoServiceTest {
         assertThrows(cl.casol.backend.conocimiento.domain.exception.UltimaSolucionActivaException.class,
                 () -> service.cambiarEstado(1,EstadoConocimiento.PUBLICADO,"tecnico@dimarsa.cl"));
     }
+    @Test void titulo151NoLlegaALaPersistenciaAlCrearNiEditar() {
+        String largo="T".repeat(151);
+        assertThrows(ClasificacionInvalidaException.class,()->service.crear(largo,"D",null,null,null,null,null,"qa@example.invalid"));
+        assertThrows(ClasificacionInvalidaException.class,()->service.modificar(1,largo,"D",null,null,null,null,null,"qa@example.invalid"));
+        verify(conocimientos,never()).guardar(any());
+    }
+
 }

@@ -41,7 +41,7 @@ public class ConocimientoEntity {
     @JoinColumn(name = "frecuencia_id")
     private FrecuenciaEntity frecuencia;
 
-    @Column(name = "conocimiento_comentario", columnDefinition = "TEXT")
+    @Column(name = "conocimiento_comentario", length = 500)
     private String comentario;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)

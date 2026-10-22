@@ -50,6 +50,8 @@ public class MantenerConocimientoService {
     @Transactional
     public Conocimiento crear(String titulo, String descripcion, Integer hardwareId, Integer sistemaId,
             Integer moduloId, Integer frecuenciaId, String comentario, String emailAutenticado) {
+        validarTitulo(titulo);
+        validarComentario(comentario);
         Clasificacion clasificacion = validarClasificacion(hardwareId, sistemaId, moduloId, frecuenciaId);
         Usuario usuario = obtenerUsuario(emailAutenticado);
         LocalDateTime ahora = LocalDateTime.now();
@@ -64,6 +66,8 @@ public class MantenerConocimientoService {
     public Conocimiento modificar(Integer id, String titulo, String descripcion, Integer hardwareId,
             Integer sistemaId, Integer moduloId, Integer frecuenciaId, String comentario,
             String emailAutenticado) {
+        validarTitulo(titulo);
+        validarComentario(comentario);
         conocimientos.bloquear(id);
         Conocimiento actual = buscar(id);
         boolean mismaClasificacion = java.util.Objects.equals(hardwareId, actual.getHardware()==null?null:actual.getHardware().id())
@@ -86,6 +90,7 @@ public class MantenerConocimientoService {
     public Conocimiento cambiarEstado(Integer id, EstadoConocimiento estado, String emailAutenticado) {
         conocimientos.bloquear(id);
         Conocimiento actual = buscar(id);
+        validarComentario(actual.getComentario());
         if (estado == EstadoConocimiento.PUBLICADO
                 && soluciones.bloquearPorConocimiento(id).stream().noneMatch(cl.casol.backend.conocimiento.domain.Solucion::activo))
             throw new cl.casol.backend.conocimiento.domain.exception.UltimaSolucionActivaException();
@@ -104,6 +109,7 @@ public class MantenerConocimientoService {
         Conocimiento actual = conocimientos.buscarPorIdIncluidoEliminado(id)
                 .orElseThrow(() -> new ConocimientoNoEncontradoException(id));
         if (actual.getEstado() == EstadoConocimiento.ELIMINADO) return;
+        validarComentario(actual.getComentario());
 
         Usuario usuario = obtenerUsuario(emailAutenticado);
         conocimientos.guardar(new Conocimiento(actual.getId(), actual.getTitulo(), actual.getDescripcion(),
@@ -111,6 +117,16 @@ public class MantenerConocimientoService {
                 actual.getFrecuencia(), actual.getComentario(), actual.getCreadoPor(), actual.getFechaCreacion(),
                 usuario, LocalDateTime.now()));
         indexador.eliminar(id);
+    }
+
+    private void validarComentario(String comentario) {
+        if (comentario != null && comentario.length() > 500)
+            throw new ClasificacionInvalidaException("Comentario: máximo 500 caracteres");
+    }
+
+    private void validarTitulo(String titulo) {
+        if (titulo == null || titulo.isBlank() || titulo.length() > 150)
+            throw new ClasificacionInvalidaException("Título obligatorio; máximo 150 caracteres");
     }
 
     private Usuario obtenerUsuario(String email) {
