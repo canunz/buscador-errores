@@ -26,4 +26,10 @@ Thumbs.db
 .env
 .env.*
 !.env.example
+
+# Local Spring Boot config with credentials must stay out of version control
+# Copy the template below to create your own local file.
 dima-bug-backend/src/main/resources/application.properties
+dima-bug-backend/src/main/resources/application-staging.properties
+dima-bug-backend/src/main/resources/application-*.properties
+!dima-bug-backend/src/main/resources/application-example.properties
