@@ -42,7 +42,7 @@ public class UsuarioConsultaAdapter implements UsuarioConsultaPort {
                 .collect(Collectors.toMap(UsuarioTicket::id, Function.identity(), (a, b) -> a));
     }
 
-    static RolTicket rol(String nombreRol) {
+    public static RolTicket rol(String nombreRol) {
         String rol = nombreRol == null ? "" : nombreRol.trim().toUpperCase(Locale.ROOT);
         if (rol.equals("ADMINISTRADOR")) return RolTicket.ADMINISTRADOR;
         if (ROLES_SOPORTE.contains(rol)) return RolTicket.SOPORTE;

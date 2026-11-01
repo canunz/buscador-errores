@@ -116,49 +116,50 @@ public class EnvioCodigoAccesoCorreoAdapter implements EnvioCodigoAccesoPort, Di
     }
 
     private String html(String nombre, String codigo, int minutos, boolean conBanner) {
+        // Si el lector bloquea imágenes, la franja mantiene su alto y color y muestra "DimaBug".
         String cabecera = conBanner
                 ? """
-                  <tr><td align="center" bgcolor="#1a1a1a" style="padding:0;line-height:0;font-size:0;background-color:#1a1a1a;">
-                    <img src="cid:%s" width="600" alt="DimaBug" style="display:block;width:100%%;max-width:600px;height:auto;border:0;background-color:#1a1a1a;color:#ffffff;font-family:Arial,Helvetica,sans-serif;font-size:24px;font-weight:bold;line-height:180px;text-align:center;">
+                  <tr><td align="center" valign="middle" height="144" bgcolor="#1a1a1a" style="padding:0;height:144px;background-color:#1a1a1a;">
+                    <img src="cid:%s" width="480" height="144" alt="DimaBug" style="display:block;width:100%%;max-width:480px;height:auto;border:0;outline:none;text-decoration:none;color:#ffffff;font-family:Arial,Helvetica,sans-serif;font-size:20px;font-weight:bold;">
                   </td></tr>
                   """.formatted(BANNER_CID)
                 : """
-                  <tr><td align="center" bgcolor="#1a1a1a" style="padding:28px 36px;background-color:#1a1a1a;border-bottom:4px solid #1e4fd6;">
-                    <span style="font-size:24px;font-weight:bold;color:#ffffff;">DimaBug</span>
+                  <tr><td align="center" valign="middle" height="144" bgcolor="#1a1a1a" style="height:144px;background-color:#1a1a1a;border-bottom:3px solid #1e4fd6;">
+                    <span style="font-family:Arial,Helvetica,sans-serif;font-size:22px;font-weight:bold;color:#ffffff;">DimaBug</span>
                   </td></tr>
                   """;
         return """
                 <!DOCTYPE html>
                 <html lang="es">
                 <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Código de acceso DimaBug</title></head>
-                <body style="margin:0;padding:0;background-color:#e9eef7;">
-                <table role="presentation" width="100%%" cellpadding="0" cellspacing="0" border="0" style="background-color:#e9eef7;">
-                  <tr><td align="center" style="padding:32px 12px;">
-                    <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="width:100%%;max-width:600px;border-collapse:separate;border-radius:14px;overflow:hidden;background-color:#0b1b4d;font-family:Arial,Helvetica,sans-serif;">
+                <body bgcolor="#2a2a2a" style="margin:0;padding:0;background-color:#2a2a2a;">
+                <table role="presentation" width="100%%" cellpadding="0" cellspacing="0" border="0" bgcolor="#2a2a2a" style="background-color:#2a2a2a;">
+                  <tr><td align="center" style="padding:24px 12px;">
+                    <table role="presentation" width="480" cellpadding="0" cellspacing="0" border="0" bgcolor="#1a1a1a" style="width:100%%;max-width:480px;background-color:#1a1a1a;font-family:Arial,Helvetica,sans-serif;">
                       %s
-                      <tr><td style="padding:32px 36px 8px 36px;color:#e2e8f0;">
-                        <p style="margin:0 0 12px 0;font-size:20px;font-weight:bold;color:#ffffff;">Hola, %s</p>
-                        <p style="margin:0;font-size:15px;line-height:1.6;color:#c7d2fe;">Se pidió ingresar a tu cuenta de <strong style="color:#ffffff;">DimaBug</strong>. Escribe este código en la pantalla de inicio de sesión para continuar:</p>
+                      <tr><td style="padding:26px 28px 0 28px;">
+                        <p style="margin:0 0 8px 0;font-size:15px;font-weight:bold;color:#f1f5f9;">Hola, %s</p>
+                        <p style="margin:0;font-size:13px;line-height:1.6;color:#b4b4b4;">Se pidió ingresar a tu cuenta de DimaBug. Escribe este código en la pantalla de inicio de sesión para continuar:</p>
                       </td></tr>
-                      <tr><td style="padding:24px 36px 0 36px;">
-                        <p style="margin:0 0 10px 0;font-size:11px;font-weight:bold;letter-spacing:2px;color:#93c5fd;">TU CÓDIGO DE ACCESO</p>
-                        <table role="presentation" width="100%%" cellpadding="0" cellspacing="0" border="0" style="border-collapse:separate;">
-                          <tr><td align="center" style="background-color:#132a6b;border:1px solid #3b82f6;border-radius:12px;padding:22px 12px;">
-                            <span style="font-family:'Courier New',Courier,monospace;font-size:38px;font-weight:bold;letter-spacing:12px;color:#ffffff;">%s</span>
+                      <tr><td style="padding:22px 28px 0 28px;">
+                        <p style="margin:0 0 10px 0;font-size:10px;letter-spacing:1px;color:#8a8a8a;">TU CÓDIGO DE ACCESO</p>
+                        <table role="presentation" width="100%%" cellpadding="0" cellspacing="0" border="0">
+                          <tr><td align="center" bgcolor="#141414" style="background-color:#141414;border:1px solid #3b82f6;border-radius:6px;padding:20px 12px;">
+                            <span style="font-family:Arial,Helvetica,sans-serif;font-size:28px;font-weight:bold;letter-spacing:8px;color:#dbeafe;">%s</span>
                           </td></tr>
                         </table>
-                        <p style="margin:16px 0 0 0;font-size:14px;line-height:1.5;color:#c7d2fe;text-align:center;">Vence en <strong style="color:#ffffff;">%d minutos</strong> y sirve para un solo ingreso. No lo compartas con nadie.</p>
+                        <p style="margin:16px 0 0 0;font-size:12px;line-height:1.5;color:#b4b4b4;text-align:center;">Vence en <strong style="color:#ffffff;">%d minutos</strong> y sirve para un solo ingreso. No lo compartas con nadie.</p>
                       </td></tr>
-                      <tr><td style="padding:24px 36px 32px 36px;">
-                        <table role="presentation" width="100%%" cellpadding="0" cellspacing="0" border="0" style="border-collapse:separate;">
-                          <tr><td style="background-color:#0f2260;border-left:4px solid #3b82f6;border-radius:8px;padding:14px 16px;font-size:13px;line-height:1.5;color:#a5b4fc;">
+                      <tr><td style="padding:22px 28px 26px 28px;">
+                        <table role="presentation" width="100%%" cellpadding="0" cellspacing="0" border="0">
+                          <tr><td bgcolor="#222222" style="background-color:#222222;border-left:3px solid #4a4a4a;border-radius:4px;padding:12px 14px;font-size:11px;line-height:1.6;color:#9a9a9a;">
                             ¿No fuiste tú? Puedes ignorar este correo. Sin este código nadie puede entrar a tu cuenta.
                           </td></tr>
                         </table>
                       </td></tr>
-                      <tr><td align="center" style="background-color:#081440;padding:18px 24px;border-top:1px solid #1e3a8a;">
-                        <p style="margin:0 0 4px 0;font-size:12px;color:#7c8db5;">Mensaje automático · Por favor no respondas este correo</p>
-                        <p style="margin:0;font-size:12px;font-weight:bold;color:#c7d2fe;">DimaBug · Soporte TI Holding Dimarsa</p>
+                      <tr><td align="center" style="padding:16px 24px 18px 24px;border-top:1px solid #2e2e2e;">
+                        <p style="margin:0 0 6px 0;font-size:10px;color:#7a7a7a;">Mensaje automático · Por favor no respondas este correo</p>
+                        <p style="margin:0;font-size:10px;color:#b4b4b4;">DimaBug · Soporte TI Holding Dimarsa</p>
                       </td></tr>
                     </table>
                   </td></tr>

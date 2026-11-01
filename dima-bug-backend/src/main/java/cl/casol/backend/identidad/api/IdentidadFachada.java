@@ -37,6 +37,11 @@ public class IdentidadFachada {
         return usuarios.buscarPorIds(distintos).stream().map(IdentidadFachada::publico).toList();
     }
 
+    /** Usuarios activos (por ejemplo, para avisar a soporte de un ticket crítico). */
+    public List<UsuarioPublico> listarActivos() {
+        return usuarios.buscarTodos().stream().filter(Usuario::isActivo).map(IdentidadFachada::publico).toList();
+    }
+
     private static UsuarioPublico publico(Usuario usuario) {
         String rol = usuario.getRol() == null ? null : usuario.getRol().getNombre();
         return new UsuarioPublico(usuario.getId(), usuario.getNombre(), usuario.getEmail(), rol, usuario.isActivo());

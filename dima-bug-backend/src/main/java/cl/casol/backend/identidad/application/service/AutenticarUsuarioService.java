@@ -51,7 +51,7 @@ public class AutenticarUsuarioService {
             EnvioCodigoAccesoPort envioCodigo,
             PasswordEncoderPort encoder,
             @Value("${dimabug.auth.codigo.minutos-vigencia:5}") int minutosVigencia,
-            @Value("${dimabug.auth.codigo.segundos-reenvio:60}") int segundosReenvio
+            @Value("${dimabug.auth.codigo.segundos-reenvio:4}") int segundosReenvio
     ) {
         this(usuarioRepository, codigoRepository, envioCodigo, encoder, Clock.systemDefaultZone(),
                 minutosVigencia, segundosReenvio);

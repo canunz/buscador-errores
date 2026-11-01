@@ -190,7 +190,7 @@ export class LoginComponent implements OnDestroy {
   private iniciarContadores(res: SolicitudCodigoAcceso): void {
     const ahora = Date.now();
     this.venceEn = ahora + (res.segundosVigencia || 300) * 1000;
-    this.reenvioDesde = ahora + (res.segundosReenvio || 60) * 1000;
+    this.reenvioDesde = ahora + (res.segundosReenvio || 4) * 1000;
     this.arrancarReloj();
   }
 
