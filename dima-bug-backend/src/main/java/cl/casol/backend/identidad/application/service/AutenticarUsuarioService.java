@@ -130,6 +130,7 @@ public class AutenticarUsuarioService {
         }
 
         codigoRepository.guardar(pendiente.marcarUsado());
+        usuarioRepository.registrarIngreso(usuario.getId(), ahora);
         return usuario;
     }
 

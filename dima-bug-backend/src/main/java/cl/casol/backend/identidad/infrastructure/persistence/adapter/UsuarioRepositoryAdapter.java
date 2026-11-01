@@ -94,4 +94,21 @@ public class UsuarioRepositoryAdapter implements UsuarioRepository {
         }
         return guardado;
     }
+
+    @Override
+    public void eliminar(Usuario usuario) {
+        try {
+            usuarioJpaRepository.deleteById(usuario.getId());
+            // flush: si el usuario tiene registros asociados, el error sale aquí y no al final.
+            usuarioJpaRepository.flush();
+        } catch (org.springframework.dao.DataIntegrityViolationException e) {
+            throw new cl.casol.backend.identidad.domain.exception.UsuarioConRegistrosException();
+        }
+        usuariosAutenticados.invalidar(usuario.getEmail());
+    }
+
+    @Override
+    public void registrarIngreso(Integer id, java.time.LocalDateTime cuando) {
+        usuarioJpaRepository.registrarIngreso(id, cuando);
+    }
 }

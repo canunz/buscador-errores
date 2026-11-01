@@ -1,5 +1,6 @@
 package cl.casol.backend.identidad.application.service;
 
+import cl.casol.backend.identidad.application.port.out.BienvenidaUsuarioPort;
 import cl.casol.backend.identidad.application.port.out.PasswordEncoderPort;
 import cl.casol.backend.identidad.application.port.out.RolRepository;
 import cl.casol.backend.identidad.application.port.out.UsuarioRepository;
@@ -10,6 +11,7 @@ import cl.casol.backend.identidad.domain.exception.EmailDuplicadoException;
 import cl.casol.backend.identidad.domain.exception.RolInactivoException;
 import cl.casol.backend.identidad.domain.exception.RolNoEncontradoException;
 import cl.casol.backend.identidad.domain.exception.UsuarioNoEncontradoException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -22,13 +24,23 @@ public class AdministrarUsuariosService {
     private final UsuarioRepository usuarioRepository;
     private final RolRepository rolRepository;
     private final PasswordEncoderPort passwordEncoder;
+    private final BienvenidaUsuarioPort bienvenida;
 
     public AdministrarUsuariosService(UsuarioRepository usuarioRepository,
                                       RolRepository rolRepository,
                                       PasswordEncoderPort passwordEncoder) {
+        this(usuarioRepository, rolRepository, passwordEncoder, BienvenidaUsuarioPort.NINGUNO);
+    }
+
+    @Autowired
+    public AdministrarUsuariosService(UsuarioRepository usuarioRepository,
+                                      RolRepository rolRepository,
+                                      PasswordEncoderPort passwordEncoder,
+                                      BienvenidaUsuarioPort bienvenida) {
         this.usuarioRepository = usuarioRepository;
         this.rolRepository = rolRepository;
         this.passwordEncoder = passwordEncoder;
+        this.bienvenida = bienvenida;
     }
 
     public List<Usuario> listar() {
@@ -52,7 +64,10 @@ public class AdministrarUsuariosService {
         Usuario usuario = new Usuario(
                 null, rol, nombre, correo, claveInternaInutilizable(), true, ahora, ahora
         );
-        return usuarioRepository.guardar(usuario);
+        Usuario creado = usuarioRepository.guardar(usuario);
+        // Correo de bienvenida con el enlace a la página de inicio de sesión.
+        bienvenida.enviar(creado.getEmail(), creado.getNombre(), rol.getNombre());
+        return creado;
     }
 
     public Usuario modificar(Integer id, String nombre, String email, Integer rolId) {
@@ -87,6 +102,17 @@ public class AdministrarUsuariosService {
         return usuarioRepository.guardar(modificado);
     }
 
+    /** Borra la cuenta. No se puede eliminar la propia ni al último administrador activo. */
+    public void eliminar(Integer id, String emailAutenticado) {
+        List<Usuario> administradores = usuarioRepository.bloquearAdministradoresActivos();
+        Usuario actual = buscarPorId(id);
+        if (actual.getEmail().equalsIgnoreCase(emailAutenticado)) {
+            throw new cl.casol.backend.identidad.domain.exception.AutoEliminacionException();
+        }
+        protegerUltimoAdministrador(actual, false, actual.getRol(), administradores);
+        usuarioRepository.eliminar(actual);
+    }
+
     private void protegerUltimoAdministrador(Usuario actual, boolean activo, Rol rol, List<Usuario> administradores) {
         if (actual.isActivo() && "ADMINISTRADOR".equalsIgnoreCase(actual.getRol().getNombre().trim())
                 && (!activo || !"ADMINISTRADOR".equalsIgnoreCase(rol.getNombre().trim()))
@@ -99,7 +125,10 @@ public class AdministrarUsuariosService {
      * Se guarda un valor aleatorio que nadie conoce, solo para cumplir con la columna obligatoria.
      */
     private String claveInternaInutilizable() {
-        return passwordEncoder.codificar(java.util.UUID.randomUUID() + "-" + java.util.UUID.randomUUID());
+        // BCrypt acepta como máximo 72 bytes: 64 caracteres aleatorios caben de sobra.
+        String aleatorio = java.util.UUID.randomUUID().toString().replace("-", "")
+                + java.util.UUID.randomUUID().toString().replace("-", "");
+        return passwordEncoder.codificar(aleatorio);
     }
 
     private Rol obtenerRolActivo(Integer rolId) {

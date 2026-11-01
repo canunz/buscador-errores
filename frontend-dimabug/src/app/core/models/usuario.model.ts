@@ -9,6 +9,7 @@ export interface Usuario {
   usuarioEmail: string;
   usuarioEstado: boolean;
   usuarioFechaCreacion?: string;
+  usuarioUltimoIngreso?: string;
   rolId?: number;
   rol?: Rol;
   rolNombre?: string;

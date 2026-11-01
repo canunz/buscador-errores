@@ -182,6 +182,18 @@ td:first-child {
   color: #fff;
 }
 
+.btn-accion.eliminar {
+  background: #fef2f2;
+  border-color: #fecaca;
+  color: #dc2626;
+}
+
+.btn-accion.eliminar:hover {
+  background: #dc2626;
+  border-color: #dc2626;
+  color: #fff;
+}
+
 .btn-accion.estado.activar {
   background: #e7f7ee;
   border-color: #bbf7d0;

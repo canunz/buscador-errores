@@ -14,6 +14,23 @@ public class Usuario {
     private boolean activo;
     private LocalDateTime fechaCreacion;
     private LocalDateTime fechaActualizacion;
+    /** Último inicio de sesión. Es null si la persona nunca ha ingresado. */
+    private LocalDateTime ultimoIngreso;
+
+    public Usuario(
+            Integer id,
+            Rol rol,
+            String nombre,
+            String email,
+            String passwordHash,
+            boolean activo,
+            LocalDateTime fechaCreacion,
+            LocalDateTime fechaActualizacion,
+            LocalDateTime ultimoIngreso
+    ) {
+        this(id, rol, nombre, email, passwordHash, activo, fechaCreacion, fechaActualizacion);
+        this.ultimoIngreso = ultimoIngreso;
+    }
 
     public Usuario(
             Integer id,
@@ -65,6 +82,10 @@ public class Usuario {
 
     public LocalDateTime getFechaActualizacion() {
         return fechaActualizacion;
+    }
+
+    public LocalDateTime getUltimoIngreso() {
+        return ultimoIngreso;
     }
 }
 

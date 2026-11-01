@@ -167,6 +167,16 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(Map.of("message", ex.getMessage()));
     }
 
+    @ExceptionHandler(cl.casol.backend.identidad.domain.exception.UsuarioConRegistrosException.class)
+    public ResponseEntity<Map<String, String>> handleUsuarioConRegistros(RuntimeException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("message", ex.getMessage()));
+    }
+
+    @ExceptionHandler(cl.casol.backend.identidad.domain.exception.AutoEliminacionException.class)
+    public ResponseEntity<Map<String, String>> handleAutoEliminacion(RuntimeException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", ex.getMessage()));
+    }
+
     @ExceptionHandler(UsuarioInactivoException.class)
     public ResponseEntity<Map<String, String>> handleUsuarioInactivo(
             UsuarioInactivoException ex

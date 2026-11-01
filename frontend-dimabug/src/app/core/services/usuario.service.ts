@@ -91,6 +91,10 @@ export class UsuarioService {
     );
   }
 
+  eliminar(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.base}/${id}`).pipe(tap(() => this.quitarLocal(id)));
+  }
+
   listarRoles(force = false): Observable<Rol[]> {
     if (!force && this.rolesCache$) {
       return this.rolesCache$;
@@ -127,6 +131,12 @@ export class UsuarioService {
     } else {
       list.unshift(item);
     }
+    this.writeUsuariosSession(list);
+  }
+
+  private quitarLocal(id: number): void {
+    this.invalidateLista();
+    const list = (this.readUsuariosSession() ?? []).filter((u) => u.usuarioId !== id);
     this.writeUsuariosSession(list);
   }
 
@@ -175,6 +185,7 @@ export class UsuarioService {
       usuarioEmail: String(u['usuarioEmail'] ?? u['email'] ?? ''),
       usuarioEstado: Boolean(u['usuarioEstado'] ?? u['activo'] ?? true),
       usuarioFechaCreacion: fechaApi(u['usuarioFechaCreacion'] ?? u['fechaCreacion']),
+      usuarioUltimoIngreso: fechaApi(u['usuarioUltimoIngreso'] ?? u['ultimoIngreso']),
       rolId: rol?.rolId ?? (u['rolId'] != null ? Number(u['rolId']) : undefined),
       rol,
       rolNombre: rol?.rolNombre ?? (u['rolNombre'] ? String(u['rolNombre']) : undefined),

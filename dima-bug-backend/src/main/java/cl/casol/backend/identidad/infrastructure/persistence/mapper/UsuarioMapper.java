@@ -28,7 +28,8 @@ public final class UsuarioMapper {
                 entity.getPasswordHash(),
                 entity.isActivo(),
                 entity.getFechaCreacion(),
-                entity.getFechaActualizacion()
+                entity.getFechaActualizacion(),
+                entity.getUltimoIngreso()
         );
     }
 

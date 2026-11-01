@@ -254,6 +254,40 @@ export class UsuariosComponent implements OnInit {
     };
   }
 
+  eliminar(u: Usuario): void {
+    if (this.esCuentaActual(u)) {
+      return;
+    }
+    this.confirmacion = {
+      titulo: 'Eliminar usuario',
+      pregunta: '¿Estás seguro de eliminar a',
+      nombre: u.usuarioNombre,
+      nota: 'Esta acción no se puede deshacer. Si tiene tickets u otros registros asociados, no se podrá eliminar y conviene inactivarlo.',
+      accion: 'Eliminar',
+      tono: 'peligro',
+      ejecutar: () => this.aplicarEliminacion(u),
+    };
+  }
+
+  private aplicarEliminacion(u: Usuario): void {
+    this.mensajeCarga = 'Eliminando usuario…';
+    this.cambiandoEstado = true;
+    this.error = '';
+    this.success = '';
+    this.usuariosApi.eliminar(u.usuarioId).subscribe({
+      next: () => {
+        this.cambiandoEstado = false;
+        this.success = `${u.usuarioNombre} fue eliminado.`;
+        this.usuarios = this.usuarios.filter((x) => x.usuarioId !== u.usuarioId);
+        this.cargar(true);
+      },
+      error: (err) => {
+        this.cambiandoEstado = false;
+        this.error = mensajeApiError(err, 'No se pudo eliminar el usuario.');
+      },
+    });
+  }
+
   aceptarConfirmacion(): void {
     const accion = this.confirmacion?.ejecutar;
     this.confirmacion = null;

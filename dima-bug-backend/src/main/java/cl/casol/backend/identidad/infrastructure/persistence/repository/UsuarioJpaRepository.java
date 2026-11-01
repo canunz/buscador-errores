@@ -35,6 +35,10 @@ public interface UsuarioJpaRepository
             """, nativeQuery = true)
     Optional<UsuarioEntity> findByIdentificador(@Param("valor") String valor);
 
+    @org.springframework.data.jpa.repository.Modifying
+    @Query(value = "UPDATE u_usuario SET usuario_ultimo_ingreso = :fecha WHERE usuario_id = :id", nativeQuery = true)
+    int registrarIngreso(@Param("id") Integer id, @Param("fecha") java.time.LocalDateTime fecha);
+
     boolean existsByEmail(String email);
 
     boolean existsByEmailIgnoreCase(String email);
