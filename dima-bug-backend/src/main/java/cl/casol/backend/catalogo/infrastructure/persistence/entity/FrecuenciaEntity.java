@@ -10,7 +10,7 @@ public class FrecuenciaEntity {
     @Column(name = "frecuencia_id")
     private Integer id;
 
-    @Column(name = "frecuencia_nombre", nullable = false, length = 100)
+    @Column(name = "frecuencia_nombre", nullable = false, length = 50)
     private String nombre;
 
     @Column(name = "frecuencia_orden", nullable = false)

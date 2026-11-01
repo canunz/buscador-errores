@@ -19,9 +19,26 @@ export function apiUrl(path: string): string {
   return `${host}/api${suffix}`;
 }
 
-/** Endpoints públicos: no llevan JWT. */
-export const PUBLIC_API_PATHS = ['/api/auth/login', '/api/health'] as const;
+/** Solo el origen y la ruta base configurados del backend pueden recibir JWT. */
+export function backendApiPath(value: string): string | null {
+  try {
+    if (!value || value !== value.trim() || value.includes('\\')) return null;
+    const origin = globalThis.location.origin;
+    const base = new URL(apiUrl('/'), origin);
+    const url = new URL(value, origin);
+    if (!['http:', 'https:'].includes(url.protocol) || url.username || url.password
+        || url.origin !== base.origin) return null;
+    const prefix = base.pathname.replace(/\/$/, '');
+    if (url.pathname === prefix) return '/';
+    return url.pathname.startsWith(prefix + '/') ? url.pathname.slice(prefix.length) : null;
+  } catch {
+    return null;
+  }
+}
+
+export const PUBLIC_API_PATHS = ['/api/auth/codigo', '/api/auth/codigo/verificar', '/api/health'] as const;
 
 export function isPublicApiUrl(url: string): boolean {
-  return PUBLIC_API_PATHS.some((path) => url.includes(path));
+  const path = backendApiPath(url);
+  return path === '/auth/codigo' || path === '/auth/codigo/verificar' || path === '/health';
 }

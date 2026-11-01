@@ -16,6 +16,10 @@ public class BuscarConocimientoService {
         this.busqueda = busqueda;
     }
 
+    public List<ResultadoBusquedaConocimiento> buscarAutoservicio(String texto) {
+        return busqueda.buscarAutoservicio(texto.trim());
+    }
+
     public List<ResultadoBusquedaConocimiento> buscar(String texto, Integer hardwareId, Integer sistemaId,
             Integer moduloId, Integer frecuenciaId) {
         String textoUtil = texto == null || texto.isBlank() ? null : texto.trim();

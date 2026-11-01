@@ -70,4 +70,22 @@ describe('QA-009 API persistente de soluciones', () => {
     api.modificarSolucion(4, 8, datos).subscribe(); const put = http.expectOne('/api/conocimientos/4/soluciones/8');
     expect(put.request.body).toEqual(datos); put.flush(solucion);
   });
+
+  it('catálogo reutilizable consulta solo conocimientos publicados e incluye inactivas',()=>{
+    api.listarSolucionesCatalogo(true,true,true).subscribe(items=>expect(items.length).toBe(1));
+    http.expectOne('/api/conocimientos').flush([{id:1,titulo:'Publicado',estado:'PUBLICADO'},{id:2,titulo:'Borrador',estado:'BORRADOR'}]);
+    http.expectOne('/api/admin/conocimientos/1/soluciones').flush([{...solucion,activo:false}]);http.expectNone('/api/admin/conocimientos/2/soluciones');
+  });
+  it('copia solo transmite IDs y confirmación por defecto falsa',()=>{
+    api.copiarSolucion(4,1,8).subscribe(s=>expect(s.id).toBe(99));const r=http.expectOne('/api/admin/conocimientos/4/soluciones/copias');
+    expect(r.request.body).toEqual({conocimientoOrigenId:1,solucionOrigenId:8,confirmarAutoservicio:false});r.flush({...solucion,id:99});
+  });
+  it('copia explícita invalida el destino solo después de éxito',()=>{
+    api.listarSoluciones(4).subscribe();http.expectOne('/api/conocimientos/4/soluciones').flush([solucion]);api.copiarSolucion(4,1,8,true).subscribe();
+    const r=http.expectOne('/api/admin/conocimientos/4/soluciones/copias');expect(r.request.body.confirmarAutoservicio).toBeTrue();r.flush({...solucion,id:99});expect(api.leerSeccion('soluciones:4')).toBeNull();
+  });
+  it('copia propaga 409 y 403 sin reintentar POST',()=>{
+    api.copiarSolucion(4,1,8).subscribe({error:e=>expect(e.message).toContain('Ya existe')});http.expectOne('/api/admin/conocimientos/4/soluciones/copias').flush({message:'Ya existe'},{status:409,statusText:'Conflict'});
+    api.copiarSolucion(4,1,8).subscribe({error:e=>expect(e.message).toContain('ADMINISTRADOR')});http.expectOne('/api/admin/conocimientos/4/soluciones/copias').flush({},{status:403,statusText:'Forbidden'});
+  });
 });

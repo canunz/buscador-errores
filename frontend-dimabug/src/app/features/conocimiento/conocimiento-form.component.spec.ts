@@ -35,4 +35,20 @@ describe('Formulario de conocimiento y encabezado', () => {
       expect(cruza).toBeFalse();
     });
   }
+  it('limita el título a 150 tanto en control como en input', () => {
+    const fixture = TestBed.createComponent(ConocimientoFormComponent); fixture.detectChanges();
+    const control = fixture.componentInstance.form.controls.titulo;
+    control.setValue('T'.repeat(150)); expect(control.valid).toBeTrue();
+    control.setValue('T'.repeat(151)); expect(control.hasError('maxlength')).toBeTrue();
+    expect(fixture.nativeElement.querySelector('[formControlName="titulo"]').maxLength).toBe(150);
+  });
+
+  it('comentario opcional acepta 500 y rechaza 501 caracteres', () => {
+    const f = TestBed.createComponent(ConocimientoFormComponent); f.detectChanges();
+    const c = f.componentInstance.form.controls.comentario;
+    c.setValue(''); expect(c.valid).toBeTrue();
+    c.setValue('C'.repeat(500)); expect(c.valid).toBeTrue();
+    c.setValue('C'.repeat(501)); expect(c.hasError('maxlength')).toBeTrue();
+    expect(f.nativeElement.querySelector('[formControlName="comentario"]').maxLength).toBe(500);
+  });
 });

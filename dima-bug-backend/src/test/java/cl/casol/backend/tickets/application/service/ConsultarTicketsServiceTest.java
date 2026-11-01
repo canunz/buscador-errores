@@ -42,9 +42,11 @@ class ConsultarTicketsServiceTest {
     }
 
     @Test void tamanoDePaginaSeAcota() {
-        when(e.tickets.buscar(any(), anyInt(), anyInt())).thenReturn(new PaginaTickets<>(List.of(), 0, 100, 0));
-        service.listar(null, -3, 5000, EMAIL_ADMIN);
-        verify(e.tickets).buscar(any(), eq(0), eq(100));
+        when(e.tickets.listarLigero(null, 100)).thenReturn(List.of());
+        var resultado = service.listar(null, -3, 5000, EMAIL_ADMIN);
+        verify(e.tickets).listarLigero(null, 100);
+        assertEquals(0, resultado.pagina());
+        assertEquals(100, resultado.tamano());
     }
 
     @Test void usuarioNoVeElDetalleDeUnTicketAjeno() {

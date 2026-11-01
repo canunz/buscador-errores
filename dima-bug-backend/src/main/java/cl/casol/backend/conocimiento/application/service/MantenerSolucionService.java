@@ -36,8 +36,11 @@ public class MantenerSolucionService {
         conocimientos.bloquear(conocimientoId);
         verificarConocimiento(conocimientoId);
         validarTitulo(titulo);
+        var actuales = soluciones.bloquearPorConocimiento(conocimientoId);
+        cl.casol.backend.conocimiento.domain.IdentidadSolucion.exigirNueva(actuales,
+                titulo, descripcion, tipo == null ? TipoSolucion.PASOS : tipo);
         Solucion guardada = soluciones.guardar(new Solucion(null, conocimientoId, descripcion,
-                tipo == null ? TipoSolucion.PASOS : tipo, orden == null ? 1 : orden, titulo.strip(), true, false));
+                tipo == null ? TipoSolucion.PASOS : tipo, ordenDisponible(actuales, orden), titulo.strip(), true, false));
         indexador.indexar(conocimientoId);
         return guardada;
     }
@@ -55,6 +58,14 @@ public class MantenerSolucionService {
                 tipo == null ? TipoSolucion.PASOS : tipo, orden == null ? 1 : orden, titulo.strip(), actual.activo(), actual.autoservicio()));
         indexador.indexar(conocimientoId);
         return guardada;
+    }
+
+    private Integer ordenDisponible(List<Solucion> actuales, Integer solicitado) {
+        int propuesto = solicitado == null ? 1 : solicitado;
+        if (actuales.stream().noneMatch(s -> s.orden() == propuesto)) return propuesto;
+        int maximo = actuales.stream().mapToInt(Solucion::orden).max().orElse(0);
+        if (maximo == Integer.MAX_VALUE) throw new cl.casol.backend.conocimiento.domain.exception.CopiaSolucionInvalidaException("No hay un orden disponible para otra solución");
+        return maximo + 1;
     }
 
     private void validarTitulo(String titulo) {

@@ -15,6 +15,15 @@ interface LoginResponse {
   rol: string;
 }
 
+export interface SolicitudCodigoAcceso {
+  message: string;
+  segundosVigencia: number;
+  segundosReenvio: number;
+}
+
+/** Error del ingreso con código; en un reenvío anticipado indica cuántos segundos faltan. */
+export type CodigoAccesoError = Error & { segundosRestantes?: number };
+
 interface AuthMeResponse {
   email: string;
   estado: string;
@@ -37,20 +46,28 @@ export class AuthService {
   readonly isSoporte = computed(() => esSoporte(this.sessionSignal()?.usuario));
   readonly isStaff = computed(() => esStaff(this.sessionSignal()?.usuario));
 
-  login(email: string, password: string): Observable<AuthSession> {
-    const identificador = email.trim();
-    const clave = password.trim();
+  /**
+   * Paso 1 del ingreso: valida que el correo exista y le envía un código de acceso.
+   * También se usa para reenviar el código.
+   */
+  solicitarCodigoAcceso(correo: string): Observable<SolicitudCodigoAcceso> {
+    const valor = correo.trim();
     return this.http
-      .post<LoginResponse>(apiUrl('/auth/login'), {
-        email: identificador,
-        usuario: identificador,
-        correo: identificador,
-        password: clave,
+      .post<SolicitudCodigoAcceso>(apiUrl('/auth/codigo'), { email: valor })
+      .pipe(catchError((err: HttpErrorResponse) => throwError(() => this.codigoError(err, 'solicitar'))));
+  }
+
+  /** Paso 2 del ingreso: valida el código recibido y abre la sesión. */
+  verificarCodigoAcceso(correo: string, codigo: string): Observable<AuthSession> {
+    return this.http
+      .post<LoginResponse>(apiUrl('/auth/codigo/verificar'), {
+        email: correo.trim(),
+        codigo: codigo.replace(/\s/g, ''),
       })
       .pipe(
         map((res) => this.sessionFromLogin(res)),
         tap((session) => this.persist(session)),
-        catchError((err: HttpErrorResponse) => throwError(() => new Error(this.loginError(err)))),
+        catchError((err: HttpErrorResponse) => throwError(() => this.codigoError(err, 'verificar'))),
       );
   }
 
@@ -84,49 +101,6 @@ export class AuthService {
     return this.sessionSignal()?.token;
   }
 
-  solicitarCodigo(email: string): Observable<{ message: string; debugCode?: string }> {
-    return this.http
-      .post<{ message?: string; debugCode?: string; codigo?: string }>(apiUrl('/auth/recuperar/email'), {
-        email,
-      })
-      .pipe(
-        map((res) => ({
-          message: res.message || 'Te enviamos un código de 5 dígitos a tu correo.',
-          debugCode: res.debugCode || res.codigo,
-        })),
-        catchError((err: HttpErrorResponse) =>
-          throwError(() => new Error(this.recoverError(err, 'No fue posible enviar el código. Intente más tarde.'))),
-        ),
-      );
-  }
-
-  validarCodigo(email: string, code: string): Observable<void> {
-    return this.http.post<unknown>(apiUrl('/auth/recuperar/codigo'), { email, code }).pipe(
-      map(() => void 0),
-      catchError((err: HttpErrorResponse) =>
-        throwError(() => new Error(this.recoverError(err, 'El código ingresado no es válido.'))),
-      ),
-    );
-  }
-
-  cambiarPassword(email: string, newPassword: string): Observable<void> {
-    return this.http
-      .post<unknown>(apiUrl('/auth/recuperar/password'), {
-        email,
-        password: newPassword,
-        newPassword,
-      })
-      .pipe(
-        map(() => void 0),
-        catchError((err: HttpErrorResponse) =>
-          throwError(
-            () =>
-              new Error(this.recoverError(err, 'No fue posible actualizar la contraseña. Intente más tarde.')),
-          ),
-        ),
-      );
-  }
-
   private sessionFromLogin(res: LoginResponse): AuthSession {
     if (!res?.token) {
       throw new Error('La API no devolvió un token de autenticación.');
@@ -144,33 +118,46 @@ export class AuthService {
     return { token: res.token, usuario };
   }
 
-  private loginError(err: HttpErrorResponse): string {
+  private codigoError(err: HttpErrorResponse, paso: 'solicitar' | 'verificar'): CodigoAccesoError {
+    const error = new Error(this.codigoMensaje(err, paso)) as CodigoAccesoError;
+    if (err.status === 429) {
+      error.segundosRestantes = Number(err.error?.segundosRestantes) || 60;
+    }
+    return error;
+  }
+
+  private codigoMensaje(err: HttpErrorResponse, paso: 'solicitar' | 'verificar'): string {
     if (err.status === 400) {
-      return this.safeApiMessage(this.extractApiMessage(err), 'Los datos enviados no son válidos.');
+      return paso === 'solicitar'
+        ? 'Ingrese un correo válido.'
+        : this.safeApiMessage(this.extractApiMessage(err), 'Revise los datos ingresados.');
+    }
+    if (paso === 'solicitar' && err.status === 404) {
+      return this.safeApiMessage(this.extractApiMessage(err), 'Este correo no está registrado en DimaBug. Inténtelo con un correo que exista.');
+    }
+    if (paso === 'solicitar' && err.status === 401) {
+      // El endpoint no responde: el backend sigue corriendo con la versión anterior.
+      return 'El servidor aún no tiene activo el ingreso con código. Reinicie el backend con una compilación limpia.';
     }
     if (err.status === 401) {
-      return 'Usuario o contraseña incorrectos.';
+      return 'El código no es válido o ya expiró. Solicite uno nuevo.';
     }
     if (err.status === 403) {
       return 'Su cuenta no tiene autorización o está inactiva.';
     }
+    if (err.status === 429) {
+      return this.safeApiMessage(this.extractApiMessage(err), 'Espere un momento antes de pedir otro código.');
+    }
     if (err.status === 503) {
-      return 'El servidor tardó en hablar con la base de datos. Intente de nuevo en unos segundos.';
+      return this.safeApiMessage(
+        this.extractApiMessage(err),
+        'No fue posible enviar el código. Intente nuevamente en unos minutos.',
+      );
     }
     if (err.status === 0) {
-      return 'No se pudo conectar con el servidor. Confirme que el backend esté en el puerto 9090.';
-    }
-    if (err.status === 404) {
-      return 'El servidor no tiene el login activo. Reinicia el backend de este proyecto (puerto 8080) e intenta de nuevo.';
+      return 'No se pudo conectar con el servidor. Confirme que el backend esté encendido.';
     }
     return this.httpError(err, 'No fue posible iniciar sesión. Intente nuevamente.');
-  }
-
-  private recoverError(err: HttpErrorResponse, fallback: string): string {
-    if (err.status === 404 || err.status === 401 || err.status === 403) {
-      return 'La recuperación de contraseña aún no está disponible. Use su correo y clave para entrar, o contacte al administrador.';
-    }
-    return this.httpError(err, fallback);
   }
 
   private httpError(err: HttpErrorResponse, fallback: string): string {

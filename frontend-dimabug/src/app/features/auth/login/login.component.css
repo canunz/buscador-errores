@@ -256,3 +256,89 @@
     padding: 28px 20px;
   }
 }
+
+/* ===== Ingreso con código de acceso ===== */
+.login-info {
+  margin: 0 0 16px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: #eaf0fe;
+  border: 1px solid #c9d7fb;
+  color: #1e3a8a;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.login-info p {
+  margin: 0;
+}
+
+.login-input.is-locked {
+  background: #f8fafc;
+}
+
+.login-input.is-locked input {
+  color: #334155;
+  font-weight: 600;
+  cursor: default;
+}
+
+.login-cambiar {
+  margin-left: 8px;
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.login-codigo input {
+  text-align: center;
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: 10px;
+  font-variant-numeric: tabular-nums;
+}
+
+.login-timer {
+  margin: -4px 0 16px;
+  font-size: 13px;
+  color: #475569;
+  text-align: center;
+}
+
+.login-timer strong {
+  color: #1e4fd6;
+  font-variant-numeric: tabular-nums;
+}
+
+.login-timer.vencido {
+  color: #b91c1c;
+  font-weight: 600;
+}
+
+.login-reenviar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 16px;
+  font-size: 13px;
+  color: #64748b;
+}
+
+.login-link-btn {
+  border: 0;
+  background: none;
+  padding: 0;
+  font: inherit;
+  font-weight: 600;
+  color: #1e4fd6;
+  cursor: pointer;
+}
+
+.login-link-btn:hover:not(:disabled) {
+  text-decoration: underline;
+}
+
+.login-link-btn:disabled {
+  color: #94a3b8;
+  cursor: default;
+}

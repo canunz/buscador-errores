@@ -4,6 +4,7 @@ import { of } from 'rxjs';
 import { HardwareComponent } from './hardware.component';
 import { AuthService } from '../../core/services/auth.service';
 import { ClasificacionService } from '../../core/services/clasificacion.service';
+import { AdminCatalogosApiService } from '../../core/services/admin-catalogos-api.service';
 
 describe('QA-010 acceso a administrar Hardware', () => {
   let admin = true;
@@ -12,6 +13,7 @@ describe('QA-010 acceso a administrar Hardware', () => {
     TestBed.configureTestingModule({ providers: [provideRouter([]),
       { provide: AuthService, useValue: { isAdmin: () => admin } },
       { provide: ClasificacionService, useValue: { hardwareEnSesion: () => [], listarHardwareDetalle: () => of([]) } },
+      { provide: AdminCatalogosApiService, useValue: {} },
     ] });
   });
   it('administrador ve acción separada y explicación de asociaciones', () => {

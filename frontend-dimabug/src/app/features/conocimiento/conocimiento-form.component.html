@@ -37,7 +37,7 @@
     <form class="kb-form" [formGroup]="form" (ngSubmit)="guardar()">
       <label class="full">
         <span>Título <span class="req" aria-hidden="true">*</span></span>
-        <input type="text" formControlName="titulo" placeholder="Error WINDOW al ingresar a Bodega" />
+        <input type="text" formControlName="titulo" maxlength="150" placeholder="Error WINDOW al ingresar a Bodega" />
       </label>
 
       <label class="full">
@@ -97,7 +97,7 @@
 
       <label class="full">
         Comentario
-        <textarea formControlName="comentario" rows="3" placeholder="Notas internas (opcional)"></textarea>
+        <textarea formControlName="comentario" maxlength="500" rows="3" placeholder="Notas internas (opcional)"></textarea>
       </label>
 
       <div class="form-actions">

@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface SolucionJpaRepository extends JpaRepository<SolucionEntity, Integer> {
+    List<SolucionEntity> findByConocimientoIdAndActivoTrueAndAutoservicioTrueOrderByOrdenAsc(Integer conocimientoId);
     List<SolucionEntity> findByConocimientoIdOrderByOrdenAsc(Integer conocimientoId);
     List<SolucionEntity> findByConocimientoIdAndActivoTrueOrderByOrdenAsc(Integer conocimientoId);
     @org.springframework.data.jpa.repository.Lock(jakarta.persistence.LockModeType.PESSIMISTIC_WRITE)

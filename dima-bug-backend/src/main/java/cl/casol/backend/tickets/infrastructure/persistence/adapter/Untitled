@@ -1,0 +1,94 @@
+package cl.casol.backend.tickets.infrastructure.persistence.adapter;
+
+import cl.casol.backend.tickets.application.port.out.TicketRepositoryPort;
+import cl.casol.backend.tickets.domain.FiltroTickets;
+import cl.casol.backend.tickets.domain.PaginaTickets;
+import cl.casol.backend.tickets.domain.Ticket;
+import cl.casol.backend.tickets.domain.exception.TicketNoEncontradoException;
+import cl.casol.backend.tickets.infrastructure.persistence.entity.TicketEntity;
+import cl.casol.backend.tickets.infrastructure.persistence.mapper.TicketMapper;
+import cl.casol.backend.tickets.infrastructure.persistence.repository.ComentarioTicketJpaRepository;
+import cl.casol.backend.tickets.infrastructure.persistence.repository.HistorialEstadoTicketJpaRepository;
+import cl.casol.backend.tickets.infrastructure.persistence.repository.TicketJpaRepository;
+import jakarta.persistence.criteria.Predicate;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.stereotype.Component;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Optional;
+
+@Component
+public class TicketRepositoryAdapter implements TicketRepositoryPort {
+    private final TicketJpaRepository tickets;
+    private final ComentarioTicketJpaRepository comentarios;
+    private final HistorialEstadoTicketJpaRepository historial;
+
+    public TicketRepositoryAdapter(TicketJpaRepository tickets, ComentarioTicketJpaRepository comentarios,
+            HistorialEstadoTicketJpaRepository historial) {
+        this.tickets = tickets;
+        this.comentarios = comentarios;
+        this.historial = historial;
+    }
+
+    @Override
+    public Ticket guardar(Ticket ticket) {
+        TicketEntity guardado = tickets.save(TicketMapper.toEntity(ticket));
+        Long ticketId = guardado.getId();
+        ticket.getComentarios().stream().filter(c -> c.id() == null)
+                .forEach(c -> comentarios.save(TicketMapper.toEntity(ticketId, c)));
+        ticket.getHistorial().stream().filter(h -> h.id() == null)
+                .forEach(h -> historial.save(TicketMapper.toEntity(ticketId, h)));
+        return buscarPorId(ticketId).orElseThrow(() -> new TicketNoEncontradoException(ticketId));
+    }
+
+    @Override
+    public Optional<Ticket> buscarPorId(Long id) {
+        return tickets.findById(id).map(entity -> TicketMapper.toDomain(entity,
+                comentarios.findAllByTicketIdOrderByFechaAscIdAsc(id).stream().map(TicketMapper::toDomain).toList(),
+                historial.findAllByTicketIdOrderByFechaAscIdAsc(id).stream().map(TicketMapper::toDomain).toList()));
+    }
+
+    @Override
+    public PaginaTickets<Ticket> buscar(FiltroTickets filtro, int pagina, int tamano) {
+        PageRequest orden = PageRequest.of(pagina, tamano,
+                Sort.by(Sort.Order.desc("fechaCreacion"), Sort.Order.desc("id")));
+        Page<TicketEntity> resultado = tickets.findAll(especificacion(filtro), orden);
+        List<Ticket> contenido = resultado.getContent().stream()
+                .map(entity -> TicketMapper.toDomain(entity, List.of(), List.of())).toList();
+        return new PaginaTickets<>(contenido, resultado.getNumber(), resultado.getSize(), resultado.getTotalElements());
+    }
+
+    @Override
+    public int siguienteCorrelativo(int anio) {
+        String prefijo = Ticket.prefijoCodigo(anio);
+        Number maximo = tickets.maximoCorrelativo(prefijo, prefijo.length() + 1);
+        return (maximo == null ? 0 : maximo.intValue()) + 1;
+    }
+
+    private static Specification<TicketEntity> especificacion(FiltroTickets filtro) {
+        return (root, query, cb) -> {
+            List<Predicate> condiciones = new ArrayList<>();
+            if (filtro.estado() != null) condiciones.add(cb.equal(root.get("estado"), filtro.estado()));
+            if (filtro.prioridad() != null) condiciones.add(cb.equal(root.get("prioridad"), filtro.prioridad()));
+            if (filtro.asignadoId() != null) condiciones.add(cb.equal(root.get("asignadoId"), filtro.asignadoId()));
+            if (filtro.solicitanteId() != null)
+                condiciones.add(cb.equal(root.get("solicitanteId"), filtro.solicitanteId()));
+            if (filtro.etiquetaId() != null) {
+                condiciones.add(cb.isMember(filtro.etiquetaId(), root.<java.util.Set<Long>>get("etiquetaIds")));
+            }
+            if (filtro.texto() != null) {
+                String patron = "%" + filtro.texto().toLowerCase(Locale.ROOT) + "%";
+                condiciones.add(cb.or(
+                        cb.like(cb.lower(root.get("titulo")), patron),
+                        cb.like(cb.lower(root.get("codigo")), patron),
+                        cb.like(cb.lower(root.get("descripcion")), patron)));
+            }
+            return cb.and(condiciones.toArray(new Predicate[0]));
+        };
+    }
+}

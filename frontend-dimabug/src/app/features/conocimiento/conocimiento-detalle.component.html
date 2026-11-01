@@ -286,7 +286,9 @@
               <p class="hint">Ejecute estas pruebas y compare con el resultado esperado.</p>
             </div>
             @if (puedeGestionar()) {
-              <button type="button" class="add-btn" (click)="abrirFormulario('pruebas')">+ Asociar prueba</button>
+              <div class="flujo-acciones"><button type="button" class="add-btn" (click)="abrirBuscarPrueba()">Buscar prueba</button>
+                @if (esAdministrador()) { <button type="button" class="add-btn" (click)="abrirNuevaPrueba()">+ Crear prueba</button> }
+              </div>
             }
           </header>
 
@@ -315,25 +317,34 @@
             <div class="form-modal">
               <div class="form-modal-fondo"></div>
               <div class="form-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="modal-prueba-titulo">
-                <h2 id="modal-prueba-titulo">Asociar prueba</h2>
-                <form class="editor en-modal" [formGroup]="pruebaForm" (ngSubmit)="guardarPrueba()">
-                  <label class="full">
-                    <span>Prueba del catálogo <span class="req">*</span></span>
-                    <select formControlName="pruebaId">
-                      <option [ngValue]="null">Seleccione una prueba existente</option>
-                      @for (p of pruebasCatalogo; track p.id) {
-                        <option [ngValue]="p.id">{{ p.descripcion }}</option>
-                      }
-                    </select>
-                  </label>
-                  <div class="editor-actions">
-                    <button type="submit" [disabled]="saving === 'pruebas'">
-                      {{ saving === 'pruebas' ? 'Asociando…' : 'Asociar prueba' }}
-                    </button>
-                    <button type="button" class="ghost-mini" (click)="cerrarFormulario('pruebas')">Cancelar</button>
-                  </div>
-                  <small>Las pruebas se reutilizan desde el catálogo; el orden lo asigna el sistema.</small>
-                </form>
+                <h2 id="modal-prueba-titulo">{{ modoPrueba === 'crear' ? 'Crear y asociar prueba' : 'Buscar prueba existente' }}</h2>
+                <div class="flujo-acciones"><button type="button" (click)="abrirBuscarPrueba()" [disabled]="saving === 'pruebas'">Buscar prueba</button>
+                @if (esAdministrador()) { <button type="button" (click)="abrirNuevaPrueba()" [disabled]="saving === 'pruebas'">Crear prueba</button> }</div>
+                @if (sectionError) { <p class="alert" role="alert">{{ sectionError }}</p> }
+                @if (modoPrueba === 'buscar') {
+                  <label>Buscar por descripción o resultado esperado<input type="search" [formControl]="pruebaBusqueda" maxlength="300" /></label>
+                  @if (cargandoPruebasCatalogo) { <p role="status">Cargando catálogo…</p> }
+                  <form class="editor en-modal" [formGroup]="pruebaForm" (ngSubmit)="guardarPrueba()">
+                    <label class="full">Prueba del catálogo<select formControlName="pruebaId"><option [ngValue]="null">Seleccione una prueba existente</option>
+                      @for (p of pruebasFiltradas; track p.id) { <option [ngValue]="p.id">{{ p.descripcion }}</option> }
+                    </select></label>
+                    @if (pruebaSeleccionada; as p) { <section class="full flujo-preview"><h3>{{ p.descripcion }}</h3><p>Resultado esperado: {{ p.resultadoEsperado || 'No indicado' }}</p><p>Estado: activa</p></section> }
+                    <div class="editor-actions"><button type="submit" [disabled]="saving === 'pruebas' || cargandoPruebasCatalogo">{{ saving === 'pruebas' ? 'Asociando…' : 'Asociar prueba' }}</button>
+                      <button type="button" (click)="cerrarFormulario('pruebas')" [disabled]="saving === 'pruebas'">Cancelar</button></div>
+                    <small>No se crea una copia; se asocia el ID existente.</small>
+                  </form>
+                } @else if (esAdministrador()) {
+                  <form class="editor en-modal" [formGroup]="pruebaNuevaForm" (ngSubmit)="guardarNuevaPruebaYAsociar()">
+                    <label class="full">Descripción *<textarea formControlName="descripcion" maxlength="500" [readOnly]="!!pruebaCreada || creacionPruebaIncierta || saving === 'pruebas'"></textarea></label>
+                    <label class="full">Resultado esperado<textarea formControlName="resultadoEsperado" maxlength="500" [readOnly]="!!pruebaCreada || creacionPruebaIncierta || saving === 'pruebas'"></textarea></label>
+                    <p class="full">Estado inicial: activa. El contrato de creación no permite otro estado; una prueba inactiva no puede asociarse.</p>
+                    @if (pruebaCreada) { <p class="full" role="status">Prueba creada: ID {{ pruebaCreada.id }}. No se volverá a crear.</p> }
+                    @if (creacionPruebaIncierta) { <button type="button" (click)="recuperarPruebaPendiente()" [disabled]="saving === 'pruebas'">Buscar prueba creada</button> }
+                    <div class="editor-actions"><button type="submit" [disabled]="saving === 'pruebas' || creacionPruebaIncierta">{{ saving === 'pruebas' ? 'Procesando…' : pruebaCreada ? 'Reintentar solo asociación' : 'Guardar y asociar' }}</button>
+                      @if (pruebaCreada) { <button type="button" (click)="comprobarAsociacionPendiente()" [disabled]="saving === 'pruebas'">Comprobar asociación</button> }
+                      <button type="button" (click)="cerrarFormulario('pruebas')" [disabled]="saving === 'pruebas'">Cancelar</button></div>
+                  </form>
+                }
               </div>
             </div>
           }
@@ -350,6 +361,7 @@
             </div>
             @if (puedeGestionar()) {
               <button type="button" class="add-btn" (click)="abrirFormulario('soluciones')">+ Solución</button>
+              @if (esAdministrador()) { <button type="button" class="add-btn" (click)="abrirReutilizarSolucion()" [disabled]="copiandoSolucion">Reutilizar solución</button> }
             }
           </header>
 
@@ -517,7 +529,8 @@
               <p class="hint">Manuales, capturas o enlaces útiles para resolver el caso.</p>
             </div>
             @if (puedeGestionar()) {
-              <button type="button" class="add-btn" (click)="abrirFormulario('materiales')">+ Material</button>
+              <div class="flujo-acciones"><button type="button" class="add-btn" (click)="abrirBuscarMaterial()">Buscar material</button>
+                <button type="button" class="add-btn" (click)="abrirFormulario('materiales')">+ Subir material</button></div>
             }
           </header>
 
@@ -582,6 +595,7 @@
                   <p class="alert error">{{ sectionError }}</p>
                 }
                 <form class="editor en-modal" [formGroup]="materialForm" (ngSubmit)="guardarMaterialDesdeFormulario()">
+                  <fieldset class="flujo-campos" [disabled]="saving === 'materiales'">
                   <label>
                     <span>Nombre <span class="req">*</span></span>
                     <input type="text" formControlName="nombre" maxlength="150" placeholder="Manual o documento de apoyo" />
@@ -631,8 +645,10 @@
                     <button type="submit" [disabled]="saving === 'materiales'">
                       {{ saving === 'materiales' ? 'Enviando…' : (editMaterialId ? 'Guardar cambios' : 'Agregar material') }}
                     </button>
-                    <button type="button" class="ghost-mini" (click)="cerrarFormulario('materiales')">Cancelar</button>
+                    <button type="button" class="ghost-mini" (click)="cerrarFormulario('materiales')" [disabled]="saving === 'materiales'">Cancelar</button>
+                    <button type="button" class="ghost-mini" (click)="cancelarMaterial()" [disabled]="saving === 'materiales'">Descartar borrador</button>
                   </div>
+                  </fieldset>
                 </form>
               </div>
             </div>
@@ -698,4 +714,61 @@
       </div>
     </div>
   </div>
+}
+
+@if (reutilizarAbierto) {
+  <div class="reutilizar-modal" role="dialog" aria-modal="true" aria-labelledby="reutilizar-titulo">
+    <div class="reutilizar-fondo"></div><article class="reutilizar-tarjeta">
+      <header><h2 id="reutilizar-titulo">Buscar y copiar solución existente</h2><button type="button" (click)="cerrarReutilizarSolucion()" [disabled]="copiandoSolucion" aria-label="Cerrar reutilización">✕</button></header>
+      <p>Origen: conocimientos PUBLICADO. Se creará una copia independiente, sin asignaciones ni historial.</p>
+      @if (copiaError) { <p class="reutilizar-error" role="alert">{{ copiaError }}</p> }
+      @if (cargandoCatalogoSoluciones) { <p role="status">Cargando soluciones…</p> }
+      <form [formGroup]="reutilizarForm" (ngSubmit)="confirmarCopiaSolucion()">
+        <label>Buscar por título, descripción o conocimiento<input type="search" formControlName="busqueda" maxlength="300" [readOnly]="copiandoSolucion || copiaCompletada" /></label>
+        <div class="reutilizar-resultados">
+          @for (s of solucionesReutilizablesFiltradas; track s.id) {
+            <button type="button" class="reutilizar-opcion" (click)="seleccionarSolucionReutilizable(s)" [disabled]="copiandoSolucion || copiaCompletada" [attr.aria-pressed]="solucionSeleccionada?.id === s.id">
+              <strong>{{ s.titulo || 'Sin título' }}</strong><span>{{ s.conocimientoTitulo }} · {{ s.tipo }} · {{ s.activo ? 'Activa' : 'Inactiva' }} · Autoservicio: {{ s.autoservicio ? 'Sí' : 'No' }}</span>
+            </button>
+          } @empty { @if (!cargandoCatalogoSoluciones) { <p>Sin soluciones disponibles para esta búsqueda.</p> } }
+        </div>
+        @if (solucionSeleccionada; as s) {
+          <section class="reutilizar-preview"><h3>{{ s.titulo || 'Sin título' }}</h3><p>Conocimiento de origen: {{ s.conocimientoTitulo }}</p><p class="reutilizar-texto">{{ s.descripcion }}</p>
+            <p>Tipo: {{ s.tipo }} · Estado: {{ s.activo ? 'Activa' : 'Inactiva' }} · Autoservicio de origen: {{ s.autoservicio ? 'Sí' : 'No' }}</p>
+            <p>Se conserva el estado. La copia será privada salvo confirmación expresa.</p>
+            <label><input type="checkbox" formControlName="autoservicio" [attr.disabled]="copiandoSolucion || copiaCompletada ? '' : null" /> Confirmo habilitar autoservicio en la copia</label>
+            @if (reutilizarForm.controls.autoservicio.value && item?.estado === 'PUBLICADO') { <p role="alert" class="reutilizar-aviso">Atención: si la copia está activa, podrá ser mostrada por el chatbot a usuarios finales de inmediato. Revisa que todas las instrucciones sean públicas.</p> }
+            <label><input type="checkbox" formControlName="confirmar" [attr.disabled]="copiandoSolucion || copiaCompletada ? '' : null" /> Confirmo copiar esta solución al conocimiento actual</label>
+          </section>
+        }
+        <footer><button type="button" (click)="cerrarReutilizarSolucion()" [disabled]="copiandoSolucion">Cancelar</button>
+          @if (copiaCompletada) { <button type="button" (click)="recargarTrasCopia()" [disabled]="copiandoSolucion">Recargar soluciones</button> }
+          @else { <button type="submit" [disabled]="!solucionSeleccionada || !reutilizarForm.controls.confirmar.value || copiandoSolucion || cargandoCatalogoSoluciones">{{ copiandoSolucion ? 'Copiando…' : 'Confirmar copia' }}</button> }
+        </footer>
+      </form>
+    </article>
+  </div>
+}
+
+@if (materialBusquedaAbierta && puedeGestionar()) {
+  <div class="form-modal flujo-material-modal"><div class="form-modal-fondo"></div><div class="form-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="buscar-material-titulo">
+    <h2 id="buscar-material-titulo">Buscar material existente</h2>
+    <p>Materiales de conocimientos PUBLICADO. Los archivos se copian en el servidor con referencia independiente; no se vuelven a subir desde tu equipo.</p>
+    @if (materialBusquedaError) { <p class="alert" role="alert">{{ materialBusquedaError }}</p> }
+    <label>Buscar por nombre, tipo o conocimiento<input type="search" [formControl]="materialFiltro" maxlength="300" [readOnly]="reutilizandoMaterial || materialReutilizado" /></label>
+    @if (cargandoMaterialesCatalogo) { <p role="status">Cargando materiales…</p> }
+    <div class="flujo-resultados">@for (m of materialesFiltrados; track m.id) {
+      <button type="button" (click)="seleccionarMaterial(m)" [disabled]="reutilizandoMaterial || materialReutilizado" [attr.aria-pressed]="materialSeleccionado?.id === m.id">{{ m.nombre }} · {{ m.tipo }} · {{ m.conocimientoTitulo }}</button>
+    } @empty { @if (!cargandoMaterialesCatalogo) { <p>No hay materiales para esta búsqueda.</p> } }</div>
+    @if (materialSeleccionado; as m) {
+      <section class="flujo-preview"><h3>{{ m.nombre }}</h3><p>Tipo: {{ m.tipo }}</p><p>Conocimiento de origen: {{ m.conocimientoTitulo }}</p>
+        <p>{{ esArchivoMaterialCatalogo(m) ? 'Archivo administrado con descarga autenticada. No se expone su ubicación física.' : 'Enlace externo: ' + m.url }}</p>
+        @if (esArchivoMaterialCatalogo(m)) { <button type="button" (click)="descargarMaterialCatalogo(m)">Descargar para revisar</button> }
+      </section>
+    }
+    <div class="editor-actions"><button type="button" (click)="cerrarBuscarMaterial()" [disabled]="reutilizandoMaterial">Cancelar</button>
+      @if (materialReutilizado) { <button type="button" (click)="recargarMaterialesReutilizados()" [disabled]="reutilizandoMaterial">Recargar materiales</button> }
+      @else { <button type="button" (click)="reutilizarMaterialSeleccionado()" [disabled]="!materialSeleccionado || reutilizandoMaterial || cargandoMaterialesCatalogo">{{ reutilizandoMaterial ? 'Copiando…' : 'Reutilizar material seleccionado' }}</button> }
+    </div>
+  </div></div>
 }

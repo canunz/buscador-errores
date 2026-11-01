@@ -38,13 +38,13 @@ export class ConocimientoFormComponent implements OnInit {
   private actual: Conocimiento | null = null;
 
   form = this.fb.nonNullable.group({
-    titulo: ['', Validators.required],
+    titulo: ['', [Validators.required, Validators.maxLength(150)]],
     descripcion: ['', Validators.required],
     hardwareId: this.fb.control<number | null>(null),
     sistemaId: this.fb.control<number | null>(null),
     moduloId: this.fb.control<number | null>(null),
     frecuenciaId: this.fb.control<number | null>(null),
-    comentario: [''],
+    comentario: ['', [Validators.maxLength(500)]],
   });
 
   get esEdicion(): boolean {

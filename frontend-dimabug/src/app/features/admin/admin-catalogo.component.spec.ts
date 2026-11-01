@@ -70,4 +70,11 @@ describe('Administración persistente', () => {
     expect(checks(f)[1].disabled).toBeTrue(); expect(checks(f)[2].disabled).toBeTrue();
     expect(f.componentInstance.form.controls.sistemaIds.value).toEqual([]);
   });
+  it('frecuencias acepta 50 y bloquea guardar con 51 caracteres', () => {
+    const c = TestBed.createComponent(AdminCatalogoComponent).componentInstance;
+    c.tipo = 'frecuencias'; c.abrir();
+    c.form.controls.nombre.setValue('F'.repeat(50)); expect(c.form.controls.nombre.valid).toBeTrue();
+    c.form.controls.nombre.setValue('F'.repeat(51)); expect(c.form.controls.nombre.hasError('maxlength')).toBeTrue();
+    c.guardar(); expect(api.guardar).not.toHaveBeenCalled();
+  });
 });

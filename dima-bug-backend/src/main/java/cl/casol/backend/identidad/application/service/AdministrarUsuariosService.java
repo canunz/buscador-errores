@@ -40,7 +40,8 @@ public class AdministrarUsuariosService {
                 .orElseThrow(UsuarioNoEncontradoException::new);
     }
 
-    public Usuario crear(String nombre, String email, String password, Integer rolId) {
+    /** El acceso es con código enviado al correo; el usuario ya no tiene contraseña propia. */
+    public Usuario crear(String nombre, String email, Integer rolId) {
         String correo = email == null ? "" : email.trim().toLowerCase();
         if (usuarioRepository.existePorEmail(correo)) {
             throw new EmailDuplicadoException();
@@ -49,12 +50,12 @@ public class AdministrarUsuariosService {
         Rol rol = obtenerRolActivo(rolId);
         LocalDateTime ahora = LocalDateTime.now();
         Usuario usuario = new Usuario(
-                null, rol, nombre, correo, passwordEncoder.codificar(password), true, ahora, ahora
+                null, rol, nombre, correo, claveInternaInutilizable(), true, ahora, ahora
         );
         return usuarioRepository.guardar(usuario);
     }
 
-    public Usuario modificar(Integer id, String nombre, String email, Integer rolId, String password) {
+    public Usuario modificar(Integer id, String nombre, String email, Integer rolId) {
         List<Usuario> administradores = usuarioRepository.bloquearAdministradoresActivos();
         Usuario actual = buscarPorId(id);
         String correo = email == null ? "" : email.trim().toLowerCase();
@@ -64,25 +65,8 @@ public class AdministrarUsuariosService {
 
         Rol rol = obtenerRolActivo(rolId);
         protegerUltimoAdministrador(actual, actual.isActivo(), rol, administradores);
-        String passwordHash = actual.getPasswordHash();
-        if (password != null && !password.isBlank()) {
-            passwordHash = passwordEncoder.codificar(password.trim());
-        }
         Usuario modificado = new Usuario(
-                actual.getId(), rol, nombre, correo, passwordHash, actual.isActivo(),
-                actual.getFechaCreacion(), LocalDateTime.now()
-        );
-        return usuarioRepository.guardar(modificado);
-    }
-
-    public Usuario cambiarPassword(Integer id, String password) {
-        if (password == null || password.isBlank()) {
-            throw new IllegalArgumentException("La contraseña es obligatoria");
-        }
-        Usuario actual = buscarPorId(id);
-        Usuario modificado = new Usuario(
-                actual.getId(), actual.getRol(), actual.getNombre(), actual.getEmail(),
-                passwordEncoder.codificar(password.trim()), actual.isActivo(),
+                actual.getId(), rol, nombre, correo, actual.getPasswordHash(), actual.isActivo(),
                 actual.getFechaCreacion(), LocalDateTime.now()
         );
         return usuarioRepository.guardar(modificado);
@@ -108,6 +92,14 @@ public class AdministrarUsuariosService {
                 && (!activo || !"ADMINISTRADOR".equalsIgnoreCase(rol.getNombre().trim()))
                 && administradores.stream().noneMatch(u -> !u.getId().equals(actual.getId())))
             throw new cl.casol.backend.identidad.domain.exception.UltimoAdministradorException();
+    }
+
+    /**
+     * La columna de contraseña sigue existiendo en la base de datos, pero ya no se usa para ingresar.
+     * Se guarda un valor aleatorio que nadie conoce, solo para cumplir con la columna obligatoria.
+     */
+    private String claveInternaInutilizable() {
+        return passwordEncoder.codificar(java.util.UUID.randomUUID() + "-" + java.util.UUID.randomUUID());
     }
 
     private Rol obtenerRolActivo(Integer rolId) {

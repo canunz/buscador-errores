@@ -59,4 +59,7 @@ class MantenerSolucionServiceTest {
         assertThrows(SolucionInactivaException.class,()->service.modificar(4,8,"Nueva",null,null,"Título"));
         verify(soluciones,never()).guardar(any());
     }
+
+    @Test void creacionComparteRechazoDeDuplicadosIncluidasInactivas(){existe();when(soluciones.bloquearPorConocimiento(4)).thenReturn(List.of(new Solucion(8,4," PASOS ",TipoSolucion.PASOS,9," TÍTULO ",false,false)));assertThrows(SolucionDuplicadaException.class,()->service.crear(4,"pasos",TipoSolucion.PASOS,10,"título"));verify(soluciones,never()).guardar(any());}
+    @Test void creacionReubicaOrdenOcupadoIncluyendoInactivas(){existe();when(soluciones.bloquearPorConocimiento(4)).thenReturn(List.of(new Solucion(8,4,"Otra",TipoSolucion.PASOS,1,"Otra",false,false),new Solucion(9,4,"Otra 2",TipoSolucion.PASOS,9,"Otra 2",false,false)));when(soluciones.guardar(any())).thenAnswer(i->i.getArgument(0));assertEquals(10,service.crear(4,"Nueva",TipoSolucion.PASOS,1,"Nueva").orden());}
 }

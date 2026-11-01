@@ -4,7 +4,6 @@ import { Router, Routes } from '@angular/router';
 import { adminGuard, authGuard, guestGuard, staffGuard } from './core/guards/auth.guard';
 import { ShellLayoutComponent } from './shared/layout/shell-layout.component';
 import { LoginComponent } from './features/auth/login/login.component';
-import { RecuperarComponent } from './features/auth/recuperar/recuperar.component';
 import { InicioComponent } from './features/inicio/inicio.component';
 import { UsuariosComponent } from './features/usuarios/usuarios.component';
 import { HardwareComponent } from './features/hardware/hardware.component';
@@ -30,13 +29,14 @@ import { AuthService } from './core/services/auth.service';
 export const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'inicio' },
   { path: 'login', component: LoginComponent, canActivate: [guestGuard] },
-  { path: 'recuperar', component: RecuperarComponent, canActivate: [guestGuard] },
+  { path: 'recuperar', redirectTo: 'login' },
   {
     path: '',
     component: ShellLayoutComponent,
     canActivate: [authGuard],
     children: [
       { path: 'inicio', component: InicioComponent },
+      { path: 'chatbot', loadComponent: () => import('./features/chatbot/chatbot.component').then(m => m.ChatbotComponent) },
       { path: 'plataforma/hardware', component: HardwareComponent, canActivate: [staffGuard] },
       { path: 'departamentos', component: DepartamentosComponent, canActivate: [staffGuard] },
       { path: 'pruebas', component: PruebasComponent, canActivate: [staffGuard] },

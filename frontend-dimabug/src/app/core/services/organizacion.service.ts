@@ -11,10 +11,11 @@ import {
   tap,
   throwError,
 } from 'rxjs';
+import { ResponsableConsulta } from '../models/organizacion-admin.model';
 import { apiUrl } from '../config/api';
 import { mensajeApiError } from '../http/api-error';
 import { DepartamentoContacto, DepartamentoItem, PruebaItem } from '../models/catalogo.model';
-import { CatalogoRef, PruebaCatalogo, ResponsableRef } from '../models/conocimiento.model';
+import { CatalogoRef, PruebaCatalogo } from '../models/conocimiento.model';
 
 @Injectable({ providedIn: 'root' })
 export class OrganizacionService {
@@ -22,7 +23,7 @@ export class OrganizacionService {
   private pruebasCache$: Observable<PruebaCatalogo[]> | null = null;
   private departamentosCache$: Observable<CatalogoRef[]> | null = null;
   private departamentosDetalleCache$: Observable<DepartamentoItem[]> | null = null;
-  private responsablesCache = new Map<number, ResponsableRef[]>();
+  private responsablesCache = new Map<number, ResponsableConsulta[]>();
 
   snapshotPruebas(): PruebaCatalogo[] { return []; }
   invalidarPruebas(): void { this.pruebasCache$ = null; }
@@ -66,7 +67,7 @@ export class OrganizacionService {
     );
   }
 
-  responsablesDeDepartamento(departamentoId: number, force = false): Observable<ResponsableRef[]> {
+  responsablesDeDepartamento(departamentoId: number, force = false): Observable<ResponsableConsulta[]> {
     if (!force && this.responsablesCache.has(departamentoId)) {
       return of(this.responsablesCache.get(departamentoId)!);
     }
@@ -140,13 +141,15 @@ export class OrganizacionService {
       .filter((item) => item.id > 0 && item.nombre);
   }
 
-  private asResponsableLista(res: unknown): ResponsableRef[] {
+  private asResponsableLista(res: unknown): ResponsableConsulta[] {
     return this.asArray(res)
       .map((item) => {
         const r = item as Record<string, unknown>;
         return {
           id: Number(r['id'] ?? r['responsableId'] ?? 0),
           nombre: String(r['nombre'] ?? r['responsableNombre'] ?? ''),
+          cargo: r['cargo'] == null ? null : String(r['cargo']),
+          contacto: r['contacto'] == null ? null : String(r['contacto']),
         };
       })
       .filter((item) => item.id > 0);

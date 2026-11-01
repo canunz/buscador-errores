@@ -22,12 +22,14 @@ describe('MaterialApoyoFormComponent', () => {
     expect(fixture.nativeElement.querySelector('[data-testid="campo-url"]')).toBeFalsy();
   });
 
-  it('en VIDEO muestra URL y deja adjuntar habilitado', () => {
-    component.cambiarTipo('VIDEO');
-    fixture.detectChanges();
-    const boton = fixture.nativeElement.querySelector('[data-testid="campo-archivo"]') as HTMLButtonElement;
+  it('en VIDEO conserva URL y no ofrece archivo local', () => {
+    component.cambiarTipo('VIDEO'); fixture.detectChanges();
     expect(fixture.nativeElement.querySelector('[data-testid="campo-url"]')).toBeTruthy();
-    expect(boton.disabled).toBeFalse();
+    expect(fixture.nativeElement.querySelector('[data-testid="campo-archivo"]')).toBeNull();
+    component.nombre = 'Video'; component.url = 'https://videos.example.invalid/guia';
+    const spy = jasmine.createSpy('guardar'); component.guardar.subscribe(spy);
+    component.enviar();
+    expect(spy).toHaveBeenCalledWith(jasmine.objectContaining({ tipo: 'VIDEO', origen: 'enlace', archivo: null }));
   });
 
   it('en ENLACE muestra solo URL y oculta adjuntar', () => {

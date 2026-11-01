@@ -1,5 +1,5 @@
 import { signal } from '@angular/core';
-import { TestBed } from '@angular/core/testing';
+import { TestBed, fakeAsync, tick, flush, discardPeriodicTasks } from '@angular/core/testing';
 import { Router, provideRouter } from '@angular/router';
 import { of } from 'rxjs';
 import { ShellLayoutComponent } from './shell-layout.component';
@@ -52,15 +52,16 @@ describe('QA-010 navegación Sistemas', () => {
     expect(f.nativeElement.querySelector('a[href="/admin/catalogo/sistemas"]')).toBeNull();
     expect(f.nativeElement.querySelector('a[href="/plataforma/hardware"]')).not.toBeNull();
   });
-  it('al navegar cierra el menú y abre la administración existente', async () => {
+  it('al navegar cierra el menú y abre la administración existente', fakeAsync(() => {
     const f = TestBed.createComponent(ShellLayoutComponent); f.detectChanges();
     f.componentInstance.menuOpen = true;
     f.nativeElement.querySelector('a[href="/admin/catalogo/sistemas"]').click();
-    await f.whenStable(); f.detectChanges();
+    tick(); f.detectChanges();
     expect(TestBed.inject(Router).url).toBe('/admin/catalogo/sistemas');
     expect(f.componentInstance.menuOpen).toBeFalse();
     expect(f.nativeElement.querySelector('app-admin-catalogo h1').textContent).toContain('Sistemas');
-  });
+    f.destroy(); flush(); discardPeriodicTasks();
+  }));
   it('QA-011 administrador ve Módulos y conserva enlace Sistemas', () => {
     const f = TestBed.createComponent(ShellLayoutComponent); f.detectChanges();
     expect(f.nativeElement.querySelector('a[href="/admin/catalogo/modulos"]').textContent).toContain('Módulos');
@@ -71,11 +72,12 @@ describe('QA-010 navegación Sistemas', () => {
     const f = TestBed.createComponent(ShellLayoutComponent); f.detectChanges();
     expect(f.nativeElement.querySelector('a[href="/admin/catalogo/modulos"]')).toBeNull();
   });
-  it('QA-011 navega al CRUD existente de Módulos y cierra menú', async () => {
+  it('QA-011 navega al CRUD existente de Módulos y cierra menú', fakeAsync(() => {
     const f = TestBed.createComponent(ShellLayoutComponent); f.detectChanges(); f.componentInstance.menuOpen = true;
-    f.nativeElement.querySelector('a[href="/admin/catalogo/modulos"]').click(); await f.whenStable(); f.detectChanges();
+    f.nativeElement.querySelector('a[href="/admin/catalogo/modulos"]').click(); tick(); f.detectChanges();
     expect(TestBed.inject(Router).url).toBe('/admin/catalogo/modulos');
     expect(f.componentInstance.menuOpen).toBeFalse();
     expect(f.nativeElement.querySelector('app-admin-catalogo h1').textContent).toContain('Módulos');
-  });
+    f.destroy(); flush(); discardPeriodicTasks();
+  }));
 });

@@ -140,6 +140,32 @@ public class BusquedaConocimientoJdbcAdapter
         }
     }
 
+    /** Busca solo en contenido autorizado; no utiliza el índice de contenido interno. */
+    @Override
+    public List<ResultadoBusquedaConocimiento> buscarAutoservicio(String texto) {
+        StringBuilder sql = new StringBuilder("""
+                SELECT c.conocimiento_id, c.conocimiento_titulo,
+                       COUNT(DISTINCT so.solucion_id) AS relevancia
+                  FROM co_conocimiento c
+                  JOIN co_solucion so ON so.conocimiento_id = c.conocimiento_id
+                                    AND so.solucion_estado = 1
+                                    AND so.solucion_autoservicio = 1
+                 WHERE c.conocimiento_estado = 'PUBLICADO'
+                """);
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        String[] terminos = texto.trim().split("\\s+");
+        for (int i = 0; i < terminos.length; i++) {
+            String nombre = "termino" + i;
+            sql.append(" AND LOWER(CONCAT_WS(' ', c.conocimiento_titulo, so.solucion_titulo, so.solucion_descripcion)) LIKE :")
+                    .append(nombre);
+            params.addValue(nombre, "%" + terminos[i].toLowerCase(java.util.Locale.ROOT) + "%");
+        }
+        sql.append(" GROUP BY c.conocimiento_id, c.conocimiento_titulo ORDER BY relevancia DESC, c.conocimiento_id");
+        return namedJdbc.query(sql.toString(), params, (rs, row) -> new ResultadoBusquedaConocimiento(
+                rs.getObject("conocimiento_id", Integer.class), rs.getString("conocimiento_titulo"),
+                null, null, null, null, null, null, null, null, rs.getObject("relevancia", Double.class)));
+    }
+
     private List<String> columna(String sql, Integer conocimientoId) {
         return jdbc.query(sql, (rs, row) -> rs.getString(1), conocimientoId);
     }

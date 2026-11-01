@@ -145,7 +145,7 @@ export class MaterialApoyoFormComponent {
       return 'Adjunte el nuevo archivo para reemplazar el actual.';
     }
     if (this.muestraUrl && !this.url.trim()) {
-      return this.tipo === 'VIDEO' ? 'Indique una URL o adjunte un video.' : 'La URL es obligatoria.';
+      return this.tipo === 'VIDEO' ? 'Indique una URL para el video.' : 'La URL es obligatoria.';
     }
     return null;
   }

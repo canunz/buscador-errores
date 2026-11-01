@@ -72,7 +72,7 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", ex.getMessage()));
     }
 
-    @ExceptionHandler({cl.casol.backend.conocimiento.domain.exception.PruebaConflictoException.class, cl.casol.backend.identidad.domain.exception.OrganizacionConflictoException.class, cl.casol.backend.identidad.domain.exception.UltimoAdministradorException.class, cl.casol.backend.catalogo.domain.exception.CatalogoConflictoException.class, EmailDuplicadoException.class, PruebaYaAsociadaException.class,
+    @ExceptionHandler({cl.casol.backend.conocimiento.domain.exception.MaterialDuplicadoException.class, cl.casol.backend.conocimiento.domain.exception.SolucionDuplicadaException.class, cl.casol.backend.conocimiento.domain.exception.PruebaConflictoException.class, cl.casol.backend.identidad.domain.exception.OrganizacionConflictoException.class, cl.casol.backend.identidad.domain.exception.UltimoAdministradorException.class, cl.casol.backend.catalogo.domain.exception.CatalogoConflictoException.class, EmailDuplicadoException.class, PruebaYaAsociadaException.class,
             OrdenPasoDuplicadoException.class, cl.casol.backend.conocimiento.domain.exception.UltimaSolucionActivaException.class, cl.casol.backend.conocimiento.domain.exception.SolucionInactivaException.class})
     public ResponseEntity<Map<String, String>> handleConflicto(RuntimeException ex) {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("message", ex.getMessage()));
@@ -89,7 +89,7 @@ public class GlobalExceptionHandler {
                 .body(Map.of("message", "El registro entra en conflicto con datos existentes"));
     }
 
-    @ExceptionHandler({cl.casol.backend.conocimiento.domain.exception.PruebaInvalidaException.class, cl.casol.backend.identidad.domain.exception.OrganizacionInvalidaException.class, cl.casol.backend.catalogo.domain.exception.CatalogoInvalidoException.class, RolInactivoException.class, AutoDesactivacionException.class,
+    @ExceptionHandler({cl.casol.backend.conocimiento.domain.exception.CopiaSolucionInvalidaException.class, cl.casol.backend.conocimiento.domain.exception.PruebaInvalidaException.class, cl.casol.backend.identidad.domain.exception.OrganizacionInvalidaException.class, cl.casol.backend.catalogo.domain.exception.CatalogoInvalidoException.class, RolInactivoException.class, AutoDesactivacionException.class,
             ClasificacionInvalidaException.class, AsignacionSolucionInvalidaException.class,
             EstadoProcedimientoInvalidoException.class, ReglaEjecucionException.class,
             EstadoConocimientoNoEvaluableException.class, cl.casol.backend.conocimiento.domain.exception.TituloSolucionInvalidoException.class})
@@ -136,6 +136,35 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Map<String, String>> handleBaseDeDatos(Exception ex) {
         return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
                 .body(Map.of("message", "No se pudo conectar con la base de datos. Intente de nuevo."));
+    }
+
+    @ExceptionHandler(cl.casol.backend.identidad.domain.exception.CorreoNoRegistradoException.class)
+    public ResponseEntity<Map<String, String>> handleCorreoNoRegistrado(
+            cl.casol.backend.identidad.domain.exception.CorreoNoRegistradoException ex
+    ) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", ex.getMessage()));
+    }
+
+    @ExceptionHandler(cl.casol.backend.identidad.domain.exception.CodigoAccesoInvalidoException.class)
+    public ResponseEntity<Map<String, String>> handleCodigoInvalido(
+            cl.casol.backend.identidad.domain.exception.CodigoAccesoInvalidoException ex
+    ) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", ex.getMessage()));
+    }
+
+    @ExceptionHandler(cl.casol.backend.identidad.domain.exception.ReenvioCodigoAnticipadoException.class)
+    public ResponseEntity<Map<String, Object>> handleReenvioAnticipado(
+            cl.casol.backend.identidad.domain.exception.ReenvioCodigoAnticipadoException ex
+    ) {
+        return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS)
+                .body(Map.of("message", ex.getMessage(), "segundosRestantes", ex.getSegundosRestantes()));
+    }
+
+    @ExceptionHandler(cl.casol.backend.identidad.domain.exception.EnvioCodigoAccesoException.class)
+    public ResponseEntity<Map<String, String>> handleEnvioCodigo(
+            cl.casol.backend.identidad.domain.exception.EnvioCodigoAccesoException ex
+    ) {
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(Map.of("message", ex.getMessage()));
     }
 
     @ExceptionHandler(UsuarioInactivoException.class)

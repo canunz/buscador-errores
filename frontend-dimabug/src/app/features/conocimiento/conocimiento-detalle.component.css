@@ -1743,3 +1743,32 @@
 :host-context(.tema-oscuro) .form-modal-dialog h2 {
   color: #f8fafc;
 }
+
+.reutilizar-modal { position: fixed; inset: 0; z-index: 90; display: grid; place-items: center; padding: 20px; }
+.reutilizar-fondo { position: absolute; inset: 0; background: #16307099; backdrop-filter: blur(3px); }
+.reutilizar-tarjeta { position: relative; width: min(900px,100%); max-height: 92vh; overflow: auto; padding: 24px; border-radius: 20px; background: white; box-shadow: 0 20px 60px #16307055; }
+.reutilizar-tarjeta header, .reutilizar-tarjeta footer { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.reutilizar-tarjeta label { display: block; margin: 12px 0; }
+.reutilizar-tarjeta input[type="search"] { display: block; width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px; }
+.reutilizar-resultados { max-height: 230px; overflow: auto; }
+.reutilizar-opcion { display: block; width: 100%; text-align: left; padding: 12px; margin: 6px 0; border: 1px solid #cbd5e1; border-radius: 8px; background: #f8faff; }
+.reutilizar-opcion span { display: block; margin-top: 5px; }
+.reutilizar-opcion[aria-pressed="true"] { outline: 2px solid #163070; }
+.reutilizar-preview { border-top: 1px solid #cbd5e1; margin-top: 16px; }
+.reutilizar-texto { white-space: pre-wrap; overflow-wrap: anywhere; }
+.reutilizar-error { color: #b42318; background: #fef2f2; padding: 10px; }
+.reutilizar-aviso { color: #854d0e; background: #fef9c3; padding: 10px; }
+.reutilizar-tarjeta button { cursor: pointer; border-radius: 8px; padding: 8px 12px; }
+.reutilizar-tarjeta button:disabled { cursor: not-allowed; opacity: .55; }
+.reutilizar-tarjeta button:focus-visible { outline: 3px solid #6794ff; outline-offset: 3px; }
+
+.flujo-acciones { display: flex; flex-wrap: wrap; gap: 8px; }
+.flujo-preview { padding: 14px; margin: 12px 0; background: #f0f4fc; border: 1px solid #cbd5e1; border-radius: 10px; overflow-wrap: anywhere; }
+.flujo-resultados { display: grid; gap: 8px; max-height: 240px; overflow: auto; margin: 12px 0; }
+.flujo-resultados button { text-align: left; padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px; background: #f8faff; }
+.flujo-resultados button[aria-pressed="true"] { outline: 2px solid #163070; }
+.flujo-material-modal { z-index: 80; }
+.flujo-material-modal .form-modal-dialog { max-height: 92vh; overflow: auto; }
+.flujo-material-modal label, .flujo-material-modal input { display: block; width: 100%; }
+
+.flujo-campos { display: contents; }

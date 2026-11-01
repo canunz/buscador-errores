@@ -23,7 +23,7 @@ public class AdministrarCatalogosService {
         repository.bloquear(tipo);
         CatalogoAdministrativo actual = id == null ? null : buscar(tipo,id);
         String nombre = datos.nombre() == null ? "" : datos.nombre().trim();
-        int limite = tipo == TipoCatalogo.modulos ? 120 : 100;
+        int limite = tipo == TipoCatalogo.frecuencias ? 50 : tipo == TipoCatalogo.modulos ? 120 : 100;
         if (nombre.isEmpty() || nombre.length() > limite) throw new CatalogoInvalidoException("Nombre obligatorio; máximo " + limite + " caracteres");
         if (repository.listar(tipo).stream().anyMatch(r -> !Objects.equals(r.id(),id)
                 && r.nombre().trim().equalsIgnoreCase(nombre)

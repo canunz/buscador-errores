@@ -1,5 +1,9 @@
 import { DatePipe, NgClass } from '@angular/common';
-import { Component, Input, OnInit, inject } from '@angular/core';
+import { Component, DestroyRef, Injector, Input, OnInit, inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { apiUrl } from '../../core/config/api';
+import { AdminPruebasApiService } from '../../core/services/admin-pruebas-api.service';
+import { PruebaItem } from '../../core/models/catalogo.model';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import {
@@ -17,14 +21,13 @@ import {
   etiquetaEstadoConocimiento,
 } from '../../core/models/conocimiento.model';
 import { AuthService } from '../../core/services/auth.service';
-import { ConocimientoService } from '../../core/services/conocimiento.service';
+import { ConocimientoService, SolucionCatalogoItem } from '../../core/services/conocimiento.service';
 import { FavoritosService } from '../../core/services/favoritos.service';
 import { OrganizacionService } from '../../core/services/organizacion.service';
 import {
   OrigenMaterial,
   acceptArchivoMaterial,
   admiteUploadLocal,
-  esUrlDescargaAutenticada,
   muestraUrlMaterial,
   origenDesdeAdjunto,
   validarMaterialFormulario,
@@ -56,6 +59,8 @@ export class ConocimientoDetalleComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly fb = inject(FormBuilder);
+  private readonly injector = inject(Injector);
+  private readonly destroyRef = inject(DestroyRef);
 
   @Input() embebido = false;
 
@@ -90,6 +95,193 @@ export class ConocimientoDetalleComponent implements OnInit {
   confirmarQuitarFavorito = false;
   saving: Seccion | null = null;
   copiado = false;
+  reutilizarAbierto = false;
+  cargandoCatalogoSoluciones = false;
+  copiandoSolucion = false;
+  copiaCompletada = false;
+  copiaGuardada: Solucion | null = null;
+  copiaError = '';
+  solucionesReutilizables: SolucionCatalogoItem[] = [];
+  solucionSeleccionada: SolucionCatalogoItem | null = null;
+  readonly reutilizarForm = this.fb.nonNullable.group({ busqueda: [''], confirmar: [false], autoservicio: [false] });
+  get solucionesReutilizablesFiltradas(): SolucionCatalogoItem[] {
+    const q = this.reutilizarForm.controls.busqueda.value.trim().toLocaleLowerCase('es');
+    return this.solucionesReutilizables.filter(s => !q || [s.titulo, s.descripcion, s.conocimientoTitulo, s.tipo]
+      .join(' ').toLocaleLowerCase('es').includes(q));
+  }
+  abrirReutilizarSolucion(): void {
+    if (!this.esAdministrador() || !this.item || this.item.estado === 'ELIMINADO' || this.copiandoSolucion) return;
+    this.reutilizarAbierto = true; this.copiaError = ''; this.copiaCompletada = false;
+    this.copiaGuardada = null; this.solucionesReutilizables = [];
+    this.solucionSeleccionada = null; this.reutilizarForm.reset({ busqueda: '', confirmar: false, autoservicio: false });
+    this.cargandoCatalogoSoluciones = true;
+    const destino = this.item.id;
+    this.conocimientosApi.listarSolucionesCatalogo(true, true, true).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: items => { this.cargandoCatalogoSoluciones = false;
+        if (!this.reutilizarAbierto || this.item?.id !== destino) return;
+        this.solucionesReutilizables = items.filter(s => s.conocimientoId !== destino);
+      }, error: (e: Error) => { this.cargandoCatalogoSoluciones = false; this.copiaError = e.message; },
+    });
+  }
+  seleccionarSolucionReutilizable(s: SolucionCatalogoItem): void {
+    if (this.copiandoSolucion || this.copiaCompletada) return;
+    this.solucionSeleccionada = s; this.copiaError = '';
+    this.reutilizarForm.patchValue({ confirmar: false, autoservicio: false });
+  }
+  cerrarReutilizarSolucion(): void {
+    if (!this.copiandoSolucion) this.reutilizarAbierto = false;
+  }
+  confirmarCopiaSolucion(): void {
+    const s = this.solucionSeleccionada; const destino = this.item;
+    if (!this.esAdministrador() || !s || !destino || this.copiandoSolucion || this.copiaCompletada
+        || !this.reutilizarForm.controls.confirmar.value) return;
+    this.copiandoSolucion = true; this.copiaError = '';
+    this.conocimientosApi.copiarSolucion(destino.id, s.conocimientoId, s.id, this.reutilizarForm.controls.autoservicio.value)
+      .pipe(takeUntilDestroyed(this.destroyRef)).subscribe({ next: guardada => {
+        this.copiaGuardada = guardada; this.copiaCompletada = true;
+        // Después de un POST exitoso, solo se reintenta la lectura; nunca se repite la creación.
+        this.recargarTrasCopia(destino.id);
+      }, error: (e: Error) => { this.copiandoSolucion = false; this.copiaError = e.message; } });
+  }
+  recargarTrasCopia(destinoId = this.item?.id): void {
+    if (!destinoId || !this.copiaCompletada) return;
+    this.copiandoSolucion = true;
+    this.conocimientosApi.listarSoluciones(destinoId, true).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: items => {
+        this.copiandoSolucion = false;
+        if (this.item?.id !== destinoId) { this.reutilizarAbierto = false; return; }
+        this.soluciones = items; this.publicarLista(`soluciones:${destinoId}`, items); this.cargarAsignaciones(destinoId, items);
+        this.reutilizarAbierto = false; this.ok(this.copiaGuardada?.activo === false
+          ? 'Solución inactiva copiada. Puedes consultarla en la administración de Soluciones; no aparece en Resolver ni en el chatbot.'
+          : 'Solución copiada de forma independiente. No se copiaron asignaciones ni historial.');
+      }, error: (e: Error) => { this.copiandoSolucion = false; this.copiaError = `La solución ya se copió. Falta recargar el destino: ${e.message}`; },
+    });
+  }
+  modoPrueba: 'buscar' | 'crear' = 'buscar';
+  cargandoPruebasCatalogo = false;
+  pruebaBusqueda = this.fb.nonNullable.control('');
+  pruebaNuevaForm = this.fb.nonNullable.group({
+    descripcion: ['', [Validators.required, Validators.pattern(/\S/), Validators.maxLength(500)]],
+    resultadoEsperado: ['', Validators.maxLength(500)],
+  });
+  pruebaCreada: PruebaItem | null = null;
+  pruebaDestinoPendienteId: number | null = null;
+  creacionPruebaIncierta = false;
+  get pruebasFiltradas(): PruebaCatalogo[] {
+    const q = this.pruebaBusqueda.value.trim().toLocaleLowerCase('es');
+    return this.pruebasCatalogo.filter(p => !q || `${p.descripcion} ${p.resultadoEsperado || ''}`.toLocaleLowerCase('es').includes(q));
+  }
+  get pruebaSeleccionada(): PruebaCatalogo | undefined { return this.pruebasCatalogo.find(p => p.id === this.pruebaForm.controls.pruebaId.value); }
+  abrirBuscarPrueba(): void { if (!this.puedeGestionar() || this.saving === 'pruebas') return; this.modoPrueba = 'buscar'; this.abrirFormulario('pruebas'); }
+  abrirNuevaPrueba(): void {
+    if (!this.esAdministrador() || this.saving === 'pruebas') return;
+    this.modoPrueba = 'crear'; this.formAbierto.pruebas = true; this.sectionError = '';
+  }
+  guardarNuevaPruebaYAsociar(): void {
+    const destino = this.conocimientoId;
+    if (!this.esAdministrador() || !destino || this.saving === 'pruebas') return;
+    if (this.pruebaDestinoPendienteId != null && this.pruebaDestinoPendienteId !== destino) {
+      this.sectionError = `La prueba pendiente corresponde al conocimiento ${this.pruebaDestinoPendienteId}. Vuelve a ese conocimiento para asociarla.`; return;
+    }
+    if (this.pruebaCreada) { this.pruebaForm.controls.pruebaId.setValue(this.pruebaCreada.id); this.guardarPrueba(); return; }
+    if (this.creacionPruebaIncierta) { this.sectionError = 'El resultado de la creación es incierto. Busca la prueba antes de volver a crear.'; return; }
+    if (this.pruebaNuevaForm.invalid) { this.pruebaNuevaForm.markAllAsTouched(); this.sectionError = 'Descripción obligatoria y campos de máximo 500 caracteres.'; return; }
+    this.saving = 'pruebas'; this.sectionError = ''; this.pruebaDestinoPendienteId = destino;
+    const v = this.pruebaNuevaForm.getRawValue();
+    this.injector.get(AdminPruebasApiService).guardar(null, v.descripcion, v.resultadoEsperado)
+      .pipe(takeUntilDestroyed(this.destroyRef)).subscribe({ next: creada => {
+        this.pruebaCreada = creada; this.saving = null;
+        this.pruebasCatalogo = [...this.pruebasCatalogo.filter(p => p.id !== creada.id), creada];
+        if (this.conocimientoId !== destino) { this.sectionError = `Prueba ${creada.id} creada para el conocimiento ${destino}; vuelve para asociarla.`; return; }
+        this.pruebaForm.controls.pruebaId.setValue(creada.id); this.guardarPrueba();
+      }, error: (e: Error & { status?: number }) => { this.saving = null; this.creacionPruebaIncierta = e.status == null || e.status === 0 || e.status >= 500; if (!this.creacionPruebaIncierta) this.pruebaDestinoPendienteId = null; this.sectionError = this.creacionPruebaIncierta ? `${e.message} No se repetirá la creación. Busca la prueba en el catálogo.` : e.message; } });
+  }
+  recuperarPruebaPendiente(): void {
+    if (!this.esAdministrador() || this.saving === 'pruebas') return;
+    this.saving = 'pruebas'; const v = this.pruebaNuevaForm.getRawValue();
+    this.injector.get(AdminPruebasApiService).listar().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: items => {
+        this.saving = null;
+        const candidatos = items.filter(p => p.descripcion.trim().toLocaleLowerCase('es') === v.descripcion.trim().toLocaleLowerCase('es')
+          && (p.resultadoEsperado || '').trim() === v.resultadoEsperado.trim());
+        if (candidatos.length !== 1 || !candidatos[0].activo) { this.sectionError = 'No hay una coincidencia activa única. Revisa el catálogo administrativo antes de crear otra prueba.'; return; }
+        this.pruebaCreada = candidatos[0]; this.creacionPruebaIncierta = false; this.sectionError = `Prueba ${this.pruebaCreada.id} encontrada. Puedes reintentar solo la asociación.`;
+      }, error: (e: Error) => { this.saving = null; this.sectionError = e.message; },
+    });
+  }
+  comprobarAsociacionPendiente(): void {
+    const id = this.pruebaDestinoPendienteId; const creada = this.pruebaCreada;
+    if (!this.puedeGestionar() || !id || !creada || this.saving === 'pruebas') return;
+    this.saving = 'pruebas';
+    this.conocimientosApi.listarPruebas(id, true).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: items => {
+        this.saving = null;
+        if (this.conocimientoId === id) { this.pruebas = items; this.publicarLista(`pruebas:${id}`, items); }
+        if (items.some(p => p.id === creada.id)) {
+          this.pruebaCreada = null; this.pruebaDestinoPendienteId = null; this.creacionPruebaIncierta = false;
+          this.pruebaNuevaForm.reset({ descripcion: '', resultadoEsperado: '' }); this.formAbierto.pruebas = false;
+          this.ok('La prueba ya estaba asociada. No se repitió la creación ni la asociación.');
+        } else this.sectionError = `Prueba ${creada.id} creada, todavía no asociada. Puedes reintentar solo la asociación.`;
+      }, error: (e: Error) => { this.saving = null; this.sectionError = e.message; },
+    });
+  }
+  materialBusquedaAbierta = false;
+  cargandoMaterialesCatalogo = false;
+  reutilizandoMaterial = false;
+  materialReutilizado = false;
+  materialBusquedaError = '';
+  materialFiltro = this.fb.nonNullable.control('');
+  materialesCatalogo: (MaterialApoyo & { conocimientoId: number; conocimientoTitulo: string })[] = [];
+  materialSeleccionado: (MaterialApoyo & { conocimientoId: number; conocimientoTitulo: string }) | null = null;
+  get materialesFiltrados() {
+    const q = this.materialFiltro.value.trim().toLocaleLowerCase('es');
+    return this.materialesCatalogo.filter(m => !q || `${m.nombre} ${m.tipo} ${m.conocimientoTitulo}`.toLocaleLowerCase('es').includes(q));
+  }
+  abrirBuscarMaterial(): void {
+    if (!this.puedeGestionar() || !this.item || this.reutilizandoMaterial) return;
+    this.materialBusquedaAbierta = true; this.materialBusquedaError = '';
+    if (this.materialReutilizado) this.materialSeleccionado = null;
+    this.materialReutilizado = false; this.materialesCatalogo = []; this.cargandoMaterialesCatalogo = true;
+    const destino = this.item.id;
+    this.conocimientosApi.listarMaterialesCatalogo().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: items => { this.cargandoMaterialesCatalogo = false; if (this.conocimientoId === destino && this.materialBusquedaAbierta) this.materialesCatalogo = items.filter(m => m.conocimientoId !== destino); },
+      error: (e: Error) => { this.cargandoMaterialesCatalogo = false; this.materialBusquedaError = e.message; },
+    });
+  }
+  esArchivoMaterialCatalogo(m: MaterialApoyo & { conocimientoId: number }): boolean {
+    return (m.tipo === 'PDF' || m.tipo === 'IMAGEN')
+      && m.url === `/api/conocimientos/${m.conocimientoId}/materiales/${m.id}/archivo`;
+  }
+  descargarMaterialCatalogo(m: MaterialApoyo & { conocimientoId: number }): void {
+    if (!this.puedeGestionar() || !this.esArchivoMaterialCatalogo(m)) {
+      this.materialBusquedaError = 'La descarga no corresponde a un archivo administrado del conocimiento de origen.'; return;
+    }
+    const url = apiUrl(`/conocimientos/${m.conocimientoId}/materiales/${m.id}/archivo`);
+    this.conocimientosApi.descargarMaterial({ ...m, url }).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      error: (e: Error) => { this.materialBusquedaError = e.message; },
+    });
+  }
+  seleccionarMaterial(m: (MaterialApoyo & { conocimientoId: number; conocimientoTitulo: string })): void {
+    if (!this.reutilizandoMaterial && !this.materialReutilizado) this.materialSeleccionado = m;
+  }
+  cerrarBuscarMaterial(): void { if (!this.reutilizandoMaterial) this.materialBusquedaAbierta = false; }
+  reutilizarMaterialSeleccionado(): void {
+    const m = this.materialSeleccionado; const id = this.conocimientoId;
+    if (!this.puedeGestionar() || !m || !id || this.reutilizandoMaterial || this.materialReutilizado) return;
+    this.reutilizandoMaterial = true; this.materialBusquedaError = '';
+    this.conocimientosApi.reutilizarMaterial(id, m.conocimientoId, m.id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: () => { this.materialReutilizado = true; this.recargarMaterialesReutilizados(id); },
+      error: (e: Error) => { this.reutilizandoMaterial = false; this.materialBusquedaError = e.message; },
+    });
+  }
+  recargarMaterialesReutilizados(id = this.conocimientoId): void {
+    if (!id || !this.materialReutilizado) return;
+    this.reutilizandoMaterial = true;
+    this.conocimientosApi.listarMateriales(id, true).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: items => { this.reutilizandoMaterial = false; if (this.conocimientoId === id) { this.materiales = items; this.publicarLista(`materiales:${id}`, items); this.ok('Material reutilizado con referencia independiente.'); } this.materialBusquedaAbierta = false; },
+      error: (e: Error) => { this.reutilizandoMaterial = false; this.materialBusquedaError = `El material ya se copió. Reintenta solo recargar: ${e.message}`; },
+    });
+  }
   private currentId: number | null = null;
 
   editSintomaId: number | null = null;
@@ -209,6 +401,8 @@ export class ConocimientoDetalleComponent implements OnInit {
   }
 
   cargar(id: number): void {
+    this.reutilizarAbierto = false;
+    this.materialBusquedaAbierta = false;
     this.currentId = id;
     this.error = '';
     this.sectionError = '';
@@ -388,14 +582,12 @@ export class ConocimientoDetalleComponent implements OnInit {
       this.sintomaForm.controls.orden.setValue(this.nextOrden(this.sintomas));
     }
     this.formAbierto[seccion] = true;
-    if (seccion === 'materiales') {
-      this.resetMaterialFormulario();
-    }
+
     if (seccion === 'pruebas') {
-      this.pruebasCatalogo = [];
+      this.pruebasCatalogo = []; this.cargandoPruebasCatalogo = true;
       this.organizacion.listarPruebas(true).subscribe({
-        next: (items) => (this.pruebasCatalogo = items),
-        error: (err: Error) => (this.sectionError = err.message),
+        next: (items) => { this.pruebasCatalogo = items; this.cargandoPruebasCatalogo = false; },
+        error: (err: Error) => { this.sectionError = err.message; this.cargandoPruebasCatalogo = false; },
       });
     }
   }
@@ -505,12 +697,13 @@ export class ConocimientoDetalleComponent implements OnInit {
   }
 
   cerrarFormulario(seccion: keyof typeof this.formAbierto): void {
+    if (this.saving === seccion) return;
     this.formAbierto[seccion] = false;
     if (seccion === 'sintomas') this.cancelarSintoma();
     if (seccion === 'causas') this.cancelarCausa();
-    if (seccion === 'pruebas') this.cancelarPrueba();
+
     if (seccion === 'soluciones') this.cancelarSolucion();
-    if (seccion === 'materiales') this.cancelarMaterial();
+
   }
 
   guardarSintoma(): void {
@@ -613,13 +806,17 @@ export class ConocimientoDetalleComponent implements OnInit {
     if (this.pruebaForm.invalid) { this.pruebaForm.markAllAsTouched(); return; }
     const value = this.pruebaForm.getRawValue();
     if (value.pruebaId == null) return;
+    if (this.pruebas.some(p => p.id === value.pruebaId)) { this.sectionError = 'Esta prueba ya está asociada al conocimiento.'; return; }
     this.saving = 'pruebas'; this.sectionError = ''; this.sectionSuccess = '';
     this.conocimientosApi.asociarPrueba(id, { pruebaId: value.pruebaId, orden: this.nextOrden(this.pruebas) }).subscribe({
       next: creada => {
         this.saving = null;
-        this.pruebas = [...this.pruebas, creada];
+        if (this.conocimientoId !== id) return;
+        this.pruebas = [...this.pruebas.filter(p => p.id !== creada.id), creada];
         this.publicarLista(`pruebas:${id}`, this.pruebas);
-        this.formAbierto.pruebas = false; this.cancelarPrueba(); this.ok('Prueba asociada.');
+        this.formAbierto.pruebas = false; this.cancelarPrueba();
+        if (this.pruebaCreada?.id === creada.id) { this.pruebaCreada = null; this.pruebaDestinoPendienteId = null; this.creacionPruebaIncierta = false; this.pruebaNuevaForm.reset({ descripcion: '', resultadoEsperado: '' }); }
+        this.ok('Prueba asociada.');
       },
       error: (err: Error) => { this.saving = null; this.fail(err); },
     });
@@ -818,24 +1015,9 @@ export class ConocimientoDetalleComponent implements OnInit {
     if (!id) {
       return;
     }
-    this.sectionError = '';
-    const previo = this.materiales;
+    if (!this.puedeGestionar() || this.saving === 'materiales') return;
+    this.sectionError = ''; this.sectionSuccess = ''; this.saving = 'materiales';
     const editando = this.editMaterialId;
-    const temporal = editando ?? -Date.now();
-    const borrador: MaterialApoyo = {
-      id: temporal,
-      nombre: valor.nombre.trim(),
-      tipo: valor.tipo,
-      url: valor.origen === 'archivo' ? '' : valor.url.trim(),
-    };
-    this.materiales =
-      editando != null
-        ? this.materiales.map((item) => (item.id === editando ? { ...item, ...borrador, id: editando } : item))
-        : [...this.materiales, borrador];
-    this.publicarLista(`materiales:${id}`, this.materiales);
-    this.resetMaterialFormulario();
-    this.formAbierto.materiales = false;
-    this.ok(editando != null ? 'Material actualizado.' : 'Material agregado.');
     const req$ =
       valor.origen === 'archivo' && valor.archivo
         ? this.conocimientosApi.crearMaterialArchivo(id, valor.nombre, valor.tipo, valor.archivo)
@@ -850,25 +1032,26 @@ export class ConocimientoDetalleComponent implements OnInit {
               tipo: valor.tipo,
               url: valor.url.trim(),
             });
-    req$.subscribe({
-      next: (creado) => {
-        this.materiales = this.materiales.map((item) => (item.id === temporal ? creado : item));
+    req$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: creado => {
+        this.saving = null;
+        if (this.conocimientoId !== id) return;
+        this.materiales = editando != null ? this.materiales.map(m => m.id === editando ? creado : m) : [...this.materiales, creado];
         this.publicarLista(`materiales:${id}`, this.materiales);
-      },
-      error: (err: Error) => {
-        this.materiales = previo;
-        this.publicarLista(`materiales:${id}`, previo);
-        this.fail(err);
-      },
+        this.resetMaterialFormulario(); this.formAbierto.materiales = false;
+        this.ok(editando != null ? 'Material actualizado.' : 'Material agregado.');
+      }, error: (err: Error) => { this.saving = null; this.fail(err); },
     });
   }
 
   esMaterialLocal(item: MaterialApoyo): boolean {
-    return esUrlDescargaAutenticada(item.url);
+    return item.url === `/api/conocimientos/${this.conocimientoId}/materiales/${item.id}/archivo`;
   }
 
   descargarMaterial(item: MaterialApoyo): void {
-    this.conocimientosApi.descargarMaterial(item).subscribe({
+    if (!this.esMaterialLocal(item)) { this.fail(new Error('La descarga no corresponde al conocimiento actual.')); return; }
+    const url = apiUrl(`/conocimientos/${this.conocimientoId}/materiales/${item.id}/archivo`);
+    this.conocimientosApi.descargarMaterial({ ...item, url }).subscribe({
       error: (err: Error) => this.fail(err),
     });
   }

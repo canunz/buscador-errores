@@ -16,6 +16,8 @@ import cl.casol.backend.shared.application.service.VisibilidadContenidoService;
 import cl.casol.backend.shared.infrastructure.security.SecurityConfig;
 import cl.casol.backend.shared.infrastructure.web.*;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.context.annotation.Import;
@@ -25,10 +27,11 @@ import java.util.*;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-@WebMvcTest({SintomaController.class,MaterialConocimientoArchivoController.class,PasoController.class,ResultadoSolucionController.class})
+@WebMvcTest({MaterialApoyoController.class,SintomaController.class,MaterialConocimientoArchivoController.class,PasoController.class,ResultadoSolucionController.class})
 @Import({SecurityConfig.class,JwtAuthenticationFilter.class,GlobalExceptionHandler.class,VisibilidadContenidoConfig.class,VisibilidadContenidoService.class})
 class ContenidoRestringidoSecurityIntegrationTest {
     @Autowired MockMvc mvc;
+    @MockitoBean MantenerMaterialApoyoService materiales;
     @MockitoBean MantenerSintomaService sintomas;
     @MockitoBean MaterialConocimientoArchivoService archivos;
     @MockitoBean MantenerPasoService pasos;
@@ -68,4 +71,35 @@ class ContenidoRestringidoSecurityIntegrationTest {
         autenticar("USUARIO");when(procedimientos.buscarPorId(1)).thenReturn(Optional.of(new Procedimiento(1,"P","D",EstadoProcedimiento.BORRADOR,null,null,null,null)));
         mvc.perform(get("/api/procedimientos/1/pasos").header("Authorization","Bearer jwt")).andExpect(status().isNotFound());verifyNoInteractions(pasos);
     }
+    @Test void usuarioNoListaNiDescargaMaterialDeBorrador() throws Exception {
+        autenticar("USUARIO"); conocimiento(EstadoConocimiento.BORRADOR);
+        for (String ruta:List.of("/api/conocimientos/1/materiales","/api/conocimientos/1/materiales/2/archivo"))
+            mvc.perform(get(ruta).header("Authorization","Bearer jwt")).andExpect(status().isNotFound());
+        verifyNoInteractions(materiales, archivos);
+    }
+    @ParameterizedTest @ValueSource(strings={"ADMINISTRADOR","TECNICO","SOPORTE"})
+    void personalAutorizadoConservaConsultaMaterialDeBorrador(String rol) throws Exception {
+        autenticar(rol); conocimiento(EstadoConocimiento.BORRADOR);
+        when(materiales.listar(1)).thenReturn(List.of());
+        mvc.perform(get("/api/conocimientos/1/materiales").header("Authorization","Bearer jwt")).andExpect(status().isOk());
+        verify(materiales).listar(1);
+    }
+
+    @ParameterizedTest @ValueSource(strings={"ADMINISTRADOR","TECNICO","SOPORTE"})
+    void personalAutorizadoDescargaArchivoDeBorrador(String rol) throws Exception {
+        autenticar(rol); conocimiento(EstadoConocimiento.BORRADOR);
+        byte[] pdf="%PDF-1.7\\ncontenido autorizado".getBytes(java.nio.charset.StandardCharsets.UTF_8);
+        when(archivos.descargar(1,2)).thenReturn(new cl.casol.backend.shared.application.archivo.ArchivoDescarga("qa.pdf","application/pdf",pdf));
+        mvc.perform(get("/api/conocimientos/1/materiales/2/archivo").header("Authorization","Bearer jwt"))
+            .andExpect(status().isOk()).andExpect(content().bytes(pdf));
+    }
+    @Test void usuarioPuedeDescargarArchivoPublicadoPeroNoAnonimo() throws Exception {
+        autenticar("USUARIO"); conocimiento(EstadoConocimiento.PUBLICADO);
+        byte[] pdf="%PDF-1.7".getBytes(java.nio.charset.StandardCharsets.UTF_8);
+        when(archivos.descargar(1,2)).thenReturn(new cl.casol.backend.shared.application.archivo.ArchivoDescarga("qa.pdf","application/pdf",pdf));
+        mvc.perform(get("/api/conocimientos/1/materiales/2/archivo").header("Authorization","Bearer jwt"))
+            .andExpect(status().isOk()).andExpect(content().bytes(pdf));
+        mvc.perform(get("/api/conocimientos/1/materiales/2/archivo")).andExpect(status().isUnauthorized());
+    }
+
 }

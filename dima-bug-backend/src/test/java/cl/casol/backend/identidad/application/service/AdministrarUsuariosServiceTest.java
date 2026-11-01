@@ -44,7 +44,7 @@ class AdministrarUsuariosServiceTest {
         when(usuarioRepository.buscarPorId(1)).thenReturn(Optional.of(admin));
         when(usuarioRepository.bloquearAdministradoresActivos()).thenReturn(java.util.List.of(admin));
         when(rolRepository.buscarPorId(2)).thenReturn(Optional.of(rol(2,"TECNICO",true)));
-        assertThrows(cl.casol.backend.identidad.domain.exception.UltimoAdministradorException.class,()->service.modificar(1,"A","admin@x.cl",2,null));
+        assertThrows(cl.casol.backend.identidad.domain.exception.UltimoAdministradorException.class,()->service.modificar(1,"A","admin@x.cl",2));
     }
     @Test void permiteDesactivarCuandoExisteOtroAdministrador() {
         Usuario admin=usuario(1,"admin@x.cl",true,rol(1,"ADMINISTRADOR",true));
@@ -54,40 +54,39 @@ class AdministrarUsuariosServiceTest {
         assertFalse(service.cambiarEstado(1,false,"otro@x.cl").isActivo());
     }
     @Test
-    void creaUsuarioActivoConPasswordCodificada() {
+    void creaUsuarioActivoSinContrasenaConocida() {
         Rol rol = rol(2, "TECNICO", true);
         when(rolRepository.buscarPorId(2)).thenReturn(Optional.of(rol));
-        when(passwordEncoder.codificar("ClaveInicialSegura")).thenReturn("$2a$10$hash");
+        when(passwordEncoder.codificar(org.mockito.ArgumentMatchers.anyString())).thenReturn("$2a$10$interna");
         when(usuarioRepository.guardar(org.mockito.ArgumentMatchers.any())).thenAnswer(i -> i.getArgument(0));
 
-        Usuario creado = service.crear("Nuevo", "nuevo@dimarsa.cl", "ClaveInicialSegura", 2);
+        Usuario creado = service.crear("Nuevo", "nuevo@dimarsa.cl", 2);
 
         assertTrue(creado.isActivo());
-        assertEquals("$2a$10$hash", creado.getPasswordHash());
+        assertEquals("$2a$10$interna", creado.getPasswordHash());
         assertEquals(2, creado.getRol().getId());
-        verify(passwordEncoder).codificar("ClaveInicialSegura");
     }
 
     @Test
     void rechazaEmailDuplicadoAlCrear() {
         when(usuarioRepository.existePorEmail("usado@dimarsa.cl")).thenReturn(true);
         assertThrows(EmailDuplicadoException.class,
-                () -> service.crear("Nuevo", "usado@dimarsa.cl", "clave", 2));
-        verify(passwordEncoder, never()).codificar("clave");
+                () -> service.crear("Nuevo", "usado@dimarsa.cl", 2));
+        verify(passwordEncoder, never()).codificar(org.mockito.ArgumentMatchers.anyString());
     }
 
     @Test
     void rechazaRolInexistente() {
         when(rolRepository.buscarPorId(99)).thenReturn(Optional.empty());
         assertThrows(RolNoEncontradoException.class,
-                () -> service.crear("Nuevo", "nuevo@dimarsa.cl", "clave", 99));
+                () -> service.crear("Nuevo", "nuevo@dimarsa.cl", 99));
     }
 
     @Test
     void rechazaRolInactivo() {
         when(rolRepository.buscarPorId(2)).thenReturn(Optional.of(rol(2, "TECNICO", false)));
         assertThrows(RolInactivoException.class,
-                () -> service.crear("Nuevo", "nuevo@dimarsa.cl", "clave", 2));
+                () -> service.crear("Nuevo", "nuevo@dimarsa.cl", 2));
     }
 
     @Test
@@ -98,7 +97,7 @@ class AdministrarUsuariosServiceTest {
         when(rolRepository.buscarPorId(1)).thenReturn(Optional.of(administrador));
         when(usuarioRepository.guardar(org.mockito.ArgumentMatchers.any())).thenAnswer(i -> i.getArgument(0));
 
-        Usuario modificado = service.modificar(5, "Nombre nuevo", "nuevo@dimarsa.cl", 1, null);
+        Usuario modificado = service.modificar(5, "Nombre nuevo", "nuevo@dimarsa.cl", 1);
 
         assertEquals("Nombre nuevo", modificado.getNombre());
         assertEquals("nuevo@dimarsa.cl", modificado.getEmail());
@@ -108,27 +107,13 @@ class AdministrarUsuariosServiceTest {
     }
 
     @Test
-    void modificaPasswordCuandoSeEnvia() {
-        Usuario actual = usuario(5, "tecnico@dimarsa.cl", true, rol(2, "TECNICO", true));
-        when(usuarioRepository.buscarPorId(5)).thenReturn(Optional.of(actual));
-        when(rolRepository.buscarPorId(2)).thenReturn(Optional.of(rol(2, "TECNICO", true)));
-        when(passwordEncoder.codificar("NuevaClave123")).thenReturn("$2a$10$nueva");
-        when(usuarioRepository.guardar(org.mockito.ArgumentMatchers.any())).thenAnswer(i -> i.getArgument(0));
-
-        Usuario modificado = service.modificar(5, "Usuario", "tecnico@dimarsa.cl", 2, "NuevaClave123");
-
-        assertEquals("$2a$10$nueva", modificado.getPasswordHash());
-        verify(passwordEncoder).codificar("NuevaClave123");
-    }
-
-    @Test
     void rechazaEmailDeOtroUsuarioAlModificar() {
         when(usuarioRepository.buscarPorId(5)).thenReturn(Optional.of(
                 usuario(5, "anterior@dimarsa.cl", true, rol(2, "TECNICO", true))));
         when(usuarioRepository.existePorEmailYIdDistinto("usado@dimarsa.cl", 5)).thenReturn(true);
 
         assertThrows(EmailDuplicadoException.class,
-                () -> service.modificar(5, "Nombre", "usado@dimarsa.cl", 2, null));
+                () -> service.modificar(5, "Nombre", "usado@dimarsa.cl", 2));
     }
 
     @Test

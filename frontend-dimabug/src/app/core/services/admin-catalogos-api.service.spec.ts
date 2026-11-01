@@ -13,6 +13,13 @@ describe('API de catálogos administrativos', () => {
     clasificacion = TestBed.inject(ClasificacionService); clasificacion.invalidarCatalogos();
   });
   afterEach(() => http.verify());
+  it('consulta Hardware completo por ID para conservar asociaciones inactivas', () => {
+    const invalidar = spyOn(clasificacion, 'invalidarCatalogos');
+    api.obtener('hardware', 7).subscribe(item => expect(item.sistemaIds).toEqual([2, 3]));
+    const req = http.expectOne('/api/admin/catalogos/hardware/7');
+    expect(req.request.method).toBe('GET'); req.flush({ id: 7, ...datos, sistemaIds: [2, 3] });
+    expect(invalidar).not.toHaveBeenCalled();
+  });
   it('alta invalida clasificación y siguiente lectura consulta red', () => {
     clasificacion.listarHardware().subscribe(); http.expectOne('/api/hardware').flush([{ id: 1, nombre: 'Anterior' }]);
     api.guardar('hardware', null, datos).subscribe(); const alta = http.expectOne('/api/admin/catalogos/hardware');

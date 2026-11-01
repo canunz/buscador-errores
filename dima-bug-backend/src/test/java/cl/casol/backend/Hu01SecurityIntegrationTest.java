@@ -5,7 +5,10 @@ import cl.casol.backend.identidad.application.port.out.UsuarioRepository;
 import cl.casol.backend.identidad.application.service.AutenticarUsuarioService;
 import cl.casol.backend.identidad.domain.Rol;
 import cl.casol.backend.identidad.domain.Usuario;
-import cl.casol.backend.identidad.domain.exception.CredencialesInvalidasException;
+import cl.casol.backend.identidad.application.service.SolicitudCodigo;
+import cl.casol.backend.identidad.domain.exception.CodigoAccesoInvalidoException;
+import cl.casol.backend.identidad.domain.exception.CorreoNoRegistradoException;
+import cl.casol.backend.identidad.domain.exception.ReenvioCodigoAnticipadoException;
 import cl.casol.backend.identidad.domain.exception.UsuarioInactivoException;
 import cl.casol.backend.identidad.infrastructure.security.JwtAuthenticationFilter;
 import cl.casol.backend.identidad.infrastructure.web.AuthController;
@@ -52,48 +55,101 @@ class Hu01SecurityIntegrationTest {
     private UsuarioRepository usuarioRepository;
 
     @Test
-    void loginCorrectoResponde200() throws Exception {
+    void solicitarCodigoResponde200ConTiempos() throws Exception {
+        when(autenticarUsuarioService.solicitarCodigo("user@example.com"))
+                .thenReturn(new SolicitudCodigo(300, 60));
+
+        mockMvc.perform(post("/api/auth/codigo")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"email\":\"user@example.com\"}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.segundosVigencia").value(300))
+                .andExpect(jsonPath("$.segundosReenvio").value(60));
+    }
+
+    @Test
+    void correoNoRegistradoResponde404() throws Exception {
+        when(autenticarUsuarioService.solicitarCodigo(anyString()))
+                .thenThrow(new CorreoNoRegistradoException());
+
+        mockMvc.perform(post("/api/auth/codigo")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"email\":\"nadie@example.com\"}"))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.message").value("Este correo no está registrado en DimaBug. Inténtelo con un correo que exista."));
+    }
+
+    @Test
+    void sinFormatoDeCorreoResponde400() throws Exception {
+        mockMvc.perform(post("/api/auth/codigo")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"email\":\"usuario\"}"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void reenviarAntesDeTiempoResponde429() throws Exception {
+        when(autenticarUsuarioService.solicitarCodigo(anyString()))
+                .thenThrow(new ReenvioCodigoAnticipadoException(40));
+
+        mockMvc.perform(post("/api/auth/codigo")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"email\":\"user@example.com\"}"))
+                .andExpect(status().isTooManyRequests())
+                .andExpect(jsonPath("$.segundosRestantes").value(40));
+    }
+
+    @Test
+    void codigoCorrectoEntregaJwt() throws Exception {
         Usuario usuario = usuario(true);
-        when(autenticarUsuarioService.autenticar("user@example.com", "password"))
+        when(autenticarUsuarioService.verificarCodigo("user@example.com", "123456"))
                 .thenReturn(usuario);
         when(tokenService.generarToken(usuario)).thenReturn("jwt-generado");
 
-        mockMvc.perform(post("/api/auth/login")
+        mockMvc.perform(post("/api/auth/codigo/verificar")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"email\":\"user@example.com\",\"password\":\"password\"}"))
+                        .content("{\"email\":\"user@example.com\",\"codigo\":\"123456\"}"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.token").value("jwt-generado"));
     }
 
     @Test
-    void credencialesIncorrectasResponden401() throws Exception {
-        when(autenticarUsuarioService.autenticar(anyString(), anyString()))
-                .thenThrow(new CredencialesInvalidasException());
+    void codigoIncorrectoOVencidoResponde401() throws Exception {
+        when(autenticarUsuarioService.verificarCodigo(anyString(), anyString()))
+                .thenThrow(new CodigoAccesoInvalidoException());
 
-        mockMvc.perform(post("/api/auth/login")
+        mockMvc.perform(post("/api/auth/codigo/verificar")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"email\":\"user@example.com\",\"password\":\"incorrecta\"}"))
+                        .content("{\"email\":\"user@example.com\",\"codigo\":\"000000\"}"))
                 .andExpect(status().isUnauthorized());
     }
 
     @Test
     void usuarioInactivoResponde403() throws Exception {
-        when(autenticarUsuarioService.autenticar(anyString(), anyString()))
+        when(autenticarUsuarioService.verificarCodigo(anyString(), anyString()))
                 .thenThrow(new UsuarioInactivoException());
 
-        mockMvc.perform(post("/api/auth/login")
+        mockMvc.perform(post("/api/auth/codigo/verificar")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"email\":\"user@example.com\",\"password\":\"password\"}"))
+                        .content("{\"email\":\"user@example.com\",\"codigo\":\"123456\"}"))
                 .andExpect(status().isForbidden());
     }
 
     @Test
     void requestInvalidoResponde400() throws Exception {
-        mockMvc.perform(post("/api/auth/login")
+        mockMvc.perform(post("/api/auth/codigo/verificar")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"email\":\"\",\"password\":\"\"}"))
+                        .content("{\"email\":\"\",\"codigo\":\"\"}"))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message").exists());
+    }
+
+    @Test
+    void loginConContrasenaYaNoExiste() throws Exception {
+        mockMvc.perform(post("/api/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"email\":\"user@example.com\",\"password\":\"password\"}"))
+                .andExpect(status().isUnauthorized());
     }
 
     @Test

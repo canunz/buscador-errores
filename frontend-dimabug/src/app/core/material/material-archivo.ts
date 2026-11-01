@@ -1,3 +1,4 @@
+import { backendApiPath } from '../config/api';
 import { HttpClient, HttpResponse } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
 import { TipoMaterial } from '../models/conocimiento.model';
@@ -9,10 +10,10 @@ export const MIME_VIDEO = ['video/mp4', 'video/webm', 'video/quicktime'] as cons
 
 export type OrigenMaterial = 'archivo' | 'enlace';
 
-export const TIPOS_UPLOAD_LOCAL: readonly TipoMaterial[] = ['PDF', 'IMAGEN', 'VIDEO'];
+export const TIPOS_UPLOAD_LOCAL: readonly TipoMaterial[] = ['PDF', 'IMAGEN'];
 
 export function admiteUploadLocal(tipo: TipoMaterial): boolean {
-  return tipo === 'PDF' || tipo === 'IMAGEN' || tipo === 'VIDEO';
+  return tipo === 'PDF' || tipo === 'IMAGEN';
 }
 
 export function muestraUrlMaterial(tipo: TipoMaterial): boolean {
@@ -26,7 +27,7 @@ export function acceptArchivoMaterial(tipo: TipoMaterial): string {
   if (tipo === 'IMAGEN') {
     return 'image/png,image/jpeg,image/webp';
   }
-  return 'video/mp4,video/webm,video/quicktime';
+  return '';
 }
 
 export function origenDesdeAdjunto(tipo: TipoMaterial, archivo: File | null | undefined): OrigenMaterial {
@@ -34,15 +35,8 @@ export function origenDesdeAdjunto(tipo: TipoMaterial, archivo: File | null | un
 }
 
 export function esUrlDescargaAutenticada(url: string | null | undefined): boolean {
-  if (!url) {
-    return false;
-  }
-  if (url.startsWith('file:materiales/')) {
-    return false;
-  }
-  return /\/api\/(?:conocimientos\/\d+\/materiales|procedimientos\/\d+\/pasos\/\d+\/materiales)\/\d+\/archivo(?:\?|$)/.test(
-    url,
-  );
+  const path = url ? backendApiPath(url) : null;
+  return path !== null && /^\/(?:conocimientos\/\d+\/materiales|procedimientos\/\d+\/pasos\/\d+\/materiales)\/\d+\/archivo$/.test(path);
 }
 
 export function mimeCompatibleConTipo(tipo: TipoMaterial, mime: string | undefined): boolean {
@@ -56,7 +50,7 @@ export function mimeCompatibleConTipo(tipo: TipoMaterial, mime: string | undefin
     return (MIME_IMAGEN as readonly string[]).includes(mime);
   }
   if (tipo === 'VIDEO') {
-    return (MIME_VIDEO as readonly string[]).includes(mime);
+    return false;
   }
   return false;
 }
@@ -83,10 +77,10 @@ export function validarMaterialFormulario(input: {
   }
 
   if (input.tipo === 'VIDEO') {
-    if (archivo) {
-      return validarArchivoMaterial(input.tipo, archivo);
+    if (archivo || input.origen === 'archivo') {
+      return 'Los videos solo se admiten mediante enlace.';
     }
-    return url ? null : 'Indique una URL o adjunte un video.';
+    return url ? null : 'Indique una URL para el video.';
   }
 
   if (!archivo) {

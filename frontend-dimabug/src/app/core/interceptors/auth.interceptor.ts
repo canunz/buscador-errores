@@ -1,7 +1,7 @@
 import { HttpErrorResponse, HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { catchError, throwError } from 'rxjs';
-import { isPublicApiUrl } from '../config/api';
+import { backendApiPath, isPublicApiUrl } from '../config/api';
 import { AuthService } from '../services/auth.service';
 
 /** Evita lanzar varias comprobaciones si varias peticiones fallan juntas. */
@@ -10,21 +10,25 @@ let verificandoSesion = false;
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const auth = inject(AuthService);
   const token = auth.token();
+  const backendPath = backendApiPath(req.url);
+  const trusted = backendPath !== null;
   const publicRequest = isPublicApiUrl(req.url);
 
   const outgoing =
-    !publicRequest && token
+    trusted && !publicRequest && token
       ? req.clone({
           setHeaders: {
             Authorization: `Bearer ${token}`,
           },
         })
-      : req;
+      : !trusted && req.headers.has('Authorization')
+        ? req.clone({ headers: req.headers.delete('Authorization') })
+        : req;
 
   return next(outgoing).pipe(
     catchError((err: HttpErrorResponse) => {
-      const sesionRechazada = !publicRequest && err.status === 401 && !!auth.token();
-      if (sesionRechazada && req.url.includes('/api/auth/me')) {
+      const sesionRechazada = trusted && !publicRequest && err.status === 401 && !!auth.token();
+      if (sesionRechazada && backendPath === '/auth/me') {
         verificandoSesion = false;
         auth.logout();
       } else if (sesionRechazada && !verificandoSesion) {

@@ -1,71 +1,195 @@
 package cl.casol.backend.identidad.application.service;
 
+import cl.casol.backend.identidad.application.port.out.CodigoAccesoRepository;
+import cl.casol.backend.identidad.application.port.out.EnvioCodigoAccesoPort;
 import cl.casol.backend.identidad.application.port.out.PasswordEncoderPort;
 import cl.casol.backend.identidad.application.port.out.UsuarioRepository;
+import cl.casol.backend.identidad.domain.CodigoAcceso;
 import cl.casol.backend.identidad.domain.Rol;
 import cl.casol.backend.identidad.domain.Usuario;
-import cl.casol.backend.identidad.domain.exception.CredencialesInvalidasException;
+import cl.casol.backend.identidad.domain.exception.CodigoAccesoInvalidoException;
+import cl.casol.backend.identidad.domain.exception.CorreoNoRegistradoException;
+import cl.casol.backend.identidad.domain.exception.ReenvioCodigoAnticipadoException;
 import cl.casol.backend.identidad.domain.exception.UsuarioInactivoException;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 
+import java.time.Clock;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.*;
 
 class AutenticarUsuarioServiceTest {
 
-    private final UsuarioRepository usuarioRepository = mock(UsuarioRepository.class);
-    private final PasswordEncoderPort passwordEncoder = mock(PasswordEncoderPort.class);
+    private static final ZoneId ZONA = ZoneId.of("America/Santiago");
+    private static final Clock RELOJ = Clock.fixed(Instant.parse("2026-10-31T15:00:00Z"), ZONA);
+    private static final LocalDateTime AHORA = LocalDateTime.now(RELOJ);
+
+    private final UsuarioRepository usuarios = mock(UsuarioRepository.class);
+    private final CodigoAccesoRepository codigos = mock(CodigoAccesoRepository.class);
+    private final EnvioCodigoAccesoPort envio = mock(EnvioCodigoAccesoPort.class);
+    private final PasswordEncoderPort encoder = mock(PasswordEncoderPort.class);
     private final AutenticarUsuarioService service =
-            new AutenticarUsuarioService(usuarioRepository, passwordEncoder);
+            new AutenticarUsuarioService(usuarios, codigos, envio, encoder, RELOJ, 5, 60);
 
     @Test
-    void autenticaUsuarioActivoConPasswordCorrecta() {
-        Usuario usuario = usuario(true);
-        when(usuarioRepository.buscarPorEmail("user@example.com")).thenReturn(Optional.of(usuario));
-        when(passwordEncoder.coincide("password", "hash-bcrypt")).thenReturn(true);
+    void solicitarGeneraCodigoDeSeisDigitosQueVenceEnCincoMinutosYLoEnvia() {
+        when(usuarios.buscarPorEmail("user@example.com")).thenReturn(Optional.of(usuario(true)));
+        when(codigos.buscarUltimo(1)).thenReturn(Optional.empty());
+        when(encoder.codificar(anyString())).thenReturn("hash-codigo");
 
-        Usuario resultado = service.autenticar("user@example.com", "password");
+        SolicitudCodigo solicitud = service.solicitarCodigo("user@example.com");
 
-        assertSame(usuario, resultado);
-        verify(passwordEncoder).coincide("password", "hash-bcrypt");
+        assertEquals(300, solicitud.segundosVigencia());
+        assertEquals(60, solicitud.segundosReenvio());
+        ArgumentCaptor<String> codigoEnviado = ArgumentCaptor.forClass(String.class);
+        verify(envio).enviar(eq("user@example.com"), eq("Usuario"), codigoEnviado.capture(), eq(5));
+        assertTrue(codigoEnviado.getValue().matches("\\d{6}"));
+        verify(encoder).codificar(codigoEnviado.getValue());
+        verify(codigos).invalidarPendientes(1);
+        ArgumentCaptor<CodigoAcceso> guardado = ArgumentCaptor.forClass(CodigoAcceso.class);
+        verify(codigos).guardar(guardado.capture());
+        assertEquals("hash-codigo", guardado.getValue().codigoHash());
+        assertEquals(AHORA.plusMinutes(5), guardado.getValue().expiraEn());
+        assertFalse(guardado.getValue().usado());
     }
 
     @Test
-    void rechazaEmailInexistenteComoCredencialesInvalidas() {
-        when(usuarioRepository.buscarPorEmail("missing@example.com")).thenReturn(Optional.empty());
+    void solicitarConCorreoNoRegistradoSeRechazaSinEnviarNada() {
+        when(usuarios.buscarPorEmail("nadie@example.com")).thenReturn(Optional.empty());
 
-        assertThrows(CredencialesInvalidasException.class,
-                () -> service.autenticar("missing@example.com", "password"));
-        verifyNoInteractions(passwordEncoder);
+        assertThrows(CorreoNoRegistradoException.class, () -> service.solicitarCodigo("nadie@example.com"));
+        verifyNoInteractions(envio, codigos);
     }
 
     @Test
-    void rechazaPasswordIncorrectaComoCredencialesInvalidas() {
-        when(usuarioRepository.buscarPorEmail("user@example.com")).thenReturn(Optional.of(usuario(true)));
-        when(passwordEncoder.coincide("bad-password", "hash-bcrypt")).thenReturn(false);
-
-        assertThrows(CredencialesInvalidasException.class,
-                () -> service.autenticar("user@example.com", "bad-password"));
+    void soloSeAceptaElCorreoCompletoNoElNombreDeUsuario() {
+        assertThrows(CorreoNoRegistradoException.class, () -> service.solicitarCodigo("user"));
+        verifyNoInteractions(usuarios, envio, codigos);
     }
 
     @Test
-    void rechazaUsuarioInactivo() {
-        when(usuarioRepository.buscarPorEmail("user@example.com")).thenReturn(Optional.of(usuario(false)));
+    void solicitarParaUsuarioInactivoNoEnviaCodigo() {
+        when(usuarios.buscarPorEmail("user@example.com")).thenReturn(Optional.of(usuario(false)));
+
+        assertThrows(UsuarioInactivoException.class, () -> service.solicitarCodigo("user@example.com"));
+        verifyNoInteractions(envio, codigos);
+    }
+
+    @Test
+    void reenviarAntesDeUnMinutoSeRechaza() {
+        when(usuarios.buscarPorEmail("user@example.com")).thenReturn(Optional.of(usuario(true)));
+        when(codigos.buscarUltimo(1)).thenReturn(Optional.of(codigo(AHORA.minusSeconds(20), 0, false)));
+
+        ReenvioCodigoAnticipadoException ex = assertThrows(ReenvioCodigoAnticipadoException.class,
+                () -> service.solicitarCodigo("user@example.com"));
+
+        assertEquals(40, ex.getSegundosRestantes());
+        verify(envio, never()).enviar(anyString(), anyString(), anyString(), anyInt());
+    }
+
+    @Test
+    void reenviarDespuesDeUnMinutoGeneraUnCodigoNuevo() {
+        when(usuarios.buscarPorEmail("user@example.com")).thenReturn(Optional.of(usuario(true)));
+        when(codigos.buscarUltimo(1)).thenReturn(Optional.of(codigo(AHORA.minusSeconds(61), 0, false)));
+        when(encoder.codificar(anyString())).thenReturn("hash-nuevo");
+
+        service.solicitarCodigo("user@example.com");
+
+        verify(codigos).invalidarPendientes(1);
+        verify(envio).enviar(eq("user@example.com"), anyString(), anyString(), eq(5));
+    }
+
+    @Test
+    void verificarCodigoCorrectoAutenticaYLoMarcaComoUsado() {
+        when(usuarios.buscarPorEmail("user@example.com")).thenReturn(Optional.of(usuario(true)));
+        when(codigos.buscarPendiente(1)).thenReturn(Optional.of(codigo(AHORA.minusMinutes(1), 0, false)));
+        when(encoder.coincide("123456", "hash-codigo")).thenReturn(true);
+
+        Usuario resultado = service.verificarCodigo("user@example.com", " 123 456 ");
+
+        assertEquals(1, resultado.getId());
+        ArgumentCaptor<CodigoAcceso> guardado = ArgumentCaptor.forClass(CodigoAcceso.class);
+        verify(codigos).guardar(guardado.capture());
+        assertTrue(guardado.getValue().usado());
+    }
+
+    @Test
+    void verificarCodigoIncorrectoSumaUnIntentoYRechaza() {
+        when(usuarios.buscarPorEmail("user@example.com")).thenReturn(Optional.of(usuario(true)));
+        when(codigos.buscarPendiente(1)).thenReturn(Optional.of(codigo(AHORA.minusMinutes(1), 2, false)));
+        when(encoder.coincide("000000", "hash-codigo")).thenReturn(false);
+
+        assertThrows(CodigoAccesoInvalidoException.class,
+                () -> service.verificarCodigo("user@example.com", "000000"));
+
+        ArgumentCaptor<CodigoAcceso> guardado = ArgumentCaptor.forClass(CodigoAcceso.class);
+        verify(codigos).guardar(guardado.capture());
+        assertEquals(3, guardado.getValue().intentos());
+        assertFalse(guardado.getValue().usado());
+    }
+
+    @Test
+    void codigoVencidoSeRechazaAunqueSeaCorrecto() {
+        when(usuarios.buscarPorEmail("user@example.com")).thenReturn(Optional.of(usuario(true)));
+        when(codigos.buscarPendiente(1)).thenReturn(Optional.of(codigo(AHORA.minusMinutes(6), 0, false)));
+
+        assertThrows(CodigoAccesoInvalidoException.class,
+                () -> service.verificarCodigo("user@example.com", "123456"));
+        verify(encoder, never()).coincide(anyString(), anyString());
+    }
+
+    @Test
+    void codigoConDemasiadosIntentosSeBloquea() {
+        when(usuarios.buscarPorEmail("user@example.com")).thenReturn(Optional.of(usuario(true)));
+        when(codigos.buscarPendiente(1)).thenReturn(Optional.of(
+                codigo(AHORA.minusMinutes(1), AutenticarUsuarioService.MAX_INTENTOS, false)));
+
+        assertThrows(CodigoAccesoInvalidoException.class,
+                () -> service.verificarCodigo("user@example.com", "123456"));
+    }
+
+    @Test
+    void sinCodigoPendienteSeRechaza() {
+        when(usuarios.buscarPorEmail("user@example.com")).thenReturn(Optional.of(usuario(true)));
+        when(codigos.buscarPendiente(1)).thenReturn(Optional.empty());
+
+        assertThrows(CodigoAccesoInvalidoException.class,
+                () -> service.verificarCodigo("user@example.com", "123456"));
+    }
+
+    @Test
+    void usuarioInexistenteRecibeElMismoErrorQueUnCodigoMalo() {
+        when(usuarios.buscarPorEmail("nadie@example.com")).thenReturn(Optional.empty());
+
+        assertThrows(CodigoAccesoInvalidoException.class,
+                () -> service.verificarCodigo("nadie@example.com", "123456"));
+        verifyNoInteractions(codigos);
+    }
+
+    @Test
+    void usuarioInactivoNoPuedeIngresar() {
+        when(usuarios.buscarPorEmail("user@example.com")).thenReturn(Optional.of(usuario(false)));
 
         assertThrows(UsuarioInactivoException.class,
-                () -> service.autenticar("user@example.com", "password"));
-        verifyNoInteractions(passwordEncoder);
+                () -> service.verificarCodigo("user@example.com", "123456"));
+        verify(codigos, never()).guardar(any());
+    }
+
+    private CodigoAcceso codigo(LocalDateTime creadoEn, int intentos, boolean usado) {
+        return new CodigoAcceso(10L, 1, "hash-codigo", creadoEn, creadoEn.plusMinutes(5), intentos, usado);
     }
 
     private Usuario usuario(boolean activo) {
         Rol rol = new Rol(1, "USUARIO", null, true, null, null);
-        return new Usuario(1, rol, "Usuario", "user@example.com", "hash-bcrypt",
-                activo, null, null);
+        return new Usuario(1, rol, "Usuario", "user@example.com", "hash-interno", activo, null, null);
     }
 }

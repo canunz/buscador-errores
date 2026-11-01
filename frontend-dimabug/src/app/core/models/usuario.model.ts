@@ -24,7 +24,6 @@ export interface UsuarioPayload {
   usuarioEmail: string;
   rolId: number;
   usuarioEstado: boolean;
-  usuarioPassword?: string;
 }
 
 function nombreRol(usuario: Usuario | null | undefined): string {

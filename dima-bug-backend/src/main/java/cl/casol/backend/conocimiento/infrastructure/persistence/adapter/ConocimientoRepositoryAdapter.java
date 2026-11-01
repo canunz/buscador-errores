@@ -44,7 +44,7 @@ public class ConocimientoRepositoryAdapter implements ConocimientoRepository {
 
     @Override
     public Optional<Conocimiento> buscarPorIdIncluidoEliminado(Integer id) {
-        return repository.findById(id).map(ConocimientoMapper::toDomain);
+        return repository.buscarConRelacionesPorId(id).map(ConocimientoMapper::toDomain);
     }
 
     @jakarta.persistence.PersistenceContext

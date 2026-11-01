@@ -10,6 +10,10 @@ import java.util.Optional;
 
 @Component
 public class SolucionRepositoryAdapter implements SolucionRepository {
+    public List<Solucion> buscarActivasAutoservicioPorConocimiento(Integer id) {
+        return repository.findByConocimientoIdAndActivoTrueAndAutoservicioTrueOrderByOrdenAsc(id)
+                .stream().map(SolucionMapper::toDomain).toList();
+    }
     private final SolucionJpaRepository repository;
     public SolucionRepositoryAdapter(SolucionJpaRepository repository) { this.repository = repository; }
     public List<Solucion> buscarPorConocimientoOrdenadas(Integer id) {

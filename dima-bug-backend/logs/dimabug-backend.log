@@ -1,0 +1,1177 @@
+2026-10-31T02:02:31.036-03:00  INFO 15744 --- [buscador-errores-api] [main] cl.casol.backend.BackendApplication      : Starting BackendApplication using Java 21.0.12.1 with PID 15744 (C:\buscador-errores\buscador-errores\dima-bug-backend\target\classes started by catas in C:\buscador-errores\buscador-errores\dima-bug-backend)
+2026-10-31T02:02:31.040-03:00  INFO 15744 --- [buscador-errores-api] [main] cl.casol.backend.BackendApplication      : No active profile set, falling back to 1 default profile: "default"
+2026-10-31T02:02:33.455-03:00  INFO 15744 --- [buscador-errores-api] [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-10-31T02:02:33.875-03:00  INFO 15744 --- [buscador-errores-api] [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 396 ms. Found 28 JPA repository interfaces.
+2026-10-31T02:02:34.805-03:00  INFO 15744 --- [buscador-errores-api] [main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 9090 (http)
+2026-10-31T02:02:34.833-03:00  INFO 15744 --- [buscador-errores-api] [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-10-31T02:02:34.834-03:00  INFO 15744 --- [buscador-errores-api] [main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.24]
+2026-10-31T02:02:34.925-03:00  INFO 15744 --- [buscador-errores-api] [main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 3820 ms
+2026-10-31T02:02:35.214-03:00  INFO 15744 --- [buscador-errores-api] [main] org.hibernate.orm.jpa                    : HHH008540: Processing PersistenceUnitInfo [name: default]
+2026-10-31T02:02:35.288-03:00  INFO 15744 --- [buscador-errores-api] [main] org.hibernate.orm.core                   : HHH000001: Hibernate ORM core version 7.4.5.Final
+2026-10-31T02:02:35.913-03:00  INFO 15744 --- [buscador-errores-api] [main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-10-31T02:02:35.963-03:00  INFO 15744 --- [buscador-errores-api] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-10-31T02:02:39.952-03:00  INFO 15744 --- [buscador-errores-api] [main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@1c9975a8
+2026-10-31T02:02:39.954-03:00  INFO 15744 --- [buscador-errores-api] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-10-31T02:02:40.742-03:00  WARN 15744 --- [buscador-errores-api] [main] org.hibernate.orm.deprecation            : HHH90000025: MySQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-10-31T02:02:41.131-03:00  INFO 15744 --- [buscador-errores-api] [main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [jdbc:mysql://127.0.0.1:3307/dima_bug_dev]
+	Database driver: MySQL Connector/J
+	Database dialect: MySQLDialect
+	Database version: 8.0.46
+	Default catalog/schema: dima_bug_dev/undefined
+	Autocommit mode: undefined/unknown
+	Isolation level: REPEATABLE_READ [default REPEATABLE_READ]
+	JDBC fetch size: none
+	Pool: DataSourceConnectionProvider
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-10-31T02:02:45.915-03:00  INFO 15744 --- [buscador-errores-api] [main] org.hibernate.orm.core                   : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-10-31T02:02:45.935-03:00  INFO 15744 --- [buscador-errores-api] [main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-10-31T02:02:46.063-03:00  INFO 15744 --- [buscador-errores-api] [main] o.s.d.j.r.query.QueryEnhancerFactories   : Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-10-31T02:02:47.560-03:00 DEBUG 15744 --- [buscador-errores-api] [main] c.c.b.i.i.s.JwtAuthenticationFilter      : Filter 'jwtAuthenticationFilter' configured for use
+2026-10-31T02:02:49.410-03:00  WARN 15744 --- [buscador-errores-api] [main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-10-31T02:02:49.623-03:00  WARN 15744 --- [buscador-errores-api] [main] .s.a.UserDetailsServiceAutoConfiguration : 
+
+Using generated security password: d1d387f2-0c90-486f-9d2d-913f97354146
+
+This generated password is for development use only. Your security configuration must be updated before running your application in production.
+
+2026-10-31T02:02:49.639-03:00  INFO 15744 --- [buscador-errores-api] [main] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name inMemoryUserDetailsManager
+2026-10-31T02:02:50.405-03:00  INFO 15744 --- [buscador-errores-api] [main] o.s.boot.tomcat.TomcatWebServer          : Tomcat started on port 9090 (http) with context path '/'
+2026-10-31T02:02:50.412-03:00  INFO 15744 --- [buscador-errores-api] [main] cl.casol.backend.BackendApplication      : Started BackendApplication in 19.96 seconds (process running for 20.664)
+2026-10-31T02:03:26.603-03:00  INFO 15744 --- [buscador-errores-api] [http-nio-9090-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-10-31T02:03:26.604-03:00  INFO 15744 --- [buscador-errores-api] [http-nio-9090-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-10-31T02:03:26.610-03:00  INFO 15744 --- [buscador-errores-api] [http-nio-9090-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 4 ms
+2026-10-31T02:03:26.673-03:00 DEBUG 15744 --- [buscador-errores-api] [http-nio-9090-exec-1] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: falta header Authorization para POST /api/auth/codigo
+2026-10-31T02:03:30.792-03:00 ERROR 15744 --- [buscador-errores-api] [http-nio-9090-exec-1] c.b.i.i.c.EnvioCodigoAccesoCorreoAdapter : No se pudo enviar el código de acceso a catasoledad256@gmail.com
+
+java.lang.IllegalStateException: Not in multipart mode - create an appropriate MimeMessageHelper via a constructor that takes a 'multipart' flag if you need to set alternative texts or add inline elements or attachments.
+	at org.springframework.mail.javamail.MimeMessageHelper.getMimeMultipart(MimeMessageHelper.java:412) ~[spring-context-support-7.0.9.jar:7.0.9]
+	at org.springframework.mail.javamail.MimeMessageHelper.getMainPart(MimeMessageHelper.java:851) ~[spring-context-support-7.0.9.jar:7.0.9]
+	at org.springframework.mail.javamail.MimeMessageHelper.setText(MimeMessageHelper.java:837) ~[spring-context-support-7.0.9.jar:7.0.9]
+	at cl.casol.backend.identidad.infrastructure.correo.EnvioCodigoAccesoCorreoAdapter.enviar(EnvioCodigoAccesoCorreoAdapter.java:55) ~[classes/:na]
+	at cl.casol.backend.identidad.application.service.AutenticarUsuarioService.solicitarCodigo(AutenticarUsuarioService.java:99) ~[classes/:na]
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103) ~[na:na]
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580) ~[na:na]
+	at org.springframework.aop.support.AopUtils.invokeJoinpointUsingReflection(AopUtils.java:359) ~[spring-aop-7.0.9.jar:7.0.9]
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.invokeJoinpoint(ReflectiveMethodInvocation.java:190) ~[spring-aop-7.0.9.jar:7.0.9]
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:158) ~[spring-aop-7.0.9.jar:7.0.9]
+	at org.springframework.transaction.interceptor.TransactionInterceptor$1.proceedWithInvocation(TransactionInterceptor.java:133) ~[spring-tx-7.0.9.jar:7.0.9]
+	at org.springframework.transaction.interceptor.TransactionAspectSupport.invokeWithinTransaction(TransactionAspectSupport.java:371) ~[spring-tx-7.0.9.jar:7.0.9]
+	at org.springframework.transaction.interceptor.TransactionInterceptor.invoke(TransactionInterceptor.java:130) ~[spring-tx-7.0.9.jar:7.0.9]
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:179) ~[spring-aop-7.0.9.jar:7.0.9]
+	at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:719) ~[spring-aop-7.0.9.jar:7.0.9]
+	at cl.casol.backend.identidad.application.service.AutenticarUsuarioService$$SpringCGLIB$$0.solicitarCodigo(<generated>) ~[classes/:na]
+	at cl.casol.backend.identidad.infrastructure.web.AuthController.solicitarCodigo(AuthController.java:42) ~[classes/:na]
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103) ~[na:na]
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580) ~[na:na]
+	at org.springframework.web.method.support.InvocableHandlerMethod.doInvoke(InvocableHandlerMethod.java:252) ~[spring-web-7.0.9.jar:7.0.9]
+	at org.springframework.web.method.support.InvocableHandlerMethod.invokeForRequest(InvocableHandlerMethod.java:184) ~[spring-web-7.0.9.jar:7.0.9]
+	at org.springframework.web.servlet.mvc.method.annotation.ServletInvocableHandlerMethod.invokeAndHandle(ServletInvocableHandlerMethod.java:117) ~[spring-webmvc-7.0.9.jar:7.0.9]
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.invokeHandlerMethod(RequestMappingHandlerAdapter.java:934) ~[spring-webmvc-7.0.9.jar:7.0.9]
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.handleInternal(RequestMappingHandlerAdapter.java:853) ~[spring-webmvc-7.0.9.jar:7.0.9]
+	at org.springframework.web.servlet.mvc.method.AbstractHandlerMethodAdapter.handle(AbstractHandlerMethodAdapter.java:86) ~[spring-webmvc-7.0.9.jar:7.0.9]
+	at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:963) ~[spring-webmvc-7.0.9.jar:7.0.9]
+	at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:866) ~[spring-webmvc-7.0.9.jar:7.0.9]
+	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1000) ~[spring-webmvc-7.0.9.jar:7.0.9]
+	at org.springframework.web.servlet.FrameworkServlet.doPost(FrameworkServlet.java:903) ~[spring-webmvc-7.0.9.jar:7.0.9]
+	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:649) ~[tomcat-embed-core-11.0.24.jar:6.1]
+	at org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:874) ~[spring-webmvc-7.0.9.jar:7.0.9]
+	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:710) ~[tomcat-embed-core-11.0.24.jar:6.1]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:132) ~[tomcat-embed-core-11.0.24.jar:11.0.24]
+	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:59) ~[tomcat-embed-websocket-11.0.24.jar:11.0.24]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:111) ~[tomcat-embed-core-11.0.24.jar:11.0.24]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:110) ~[spring-web-7.0.9.jar:7.0.9]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:111) ~[tomcat-embed-core-11.0.24.jar:11.0.24]
+	at org.springframework.web.filter.CompositeFilter$VirtualFilterChain.doFilter(CompositeFilter.java:108) ~[spring-web-7.0.9.jar:7.0.9]
+	at org.springframework.security.web.FilterChainProxy.lambda$doFilterInternal$2(FilterChainProxy.java:235) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:376) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.access.intercept.AuthorizationFilter.doFilter(AuthorizationFilter.java:101) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:385) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.access.ExceptionTranslationFilter.doFilter(ExceptionTranslationFilter.java:126) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.access.ExceptionTranslationFilter.doFilter(ExceptionTranslationFilter.java:120) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:385) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.session.SessionManagementFilter.doFilter(SessionManagementFilter.java:132) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.session.SessionManagementFilter.doFilter(SessionManagementFilter.java:86) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:385) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.authentication.AnonymousAuthenticationFilter.doFilter(AnonymousAuthenticationFilter.java:100) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:385) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter.doFilter(SecurityContextHolderAwareRequestFilter.java:181) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:385) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.savedrequest.RequestCacheAwareFilter.doFilter(RequestCacheAwareFilter.java:63) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:385) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at cl.casol.backend.identidad.infrastructure.security.JwtAuthenticationFilter.doFilterInternal(JwtAuthenticationFilter.java:55) ~[classes/:na]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-7.0.9.jar:7.0.9]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:385) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.authentication.logout.LogoutFilter.doFilter(LogoutFilter.java:110) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.authentication.logout.LogoutFilter.doFilter(LogoutFilter.java:96) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:385) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.header.HeaderWriterFilter.doHeadersAfter(HeaderWriterFilter.java:90) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.header.HeaderWriterFilter.doFilterInternal(HeaderWriterFilter.java:75) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-7.0.9.jar:7.0.9]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:385) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.context.SecurityContextHolderFilter.doFilter(SecurityContextHolderFilter.java:82) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.context.SecurityContextHolderFilter.doFilter(SecurityContextHolderFilter.java:69) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:385) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter.doFilterInternal(WebAsyncManagerIntegrationFilter.java:62) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-7.0.9.jar:7.0.9]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:385) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.session.DisableEncodeUrlFilter.doFilterInternal(DisableEncodeUrlFilter.java:42) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-7.0.9.jar:7.0.9]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:385) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.FilterChainProxy.doFilterInternal(FilterChainProxy.java:237) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.FilterChainProxy.doFilter(FilterChainProxy.java:195) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.web.filter.CompositeFilter$VirtualFilterChain.doFilter(CompositeFilter.java:113) ~[spring-web-7.0.9.jar:7.0.9]
+	at org.springframework.web.filter.ServletRequestPathFilter.doFilter(ServletRequestPathFilter.java:52) ~[spring-web-7.0.9.jar:7.0.9]
+	at org.springframework.web.filter.CompositeFilter$VirtualFilterChain.doFilter(CompositeFilter.java:113) ~[spring-web-7.0.9.jar:7.0.9]
+	at org.springframework.web.filter.CompositeFilter.doFilter(CompositeFilter.java:74) ~[spring-web-7.0.9.jar:7.0.9]
+	at org.springframework.security.config.annotation.web.configuration.WebSecurityConfiguration$CompositeFilterChainProxy.doFilter(WebSecurityConfiguration.java:317) ~[spring-security-config-7.1.1.jar:7.1.1]
+	at org.springframework.web.filter.DelegatingFilterProxy.invokeDelegate(DelegatingFilterProxy.java:355) ~[spring-web-7.0.9.jar:7.0.9]
+	at org.springframework.web.filter.DelegatingFilterProxy.doFilter(DelegatingFilterProxy.java:272) ~[spring-web-7.0.9.jar:7.0.9]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:111) ~[tomcat-embed-core-11.0.24.jar:11.0.24]
+	at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:100) ~[spring-web-7.0.9.jar:7.0.9]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-7.0.9.jar:7.0.9]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:111) ~[tomcat-embed-core-11.0.24.jar:11.0.24]
+	at org.springframework.web.filter.FormContentFilter.doFilterInternal(FormContentFilter.java:93) ~[spring-web-7.0.9.jar:7.0.9]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-7.0.9.jar:7.0.9]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:111) ~[tomcat-embed-core-11.0.24.jar:11.0.24]
+	at org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:199) ~[spring-web-7.0.9.jar:7.0.9]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-7.0.9.jar:7.0.9]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:111) ~[tomcat-embed-core-11.0.24.jar:11.0.24]
+	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:165) ~[tomcat-embed-core-11.0.24.jar:11.0.24]
+	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:77) ~[tomcat-embed-core-11.0.24.jar:11.0.24]
+	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:535) ~[tomcat-embed-core-11.0.24.jar:11.0.24]
+	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:115) ~[tomcat-embed-core-11.0.24.jar:11.0.24]
+	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:86) ~[tomcat-embed-core-11.0.24.jar:11.0.24]
+	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:71) ~[tomcat-embed-core-11.0.24.jar:11.0.24]
+	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:347) ~[tomcat-embed-core-11.0.24.jar:11.0.24]
+	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:406) ~[tomcat-embed-core-11.0.24.jar:11.0.24]
+	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:71) ~[tomcat-embed-core-11.0.24.jar:11.0.24]
+	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:1307) ~[tomcat-embed-core-11.0.24.jar:11.0.24]
+	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:2036) ~[tomcat-embed-core-11.0.24.jar:11.0.24]
+	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:74) ~[tomcat-embed-core-11.0.24.jar:11.0.24]
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:949) ~[tomcat-embed-core-11.0.24.jar:11.0.24]
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:483) ~[tomcat-embed-core-11.0.24.jar:11.0.24]
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:74) ~[tomcat-embed-core-11.0.24.jar:11.0.24]
+	at java.base/java.lang.Thread.run(Thread.java:1583) ~[na:na]
+
+2026-10-31T02:04:00.701-03:00 DEBUG 15744 --- [buscador-errores-api] [http-nio-9090-exec-2] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: falta header Authorization para POST /api/auth/codigo
+2026-10-31T02:04:02.659-03:00 ERROR 15744 --- [buscador-errores-api] [http-nio-9090-exec-2] c.b.i.i.c.EnvioCodigoAccesoCorreoAdapter : No se pudo enviar el código de acceso a catasoledad256@gmail.com
+
+java.lang.IllegalStateException: Not in multipart mode - create an appropriate MimeMessageHelper via a constructor that takes a 'multipart' flag if you need to set alternative texts or add inline elements or attachments.
+	at org.springframework.mail.javamail.MimeMessageHelper.getMimeMultipart(MimeMessageHelper.java:412) ~[spring-context-support-7.0.9.jar:7.0.9]
+	at org.springframework.mail.javamail.MimeMessageHelper.getMainPart(MimeMessageHelper.java:851) ~[spring-context-support-7.0.9.jar:7.0.9]
+	at org.springframework.mail.javamail.MimeMessageHelper.setText(MimeMessageHelper.java:837) ~[spring-context-support-7.0.9.jar:7.0.9]
+	at cl.casol.backend.identidad.infrastructure.correo.EnvioCodigoAccesoCorreoAdapter.enviar(EnvioCodigoAccesoCorreoAdapter.java:55) ~[classes/:na]
+	at cl.casol.backend.identidad.application.service.AutenticarUsuarioService.solicitarCodigo(AutenticarUsuarioService.java:99) ~[classes/:na]
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103) ~[na:na]
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580) ~[na:na]
+	at org.springframework.aop.support.AopUtils.invokeJoinpointUsingReflection(AopUtils.java:359) ~[spring-aop-7.0.9.jar:7.0.9]
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.invokeJoinpoint(ReflectiveMethodInvocation.java:190) ~[spring-aop-7.0.9.jar:7.0.9]
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:158) ~[spring-aop-7.0.9.jar:7.0.9]
+	at org.springframework.transaction.interceptor.TransactionInterceptor$1.proceedWithInvocation(TransactionInterceptor.java:133) ~[spring-tx-7.0.9.jar:7.0.9]
+	at org.springframework.transaction.interceptor.TransactionAspectSupport.invokeWithinTransaction(TransactionAspectSupport.java:371) ~[spring-tx-7.0.9.jar:7.0.9]
+	at org.springframework.transaction.interceptor.TransactionInterceptor.invoke(TransactionInterceptor.java:130) ~[spring-tx-7.0.9.jar:7.0.9]
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:179) ~[spring-aop-7.0.9.jar:7.0.9]
+	at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:719) ~[spring-aop-7.0.9.jar:7.0.9]
+	at cl.casol.backend.identidad.application.service.AutenticarUsuarioService$$SpringCGLIB$$0.solicitarCodigo(<generated>) ~[classes/:na]
+	at cl.casol.backend.identidad.infrastructure.web.AuthController.solicitarCodigo(AuthController.java:42) ~[classes/:na]
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103) ~[na:na]
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580) ~[na:na]
+	at org.springframework.web.method.support.InvocableHandlerMethod.doInvoke(InvocableHandlerMethod.java:252) ~[spring-web-7.0.9.jar:7.0.9]
+	at org.springframework.web.method.support.InvocableHandlerMethod.invokeForRequest(InvocableHandlerMethod.java:184) ~[spring-web-7.0.9.jar:7.0.9]
+	at org.springframework.web.servlet.mvc.method.annotation.ServletInvocableHandlerMethod.invokeAndHandle(ServletInvocableHandlerMethod.java:117) ~[spring-webmvc-7.0.9.jar:7.0.9]
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.invokeHandlerMethod(RequestMappingHandlerAdapter.java:934) ~[spring-webmvc-7.0.9.jar:7.0.9]
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.handleInternal(RequestMappingHandlerAdapter.java:853) ~[spring-webmvc-7.0.9.jar:7.0.9]
+	at org.springframework.web.servlet.mvc.method.AbstractHandlerMethodAdapter.handle(AbstractHandlerMethodAdapter.java:86) ~[spring-webmvc-7.0.9.jar:7.0.9]
+	at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:963) ~[spring-webmvc-7.0.9.jar:7.0.9]
+	at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:866) ~[spring-webmvc-7.0.9.jar:7.0.9]
+	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1000) ~[spring-webmvc-7.0.9.jar:7.0.9]
+	at org.springframework.web.servlet.FrameworkServlet.doPost(FrameworkServlet.java:903) ~[spring-webmvc-7.0.9.jar:7.0.9]
+	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:649) ~[tomcat-embed-core-11.0.24.jar:6.1]
+	at org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:874) ~[spring-webmvc-7.0.9.jar:7.0.9]
+	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:710) ~[tomcat-embed-core-11.0.24.jar:6.1]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:132) ~[tomcat-embed-core-11.0.24.jar:11.0.24]
+	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:59) ~[tomcat-embed-websocket-11.0.24.jar:11.0.24]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:111) ~[tomcat-embed-core-11.0.24.jar:11.0.24]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:110) ~[spring-web-7.0.9.jar:7.0.9]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:111) ~[tomcat-embed-core-11.0.24.jar:11.0.24]
+	at org.springframework.web.filter.CompositeFilter$VirtualFilterChain.doFilter(CompositeFilter.java:108) ~[spring-web-7.0.9.jar:7.0.9]
+	at org.springframework.security.web.FilterChainProxy.lambda$doFilterInternal$2(FilterChainProxy.java:235) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:376) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.access.intercept.AuthorizationFilter.doFilter(AuthorizationFilter.java:101) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:385) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.access.ExceptionTranslationFilter.doFilter(ExceptionTranslationFilter.java:126) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.access.ExceptionTranslationFilter.doFilter(ExceptionTranslationFilter.java:120) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:385) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.session.SessionManagementFilter.doFilter(SessionManagementFilter.java:132) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.session.SessionManagementFilter.doFilter(SessionManagementFilter.java:86) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:385) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.authentication.AnonymousAuthenticationFilter.doFilter(AnonymousAuthenticationFilter.java:100) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:385) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter.doFilter(SecurityContextHolderAwareRequestFilter.java:181) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:385) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.savedrequest.RequestCacheAwareFilter.doFilter(RequestCacheAwareFilter.java:63) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:385) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at cl.casol.backend.identidad.infrastructure.security.JwtAuthenticationFilter.doFilterInternal(JwtAuthenticationFilter.java:55) ~[classes/:na]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-7.0.9.jar:7.0.9]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:385) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.authentication.logout.LogoutFilter.doFilter(LogoutFilter.java:110) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.authentication.logout.LogoutFilter.doFilter(LogoutFilter.java:96) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:385) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.header.HeaderWriterFilter.doHeadersAfter(HeaderWriterFilter.java:90) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.header.HeaderWriterFilter.doFilterInternal(HeaderWriterFilter.java:75) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-7.0.9.jar:7.0.9]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:385) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.context.SecurityContextHolderFilter.doFilter(SecurityContextHolderFilter.java:82) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.context.SecurityContextHolderFilter.doFilter(SecurityContextHolderFilter.java:69) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:385) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter.doFilterInternal(WebAsyncManagerIntegrationFilter.java:62) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-7.0.9.jar:7.0.9]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:385) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.session.DisableEncodeUrlFilter.doFilterInternal(DisableEncodeUrlFilter.java:42) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-7.0.9.jar:7.0.9]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:385) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.FilterChainProxy.doFilterInternal(FilterChainProxy.java:237) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.FilterChainProxy.doFilter(FilterChainProxy.java:195) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.web.filter.CompositeFilter$VirtualFilterChain.doFilter(CompositeFilter.java:113) ~[spring-web-7.0.9.jar:7.0.9]
+	at org.springframework.web.filter.ServletRequestPathFilter.doFilter(ServletRequestPathFilter.java:52) ~[spring-web-7.0.9.jar:7.0.9]
+	at org.springframework.web.filter.CompositeFilter$VirtualFilterChain.doFilter(CompositeFilter.java:113) ~[spring-web-7.0.9.jar:7.0.9]
+	at org.springframework.web.filter.CompositeFilter.doFilter(CompositeFilter.java:74) ~[spring-web-7.0.9.jar:7.0.9]
+	at org.springframework.security.config.annotation.web.configuration.WebSecurityConfiguration$CompositeFilterChainProxy.doFilter(WebSecurityConfiguration.java:317) ~[spring-security-config-7.1.1.jar:7.1.1]
+	at org.springframework.web.filter.DelegatingFilterProxy.invokeDelegate(DelegatingFilterProxy.java:355) ~[spring-web-7.0.9.jar:7.0.9]
+	at org.springframework.web.filter.DelegatingFilterProxy.doFilter(DelegatingFilterProxy.java:272) ~[spring-web-7.0.9.jar:7.0.9]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:111) ~[tomcat-embed-core-11.0.24.jar:11.0.24]
+	at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:100) ~[spring-web-7.0.9.jar:7.0.9]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-7.0.9.jar:7.0.9]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:111) ~[tomcat-embed-core-11.0.24.jar:11.0.24]
+	at org.springframework.web.filter.FormContentFilter.doFilterInternal(FormContentFilter.java:93) ~[spring-web-7.0.9.jar:7.0.9]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-7.0.9.jar:7.0.9]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:111) ~[tomcat-embed-core-11.0.24.jar:11.0.24]
+	at org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:199) ~[spring-web-7.0.9.jar:7.0.9]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-7.0.9.jar:7.0.9]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:111) ~[tomcat-embed-core-11.0.24.jar:11.0.24]
+	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:165) ~[tomcat-embed-core-11.0.24.jar:11.0.24]
+	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:77) ~[tomcat-embed-core-11.0.24.jar:11.0.24]
+	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:535) ~[tomcat-embed-core-11.0.24.jar:11.0.24]
+	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:115) ~[tomcat-embed-core-11.0.24.jar:11.0.24]
+	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:86) ~[tomcat-embed-core-11.0.24.jar:11.0.24]
+	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:71) ~[tomcat-embed-core-11.0.24.jar:11.0.24]
+	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:347) ~[tomcat-embed-core-11.0.24.jar:11.0.24]
+	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:406) ~[tomcat-embed-core-11.0.24.jar:11.0.24]
+	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:71) ~[tomcat-embed-core-11.0.24.jar:11.0.24]
+	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:1307) ~[tomcat-embed-core-11.0.24.jar:11.0.24]
+	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:2036) ~[tomcat-embed-core-11.0.24.jar:11.0.24]
+	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:74) ~[tomcat-embed-core-11.0.24.jar:11.0.24]
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:949) ~[tomcat-embed-core-11.0.24.jar:11.0.24]
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:483) ~[tomcat-embed-core-11.0.24.jar:11.0.24]
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:74) ~[tomcat-embed-core-11.0.24.jar:11.0.24]
+	at java.base/java.lang.Thread.run(Thread.java:1583) ~[na:na]
+
+2026-10-31T02:05:57.516-03:00 DEBUG 15744 --- [buscador-errores-api] [http-nio-9090-exec-3] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: falta header Authorization para POST /api/auth/codigo
+2026-10-31T02:05:59.582-03:00 ERROR 15744 --- [buscador-errores-api] [http-nio-9090-exec-3] c.b.i.i.c.EnvioCodigoAccesoCorreoAdapter : No se pudo enviar el código de acceso a catasoledad256@gmail.com
+
+java.lang.IllegalStateException: Not in multipart mode - create an appropriate MimeMessageHelper via a constructor that takes a 'multipart' flag if you need to set alternative texts or add inline elements or attachments.
+	at org.springframework.mail.javamail.MimeMessageHelper.getMimeMultipart(MimeMessageHelper.java:412) ~[spring-context-support-7.0.9.jar:7.0.9]
+	at org.springframework.mail.javamail.MimeMessageHelper.getMainPart(MimeMessageHelper.java:851) ~[spring-context-support-7.0.9.jar:7.0.9]
+	at org.springframework.mail.javamail.MimeMessageHelper.setText(MimeMessageHelper.java:837) ~[spring-context-support-7.0.9.jar:7.0.9]
+	at cl.casol.backend.identidad.infrastructure.correo.EnvioCodigoAccesoCorreoAdapter.enviar(EnvioCodigoAccesoCorreoAdapter.java:55) ~[classes/:na]
+	at cl.casol.backend.identidad.application.service.AutenticarUsuarioService.solicitarCodigo(AutenticarUsuarioService.java:99) ~[classes/:na]
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103) ~[na:na]
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580) ~[na:na]
+	at org.springframework.aop.support.AopUtils.invokeJoinpointUsingReflection(AopUtils.java:359) ~[spring-aop-7.0.9.jar:7.0.9]
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.invokeJoinpoint(ReflectiveMethodInvocation.java:190) ~[spring-aop-7.0.9.jar:7.0.9]
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:158) ~[spring-aop-7.0.9.jar:7.0.9]
+	at org.springframework.transaction.interceptor.TransactionInterceptor$1.proceedWithInvocation(TransactionInterceptor.java:133) ~[spring-tx-7.0.9.jar:7.0.9]
+	at org.springframework.transaction.interceptor.TransactionAspectSupport.invokeWithinTransaction(TransactionAspectSupport.java:371) ~[spring-tx-7.0.9.jar:7.0.9]
+	at org.springframework.transaction.interceptor.TransactionInterceptor.invoke(TransactionInterceptor.java:130) ~[spring-tx-7.0.9.jar:7.0.9]
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:179) ~[spring-aop-7.0.9.jar:7.0.9]
+	at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:719) ~[spring-aop-7.0.9.jar:7.0.9]
+	at cl.casol.backend.identidad.application.service.AutenticarUsuarioService$$SpringCGLIB$$0.solicitarCodigo(<generated>) ~[classes/:na]
+	at cl.casol.backend.identidad.infrastructure.web.AuthController.solicitarCodigo(AuthController.java:42) ~[classes/:na]
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103) ~[na:na]
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580) ~[na:na]
+	at org.springframework.web.method.support.InvocableHandlerMethod.doInvoke(InvocableHandlerMethod.java:252) ~[spring-web-7.0.9.jar:7.0.9]
+	at org.springframework.web.method.support.InvocableHandlerMethod.invokeForRequest(InvocableHandlerMethod.java:184) ~[spring-web-7.0.9.jar:7.0.9]
+	at org.springframework.web.servlet.mvc.method.annotation.ServletInvocableHandlerMethod.invokeAndHandle(ServletInvocableHandlerMethod.java:117) ~[spring-webmvc-7.0.9.jar:7.0.9]
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.invokeHandlerMethod(RequestMappingHandlerAdapter.java:934) ~[spring-webmvc-7.0.9.jar:7.0.9]
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.handleInternal(RequestMappingHandlerAdapter.java:853) ~[spring-webmvc-7.0.9.jar:7.0.9]
+	at org.springframework.web.servlet.mvc.method.AbstractHandlerMethodAdapter.handle(AbstractHandlerMethodAdapter.java:86) ~[spring-webmvc-7.0.9.jar:7.0.9]
+	at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:963) ~[spring-webmvc-7.0.9.jar:7.0.9]
+	at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:866) ~[spring-webmvc-7.0.9.jar:7.0.9]
+	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1000) ~[spring-webmvc-7.0.9.jar:7.0.9]
+	at org.springframework.web.servlet.FrameworkServlet.doPost(FrameworkServlet.java:903) ~[spring-webmvc-7.0.9.jar:7.0.9]
+	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:649) ~[tomcat-embed-core-11.0.24.jar:6.1]
+	at org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:874) ~[spring-webmvc-7.0.9.jar:7.0.9]
+	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:710) ~[tomcat-embed-core-11.0.24.jar:6.1]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:132) ~[tomcat-embed-core-11.0.24.jar:11.0.24]
+	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:59) ~[tomcat-embed-websocket-11.0.24.jar:11.0.24]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:111) ~[tomcat-embed-core-11.0.24.jar:11.0.24]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:110) ~[spring-web-7.0.9.jar:7.0.9]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:111) ~[tomcat-embed-core-11.0.24.jar:11.0.24]
+	at org.springframework.web.filter.CompositeFilter$VirtualFilterChain.doFilter(CompositeFilter.java:108) ~[spring-web-7.0.9.jar:7.0.9]
+	at org.springframework.security.web.FilterChainProxy.lambda$doFilterInternal$2(FilterChainProxy.java:235) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:376) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.access.intercept.AuthorizationFilter.doFilter(AuthorizationFilter.java:101) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:385) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.access.ExceptionTranslationFilter.doFilter(ExceptionTranslationFilter.java:126) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.access.ExceptionTranslationFilter.doFilter(ExceptionTranslationFilter.java:120) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:385) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.session.SessionManagementFilter.doFilter(SessionManagementFilter.java:132) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.session.SessionManagementFilter.doFilter(SessionManagementFilter.java:86) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:385) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.authentication.AnonymousAuthenticationFilter.doFilter(AnonymousAuthenticationFilter.java:100) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:385) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter.doFilter(SecurityContextHolderAwareRequestFilter.java:181) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:385) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.savedrequest.RequestCacheAwareFilter.doFilter(RequestCacheAwareFilter.java:63) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:385) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at cl.casol.backend.identidad.infrastructure.security.JwtAuthenticationFilter.doFilterInternal(JwtAuthenticationFilter.java:55) ~[classes/:na]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-7.0.9.jar:7.0.9]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:385) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.authentication.logout.LogoutFilter.doFilter(LogoutFilter.java:110) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.authentication.logout.LogoutFilter.doFilter(LogoutFilter.java:96) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:385) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.header.HeaderWriterFilter.doHeadersAfter(HeaderWriterFilter.java:90) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.header.HeaderWriterFilter.doFilterInternal(HeaderWriterFilter.java:75) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-7.0.9.jar:7.0.9]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:385) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.context.SecurityContextHolderFilter.doFilter(SecurityContextHolderFilter.java:82) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.context.SecurityContextHolderFilter.doFilter(SecurityContextHolderFilter.java:69) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:385) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter.doFilterInternal(WebAsyncManagerIntegrationFilter.java:62) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-7.0.9.jar:7.0.9]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:385) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.session.DisableEncodeUrlFilter.doFilterInternal(DisableEncodeUrlFilter.java:42) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-7.0.9.jar:7.0.9]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:385) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.FilterChainProxy.doFilterInternal(FilterChainProxy.java:237) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.FilterChainProxy.doFilter(FilterChainProxy.java:195) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.web.filter.CompositeFilter$VirtualFilterChain.doFilter(CompositeFilter.java:113) ~[spring-web-7.0.9.jar:7.0.9]
+	at org.springframework.web.filter.ServletRequestPathFilter.doFilter(ServletRequestPathFilter.java:52) ~[spring-web-7.0.9.jar:7.0.9]
+	at org.springframework.web.filter.CompositeFilter$VirtualFilterChain.doFilter(CompositeFilter.java:113) ~[spring-web-7.0.9.jar:7.0.9]
+	at org.springframework.web.filter.CompositeFilter.doFilter(CompositeFilter.java:74) ~[spring-web-7.0.9.jar:7.0.9]
+	at org.springframework.security.config.annotation.web.configuration.WebSecurityConfiguration$CompositeFilterChainProxy.doFilter(WebSecurityConfiguration.java:317) ~[spring-security-config-7.1.1.jar:7.1.1]
+	at org.springframework.web.filter.DelegatingFilterProxy.invokeDelegate(DelegatingFilterProxy.java:355) ~[spring-web-7.0.9.jar:7.0.9]
+	at org.springframework.web.filter.DelegatingFilterProxy.doFilter(DelegatingFilterProxy.java:272) ~[spring-web-7.0.9.jar:7.0.9]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:111) ~[tomcat-embed-core-11.0.24.jar:11.0.24]
+	at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:100) ~[spring-web-7.0.9.jar:7.0.9]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-7.0.9.jar:7.0.9]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:111) ~[tomcat-embed-core-11.0.24.jar:11.0.24]
+	at org.springframework.web.filter.FormContentFilter.doFilterInternal(FormContentFilter.java:93) ~[spring-web-7.0.9.jar:7.0.9]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-7.0.9.jar:7.0.9]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:111) ~[tomcat-embed-core-11.0.24.jar:11.0.24]
+	at org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:199) ~[spring-web-7.0.9.jar:7.0.9]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-7.0.9.jar:7.0.9]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:111) ~[tomcat-embed-core-11.0.24.jar:11.0.24]
+	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:165) ~[tomcat-embed-core-11.0.24.jar:11.0.24]
+	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:77) ~[tomcat-embed-core-11.0.24.jar:11.0.24]
+	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:535) ~[tomcat-embed-core-11.0.24.jar:11.0.24]
+	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:115) ~[tomcat-embed-core-11.0.24.jar:11.0.24]
+	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:86) ~[tomcat-embed-core-11.0.24.jar:11.0.24]
+	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:71) ~[tomcat-embed-core-11.0.24.jar:11.0.24]
+	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:347) ~[tomcat-embed-core-11.0.24.jar:11.0.24]
+	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:406) ~[tomcat-embed-core-11.0.24.jar:11.0.24]
+	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:71) ~[tomcat-embed-core-11.0.24.jar:11.0.24]
+	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:1307) ~[tomcat-embed-core-11.0.24.jar:11.0.24]
+	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:2036) ~[tomcat-embed-core-11.0.24.jar:11.0.24]
+	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:74) ~[tomcat-embed-core-11.0.24.jar:11.0.24]
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:949) ~[tomcat-embed-core-11.0.24.jar:11.0.24]
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:483) ~[tomcat-embed-core-11.0.24.jar:11.0.24]
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:74) ~[tomcat-embed-core-11.0.24.jar:11.0.24]
+	at java.base/java.lang.Thread.run(Thread.java:1583) ~[na:na]
+
+2026-10-31T02:10:15.831-03:00  INFO 15744 --- [buscador-errores-api] [SpringApplicationShutdownHook] o.s.boot.tomcat.GracefulShutdown         : Commencing graceful shutdown. Waiting for active requests to complete
+2026-10-31T02:10:15.850-03:00  INFO 15744 --- [buscador-errores-api] [tomcat-shutdown] o.s.boot.tomcat.GracefulShutdown         : Graceful shutdown complete
+2026-10-31T02:10:15.861-03:00  INFO 15744 --- [buscador-errores-api] [SpringApplicationShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-10-31T02:10:15.867-03:00  INFO 15744 --- [buscador-errores-api] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2026-10-31T02:10:16.128-03:00  INFO 15744 --- [buscador-errores-api] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+2026-10-31T02:10:53.009-03:00  INFO 30200 --- [buscador-errores-api] [main] cl.casol.backend.BackendApplication      : Starting BackendApplication using Java 21.0.12.1 with PID 30200 (C:\buscador-errores\buscador-errores\dima-bug-backend\target\classes started by catas in C:\buscador-errores\buscador-errores\dima-bug-backend)
+2026-10-31T02:10:53.013-03:00  INFO 30200 --- [buscador-errores-api] [main] cl.casol.backend.BackendApplication      : No active profile set, falling back to 1 default profile: "default"
+2026-10-31T02:10:55.260-03:00  INFO 30200 --- [buscador-errores-api] [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-10-31T02:10:55.634-03:00  INFO 30200 --- [buscador-errores-api] [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 360 ms. Found 28 JPA repository interfaces.
+2026-10-31T02:10:56.434-03:00  INFO 30200 --- [buscador-errores-api] [main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 9090 (http)
+2026-10-31T02:10:56.464-03:00  INFO 30200 --- [buscador-errores-api] [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-10-31T02:10:56.466-03:00  INFO 30200 --- [buscador-errores-api] [main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.24]
+2026-10-31T02:10:56.586-03:00  INFO 30200 --- [buscador-errores-api] [main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 3507 ms
+2026-10-31T02:10:56.927-03:00  INFO 30200 --- [buscador-errores-api] [main] org.hibernate.orm.jpa                    : HHH008540: Processing PersistenceUnitInfo [name: default]
+2026-10-31T02:10:57.013-03:00  INFO 30200 --- [buscador-errores-api] [main] org.hibernate.orm.core                   : HHH000001: Hibernate ORM core version 7.4.5.Final
+2026-10-31T02:10:57.657-03:00  INFO 30200 --- [buscador-errores-api] [main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-10-31T02:10:57.713-03:00  INFO 30200 --- [buscador-errores-api] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-10-31T02:11:01.453-03:00  INFO 30200 --- [buscador-errores-api] [main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@418d1c03
+2026-10-31T02:11:01.455-03:00  INFO 30200 --- [buscador-errores-api] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-10-31T02:11:02.278-03:00  WARN 30200 --- [buscador-errores-api] [main] org.hibernate.orm.deprecation            : HHH90000025: MySQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-10-31T02:11:02.662-03:00  INFO 30200 --- [buscador-errores-api] [main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [jdbc:mysql://127.0.0.1:3307/dima_bug_dev]
+	Database driver: MySQL Connector/J
+	Database dialect: MySQLDialect
+	Database version: 8.0.46
+	Default catalog/schema: dima_bug_dev/undefined
+	Autocommit mode: undefined/unknown
+	Isolation level: REPEATABLE_READ [default REPEATABLE_READ]
+	JDBC fetch size: none
+	Pool: DataSourceConnectionProvider
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-10-31T02:11:04.507-03:00  INFO 30200 --- [buscador-errores-api] [main] org.hibernate.orm.core                   : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-10-31T02:11:04.517-03:00  INFO 30200 --- [buscador-errores-api] [main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-10-31T02:11:04.588-03:00  INFO 30200 --- [buscador-errores-api] [main] o.s.d.j.r.query.QueryEnhancerFactories   : Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-10-31T02:11:05.463-03:00 DEBUG 30200 --- [buscador-errores-api] [main] c.c.b.i.i.s.JwtAuthenticationFilter      : Filter 'jwtAuthenticationFilter' configured for use
+2026-10-31T02:11:07.203-03:00  WARN 30200 --- [buscador-errores-api] [main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-10-31T02:11:07.466-03:00  WARN 30200 --- [buscador-errores-api] [main] .s.a.UserDetailsServiceAutoConfiguration : 
+
+Using generated security password: 0b0b8e74-d6f4-4b51-8a87-7b3730d4a291
+
+This generated password is for development use only. Your security configuration must be updated before running your application in production.
+
+2026-10-31T02:11:07.482-03:00  INFO 30200 --- [buscador-errores-api] [main] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name inMemoryUserDetailsManager
+2026-10-31T02:11:08.404-03:00  INFO 30200 --- [buscador-errores-api] [main] o.s.boot.tomcat.TomcatWebServer          : Tomcat started on port 9090 (http) with context path '/'
+2026-10-31T02:11:08.413-03:00  INFO 30200 --- [buscador-errores-api] [main] cl.casol.backend.BackendApplication      : Started BackendApplication in 16.086 seconds (process running for 16.783)
+2026-10-31T02:11:21.291-03:00  INFO 30200 --- [buscador-errores-api] [http-nio-9090-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-10-31T02:11:21.293-03:00  INFO 30200 --- [buscador-errores-api] [http-nio-9090-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-10-31T02:11:21.296-03:00  INFO 30200 --- [buscador-errores-api] [http-nio-9090-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 3 ms
+2026-10-31T02:11:21.335-03:00 DEBUG 30200 --- [buscador-errores-api] [http-nio-9090-exec-1] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: falta header Authorization para POST /api/auth/codigo
+2026-10-31T02:11:26.985-03:00 ERROR 30200 --- [buscador-errores-api] [http-nio-9090-exec-1] c.b.i.i.c.EnvioCodigoAccesoCorreoAdapter : No se pudo enviar el código de acceso a catasoledad256@gmail.com
+
+org.springframework.mail.MailAuthenticationException: Authentication failed
+	at org.springframework.mail.javamail.JavaMailSenderImpl.doSend(JavaMailSenderImpl.java:389) ~[spring-context-support-7.0.9.jar:7.0.9]
+	at org.springframework.mail.javamail.JavaMailSenderImpl.send(JavaMailSenderImpl.java:337) ~[spring-context-support-7.0.9.jar:7.0.9]
+	at org.springframework.mail.javamail.JavaMailSender.send(JavaMailSender.java:101) ~[spring-context-support-7.0.9.jar:7.0.9]
+	at cl.casol.backend.identidad.infrastructure.correo.EnvioCodigoAccesoCorreoAdapter.enviar(EnvioCodigoAccesoCorreoAdapter.java:57) ~[classes/:na]
+	at cl.casol.backend.identidad.application.service.AutenticarUsuarioService.solicitarCodigo(AutenticarUsuarioService.java:99) ~[classes/:na]
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103) ~[na:na]
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580) ~[na:na]
+	at org.springframework.aop.support.AopUtils.invokeJoinpointUsingReflection(AopUtils.java:359) ~[spring-aop-7.0.9.jar:7.0.9]
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.invokeJoinpoint(ReflectiveMethodInvocation.java:190) ~[spring-aop-7.0.9.jar:7.0.9]
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:158) ~[spring-aop-7.0.9.jar:7.0.9]
+	at org.springframework.transaction.interceptor.TransactionInterceptor$1.proceedWithInvocation(TransactionInterceptor.java:133) ~[spring-tx-7.0.9.jar:7.0.9]
+	at org.springframework.transaction.interceptor.TransactionAspectSupport.invokeWithinTransaction(TransactionAspectSupport.java:371) ~[spring-tx-7.0.9.jar:7.0.9]
+	at org.springframework.transaction.interceptor.TransactionInterceptor.invoke(TransactionInterceptor.java:130) ~[spring-tx-7.0.9.jar:7.0.9]
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:179) ~[spring-aop-7.0.9.jar:7.0.9]
+	at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:719) ~[spring-aop-7.0.9.jar:7.0.9]
+	at cl.casol.backend.identidad.application.service.AutenticarUsuarioService$$SpringCGLIB$$0.solicitarCodigo(<generated>) ~[classes/:na]
+	at cl.casol.backend.identidad.infrastructure.web.AuthController.solicitarCodigo(AuthController.java:42) ~[classes/:na]
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103) ~[na:na]
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580) ~[na:na]
+	at org.springframework.web.method.support.InvocableHandlerMethod.doInvoke(InvocableHandlerMethod.java:252) ~[spring-web-7.0.9.jar:7.0.9]
+	at org.springframework.web.method.support.InvocableHandlerMethod.invokeForRequest(InvocableHandlerMethod.java:184) ~[spring-web-7.0.9.jar:7.0.9]
+	at org.springframework.web.servlet.mvc.method.annotation.ServletInvocableHandlerMethod.invokeAndHandle(ServletInvocableHandlerMethod.java:117) ~[spring-webmvc-7.0.9.jar:7.0.9]
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.invokeHandlerMethod(RequestMappingHandlerAdapter.java:934) ~[spring-webmvc-7.0.9.jar:7.0.9]
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.handleInternal(RequestMappingHandlerAdapter.java:853) ~[spring-webmvc-7.0.9.jar:7.0.9]
+	at org.springframework.web.servlet.mvc.method.AbstractHandlerMethodAdapter.handle(AbstractHandlerMethodAdapter.java:86) ~[spring-webmvc-7.0.9.jar:7.0.9]
+	at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:963) ~[spring-webmvc-7.0.9.jar:7.0.9]
+	at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:866) ~[spring-webmvc-7.0.9.jar:7.0.9]
+	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1000) ~[spring-webmvc-7.0.9.jar:7.0.9]
+	at org.springframework.web.servlet.FrameworkServlet.doPost(FrameworkServlet.java:903) ~[spring-webmvc-7.0.9.jar:7.0.9]
+	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:649) ~[tomcat-embed-core-11.0.24.jar:6.1]
+	at org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:874) ~[spring-webmvc-7.0.9.jar:7.0.9]
+	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:710) ~[tomcat-embed-core-11.0.24.jar:6.1]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:132) ~[tomcat-embed-core-11.0.24.jar:11.0.24]
+	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:59) ~[tomcat-embed-websocket-11.0.24.jar:11.0.24]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:111) ~[tomcat-embed-core-11.0.24.jar:11.0.24]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:110) ~[spring-web-7.0.9.jar:7.0.9]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:111) ~[tomcat-embed-core-11.0.24.jar:11.0.24]
+	at org.springframework.web.filter.CompositeFilter$VirtualFilterChain.doFilter(CompositeFilter.java:108) ~[spring-web-7.0.9.jar:7.0.9]
+	at org.springframework.security.web.FilterChainProxy.lambda$doFilterInternal$2(FilterChainProxy.java:235) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:376) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.access.intercept.AuthorizationFilter.doFilter(AuthorizationFilter.java:101) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:385) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.access.ExceptionTranslationFilter.doFilter(ExceptionTranslationFilter.java:126) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.access.ExceptionTranslationFilter.doFilter(ExceptionTranslationFilter.java:120) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:385) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.session.SessionManagementFilter.doFilter(SessionManagementFilter.java:132) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.session.SessionManagementFilter.doFilter(SessionManagementFilter.java:86) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:385) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.authentication.AnonymousAuthenticationFilter.doFilter(AnonymousAuthenticationFilter.java:100) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:385) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter.doFilter(SecurityContextHolderAwareRequestFilter.java:181) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:385) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.savedrequest.RequestCacheAwareFilter.doFilter(RequestCacheAwareFilter.java:63) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:385) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at cl.casol.backend.identidad.infrastructure.security.JwtAuthenticationFilter.doFilterInternal(JwtAuthenticationFilter.java:55) ~[classes/:na]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-7.0.9.jar:7.0.9]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:385) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.authentication.logout.LogoutFilter.doFilter(LogoutFilter.java:110) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.authentication.logout.LogoutFilter.doFilter(LogoutFilter.java:96) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:385) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.header.HeaderWriterFilter.doHeadersAfter(HeaderWriterFilter.java:90) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.header.HeaderWriterFilter.doFilterInternal(HeaderWriterFilter.java:75) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-7.0.9.jar:7.0.9]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:385) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.context.SecurityContextHolderFilter.doFilter(SecurityContextHolderFilter.java:82) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.context.SecurityContextHolderFilter.doFilter(SecurityContextHolderFilter.java:69) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:385) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter.doFilterInternal(WebAsyncManagerIntegrationFilter.java:62) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-7.0.9.jar:7.0.9]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:385) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.session.DisableEncodeUrlFilter.doFilterInternal(DisableEncodeUrlFilter.java:42) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-7.0.9.jar:7.0.9]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:385) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.FilterChainProxy.doFilterInternal(FilterChainProxy.java:237) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.FilterChainProxy.doFilter(FilterChainProxy.java:195) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.web.filter.CompositeFilter$VirtualFilterChain.doFilter(CompositeFilter.java:113) ~[spring-web-7.0.9.jar:7.0.9]
+	at org.springframework.web.filter.ServletRequestPathFilter.doFilter(ServletRequestPathFilter.java:52) ~[spring-web-7.0.9.jar:7.0.9]
+	at org.springframework.web.filter.CompositeFilter$VirtualFilterChain.doFilter(CompositeFilter.java:113) ~[spring-web-7.0.9.jar:7.0.9]
+	at org.springframework.web.filter.CompositeFilter.doFilter(CompositeFilter.java:74) ~[spring-web-7.0.9.jar:7.0.9]
+	at org.springframework.security.config.annotation.web.configuration.WebSecurityConfiguration$CompositeFilterChainProxy.doFilter(WebSecurityConfiguration.java:317) ~[spring-security-config-7.1.1.jar:7.1.1]
+	at org.springframework.web.filter.DelegatingFilterProxy.invokeDelegate(DelegatingFilterProxy.java:355) ~[spring-web-7.0.9.jar:7.0.9]
+	at org.springframework.web.filter.DelegatingFilterProxy.doFilter(DelegatingFilterProxy.java:272) ~[spring-web-7.0.9.jar:7.0.9]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:111) ~[tomcat-embed-core-11.0.24.jar:11.0.24]
+	at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:100) ~[spring-web-7.0.9.jar:7.0.9]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-7.0.9.jar:7.0.9]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:111) ~[tomcat-embed-core-11.0.24.jar:11.0.24]
+	at org.springframework.web.filter.FormContentFilter.doFilterInternal(FormContentFilter.java:93) ~[spring-web-7.0.9.jar:7.0.9]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-7.0.9.jar:7.0.9]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:111) ~[tomcat-embed-core-11.0.24.jar:11.0.24]
+	at org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:199) ~[spring-web-7.0.9.jar:7.0.9]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-7.0.9.jar:7.0.9]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:111) ~[tomcat-embed-core-11.0.24.jar:11.0.24]
+	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:165) ~[tomcat-embed-core-11.0.24.jar:11.0.24]
+	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:77) ~[tomcat-embed-core-11.0.24.jar:11.0.24]
+	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:535) ~[tomcat-embed-core-11.0.24.jar:11.0.24]
+	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:115) ~[tomcat-embed-core-11.0.24.jar:11.0.24]
+	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:86) ~[tomcat-embed-core-11.0.24.jar:11.0.24]
+	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:71) ~[tomcat-embed-core-11.0.24.jar:11.0.24]
+	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:347) ~[tomcat-embed-core-11.0.24.jar:11.0.24]
+	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:406) ~[tomcat-embed-core-11.0.24.jar:11.0.24]
+	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:71) ~[tomcat-embed-core-11.0.24.jar:11.0.24]
+	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:1307) ~[tomcat-embed-core-11.0.24.jar:11.0.24]
+	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:2036) ~[tomcat-embed-core-11.0.24.jar:11.0.24]
+	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:74) ~[tomcat-embed-core-11.0.24.jar:11.0.24]
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:949) ~[tomcat-embed-core-11.0.24.jar:11.0.24]
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:483) ~[tomcat-embed-core-11.0.24.jar:11.0.24]
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:74) ~[tomcat-embed-core-11.0.24.jar:11.0.24]
+	at java.base/java.lang.Thread.run(Thread.java:1583) ~[na:na]
+Caused by: jakarta.mail.AuthenticationFailedException: 535-5.7.8 Username and Password not accepted. For more information, go to
+535 5.7.8  https://support.google.com/mail/?p=BadCredentials ada2fe7eead31-7d07765cae9sm4612888137.9 - gsmtp
+
+	at org.eclipse.angus.mail.smtp.SMTPTransport$Authenticator.authenticate(SMTPTransport.java:954) ~[angus-mail-2.0.5.jar:na]
+	at org.eclipse.angus.mail.smtp.SMTPTransport.authenticate(SMTPTransport.java:865) ~[angus-mail-2.0.5.jar:na]
+	at org.eclipse.angus.mail.smtp.SMTPTransport.protocolConnect(SMTPTransport.java:769) ~[angus-mail-2.0.5.jar:na]
+	at jakarta.mail.Service.connect(Service.java:345) ~[jakarta.mail-api-2.1.5.jar:na]
+	at org.springframework.mail.javamail.JavaMailSenderImpl.connectTransport(JavaMailSenderImpl.java:467) ~[spring-context-support-7.0.9.jar:7.0.9]
+	at org.springframework.mail.javamail.JavaMailSenderImpl.doSend(JavaMailSenderImpl.java:386) ~[spring-context-support-7.0.9.jar:7.0.9]
+	... 107 common frames omitted
+
+2026-10-31T02:15:30.523-03:00 DEBUG 30200 --- [buscador-errores-api] [http-nio-9090-exec-2] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: falta header Authorization para POST /api/auth/codigo
+2026-10-31T02:15:34.616-03:00 ERROR 30200 --- [buscador-errores-api] [http-nio-9090-exec-2] c.b.i.i.c.EnvioCodigoAccesoCorreoAdapter : No se pudo enviar el código de acceso a catasoledad36@gmail.com
+
+org.springframework.mail.MailAuthenticationException: Authentication failed
+	at org.springframework.mail.javamail.JavaMailSenderImpl.doSend(JavaMailSenderImpl.java:389) ~[spring-context-support-7.0.9.jar:7.0.9]
+	at org.springframework.mail.javamail.JavaMailSenderImpl.send(JavaMailSenderImpl.java:337) ~[spring-context-support-7.0.9.jar:7.0.9]
+	at org.springframework.mail.javamail.JavaMailSender.send(JavaMailSender.java:101) ~[spring-context-support-7.0.9.jar:7.0.9]
+	at cl.casol.backend.identidad.infrastructure.correo.EnvioCodigoAccesoCorreoAdapter.enviar(EnvioCodigoAccesoCorreoAdapter.java:57) ~[classes/:na]
+	at cl.casol.backend.identidad.application.service.AutenticarUsuarioService.solicitarCodigo(AutenticarUsuarioService.java:99) ~[classes/:na]
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103) ~[na:na]
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580) ~[na:na]
+	at org.springframework.aop.support.AopUtils.invokeJoinpointUsingReflection(AopUtils.java:359) ~[spring-aop-7.0.9.jar:7.0.9]
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.invokeJoinpoint(ReflectiveMethodInvocation.java:190) ~[spring-aop-7.0.9.jar:7.0.9]
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:158) ~[spring-aop-7.0.9.jar:7.0.9]
+	at org.springframework.transaction.interceptor.TransactionInterceptor$1.proceedWithInvocation(TransactionInterceptor.java:133) ~[spring-tx-7.0.9.jar:7.0.9]
+	at org.springframework.transaction.interceptor.TransactionAspectSupport.invokeWithinTransaction(TransactionAspectSupport.java:371) ~[spring-tx-7.0.9.jar:7.0.9]
+	at org.springframework.transaction.interceptor.TransactionInterceptor.invoke(TransactionInterceptor.java:130) ~[spring-tx-7.0.9.jar:7.0.9]
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:179) ~[spring-aop-7.0.9.jar:7.0.9]
+	at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:719) ~[spring-aop-7.0.9.jar:7.0.9]
+	at cl.casol.backend.identidad.application.service.AutenticarUsuarioService$$SpringCGLIB$$0.solicitarCodigo(<generated>) ~[classes/:na]
+	at cl.casol.backend.identidad.infrastructure.web.AuthController.solicitarCodigo(AuthController.java:42) ~[classes/:na]
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103) ~[na:na]
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580) ~[na:na]
+	at org.springframework.web.method.support.InvocableHandlerMethod.doInvoke(InvocableHandlerMethod.java:252) ~[spring-web-7.0.9.jar:7.0.9]
+	at org.springframework.web.method.support.InvocableHandlerMethod.invokeForRequest(InvocableHandlerMethod.java:184) ~[spring-web-7.0.9.jar:7.0.9]
+	at org.springframework.web.servlet.mvc.method.annotation.ServletInvocableHandlerMethod.invokeAndHandle(ServletInvocableHandlerMethod.java:117) ~[spring-webmvc-7.0.9.jar:7.0.9]
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.invokeHandlerMethod(RequestMappingHandlerAdapter.java:934) ~[spring-webmvc-7.0.9.jar:7.0.9]
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.handleInternal(RequestMappingHandlerAdapter.java:853) ~[spring-webmvc-7.0.9.jar:7.0.9]
+	at org.springframework.web.servlet.mvc.method.AbstractHandlerMethodAdapter.handle(AbstractHandlerMethodAdapter.java:86) ~[spring-webmvc-7.0.9.jar:7.0.9]
+	at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:963) ~[spring-webmvc-7.0.9.jar:7.0.9]
+	at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:866) ~[spring-webmvc-7.0.9.jar:7.0.9]
+	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1000) ~[spring-webmvc-7.0.9.jar:7.0.9]
+	at org.springframework.web.servlet.FrameworkServlet.doPost(FrameworkServlet.java:903) ~[spring-webmvc-7.0.9.jar:7.0.9]
+	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:649) ~[tomcat-embed-core-11.0.24.jar:6.1]
+	at org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:874) ~[spring-webmvc-7.0.9.jar:7.0.9]
+	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:710) ~[tomcat-embed-core-11.0.24.jar:6.1]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:132) ~[tomcat-embed-core-11.0.24.jar:11.0.24]
+	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:59) ~[tomcat-embed-websocket-11.0.24.jar:11.0.24]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:111) ~[tomcat-embed-core-11.0.24.jar:11.0.24]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:110) ~[spring-web-7.0.9.jar:7.0.9]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:111) ~[tomcat-embed-core-11.0.24.jar:11.0.24]
+	at org.springframework.web.filter.CompositeFilter$VirtualFilterChain.doFilter(CompositeFilter.java:108) ~[spring-web-7.0.9.jar:7.0.9]
+	at org.springframework.security.web.FilterChainProxy.lambda$doFilterInternal$2(FilterChainProxy.java:235) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:376) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.access.intercept.AuthorizationFilter.doFilter(AuthorizationFilter.java:101) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:385) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.access.ExceptionTranslationFilter.doFilter(ExceptionTranslationFilter.java:126) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.access.ExceptionTranslationFilter.doFilter(ExceptionTranslationFilter.java:120) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:385) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.session.SessionManagementFilter.doFilter(SessionManagementFilter.java:132) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.session.SessionManagementFilter.doFilter(SessionManagementFilter.java:86) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:385) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.authentication.AnonymousAuthenticationFilter.doFilter(AnonymousAuthenticationFilter.java:100) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:385) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter.doFilter(SecurityContextHolderAwareRequestFilter.java:181) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:385) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.savedrequest.RequestCacheAwareFilter.doFilter(RequestCacheAwareFilter.java:63) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:385) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at cl.casol.backend.identidad.infrastructure.security.JwtAuthenticationFilter.doFilterInternal(JwtAuthenticationFilter.java:55) ~[classes/:na]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-7.0.9.jar:7.0.9]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:385) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.authentication.logout.LogoutFilter.doFilter(LogoutFilter.java:110) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.authentication.logout.LogoutFilter.doFilter(LogoutFilter.java:96) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:385) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.header.HeaderWriterFilter.doHeadersAfter(HeaderWriterFilter.java:90) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.header.HeaderWriterFilter.doFilterInternal(HeaderWriterFilter.java:75) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-7.0.9.jar:7.0.9]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:385) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.context.SecurityContextHolderFilter.doFilter(SecurityContextHolderFilter.java:82) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.context.SecurityContextHolderFilter.doFilter(SecurityContextHolderFilter.java:69) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:385) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter.doFilterInternal(WebAsyncManagerIntegrationFilter.java:62) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-7.0.9.jar:7.0.9]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:385) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.session.DisableEncodeUrlFilter.doFilterInternal(DisableEncodeUrlFilter.java:42) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-7.0.9.jar:7.0.9]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:385) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.FilterChainProxy.doFilterInternal(FilterChainProxy.java:237) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.FilterChainProxy.doFilter(FilterChainProxy.java:195) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.web.filter.CompositeFilter$VirtualFilterChain.doFilter(CompositeFilter.java:113) ~[spring-web-7.0.9.jar:7.0.9]
+	at org.springframework.web.filter.ServletRequestPathFilter.doFilter(ServletRequestPathFilter.java:52) ~[spring-web-7.0.9.jar:7.0.9]
+	at org.springframework.web.filter.CompositeFilter$VirtualFilterChain.doFilter(CompositeFilter.java:113) ~[spring-web-7.0.9.jar:7.0.9]
+	at org.springframework.web.filter.CompositeFilter.doFilter(CompositeFilter.java:74) ~[spring-web-7.0.9.jar:7.0.9]
+	at org.springframework.security.config.annotation.web.configuration.WebSecurityConfiguration$CompositeFilterChainProxy.doFilter(WebSecurityConfiguration.java:317) ~[spring-security-config-7.1.1.jar:7.1.1]
+	at org.springframework.web.filter.DelegatingFilterProxy.invokeDelegate(DelegatingFilterProxy.java:355) ~[spring-web-7.0.9.jar:7.0.9]
+	at org.springframework.web.filter.DelegatingFilterProxy.doFilter(DelegatingFilterProxy.java:272) ~[spring-web-7.0.9.jar:7.0.9]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:111) ~[tomcat-embed-core-11.0.24.jar:11.0.24]
+	at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:100) ~[spring-web-7.0.9.jar:7.0.9]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-7.0.9.jar:7.0.9]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:111) ~[tomcat-embed-core-11.0.24.jar:11.0.24]
+	at org.springframework.web.filter.FormContentFilter.doFilterInternal(FormContentFilter.java:93) ~[spring-web-7.0.9.jar:7.0.9]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-7.0.9.jar:7.0.9]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:111) ~[tomcat-embed-core-11.0.24.jar:11.0.24]
+	at org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:199) ~[spring-web-7.0.9.jar:7.0.9]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-7.0.9.jar:7.0.9]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:111) ~[tomcat-embed-core-11.0.24.jar:11.0.24]
+	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:165) ~[tomcat-embed-core-11.0.24.jar:11.0.24]
+	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:77) ~[tomcat-embed-core-11.0.24.jar:11.0.24]
+	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:535) ~[tomcat-embed-core-11.0.24.jar:11.0.24]
+	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:115) ~[tomcat-embed-core-11.0.24.jar:11.0.24]
+	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:86) ~[tomcat-embed-core-11.0.24.jar:11.0.24]
+	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:71) ~[tomcat-embed-core-11.0.24.jar:11.0.24]
+	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:347) ~[tomcat-embed-core-11.0.24.jar:11.0.24]
+	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:406) ~[tomcat-embed-core-11.0.24.jar:11.0.24]
+	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:71) ~[tomcat-embed-core-11.0.24.jar:11.0.24]
+	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:1307) ~[tomcat-embed-core-11.0.24.jar:11.0.24]
+	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:2036) ~[tomcat-embed-core-11.0.24.jar:11.0.24]
+	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:74) ~[tomcat-embed-core-11.0.24.jar:11.0.24]
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:949) ~[tomcat-embed-core-11.0.24.jar:11.0.24]
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:483) ~[tomcat-embed-core-11.0.24.jar:11.0.24]
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:74) ~[tomcat-embed-core-11.0.24.jar:11.0.24]
+	at java.base/java.lang.Thread.run(Thread.java:1583) ~[na:na]
+Caused by: jakarta.mail.AuthenticationFailedException: 535-5.7.8 Username and Password not accepted. For more information, go to
+535 5.7.8  https://support.google.com/mail/?p=BadCredentials a1e0cc1a2514c-992ee45a603sm5434390241.9 - gsmtp
+
+	at org.eclipse.angus.mail.smtp.SMTPTransport$Authenticator.authenticate(SMTPTransport.java:954) ~[angus-mail-2.0.5.jar:na]
+	at org.eclipse.angus.mail.smtp.SMTPTransport.authenticate(SMTPTransport.java:865) ~[angus-mail-2.0.5.jar:na]
+	at org.eclipse.angus.mail.smtp.SMTPTransport.protocolConnect(SMTPTransport.java:769) ~[angus-mail-2.0.5.jar:na]
+	at jakarta.mail.Service.connect(Service.java:345) ~[jakarta.mail-api-2.1.5.jar:na]
+	at org.springframework.mail.javamail.JavaMailSenderImpl.connectTransport(JavaMailSenderImpl.java:467) ~[spring-context-support-7.0.9.jar:7.0.9]
+	at org.springframework.mail.javamail.JavaMailSenderImpl.doSend(JavaMailSenderImpl.java:386) ~[spring-context-support-7.0.9.jar:7.0.9]
+	... 107 common frames omitted
+
+2026-10-31T02:17:16.147-03:00 DEBUG 30200 --- [buscador-errores-api] [http-nio-9090-exec-3] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: falta header Authorization para POST /api/auth/codigo
+2026-10-31T02:17:20.700-03:00 ERROR 30200 --- [buscador-errores-api] [http-nio-9090-exec-3] c.b.i.i.c.EnvioCodigoAccesoCorreoAdapter : No se pudo enviar el código de acceso a catasoledad256@gmail.com
+
+org.springframework.mail.MailAuthenticationException: Authentication failed
+	at org.springframework.mail.javamail.JavaMailSenderImpl.doSend(JavaMailSenderImpl.java:389) ~[spring-context-support-7.0.9.jar:7.0.9]
+	at org.springframework.mail.javamail.JavaMailSenderImpl.send(JavaMailSenderImpl.java:337) ~[spring-context-support-7.0.9.jar:7.0.9]
+	at org.springframework.mail.javamail.JavaMailSender.send(JavaMailSender.java:101) ~[spring-context-support-7.0.9.jar:7.0.9]
+	at cl.casol.backend.identidad.infrastructure.correo.EnvioCodigoAccesoCorreoAdapter.enviar(EnvioCodigoAccesoCorreoAdapter.java:57) ~[classes/:na]
+	at cl.casol.backend.identidad.application.service.AutenticarUsuarioService.solicitarCodigo(AutenticarUsuarioService.java:99) ~[classes/:na]
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103) ~[na:na]
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580) ~[na:na]
+	at org.springframework.aop.support.AopUtils.invokeJoinpointUsingReflection(AopUtils.java:359) ~[spring-aop-7.0.9.jar:7.0.9]
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.invokeJoinpoint(ReflectiveMethodInvocation.java:190) ~[spring-aop-7.0.9.jar:7.0.9]
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:158) ~[spring-aop-7.0.9.jar:7.0.9]
+	at org.springframework.transaction.interceptor.TransactionInterceptor$1.proceedWithInvocation(TransactionInterceptor.java:133) ~[spring-tx-7.0.9.jar:7.0.9]
+	at org.springframework.transaction.interceptor.TransactionAspectSupport.invokeWithinTransaction(TransactionAspectSupport.java:371) ~[spring-tx-7.0.9.jar:7.0.9]
+	at org.springframework.transaction.interceptor.TransactionInterceptor.invoke(TransactionInterceptor.java:130) ~[spring-tx-7.0.9.jar:7.0.9]
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:179) ~[spring-aop-7.0.9.jar:7.0.9]
+	at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:719) ~[spring-aop-7.0.9.jar:7.0.9]
+	at cl.casol.backend.identidad.application.service.AutenticarUsuarioService$$SpringCGLIB$$0.solicitarCodigo(<generated>) ~[classes/:na]
+	at cl.casol.backend.identidad.infrastructure.web.AuthController.solicitarCodigo(AuthController.java:42) ~[classes/:na]
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103) ~[na:na]
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580) ~[na:na]
+	at org.springframework.web.method.support.InvocableHandlerMethod.doInvoke(InvocableHandlerMethod.java:252) ~[spring-web-7.0.9.jar:7.0.9]
+	at org.springframework.web.method.support.InvocableHandlerMethod.invokeForRequest(InvocableHandlerMethod.java:184) ~[spring-web-7.0.9.jar:7.0.9]
+	at org.springframework.web.servlet.mvc.method.annotation.ServletInvocableHandlerMethod.invokeAndHandle(ServletInvocableHandlerMethod.java:117) ~[spring-webmvc-7.0.9.jar:7.0.9]
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.invokeHandlerMethod(RequestMappingHandlerAdapter.java:934) ~[spring-webmvc-7.0.9.jar:7.0.9]
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.handleInternal(RequestMappingHandlerAdapter.java:853) ~[spring-webmvc-7.0.9.jar:7.0.9]
+	at org.springframework.web.servlet.mvc.method.AbstractHandlerMethodAdapter.handle(AbstractHandlerMethodAdapter.java:86) ~[spring-webmvc-7.0.9.jar:7.0.9]
+	at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:963) ~[spring-webmvc-7.0.9.jar:7.0.9]
+	at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:866) ~[spring-webmvc-7.0.9.jar:7.0.9]
+	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1000) ~[spring-webmvc-7.0.9.jar:7.0.9]
+	at org.springframework.web.servlet.FrameworkServlet.doPost(FrameworkServlet.java:903) ~[spring-webmvc-7.0.9.jar:7.0.9]
+	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:649) ~[tomcat-embed-core-11.0.24.jar:6.1]
+	at org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:874) ~[spring-webmvc-7.0.9.jar:7.0.9]
+	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:710) ~[tomcat-embed-core-11.0.24.jar:6.1]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:132) ~[tomcat-embed-core-11.0.24.jar:11.0.24]
+	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:59) ~[tomcat-embed-websocket-11.0.24.jar:11.0.24]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:111) ~[tomcat-embed-core-11.0.24.jar:11.0.24]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:110) ~[spring-web-7.0.9.jar:7.0.9]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:111) ~[tomcat-embed-core-11.0.24.jar:11.0.24]
+	at org.springframework.web.filter.CompositeFilter$VirtualFilterChain.doFilter(CompositeFilter.java:108) ~[spring-web-7.0.9.jar:7.0.9]
+	at org.springframework.security.web.FilterChainProxy.lambda$doFilterInternal$2(FilterChainProxy.java:235) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:376) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.access.intercept.AuthorizationFilter.doFilter(AuthorizationFilter.java:101) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:385) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.access.ExceptionTranslationFilter.doFilter(ExceptionTranslationFilter.java:126) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.access.ExceptionTranslationFilter.doFilter(ExceptionTranslationFilter.java:120) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:385) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.session.SessionManagementFilter.doFilter(SessionManagementFilter.java:132) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.session.SessionManagementFilter.doFilter(SessionManagementFilter.java:86) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:385) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.authentication.AnonymousAuthenticationFilter.doFilter(AnonymousAuthenticationFilter.java:100) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:385) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter.doFilter(SecurityContextHolderAwareRequestFilter.java:181) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:385) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.savedrequest.RequestCacheAwareFilter.doFilter(RequestCacheAwareFilter.java:63) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:385) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at cl.casol.backend.identidad.infrastructure.security.JwtAuthenticationFilter.doFilterInternal(JwtAuthenticationFilter.java:55) ~[classes/:na]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-7.0.9.jar:7.0.9]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:385) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.authentication.logout.LogoutFilter.doFilter(LogoutFilter.java:110) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.authentication.logout.LogoutFilter.doFilter(LogoutFilter.java:96) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:385) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.header.HeaderWriterFilter.doHeadersAfter(HeaderWriterFilter.java:90) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.header.HeaderWriterFilter.doFilterInternal(HeaderWriterFilter.java:75) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-7.0.9.jar:7.0.9]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:385) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.context.SecurityContextHolderFilter.doFilter(SecurityContextHolderFilter.java:82) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.context.SecurityContextHolderFilter.doFilter(SecurityContextHolderFilter.java:69) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:385) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter.doFilterInternal(WebAsyncManagerIntegrationFilter.java:62) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-7.0.9.jar:7.0.9]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:385) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.session.DisableEncodeUrlFilter.doFilterInternal(DisableEncodeUrlFilter.java:42) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-7.0.9.jar:7.0.9]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:385) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.FilterChainProxy.doFilterInternal(FilterChainProxy.java:237) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.security.web.FilterChainProxy.doFilter(FilterChainProxy.java:195) ~[spring-security-web-7.1.1.jar:7.1.1]
+	at org.springframework.web.filter.CompositeFilter$VirtualFilterChain.doFilter(CompositeFilter.java:113) ~[spring-web-7.0.9.jar:7.0.9]
+	at org.springframework.web.filter.ServletRequestPathFilter.doFilter(ServletRequestPathFilter.java:52) ~[spring-web-7.0.9.jar:7.0.9]
+	at org.springframework.web.filter.CompositeFilter$VirtualFilterChain.doFilter(CompositeFilter.java:113) ~[spring-web-7.0.9.jar:7.0.9]
+	at org.springframework.web.filter.CompositeFilter.doFilter(CompositeFilter.java:74) ~[spring-web-7.0.9.jar:7.0.9]
+	at org.springframework.security.config.annotation.web.configuration.WebSecurityConfiguration$CompositeFilterChainProxy.doFilter(WebSecurityConfiguration.java:317) ~[spring-security-config-7.1.1.jar:7.1.1]
+	at org.springframework.web.filter.DelegatingFilterProxy.invokeDelegate(DelegatingFilterProxy.java:355) ~[spring-web-7.0.9.jar:7.0.9]
+	at org.springframework.web.filter.DelegatingFilterProxy.doFilter(DelegatingFilterProxy.java:272) ~[spring-web-7.0.9.jar:7.0.9]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:111) ~[tomcat-embed-core-11.0.24.jar:11.0.24]
+	at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:100) ~[spring-web-7.0.9.jar:7.0.9]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-7.0.9.jar:7.0.9]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:111) ~[tomcat-embed-core-11.0.24.jar:11.0.24]
+	at org.springframework.web.filter.FormContentFilter.doFilterInternal(FormContentFilter.java:93) ~[spring-web-7.0.9.jar:7.0.9]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-7.0.9.jar:7.0.9]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:111) ~[tomcat-embed-core-11.0.24.jar:11.0.24]
+	at org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:199) ~[spring-web-7.0.9.jar:7.0.9]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-7.0.9.jar:7.0.9]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:111) ~[tomcat-embed-core-11.0.24.jar:11.0.24]
+	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:165) ~[tomcat-embed-core-11.0.24.jar:11.0.24]
+	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:77) ~[tomcat-embed-core-11.0.24.jar:11.0.24]
+	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:535) ~[tomcat-embed-core-11.0.24.jar:11.0.24]
+	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:115) ~[tomcat-embed-core-11.0.24.jar:11.0.24]
+	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:86) ~[tomcat-embed-core-11.0.24.jar:11.0.24]
+	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:71) ~[tomcat-embed-core-11.0.24.jar:11.0.24]
+	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:347) ~[tomcat-embed-core-11.0.24.jar:11.0.24]
+	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:406) ~[tomcat-embed-core-11.0.24.jar:11.0.24]
+	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:71) ~[tomcat-embed-core-11.0.24.jar:11.0.24]
+	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:1307) ~[tomcat-embed-core-11.0.24.jar:11.0.24]
+	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:2036) ~[tomcat-embed-core-11.0.24.jar:11.0.24]
+	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:74) ~[tomcat-embed-core-11.0.24.jar:11.0.24]
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:949) ~[tomcat-embed-core-11.0.24.jar:11.0.24]
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:483) ~[tomcat-embed-core-11.0.24.jar:11.0.24]
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:74) ~[tomcat-embed-core-11.0.24.jar:11.0.24]
+	at java.base/java.lang.Thread.run(Thread.java:1583) ~[na:na]
+Caused by: jakarta.mail.AuthenticationFailedException: 535-5.7.8 Username and Password not accepted. For more information, go to
+535 5.7.8  https://support.google.com/mail/?p=BadCredentials a1e0cc1a2514c-992ee1d1b35sm5318262241.1 - gsmtp
+
+	at org.eclipse.angus.mail.smtp.SMTPTransport$Authenticator.authenticate(SMTPTransport.java:954) ~[angus-mail-2.0.5.jar:na]
+	at org.eclipse.angus.mail.smtp.SMTPTransport.authenticate(SMTPTransport.java:865) ~[angus-mail-2.0.5.jar:na]
+	at org.eclipse.angus.mail.smtp.SMTPTransport.protocolConnect(SMTPTransport.java:769) ~[angus-mail-2.0.5.jar:na]
+	at jakarta.mail.Service.connect(Service.java:345) ~[jakarta.mail-api-2.1.5.jar:na]
+	at org.springframework.mail.javamail.JavaMailSenderImpl.connectTransport(JavaMailSenderImpl.java:467) ~[spring-context-support-7.0.9.jar:7.0.9]
+	at org.springframework.mail.javamail.JavaMailSenderImpl.doSend(JavaMailSenderImpl.java:386) ~[spring-context-support-7.0.9.jar:7.0.9]
+	... 107 common frames omitted
+
+2026-10-31T02:18:00.027-03:00  INFO 30200 --- [buscador-errores-api] [SpringApplicationShutdownHook] o.s.boot.tomcat.GracefulShutdown         : Commencing graceful shutdown. Waiting for active requests to complete
+2026-10-31T02:18:00.045-03:00  INFO 30200 --- [buscador-errores-api] [tomcat-shutdown] o.s.boot.tomcat.GracefulShutdown         : Graceful shutdown complete
+2026-10-31T02:18:00.058-03:00  INFO 30200 --- [buscador-errores-api] [SpringApplicationShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-10-31T02:18:00.060-03:00  INFO 30200 --- [buscador-errores-api] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2026-10-31T02:18:00.277-03:00  INFO 30200 --- [buscador-errores-api] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+2026-10-31T02:18:42.126-03:00  INFO 28644 --- [buscador-errores-api] [main] cl.casol.backend.BackendApplication      : Starting BackendApplication using Java 21.0.12.1 with PID 28644 (C:\buscador-errores\buscador-errores\dima-bug-backend\target\classes started by catas in C:\buscador-errores\buscador-errores\dima-bug-backend)
+2026-10-31T02:18:42.129-03:00  INFO 28644 --- [buscador-errores-api] [main] cl.casol.backend.BackendApplication      : No active profile set, falling back to 1 default profile: "default"
+2026-10-31T02:18:43.976-03:00  INFO 28644 --- [buscador-errores-api] [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-10-31T02:18:44.373-03:00  INFO 28644 --- [buscador-errores-api] [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 384 ms. Found 28 JPA repository interfaces.
+2026-10-31T02:18:45.140-03:00  INFO 28644 --- [buscador-errores-api] [main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 9090 (http)
+2026-10-31T02:18:45.169-03:00  INFO 28644 --- [buscador-errores-api] [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-10-31T02:18:45.170-03:00  INFO 28644 --- [buscador-errores-api] [main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.24]
+2026-10-31T02:18:45.266-03:00  INFO 28644 --- [buscador-errores-api] [main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 3077 ms
+2026-10-31T02:18:45.527-03:00  INFO 28644 --- [buscador-errores-api] [main] org.hibernate.orm.jpa                    : HHH008540: Processing PersistenceUnitInfo [name: default]
+2026-10-31T02:18:45.618-03:00  INFO 28644 --- [buscador-errores-api] [main] org.hibernate.orm.core                   : HHH000001: Hibernate ORM core version 7.4.5.Final
+2026-10-31T02:18:46.293-03:00  INFO 28644 --- [buscador-errores-api] [main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-10-31T02:18:46.351-03:00  INFO 28644 --- [buscador-errores-api] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-10-31T02:18:50.509-03:00  INFO 28644 --- [buscador-errores-api] [main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@418d1c03
+2026-10-31T02:18:50.513-03:00  INFO 28644 --- [buscador-errores-api] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-10-31T02:18:51.322-03:00  WARN 28644 --- [buscador-errores-api] [main] org.hibernate.orm.deprecation            : HHH90000025: MySQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-10-31T02:18:51.720-03:00  INFO 28644 --- [buscador-errores-api] [main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [jdbc:mysql://127.0.0.1:3307/dima_bug_dev]
+	Database driver: MySQL Connector/J
+	Database dialect: MySQLDialect
+	Database version: 8.0.46
+	Default catalog/schema: dima_bug_dev/undefined
+	Autocommit mode: undefined/unknown
+	Isolation level: REPEATABLE_READ [default REPEATABLE_READ]
+	JDBC fetch size: none
+	Pool: DataSourceConnectionProvider
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-10-31T02:18:53.818-03:00  INFO 28644 --- [buscador-errores-api] [main] org.hibernate.orm.core                   : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-10-31T02:18:53.827-03:00  INFO 28644 --- [buscador-errores-api] [main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-10-31T02:18:53.901-03:00  INFO 28644 --- [buscador-errores-api] [main] o.s.d.j.r.query.QueryEnhancerFactories   : Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-10-31T02:18:54.885-03:00 DEBUG 28644 --- [buscador-errores-api] [main] c.c.b.i.i.s.JwtAuthenticationFilter      : Filter 'jwtAuthenticationFilter' configured for use
+2026-10-31T02:18:56.466-03:00  WARN 28644 --- [buscador-errores-api] [main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-10-31T02:18:56.672-03:00  WARN 28644 --- [buscador-errores-api] [main] .s.a.UserDetailsServiceAutoConfiguration : 
+
+Using generated security password: 58710022-c80f-44fa-9075-6e6f70a3f12c
+
+This generated password is for development use only. Your security configuration must be updated before running your application in production.
+
+2026-10-31T02:18:56.682-03:00  INFO 28644 --- [buscador-errores-api] [main] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name inMemoryUserDetailsManager
+2026-10-31T02:18:57.430-03:00  INFO 28644 --- [buscador-errores-api] [main] o.s.boot.tomcat.TomcatWebServer          : Tomcat started on port 9090 (http) with context path '/'
+2026-10-31T02:18:57.436-03:00  INFO 28644 --- [buscador-errores-api] [main] cl.casol.backend.BackendApplication      : Started BackendApplication in 15.846 seconds (process running for 16.435)
+2026-10-31T02:19:14.552-03:00  INFO 28644 --- [buscador-errores-api] [http-nio-9090-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-10-31T02:19:14.553-03:00  INFO 28644 --- [buscador-errores-api] [http-nio-9090-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-10-31T02:19:14.557-03:00  INFO 28644 --- [buscador-errores-api] [http-nio-9090-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 4 ms
+2026-10-31T02:19:14.601-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-1] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: falta header Authorization para POST /api/auth/codigo
+2026-10-31T02:19:52.160-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-2] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: falta header Authorization para POST /api/auth/codigo/verificar
+2026-10-31T02:19:54.526-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-3] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: token recibido con longitud 155 para GET /api/tickets
+2026-10-31T02:19:54.646-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-3] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: resultado de validacion=true
+2026-10-31T02:19:54.651-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-3] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: email extraido=catasoledad36@gmail.com
+2026-10-31T02:19:54.655-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-3] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: usuario encontrado=true
+2026-10-31T02:19:54.658-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-3] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: usuario activo=true
+2026-10-31T02:19:54.658-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-3] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: nombre exacto del rol=Administrador
+2026-10-31T02:19:54.659-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-3] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: autoridad construida=ROLE_ADMINISTRADOR
+2026-10-31T02:19:54.666-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-3] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: autenticacion instalada en SecurityContextHolder=true
+2026-10-31T02:20:02.492-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-4] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: token recibido con longitud 155 para GET /api/procedimientos
+2026-10-31T02:20:02.498-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-4] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: resultado de validacion=true
+2026-10-31T02:20:02.529-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-4] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: email extraido=catasoledad36@gmail.com
+2026-10-31T02:20:02.533-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-5] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: token recibido con longitud 155 para GET /api/ejecuciones
+2026-10-31T02:20:02.533-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-4] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: usuario encontrado=true
+2026-10-31T02:20:02.547-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-4] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: usuario activo=true
+2026-10-31T02:20:02.547-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-5] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: resultado de validacion=true
+2026-10-31T02:20:02.549-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-4] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: nombre exacto del rol=Administrador
+2026-10-31T02:20:02.562-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-5] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: email extraido=catasoledad36@gmail.com
+2026-10-31T02:20:02.561-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-4] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: autoridad construida=ROLE_ADMINISTRADOR
+2026-10-31T02:20:02.562-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-5] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: usuario encontrado=true
+2026-10-31T02:20:02.565-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-4] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: autenticacion instalada en SecurityContextHolder=true
+2026-10-31T02:20:02.565-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-5] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: usuario activo=true
+2026-10-31T02:20:02.567-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-5] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: nombre exacto del rol=Administrador
+2026-10-31T02:20:02.573-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-6] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: token recibido con longitud 155 para GET /api/conocimientos
+2026-10-31T02:20:02.569-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-5] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: autoridad construida=ROLE_ADMINISTRADOR
+2026-10-31T02:20:02.580-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-8] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: token recibido con longitud 155 para GET /api/pruebas
+2026-10-31T02:20:02.580-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-7] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: token recibido con longitud 155 para GET /api/tickets
+2026-10-31T02:20:02.582-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-6] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: resultado de validacion=true
+2026-10-31T02:20:02.582-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-5] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: autenticacion instalada en SecurityContextHolder=true
+2026-10-31T02:20:02.583-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-8] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: resultado de validacion=true
+2026-10-31T02:20:02.584-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-7] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: resultado de validacion=true
+2026-10-31T02:20:02.587-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-6] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: email extraido=catasoledad36@gmail.com
+2026-10-31T02:20:02.601-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-6] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: usuario encontrado=true
+2026-10-31T02:20:02.599-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-8] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: email extraido=catasoledad36@gmail.com
+2026-10-31T02:20:02.601-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-7] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: email extraido=catasoledad36@gmail.com
+2026-10-31T02:20:02.611-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-8] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: usuario encontrado=true
+2026-10-31T02:20:02.609-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-6] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: usuario activo=true
+2026-10-31T02:20:02.613-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-7] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: usuario encontrado=true
+2026-10-31T02:20:02.616-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-8] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: usuario activo=true
+2026-10-31T02:20:02.616-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-6] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: nombre exacto del rol=Administrador
+2026-10-31T02:20:02.616-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-7] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: usuario activo=true
+2026-10-31T02:20:02.616-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-8] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: nombre exacto del rol=Administrador
+2026-10-31T02:20:02.616-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-6] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: autoridad construida=ROLE_ADMINISTRADOR
+2026-10-31T02:20:02.624-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-6] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: autenticacion instalada en SecurityContextHolder=true
+2026-10-31T02:20:02.617-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-7] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: nombre exacto del rol=Administrador
+2026-10-31T02:20:02.623-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-8] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: autoridad construida=ROLE_ADMINISTRADOR
+2026-10-31T02:20:02.630-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-7] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: autoridad construida=ROLE_ADMINISTRADOR
+2026-10-31T02:20:02.630-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-8] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: autenticacion instalada en SecurityContextHolder=true
+2026-10-31T02:20:02.630-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-7] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: autenticacion instalada en SecurityContextHolder=true
+2026-10-31T02:20:06.404-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-9] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: token recibido con longitud 155 para GET /api/hardware
+2026-10-31T02:20:06.405-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-9] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: resultado de validacion=true
+2026-10-31T02:20:06.407-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-9] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: email extraido=catasoledad36@gmail.com
+2026-10-31T02:20:06.407-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-9] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: usuario encontrado=true
+2026-10-31T02:20:06.408-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-9] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: usuario activo=true
+2026-10-31T02:20:06.408-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-9] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: nombre exacto del rol=Administrador
+2026-10-31T02:20:06.408-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-9] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: autoridad construida=ROLE_ADMINISTRADOR
+2026-10-31T02:20:06.409-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-9] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: autenticacion instalada en SecurityContextHolder=true
+2026-10-31T02:20:07.231-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-10] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: token recibido con longitud 155 para GET /api/hardware/3/sistemas
+2026-10-31T02:20:07.233-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-10] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: resultado de validacion=true
+2026-10-31T02:20:07.236-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-10] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: email extraido=catasoledad36@gmail.com
+2026-10-31T02:20:07.238-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-10] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: usuario encontrado=true
+2026-10-31T02:20:07.238-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-10] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: usuario activo=true
+2026-10-31T02:20:07.241-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-1] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: token recibido con longitud 155 para GET /api/hardware/8/sistemas
+2026-10-31T02:20:07.242-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-10] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: nombre exacto del rol=Administrador
+2026-10-31T02:20:07.243-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-10] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: autoridad construida=ROLE_ADMINISTRADOR
+2026-10-31T02:20:07.243-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-10] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: autenticacion instalada en SecurityContextHolder=true
+2026-10-31T02:20:07.244-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-1] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: resultado de validacion=true
+2026-10-31T02:20:07.247-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-1] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: email extraido=catasoledad36@gmail.com
+2026-10-31T02:20:07.249-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-1] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: usuario encontrado=true
+2026-10-31T02:20:07.249-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-1] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: usuario activo=true
+2026-10-31T02:20:07.249-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-1] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: nombre exacto del rol=Administrador
+2026-10-31T02:20:07.249-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-1] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: autoridad construida=ROLE_ADMINISTRADOR
+2026-10-31T02:20:07.250-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-1] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: autenticacion instalada en SecurityContextHolder=true
+2026-10-31T02:20:07.254-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-2] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: token recibido con longitud 155 para GET /api/hardware/4/sistemas
+2026-10-31T02:20:07.260-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-3] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: token recibido con longitud 155 para GET /api/hardware/5/sistemas
+2026-10-31T02:20:07.261-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-3] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: resultado de validacion=true
+2026-10-31T02:20:07.261-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-2] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: resultado de validacion=true
+2026-10-31T02:20:07.262-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-3] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: email extraido=catasoledad36@gmail.com
+2026-10-31T02:20:07.263-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-3] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: usuario encontrado=true
+2026-10-31T02:20:07.264-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-2] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: email extraido=catasoledad36@gmail.com
+2026-10-31T02:20:07.264-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-3] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: usuario activo=true
+2026-10-31T02:20:07.264-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-2] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: usuario encontrado=true
+2026-10-31T02:20:07.264-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-3] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: nombre exacto del rol=Administrador
+2026-10-31T02:20:07.264-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-2] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: usuario activo=true
+2026-10-31T02:20:07.264-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-3] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: autoridad construida=ROLE_ADMINISTRADOR
+2026-10-31T02:20:07.264-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-2] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: nombre exacto del rol=Administrador
+2026-10-31T02:20:07.264-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-2] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: autoridad construida=ROLE_ADMINISTRADOR
+2026-10-31T02:20:07.264-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-3] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: autenticacion instalada en SecurityContextHolder=true
+2026-10-31T02:20:07.265-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-2] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: autenticacion instalada en SecurityContextHolder=true
+2026-10-31T02:20:07.271-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-7] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: token recibido con longitud 155 para GET /api/hardware/12/sistemas
+2026-10-31T02:20:07.275-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-7] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: resultado de validacion=true
+2026-10-31T02:20:07.277-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-8] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: token recibido con longitud 155 para GET /api/hardware/10/sistemas
+2026-10-31T02:20:07.278-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-7] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: email extraido=catasoledad36@gmail.com
+2026-10-31T02:20:07.278-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-8] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: resultado de validacion=true
+2026-10-31T02:20:07.278-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-7] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: usuario encontrado=true
+2026-10-31T02:20:07.278-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-7] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: usuario activo=true
+2026-10-31T02:20:07.279-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-7] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: nombre exacto del rol=Administrador
+2026-10-31T02:20:07.279-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-7] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: autoridad construida=ROLE_ADMINISTRADOR
+2026-10-31T02:20:07.279-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-7] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: autenticacion instalada en SecurityContextHolder=true
+2026-10-31T02:20:07.279-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-8] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: email extraido=catasoledad36@gmail.com
+2026-10-31T02:20:07.279-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-8] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: usuario encontrado=true
+2026-10-31T02:20:07.280-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-8] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: usuario activo=true
+2026-10-31T02:20:07.280-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-8] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: nombre exacto del rol=Administrador
+2026-10-31T02:20:07.280-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-8] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: autoridad construida=ROLE_ADMINISTRADOR
+2026-10-31T02:20:07.280-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-8] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: autenticacion instalada en SecurityContextHolder=true
+2026-10-31T02:20:07.881-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-4] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: token recibido con longitud 155 para GET /api/hardware/6/sistemas
+2026-10-31T02:20:07.882-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-4] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: resultado de validacion=true
+2026-10-31T02:20:07.883-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-4] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: email extraido=catasoledad36@gmail.com
+2026-10-31T02:20:07.883-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-4] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: usuario encontrado=true
+2026-10-31T02:20:07.883-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-4] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: usuario activo=true
+2026-10-31T02:20:07.883-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-4] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: nombre exacto del rol=Administrador
+2026-10-31T02:20:07.884-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-4] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: autoridad construida=ROLE_ADMINISTRADOR
+2026-10-31T02:20:07.885-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-4] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: autenticacion instalada en SecurityContextHolder=true
+2026-10-31T02:20:08.448-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-6] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: token recibido con longitud 155 para GET /api/hardware/9/sistemas
+2026-10-31T02:20:08.449-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-6] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: resultado de validacion=true
+2026-10-31T02:20:08.450-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-6] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: email extraido=catasoledad36@gmail.com
+2026-10-31T02:20:08.450-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-6] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: usuario encontrado=true
+2026-10-31T02:20:08.451-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-6] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: usuario activo=true
+2026-10-31T02:20:08.452-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-6] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: nombre exacto del rol=Administrador
+2026-10-31T02:20:08.453-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-6] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: autoridad construida=ROLE_ADMINISTRADOR
+2026-10-31T02:20:08.454-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-6] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: autenticacion instalada en SecurityContextHolder=true
+2026-10-31T02:20:08.458-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-5] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: token recibido con longitud 155 para GET /api/hardware/7/sistemas
+2026-10-31T02:20:08.462-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-5] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: resultado de validacion=true
+2026-10-31T02:20:08.463-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-5] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: email extraido=catasoledad36@gmail.com
+2026-10-31T02:20:08.464-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-5] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: usuario encontrado=true
+2026-10-31T02:20:08.464-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-5] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: usuario activo=true
+2026-10-31T02:20:08.464-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-5] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: nombre exacto del rol=Administrador
+2026-10-31T02:20:08.464-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-5] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: autoridad construida=ROLE_ADMINISTRADOR
+2026-10-31T02:20:08.465-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-5] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: autenticacion instalada en SecurityContextHolder=true
+2026-10-31T02:20:08.478-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-9] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: token recibido con longitud 155 para GET /api/hardware/11/sistemas
+2026-10-31T02:20:08.479-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-9] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: resultado de validacion=true
+2026-10-31T02:20:08.480-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-9] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: email extraido=catasoledad36@gmail.com
+2026-10-31T02:20:08.480-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-9] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: usuario encontrado=true
+2026-10-31T02:20:08.480-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-9] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: usuario activo=true
+2026-10-31T02:20:08.480-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-9] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: nombre exacto del rol=Administrador
+2026-10-31T02:20:08.480-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-9] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: autoridad construida=ROLE_ADMINISTRADOR
+2026-10-31T02:20:08.481-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-9] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: autenticacion instalada en SecurityContextHolder=true
+2026-10-31T02:20:09.249-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-10] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: token recibido con longitud 155 para GET /api/departamentos
+2026-10-31T02:20:09.250-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-10] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: resultado de validacion=true
+2026-10-31T02:20:09.250-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-10] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: email extraido=catasoledad36@gmail.com
+2026-10-31T02:20:09.251-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-10] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: usuario encontrado=true
+2026-10-31T02:20:09.251-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-10] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: usuario activo=true
+2026-10-31T02:20:09.251-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-10] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: nombre exacto del rol=Administrador
+2026-10-31T02:20:09.251-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-10] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: autoridad construida=ROLE_ADMINISTRADOR
+2026-10-31T02:20:09.251-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-10] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: autenticacion instalada en SecurityContextHolder=true
+2026-10-31T02:20:10.013-03:00  WARN 28644 --- [buscador-errores-api] [http-nio-9090-exec-10] org.hibernate.orm.jdbc.error             : HHH000247: ErrorCode: 1054, SQLState: 42S22
+2026-10-31T02:20:10.013-03:00  WARN 28644 --- [buscador-errores-api] [http-nio-9090-exec-10] org.hibernate.orm.jdbc.error             : Unknown column 'de1_0.departamento_version' in 'field list'
+2026-10-31T02:20:10.063-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-1] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: token recibido con longitud 155 para GET /api/usuarios
+2026-10-31T02:20:10.064-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-1] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: resultado de validacion=true
+2026-10-31T02:20:10.065-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-1] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: email extraido=catasoledad36@gmail.com
+2026-10-31T02:20:10.065-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-1] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: usuario encontrado=true
+2026-10-31T02:20:10.066-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-1] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: usuario activo=true
+2026-10-31T02:20:10.066-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-1] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: nombre exacto del rol=Administrador
+2026-10-31T02:20:10.066-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-1] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: autoridad construida=ROLE_ADMINISTRADOR
+2026-10-31T02:20:10.066-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-1] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: autenticacion instalada en SecurityContextHolder=true
+2026-10-31T02:20:12.994-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-8] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: token recibido con longitud 155 para GET /api/roles
+2026-10-31T02:20:12.996-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-8] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: resultado de validacion=true
+2026-10-31T02:20:12.998-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-8] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: email extraido=catasoledad36@gmail.com
+2026-10-31T02:20:12.999-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-8] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: usuario encontrado=true
+2026-10-31T02:20:12.999-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-8] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: usuario activo=true
+2026-10-31T02:20:12.999-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-8] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: nombre exacto del rol=Administrador
+2026-10-31T02:20:13.000-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-8] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: autoridad construida=ROLE_ADMINISTRADOR
+2026-10-31T02:20:13.000-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-8] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: autenticacion instalada en SecurityContextHolder=true
+2026-10-31T02:20:54.781-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-3] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: token recibido con longitud 155 para GET /api/tickets
+2026-10-31T02:20:54.783-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-3] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: resultado de validacion=true
+2026-10-31T02:20:54.784-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-3] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: email extraido=catasoledad36@gmail.com
+2026-10-31T02:20:54.784-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-3] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: usuario encontrado=true
+2026-10-31T02:20:54.784-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-3] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: usuario activo=true
+2026-10-31T02:20:54.784-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-3] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: nombre exacto del rol=Administrador
+2026-10-31T02:20:54.785-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-3] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: autoridad construida=ROLE_ADMINISTRADOR
+2026-10-31T02:20:54.785-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-3] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: autenticacion instalada en SecurityContextHolder=true
+2026-10-31T02:21:54.785-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-7] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: token recibido con longitud 155 para GET /api/tickets
+2026-10-31T02:21:54.787-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-7] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: resultado de validacion=true
+2026-10-31T02:21:54.789-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-7] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: email extraido=catasoledad36@gmail.com
+2026-10-31T02:21:54.790-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-7] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: usuario encontrado=true
+2026-10-31T02:21:54.790-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-7] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: usuario activo=true
+2026-10-31T02:21:54.791-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-7] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: nombre exacto del rol=Administrador
+2026-10-31T02:21:54.791-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-7] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: autoridad construida=ROLE_ADMINISTRADOR
+2026-10-31T02:21:54.791-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-7] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: autenticacion instalada en SecurityContextHolder=true
+2026-10-31T02:22:54.779-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-2] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: token recibido con longitud 155 para GET /api/tickets
+2026-10-31T02:22:54.780-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-2] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: resultado de validacion=true
+2026-10-31T02:22:54.782-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-2] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: email extraido=catasoledad36@gmail.com
+2026-10-31T02:22:54.782-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-2] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: usuario encontrado=true
+2026-10-31T02:22:54.782-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-2] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: usuario activo=true
+2026-10-31T02:22:54.783-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-2] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: nombre exacto del rol=Administrador
+2026-10-31T02:22:54.783-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-2] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: autoridad construida=ROLE_ADMINISTRADOR
+2026-10-31T02:22:54.783-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-2] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: autenticacion instalada en SecurityContextHolder=true
+2026-10-31T02:23:54.778-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-4] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: token recibido con longitud 155 para GET /api/tickets
+2026-10-31T02:23:54.780-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-4] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: resultado de validacion=true
+2026-10-31T02:23:54.781-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-4] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: email extraido=catasoledad36@gmail.com
+2026-10-31T02:23:54.782-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-4] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: usuario encontrado=true
+2026-10-31T02:23:54.782-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-4] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: usuario activo=true
+2026-10-31T02:23:54.782-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-4] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: nombre exacto del rol=Administrador
+2026-10-31T02:23:54.782-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-4] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: autoridad construida=ROLE_ADMINISTRADOR
+2026-10-31T02:23:54.783-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-4] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: autenticacion instalada en SecurityContextHolder=true
+2026-10-31T02:24:12.593-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-5] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: token recibido con longitud 155 para GET /api/tickets
+2026-10-31T02:24:12.595-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-5] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: resultado de validacion=true
+2026-10-31T02:24:12.595-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-5] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: email extraido=catasoledad36@gmail.com
+2026-10-31T02:24:12.596-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-5] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: usuario encontrado=true
+2026-10-31T02:24:12.596-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-5] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: usuario activo=true
+2026-10-31T02:24:12.597-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-5] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: nombre exacto del rol=Administrador
+2026-10-31T02:24:12.597-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-5] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: autoridad construida=ROLE_ADMINISTRADOR
+2026-10-31T02:24:12.597-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-5] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: autenticacion instalada en SecurityContextHolder=true
+2026-10-31T02:24:13.794-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-9] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: token recibido con longitud 155 para GET /api/etiquetas
+2026-10-31T02:24:13.795-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-9] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: resultado de validacion=true
+2026-10-31T02:24:13.795-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-9] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: email extraido=catasoledad36@gmail.com
+2026-10-31T02:24:13.796-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-9] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: usuario encontrado=true
+2026-10-31T02:24:13.796-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-9] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: usuario activo=true
+2026-10-31T02:24:13.796-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-9] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: nombre exacto del rol=Administrador
+2026-10-31T02:24:13.796-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-9] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: autoridad construida=ROLE_ADMINISTRADOR
+2026-10-31T02:24:13.797-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-9] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: autenticacion instalada en SecurityContextHolder=true
+2026-10-31T02:25:01.247-03:00 DEBUG 28644 --- [buscador-errores-api] [http-nio-9090-exec-6] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: falta header Authorization para POST /api/auth/codigo
+2026-10-31T02:27:44.190-03:00  INFO 28644 --- [buscador-errores-api] [SpringApplicationShutdownHook] o.s.boot.tomcat.GracefulShutdown         : Commencing graceful shutdown. Waiting for active requests to complete
+2026-10-31T02:27:44.214-03:00  INFO 28644 --- [buscador-errores-api] [tomcat-shutdown] o.s.boot.tomcat.GracefulShutdown         : Graceful shutdown complete
+2026-10-31T02:27:44.224-03:00  INFO 28644 --- [buscador-errores-api] [SpringApplicationShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-10-31T02:27:44.227-03:00  INFO 28644 --- [buscador-errores-api] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2026-10-31T02:27:44.422-03:00  INFO 28644 --- [buscador-errores-api] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+2026-10-31T02:28:25.751-03:00  INFO 13580 --- [buscador-errores-api] [main] cl.casol.backend.BackendApplication      : Starting BackendApplication using Java 21.0.12.1 with PID 13580 (C:\buscador-errores\buscador-errores\dima-bug-backend\target\classes started by catas in C:\buscador-errores\buscador-errores\dima-bug-backend)
+2026-10-31T02:28:25.757-03:00  INFO 13580 --- [buscador-errores-api] [main] cl.casol.backend.BackendApplication      : No active profile set, falling back to 1 default profile: "default"
+2026-10-31T02:28:27.955-03:00  INFO 13580 --- [buscador-errores-api] [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-10-31T02:28:28.402-03:00  INFO 13580 --- [buscador-errores-api] [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 436 ms. Found 28 JPA repository interfaces.
+2026-10-31T02:28:29.044-03:00  INFO 13580 --- [buscador-errores-api] [main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 9090 (http)
+2026-10-31T02:28:29.063-03:00  INFO 13580 --- [buscador-errores-api] [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-10-31T02:28:29.064-03:00  INFO 13580 --- [buscador-errores-api] [main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.24]
+2026-10-31T02:28:29.135-03:00  INFO 13580 --- [buscador-errores-api] [main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 3303 ms
+2026-10-31T02:28:29.397-03:00  INFO 13580 --- [buscador-errores-api] [main] org.hibernate.orm.jpa                    : HHH008540: Processing PersistenceUnitInfo [name: default]
+2026-10-31T02:28:29.488-03:00  INFO 13580 --- [buscador-errores-api] [main] org.hibernate.orm.core                   : HHH000001: Hibernate ORM core version 7.4.5.Final
+2026-10-31T02:28:29.997-03:00  INFO 13580 --- [buscador-errores-api] [main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-10-31T02:28:30.046-03:00  INFO 13580 --- [buscador-errores-api] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-10-31T02:28:33.970-03:00  INFO 13580 --- [buscador-errores-api] [main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@418d1c03
+2026-10-31T02:28:33.972-03:00  INFO 13580 --- [buscador-errores-api] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-10-31T02:28:34.761-03:00  WARN 13580 --- [buscador-errores-api] [main] org.hibernate.orm.deprecation            : HHH90000025: MySQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-10-31T02:28:35.157-03:00  INFO 13580 --- [buscador-errores-api] [main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [jdbc:mysql://127.0.0.1:3307/dima_bug_dev]
+	Database driver: MySQL Connector/J
+	Database dialect: MySQLDialect
+	Database version: 8.0.46
+	Default catalog/schema: dima_bug_dev/undefined
+	Autocommit mode: undefined/unknown
+	Isolation level: REPEATABLE_READ [default REPEATABLE_READ]
+	JDBC fetch size: none
+	Pool: DataSourceConnectionProvider
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-10-31T02:28:36.911-03:00  INFO 13580 --- [buscador-errores-api] [main] org.hibernate.orm.core                   : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-10-31T02:28:36.919-03:00  INFO 13580 --- [buscador-errores-api] [main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-10-31T02:28:36.982-03:00  INFO 13580 --- [buscador-errores-api] [main] o.s.d.j.r.query.QueryEnhancerFactories   : Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-10-31T02:28:37.782-03:00 DEBUG 13580 --- [buscador-errores-api] [main] c.c.b.i.i.s.JwtAuthenticationFilter      : Filter 'jwtAuthenticationFilter' configured for use
+2026-10-31T02:28:39.484-03:00  WARN 13580 --- [buscador-errores-api] [main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-10-31T02:28:39.659-03:00  WARN 13580 --- [buscador-errores-api] [main] .s.a.UserDetailsServiceAutoConfiguration : 
+
+Using generated security password: d454af43-f560-4be8-aed5-f89ffdfae995
+
+This generated password is for development use only. Your security configuration must be updated before running your application in production.
+
+2026-10-31T02:28:39.671-03:00  INFO 13580 --- [buscador-errores-api] [main] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name inMemoryUserDetailsManager
+2026-10-31T02:28:40.328-03:00  INFO 13580 --- [buscador-errores-api] [main] o.s.boot.tomcat.TomcatWebServer          : Tomcat started on port 9090 (http) with context path '/'
+2026-10-31T02:28:40.338-03:00  INFO 13580 --- [buscador-errores-api] [main] cl.casol.backend.BackendApplication      : Started BackendApplication in 15.313 seconds (process running for 15.957)
+2026-10-31T02:29:33.024-03:00  INFO 13580 --- [buscador-errores-api] [http-nio-9090-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-10-31T02:29:33.025-03:00  INFO 13580 --- [buscador-errores-api] [http-nio-9090-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-10-31T02:29:33.028-03:00  INFO 13580 --- [buscador-errores-api] [http-nio-9090-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 2 ms
+2026-10-31T02:29:33.061-03:00 DEBUG 13580 --- [buscador-errores-api] [http-nio-9090-exec-1] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: falta header Authorization para POST /api/auth/codigo
+2026-10-31T02:33:21.814-03:00 DEBUG 13580 --- [buscador-errores-api] [http-nio-9090-exec-2] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: falta header Authorization para POST /api/auth/codigo
+2026-10-31T02:33:45.874-03:00 DEBUG 13580 --- [buscador-errores-api] [http-nio-9090-exec-3] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: falta header Authorization para POST /api/auth/codigo
+2026-10-31T02:34:52.043-03:00 DEBUG 13580 --- [buscador-errores-api] [http-nio-9090-exec-4] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: falta header Authorization para POST /api/auth/codigo/verificar
+2026-10-31T02:34:54.469-03:00 DEBUG 13580 --- [buscador-errores-api] [http-nio-9090-exec-5] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: token recibido con longitud 156 para GET /api/tickets
+2026-10-31T02:34:54.631-03:00 DEBUG 13580 --- [buscador-errores-api] [http-nio-9090-exec-5] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: resultado de validacion=true
+2026-10-31T02:34:54.634-03:00 DEBUG 13580 --- [buscador-errores-api] [http-nio-9090-exec-5] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: email extraido=catasoledad256@gmail.com
+2026-10-31T02:34:54.650-03:00 DEBUG 13580 --- [buscador-errores-api] [http-nio-9090-exec-5] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: usuario encontrado=true
+2026-10-31T02:34:54.651-03:00 DEBUG 13580 --- [buscador-errores-api] [http-nio-9090-exec-5] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: usuario activo=true
+2026-10-31T02:34:54.652-03:00 DEBUG 13580 --- [buscador-errores-api] [http-nio-9090-exec-5] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: nombre exacto del rol=Soporte
+2026-10-31T02:34:54.652-03:00 DEBUG 13580 --- [buscador-errores-api] [http-nio-9090-exec-5] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: autoridad construida=ROLE_SOPORTE
+2026-10-31T02:34:54.660-03:00 DEBUG 13580 --- [buscador-errores-api] [http-nio-9090-exec-5] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: autenticacion instalada en SecurityContextHolder=true
+2026-10-31T02:35:02.428-03:00 DEBUG 13580 --- [buscador-errores-api] [http-nio-9090-exec-6] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: falta header Authorization para GET /api/procedimientos
+2026-10-31T02:35:02.465-03:00 DEBUG 13580 --- [buscador-errores-api] [http-nio-9090-exec-7] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: falta header Authorization para GET /api/conocimientos
+2026-10-31T02:35:02.470-03:00 DEBUG 13580 --- [buscador-errores-api] [http-nio-9090-exec-8] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: falta header Authorization para GET /api/pruebas
+2026-10-31T02:35:02.535-03:00 DEBUG 13580 --- [buscador-errores-api] [http-nio-9090-exec-9] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: falta header Authorization para GET /api/ejecuciones
+2026-10-31T02:35:02.560-03:00 DEBUG 13580 --- [buscador-errores-api] [http-nio-9090-exec-10] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: falta header Authorization para GET /api/hardware
+2026-10-31T02:35:02.586-03:00 DEBUG 13580 --- [buscador-errores-api] [http-nio-9090-exec-1] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: falta header Authorization para GET /api/hardware
+2026-10-31T02:35:02.615-03:00 DEBUG 13580 --- [buscador-errores-api] [http-nio-9090-exec-2] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: falta header Authorization para GET /api/departamentos
+2026-10-31T02:35:07.225-03:00 DEBUG 13580 --- [buscador-errores-api] [http-nio-9090-exec-3] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: falta header Authorization para POST /api/auth/codigo
+2026-10-31T02:35:54.372-03:00 DEBUG 13580 --- [buscador-errores-api] [http-nio-9090-exec-4] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: falta header Authorization para POST /api/auth/codigo/verificar
+2026-10-31T02:35:56.428-03:00 DEBUG 13580 --- [buscador-errores-api] [http-nio-9090-exec-5] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: token recibido con longitud 155 para GET /api/tickets
+2026-10-31T02:35:56.430-03:00 DEBUG 13580 --- [buscador-errores-api] [http-nio-9090-exec-5] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: resultado de validacion=true
+2026-10-31T02:35:56.434-03:00 DEBUG 13580 --- [buscador-errores-api] [http-nio-9090-exec-5] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: email extraido=catasoledad36@gmail.com
+2026-10-31T02:35:56.444-03:00 DEBUG 13580 --- [buscador-errores-api] [http-nio-9090-exec-5] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: usuario encontrado=true
+2026-10-31T02:35:56.444-03:00 DEBUG 13580 --- [buscador-errores-api] [http-nio-9090-exec-5] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: usuario activo=true
+2026-10-31T02:35:56.444-03:00 DEBUG 13580 --- [buscador-errores-api] [http-nio-9090-exec-5] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: nombre exacto del rol=Administrador
+2026-10-31T02:35:56.444-03:00 DEBUG 13580 --- [buscador-errores-api] [http-nio-9090-exec-5] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: autoridad construida=ROLE_ADMINISTRADOR
+2026-10-31T02:35:56.444-03:00 DEBUG 13580 --- [buscador-errores-api] [http-nio-9090-exec-5] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: autenticacion instalada en SecurityContextHolder=true
+2026-10-31T02:35:59.986-03:00 DEBUG 13580 --- [buscador-errores-api] [http-nio-9090-exec-7] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: token recibido con longitud 155 para GET /api/usuarios
+2026-10-31T02:35:59.988-03:00 DEBUG 13580 --- [buscador-errores-api] [http-nio-9090-exec-7] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: resultado de validacion=true
+2026-10-31T02:35:59.990-03:00 DEBUG 13580 --- [buscador-errores-api] [http-nio-9090-exec-7] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: email extraido=catasoledad36@gmail.com
+2026-10-31T02:35:59.994-03:00 DEBUG 13580 --- [buscador-errores-api] [http-nio-9090-exec-7] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: usuario encontrado=true
+2026-10-31T02:36:00.000-03:00 DEBUG 13580 --- [buscador-errores-api] [http-nio-9090-exec-6] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: token recibido con longitud 155 para GET /api/roles
+2026-10-31T02:36:00.000-03:00 DEBUG 13580 --- [buscador-errores-api] [http-nio-9090-exec-7] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: usuario activo=true
+2026-10-31T02:36:00.002-03:00 DEBUG 13580 --- [buscador-errores-api] [http-nio-9090-exec-7] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: nombre exacto del rol=Administrador
+2026-10-31T02:36:00.003-03:00 DEBUG 13580 --- [buscador-errores-api] [http-nio-9090-exec-6] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: resultado de validacion=true
+2026-10-31T02:36:00.004-03:00 DEBUG 13580 --- [buscador-errores-api] [http-nio-9090-exec-7] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: autoridad construida=ROLE_ADMINISTRADOR
+2026-10-31T02:36:00.006-03:00 DEBUG 13580 --- [buscador-errores-api] [http-nio-9090-exec-6] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: email extraido=catasoledad36@gmail.com
+2026-10-31T02:36:00.007-03:00 DEBUG 13580 --- [buscador-errores-api] [http-nio-9090-exec-7] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: autenticacion instalada en SecurityContextHolder=true
+2026-10-31T02:36:00.020-03:00 DEBUG 13580 --- [buscador-errores-api] [http-nio-9090-exec-6] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: usuario encontrado=true
+2026-10-31T02:36:00.021-03:00 DEBUG 13580 --- [buscador-errores-api] [http-nio-9090-exec-6] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: usuario activo=true
+2026-10-31T02:36:00.022-03:00 DEBUG 13580 --- [buscador-errores-api] [http-nio-9090-exec-6] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: nombre exacto del rol=Administrador
+2026-10-31T02:36:00.023-03:00 DEBUG 13580 --- [buscador-errores-api] [http-nio-9090-exec-6] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: autoridad construida=ROLE_ADMINISTRADOR
+2026-10-31T02:36:00.026-03:00 DEBUG 13580 --- [buscador-errores-api] [http-nio-9090-exec-6] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: autenticacion instalada en SecurityContextHolder=true
+2026-10-31T02:36:04.409-03:00 DEBUG 13580 --- [buscador-errores-api] [http-nio-9090-exec-8] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: token recibido con longitud 155 para GET /api/departamentos
+2026-10-31T02:36:04.410-03:00 DEBUG 13580 --- [buscador-errores-api] [http-nio-9090-exec-8] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: resultado de validacion=true
+2026-10-31T02:36:04.412-03:00 DEBUG 13580 --- [buscador-errores-api] [http-nio-9090-exec-8] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: email extraido=catasoledad36@gmail.com
+2026-10-31T02:36:04.412-03:00 DEBUG 13580 --- [buscador-errores-api] [http-nio-9090-exec-8] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: usuario encontrado=true
+2026-10-31T02:36:04.413-03:00 DEBUG 13580 --- [buscador-errores-api] [http-nio-9090-exec-8] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: usuario activo=true
+2026-10-31T02:36:04.413-03:00 DEBUG 13580 --- [buscador-errores-api] [http-nio-9090-exec-8] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: nombre exacto del rol=Administrador
+2026-10-31T02:36:04.413-03:00 DEBUG 13580 --- [buscador-errores-api] [http-nio-9090-exec-8] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: autoridad construida=ROLE_ADMINISTRADOR
+2026-10-31T02:36:04.414-03:00 DEBUG 13580 --- [buscador-errores-api] [http-nio-9090-exec-8] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: autenticacion instalada en SecurityContextHolder=true
+2026-10-31T02:36:04.419-03:00 DEBUG 13580 --- [buscador-errores-api] [http-nio-9090-exec-9] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: token recibido con longitud 155 para GET /api/tickets
+2026-10-31T02:36:04.421-03:00 DEBUG 13580 --- [buscador-errores-api] [http-nio-9090-exec-9] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: resultado de validacion=true
+2026-10-31T02:36:04.423-03:00 DEBUG 13580 --- [buscador-errores-api] [http-nio-9090-exec-9] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: email extraido=catasoledad36@gmail.com
+2026-10-31T02:36:04.424-03:00 DEBUG 13580 --- [buscador-errores-api] [http-nio-9090-exec-9] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: usuario encontrado=true
+2026-10-31T02:36:04.424-03:00 DEBUG 13580 --- [buscador-errores-api] [http-nio-9090-exec-9] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: usuario activo=true
+2026-10-31T02:36:04.425-03:00 DEBUG 13580 --- [buscador-errores-api] [http-nio-9090-exec-9] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: nombre exacto del rol=Administrador
+2026-10-31T02:36:04.425-03:00 DEBUG 13580 --- [buscador-errores-api] [http-nio-9090-exec-9] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: autoridad construida=ROLE_ADMINISTRADOR
+2026-10-31T02:36:04.425-03:00 DEBUG 13580 --- [buscador-errores-api] [http-nio-9090-exec-9] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: autenticacion instalada en SecurityContextHolder=true
+2026-10-31T02:36:05.385-03:00  WARN 13580 --- [buscador-errores-api] [http-nio-9090-exec-8] org.hibernate.orm.jdbc.error             : HHH000247: ErrorCode: 1054, SQLState: 42S22
+2026-10-31T02:36:05.385-03:00  WARN 13580 --- [buscador-errores-api] [http-nio-9090-exec-8] org.hibernate.orm.jdbc.error             : Unknown column 'de1_0.departamento_version' in 'field list'
+2026-10-31T02:36:49.614-03:00 DEBUG 13580 --- [buscador-errores-api] [http-nio-9090-exec-10] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: falta header Authorization para POST /api/auth/codigo
+2026-10-31T02:37:00.640-03:00 DEBUG 13580 --- [buscador-errores-api] [http-nio-9090-exec-1] c.c.b.i.i.s.JwtAuthenticationFilter      : JWT: falta header Authorization para POST /api/auth/codigo
