@@ -16,12 +16,12 @@
           {{ esAdministrador() ? 'Administrador' : (puedeGestionar() ? 'Soporte' : 'Consulta') }}
         </span>
         <h1>Conocimiento</h1>
-        <p>Base de conocimiento: síntoma, causa, prueba de verificación y solución.</p>
+        <p>Errores ya resueltos por Soporte: qué pasa, por qué pasa, cómo comprobarlo y cómo solucionarlo.</p>
       </div>
       @if (puedeGestionar()) {
         <a routerLink="/conocimiento/nuevo" class="btn-crear">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M12 5v14M5 12h14" /></svg>
-          Nuevo conocimiento
+          Nueva solución
         </a>
       }
     </div>
