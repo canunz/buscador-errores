@@ -1,4 +1,5 @@
 export interface ChatbotSolucion {
+  id?: number;
   conocimiento: string;
   titulo: string | null;
   solucion: string;

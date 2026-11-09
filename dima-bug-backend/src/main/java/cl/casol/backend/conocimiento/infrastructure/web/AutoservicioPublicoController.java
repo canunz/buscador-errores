@@ -19,5 +19,5 @@ public class AutoservicioPublicoController {
  @GetMapping("/soluciones/{id}") public SolucionPublica detalle(@PathVariable Integer id){return SolucionPublica.from(service.publica(id));}
  @GetMapping("/soluciones/{id}/materiales") public List<MaterialSolucionResponse> materiales(@PathVariable Integer id){return service.materiales(id,true).stream().map(m->MaterialSolucionResponse.from(m,true)).toList();}
  @GetMapping("/soluciones/{id}/materiales/{material}/archivo") public org.springframework.http.ResponseEntity<byte[]> archivo(@PathVariable Integer id,@PathVariable Integer material){return ArchivoHttp.respuesta(service.descargar(id,material,true));}
- @PostMapping("/chatbot/consultas") public ChatbotResponse consultar(@Valid @RequestBody ConsultaChatbotRequest r){return ChatbotResponse.from(chatbot.consultar(r.consulta()).stream().map(s->new ConsultarChatbotService.SolucionChatbot("Autoservicio",s.titulo(),s.solucion())).toList());}
+ @PostMapping("/chatbot/consultas") public ChatbotResponse consultar(@Valid @RequestBody ConsultaChatbotRequest r){return ChatbotResponse.from(chatbot.consultar(r.consulta()).stream().map(s->new ConsultarChatbotService.SolucionChatbot(s.id(),"Autoservicio",s.titulo(),s.solucion())).toList());}
 }

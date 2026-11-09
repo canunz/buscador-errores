@@ -40,14 +40,14 @@ class ChatbotSecurityIntegrationTest {
     }
 
     @ParameterizedTest @ValueSource(strings = {"ADMINISTRADOR", "TECNICO", "SOPORTE", "USUARIO"})
-    void rolesAutorizadosRecibenSoloContratoOriginal(String rol) throws Exception {
+    void rolesAutorizadosRecibenContratoConIdPublico(String rol) throws Exception {
         auth(rol);
-        when(service.consultar("impresora")).thenReturn(List.of(new ConsultarChatbotService.SolucionChatbot("Impresión", "Reinicio", "Paso seguro")));
+        when(service.consultar("impresora")).thenReturn(List.of(new ConsultarChatbotService.SolucionChatbot(8, "Impresión", "Reinicio", "Paso seguro")));
         mvc.perform(post("/api/chatbot/consultas").header("Authorization", "Bearer valido")
                 .contentType(MediaType.APPLICATION_JSON).content("{\"consulta\":\"impresora\"}"))
                 .andExpect(status().isOk()).andExpect(content().json("""
                         {"mensaje":"Encontré estas soluciones de autoservicio:","soluciones":[
-                        {"conocimiento":"Impresión","titulo":"Reinicio","solucion":"Paso seguro"}]}
+                        {"id":8,"conocimiento":"Impresión","titulo":"Reinicio","solucion":"Paso seguro"}]}
                         """, org.springframework.test.json.JsonCompareMode.STRICT));
     }
 

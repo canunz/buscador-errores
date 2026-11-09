@@ -4,12 +4,20 @@ import { ChatbotComponent } from './chatbot.component';
 import { ChatbotService } from '../../core/services/chatbot.service';
 import { ChatbotResponse } from '../../core/models/chatbot.model';
 
+import {AutoservicioService} from '../../core/services/autoservicio.service';
+
 describe('Chatbot recuperado', () => {
   let api: jasmine.SpyObj<ChatbotService>;
   beforeEach(() => {
     api = jasmine.createSpyObj('ChatbotService', ['consultar']);
-    TestBed.configureTestingModule({ imports: [ChatbotComponent], providers: [{ provide: ChatbotService, useValue: api }] });
+    TestBed.configureTestingModule({ imports: [ChatbotComponent], providers: [{ provide: ChatbotService, useValue: api },{provide:AutoservicioService,useValue:{materiales:()=>of([{id:2,nombre:'Video público',tipo:'VIDEO',url:'https://example.org/video',publicado:true}]),enlace:(url:string)=>url}}] });
   });
+  it('consulta materiales dentro de la tarjeta y permite seguir conversando',fakeAsync(()=>{
+    api.consultar.and.returnValue(of({mensaje:'Resultado',soluciones:[{id:27,conocimiento:'Debian',titulo:'Debian',solucion:'Instrucciones'}]}));
+    const f=TestBed.createComponent(ChatbotComponent);f.componentInstance.form.setValue({consulta:'Debian'});f.componentInstance.enviar();f.detectChanges();tick();
+    const boton=f.nativeElement.querySelector('app-materiales-publicos button');expect(boton.textContent).toContain('Ver material de apoyo');boton.click();f.detectChanges();expect(f.nativeElement.textContent).toContain('Video público');
+    f.componentInstance.form.setValue({consulta:'otra consulta'});f.componentInstance.enviar();f.detectChanges();tick();expect(api.consultar).toHaveBeenCalledTimes(2);expect(f.componentInstance.mensajes.length).toBe(5);
+  }));
   it('no envía consultas vacías ni mayores de 300 caracteres', () => {
     const c = TestBed.createComponent(ChatbotComponent).componentInstance;
     for (const consulta of [' ', 'x'.repeat(301)]) { c.form.setValue({ consulta }); c.enviar(); }

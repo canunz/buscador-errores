@@ -4,7 +4,6 @@
 @if(error){<div role="alert">@if(noDisponible){<h1>Recurso no disponible</h1>}<p>{{error}}</p><button type="button" class="tk-btn tk-btn-sec" (click)="buscar()">Reintentar</button></div>}
 @if(!cargando&&!error){
  @if(detalle;as d){<article class="tk-card solucion"><h1>{{d.titulo}}</h1><h2>Instrucciones</h2><p class="instrucciones">{{d.instrucciones}}</p><h2>Material de apoyo</h2>
- @if(errorMateriales){<p role="alert">{{errorMateriales}}</p><button class="tk-btn tk-btn-sec" (click)="cargarMateriales()">Reintentar materiales</button>}
- <ul>@for(m of materiales;track m.id){@let url=api.enlace(m.url);@let archivoUrl=archivo(m);<li><span><strong>{{m.nombre}}</strong> · {{m.tipo}}</span>@if(archivoUrl){<a class="tk-btn tk-btn-sec" [href]="archivoUrl" target="_blank" rel="noopener noreferrer">Abrir documento</a>}@else if(url){<a class="tk-btn tk-btn-sec" [href]="url" target="_blank" rel="noopener noreferrer">Abrir recurso</a>}</li>}@empty{@if(!errorMateriales){<li>No hay materiales públicos para esta solución.</li>}}</ul></article>}
+ <app-materiales-publicos [solucionId]="id" /></article>}
  @else if(!esDetalle){<div class="resultados">@for(s of items;track s.id){<article class="tk-card"><h2><a [routerLink]="['/autoservicio/soluciones',s.id]">{{s.titulo}}</a></h2><p>{{s.instrucciones.slice(0,180)}}</p><a [routerLink]="['/autoservicio/soluciones',s.id]">Consultar solución →</a></article>}@empty{<p>No encontramos soluciones públicas. Prueba otra búsqueda o consulta al asistente.</p>}</div>}
 }

@@ -21,7 +21,7 @@ class ConsultarChatbotServiceTest {
         when(busqueda.buscarAutoservicio("impresora")).thenReturn(List.of(conocimiento(1)));
         when(soluciones.buscarActivasAutoservicioPorConocimiento(1)).thenReturn(List.of(
                 new Solucion(8, 1, "Reiniciar", TipoSolucion.PASOS, 1, "Paso seguro", true, true)));
-        assertEquals(List.of(new ConsultarChatbotService.SolucionChatbot("Impresora", "Paso seguro", "Reiniciar")),
+        assertEquals(List.of(new ConsultarChatbotService.SolucionChatbot(8, "Impresora", "Paso seguro", "Reiniciar")),
                 servicio.consultar(" impresora "));
         verify(busqueda).buscarAutoservicio("impresora");
         verify(soluciones).buscarActivasAutoservicioPorConocimiento(1);

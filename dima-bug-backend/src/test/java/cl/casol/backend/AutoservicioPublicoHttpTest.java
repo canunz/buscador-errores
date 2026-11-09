@@ -46,7 +46,7 @@ class AutoservicioPublicoHttpTest {
   mvc.perform(get("/api/conocimientos/1/materiales/2/archivo")).andExpect(status().isUnauthorized());
  }
  @Test void chatbotAnonimoNoExponeFuentesNiSolucionesInternas()throws Exception {
-  String body=mvc.perform(post("/api/publico/chatbot/consultas").contentType(MediaType.APPLICATION_JSON).content("{\"consulta\":\"PDA\"}")).andExpect(status().isOk()).andExpect(jsonPath("$.soluciones[0].titulo").value("Reiniciar PDA")).andReturn().getResponse().getContentAsString();
+  String body=mvc.perform(post("/api/publico/chatbot/consultas").contentType(MediaType.APPLICATION_JSON).content("{\"consulta\":\"PDA\"}")).andExpect(status().isOk()).andExpect(jsonPath("$.soluciones[0].titulo").value("Reiniciar PDA")).andExpect(jsonPath("$.soluciones[0].id").value(1)).andReturn().getResponse().getContentAsString();
   assertFalse(body.contains("INTERNA"));assertFalse(body.contains("Datos privados"));assertFalse(body.contains("Titulo interno"));
  }
  @Test void deshabilitarAutoservicioRetiraInmediatamenteDetalleMaterialYChatbot()throws Exception {
