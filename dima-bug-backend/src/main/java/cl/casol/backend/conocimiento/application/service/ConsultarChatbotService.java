@@ -22,12 +22,12 @@ public class ConsultarChatbotService {
         List<SolucionChatbot> resultado = new ArrayList<>(MAX_RESULTADOS);
         for (var conocimiento : buscador.buscarAutoservicio(consulta)) {
             for (var solucion : soluciones.buscarActivasAutoservicioPorConocimiento(conocimiento.id())) {
-                resultado.add(new SolucionChatbot(conocimiento.titulo(), solucion.titulo(), solucion.descripcion()));
+                resultado.add(new SolucionChatbot(solucion.id(), conocimiento.titulo(), solucion.titulo(), solucion.descripcion()));
                 if (resultado.size() == MAX_RESULTADOS) return List.copyOf(resultado);
             }
         }
         return List.copyOf(resultado);
     }
 
-    public record SolucionChatbot(String conocimiento, String titulo, String solucion) { }
+    public record SolucionChatbot(Integer id, String conocimiento, String titulo, String solucion) { }
 }

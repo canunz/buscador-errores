@@ -21,6 +21,8 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 @SpringBootTest(properties={"spring.datasource.url=jdbc:h2:mem:hardware_procedimiento;MODE=MySQL;DB_CLOSE_DELAY=-1","spring.datasource.username=sa","spring.datasource.password=","spring.datasource.driver-class-name=org.h2.Driver","spring.jpa.hibernate.ddl-auto=create-drop","spring.sql.init.mode=never","jwt.secret=clave-sintetica-hardware-procedimiento-solo-test-123456789","jwt.expiration=3600000","dimabug.automatizacion.modo=SIMULADO","dimabug.automatizacion.intervalo-ms=3600000"})
 @AutoConfigureMockMvc @DirtiesContext(classMode=DirtiesContext.ClassMode.AFTER_CLASS) @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class HardwareProcedimientoHttpTest {
+    @org.springframework.test.context.bean.override.mockito.MockitoBean
+    cl.casol.backend.identidad.application.port.out.EnvioCodigoAccesoPort envioCodigo;
     @Autowired MockMvc mvc;@Autowired JdbcTemplate jdbc;@Autowired PasswordEncoder encoder;String token;
     String json(Object v){return tools.jackson.databind.json.JsonMapper.builder().build().writeValueAsString(v);}
     String texto(ResultActions r)throws Exception{return r.andReturn().getResponse().getContentAsString();}
@@ -35,7 +37,7 @@ class HardwareProcedimientoHttpTest {
         jdbc.update("insert into cl_hardware(hardware_id,hardware_nombre,hardware_estado) values(1,'POS de venta QA',true),(2,'Impresora QA',true),(3,'Hardware legado QA',false)");
         jdbc.update("insert into cl_sistema(sistema_id,sistema_nombre,sistema_estado) values(1,'Sistema conservado',true)");
         jdbc.update("insert into cl_modulo(modulo_id,sistema_id,modulo_nombre,modulo_estado) values(1,1,'Módulo conservado',true)");
-        token=JsonPath.read(texto(mvc.perform(post("/api/auth/login").contentType(MediaType.APPLICATION_JSON).content(json(Map.of("email","qa-hardware@example.invalid","password","SoloPruebas123!")))).andExpect(status().isOk())),"$.token");
+        token=LoginCodigoTestSupport.autenticar(mvc,envioCodigo,"qa-hardware@example.invalid",jdbc);
     }
     @AfterAll void noDuplicaCatalogo(){assertEquals(3,jdbc.queryForObject("select count(*) from cl_hardware",Integer.class));}
     @Test void creaConHardwareYLoRecupera()throws Exception{int p=id(texto(crear(Map.of("nombre","Con POS","hardwareId",1)).andExpect(status().isCreated()).andExpect(jsonPath("$.hardwareId").value(1))));leer(p).andExpect(status().isOk()).andExpect(jsonPath("$.hardwareId").value(1));assertEquals(1,jdbc.queryForObject("select hardware_id from pr_procedimiento where procedimiento_id=?",Integer.class,p));}

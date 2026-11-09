@@ -47,28 +47,7 @@
     <h2>Instrucciones públicas</h2>
     <p class="instrucciones">{{ d.instrucciones }}</p>
     <h2>Material de apoyo</h2>
-    @if (errorMateriales) {
-      <p role="alert">{{ errorMateriales }}</p>
-      <button class="btn-sec" type="button" (click)="cargarMateriales()">Reintentar materiales</button>
-    }
-    <ul>
-      @for (m of materiales; track m.id) {
-        @let url = api.enlace(m.url);
-        @let archivoUrl = archivo(m);
-        <li>
-          <span><strong>{{ m.nombre }}</strong> · {{ m.tipo }}</span>
-          @if (archivoUrl) {
-            <a class="btn-sec" [href]="archivoUrl" target="_blank" rel="noopener noreferrer">Abrir documento</a>
-          } @else if (url) {
-            <a class="btn-sec" [href]="url" target="_blank" rel="noopener noreferrer">Abrir recurso</a>
-          }
-        </li>
-      } @empty {
-        @if (!errorMateriales) {
-          <li>No hay materiales públicos para esta solución.</li>
-        }
-      }
-    </ul>
+    <app-materiales-publicos [solucionId]="id" />
   </article>
 } @else if (!esDetalle && !error) {
   <div class="resultados">

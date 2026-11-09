@@ -9,8 +9,8 @@ public record ChatbotResponse(String mensaje, List<ChatbotSolucionResponse> solu
 
     public static ChatbotResponse from(List<SolucionChatbot> soluciones) {
         return new ChatbotResponse(soluciones.isEmpty() ? MENSAJE_SOPORTE : "Encontré estas soluciones de autoservicio:",
-                soluciones.stream().map(s -> new ChatbotSolucionResponse(s.conocimiento(), s.titulo(), s.solucion())).toList());
+                soluciones.stream().map(s -> new ChatbotSolucionResponse(s.id(), s.conocimiento(), s.titulo(), s.solucion())).toList());
     }
 
-    public record ChatbotSolucionResponse(String conocimiento, String titulo, String solucion) { }
+    public record ChatbotSolucionResponse(Integer id, String conocimiento, String titulo, String solucion) { }
 }

@@ -23,6 +23,8 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 @SpringBootTest(properties={"spring.datasource.url=jdbc:h2:mem:edicion_admin;MODE=MySQL;DB_CLOSE_DELAY=-1","spring.datasource.username=sa","spring.datasource.password=","spring.datasource.driver-class-name=org.h2.Driver","spring.jpa.hibernate.ddl-auto=create-drop","spring.sql.init.mode=never","jwt.secret=clave-sintetica-de-edicion-no-usar-en-produccion-123456789","jwt.expiration=3600000","dimabug.automatizacion.modo=SIMULADO","dimabug.automatizacion.intervalo-ms=3600000","dimabug.storage.materiales-dir=./target/test-edicion/materiales","dimabug.storage.tickets-dir=./target/test-edicion/tickets"})
 @AutoConfigureMockMvc @DirtiesContext(classMode=DirtiesContext.ClassMode.AFTER_CLASS) @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class EdicionProcedimientoAdminHttpTest {
+    @org.springframework.test.context.bean.override.mockito.MockitoBean
+    cl.casol.backend.identidad.application.port.out.EnvioCodigoAccesoPort envioCodigo;
     @Autowired MockMvc mvc;@Autowired JdbcTemplate jdbc;@Autowired PasswordEncoder encoder;
     String token;
     String json(Object value){return tools.jackson.databind.json.JsonMapper.builder().build().writeValueAsString(value);}
@@ -39,7 +41,7 @@ class EdicionProcedimientoAdminHttpTest {
         jdbc.update("insert into u_usuario(usuario_id,rol_id,usuario_nombre,usuario_email,usuario_password_hash,usuario_estado,usuario_fecha_creacion,usuario_fecha_actualizacion) values(1,1,'Admin QA','qa-editor@example.invalid',?,true,CURRENT_TIMESTAMP,CURRENT_TIMESTAMP)",encoder.encode("SoloPrueba123!"));
         jdbc.update("insert into cl_sistema(sistema_id,sistema_nombre,sistema_estado) values(1,'Sistema QA',true)");
         jdbc.update("insert into cl_modulo(modulo_id,sistema_id,modulo_nombre,modulo_estado) values(1,1,'Módulo QA',true)");
-        token=JsonPath.read(texto(mvc.perform(post("/api/auth/login").contentType(MediaType.APPLICATION_JSON).content(json(Map.of("email","qa-editor@example.invalid","password","SoloPrueba123!")))).andExpect(status().isOk())),"$.token");
+        token=LoginCodigoTestSupport.autenticar(mvc,envioCodigo,"qa-editor@example.invalid",jdbc);
     }
     @ParameterizedTest @ValueSource(strings={"TECNICO","SOPORTE","USUARIO"}) void noAdministradoresNoModifican(String rol)throws Exception {
         for(var req:List.of(post("/api/procedimientos"),put("/api/procedimientos/1"),post("/api/procedimientos/1/edicion"),post("/api/procedimientos/1/pasos"),put("/api/procedimientos/1/pasos/1"),delete("/api/procedimientos/1/pasos/1"),patch("/api/procedimientos/1/pasos/1/orden"),put("/api/procedimientos/1/pasos/1/configuracion"),post("/api/procedimientos/1/pasos/1/materiales"),patch("/api/procedimientos/1/estado")))mvc.perform(req.with(user("qa").roles(rol)).contentType(MediaType.APPLICATION_JSON).content("{}")).andExpect(status().isForbidden());

@@ -4,6 +4,8 @@ import { finalize } from 'rxjs';
 import { ChatbotService } from '../../core/services/chatbot.service';
 import { ChatbotSolucion } from '../../core/models/chatbot.model';
 
+import { MaterialesPublicosComponent } from '../../shared/ui/materiales-publicos.component';
+
 interface Mensaje {
   autor: 'usuario' | 'asistente';
   texto: string;
@@ -13,7 +15,7 @@ interface Mensaje {
 @Component({
   selector: 'app-chatbot',
   standalone: true,
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, MaterialesPublicosComponent],
   templateUrl: './chatbot.component.html',
   styleUrl: './chatbot.component.css',
 })

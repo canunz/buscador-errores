@@ -1,10 +1,9 @@
-package cl.casol.backend.tickets.infrastructure.correo;
+package cl.casol.backend.tickets.infrastructure.integracion;
 
 import cl.casol.backend.identidad.api.IdentidadFachada;
 import cl.casol.backend.identidad.api.UsuarioPublico;
 import cl.casol.backend.tickets.application.port.out.AvisoTicketCriticoPort;
 import cl.casol.backend.tickets.domain.Ticket;
-import cl.casol.backend.tickets.infrastructure.integracion.UsuarioConsultaAdapter;
 import jakarta.mail.internet.MimeMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

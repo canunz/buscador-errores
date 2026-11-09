@@ -12,6 +12,7 @@
               <section class="solucion"><small>{{ solucion.conocimiento }}</small>
                 @if (solucion.titulo) { <h2>{{ solucion.titulo }}</h2> }
                 <p>{{ solucion.solucion }}</p>
+                @if (solucion.id) { <app-materiales-publicos [solucionId]="solucion.id" [plegable]="true" /> }
               </section>
             }
           </div>

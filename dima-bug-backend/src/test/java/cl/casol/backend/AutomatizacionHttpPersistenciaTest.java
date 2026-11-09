@@ -26,6 +26,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
     "dimabug.storage.materiales-dir=./target/test-http/materiales","dimabug.storage.tickets-dir=./target/test-http/tickets"})
 @ActiveProfiles("test") @AutoConfigureMockMvc @DirtiesContext(classMode=DirtiesContext.ClassMode.AFTER_CLASS)
 class AutomatizacionHttpPersistenciaTest {
+    @org.springframework.test.context.bean.override.mockito.MockitoBean
+    cl.casol.backend.identidad.application.port.out.EnvioCodigoAccesoPort envioCodigo;
     @Autowired MockMvc mvc;@Autowired JdbcTemplate jdbc;@Autowired PasswordEncoder encoder;
     @org.springframework.test.context.bean.override.mockito.MockitoSpyBean cl.casol.backend.ejecucion.application.service.GestionarEjecucionService gestionar;
     String token;
@@ -36,7 +38,7 @@ class AutomatizacionHttpPersistenciaTest {
         try(var connection=jdbc.getDataSource().getConnection()){assertTrue(connection.getMetaData().getURL().startsWith("jdbc:h2:mem:automatizacion_http"));}
         jdbc.update("insert into u_rol(rol_id,rol_nombre,rol_estado,rol_fecha_creacion,rol_fecha_actualizacion) values(1,'ADMINISTRADOR',true,CURRENT_TIMESTAMP,CURRENT_TIMESTAMP)");
         jdbc.update("insert into u_usuario(usuario_id,rol_id,usuario_nombre,usuario_email,usuario_password_hash,usuario_estado,usuario_fecha_creacion,usuario_fecha_actualizacion) values(1,1,'QA HTTP','qa-http@example.invalid',?,true,CURRENT_TIMESTAMP,CURRENT_TIMESTAMP)",encoder.encode("ClaveSoloTest123!"));
-        String login=json(mvc.perform(post("/api/auth/login").contentType(MediaType.APPLICATION_JSON).content("{\"email\":\"qa-http@example.invalid\",\"password\":\"ClaveSoloTest123!\"}")).andExpect(status().isOk()));token=JsonPath.read(login,"$.token");
+        token=LoginCodigoTestSupport.autenticar(mvc,envioCodigo,"qa-http@example.invalid",jdbc);
         int sucursal=numero(json(postJson("/api/admin/sucursales","{\"codigo\":\"QA_HTTP\",\"nombre\":\"Sucursal sintética\",\"responsableNombre\":\"QA\",\"responsableEmail\":\"qa-no-enviar@dimarsa.cl\"}").andExpect(status().isCreated())),"$.id");
         int procedimiento=numero(json(postJson("/api/procedimientos","{\"nombre\":\"Preparar POS · HTTP\",\"descripcion\":\"Solo prueba aislada\"}").andExpect(status().isCreated())),"$.id");
         postJson("/api/procedimientos/"+procedimiento+"/pasos","{\"orden\":1,\"instruccion\":\"Verificar instalaciones\",\"esCritico\":true,\"modoEjecucion\":\"VALIDACION_EXTERNA\"}").andExpect(status().isCreated());

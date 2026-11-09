@@ -54,6 +54,18 @@ describe('JWT limitado al backend autorizado', () => {
       const req = backend.expectOne(url); expect(req.request.headers.has('Authorization')).toBeTrue(); req.flush({});
     }
   });
+  it('mantiene públicos los endpoints de acceso por código sin JWT residual', () => {
+    for (const url of ['/api/auth/codigo', '/api/auth/codigo/verificar']) {
+      expect(isPublicApiUrl(url)).toBeTrue();
+      http.post(url, {}, {headers: {Authorization: 'Bearer no-enviar'}}).subscribe({error: () => {}});
+      const req = backend.expectOne(url);
+      expect(req.request.headers.has('Authorization')).toBeFalse();
+      req.flush({}, {status: 401, statusText: 'Unauthorized'});
+    }
+    expect(auth.me).not.toHaveBeenCalled(); expect(auth.logout).not.toHaveBeenCalled();
+    expect(isPublicApiUrl('/api/auth/codigo/privado')).toBeFalse();
+    expect(isPublicApiUrl('https://ajeno.invalid/api/auth/codigo')).toBeFalse();
+  });
   it('autoriza solo el backend remoto configurado y su prefijo', () => {
     environment.production = true; environment.apiUrl = 'https://backend.example.invalid/dimabug';
     const url = 'https://backend.example.invalid/dimabug/api/tickets';

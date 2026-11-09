@@ -12,13 +12,15 @@
     }
   </div>
 
-  @if (hardwareOrigenId || tipo === 'modulos') {
+  @if (hardwareOrigenId || tipo === 'modulos' || tipo === 'sistemas') {
     <nav class="catalogo-contexto" aria-label="Navegación de catálogos">
       @if (hardwareOrigenId) {
         <a routerLink="/plataforma/hardware" [queryParams]="{ hardwareId: hardwareOrigenId }">Volver al Hardware de origen</a>
       }
+      <a routerLink="/admin/catalogo/sistemas" [queryParams]="{ hardwareId: hardwareOrigenId }">Todos los Sistemas</a>
       @if (tipo === 'modulos' && sistemaContextoId) {
         <a routerLink="/admin/catalogo/sistemas" [queryParams]="{ editarId: sistemaContextoId, hardwareId: hardwareOrigenId }">Volver al Sistema</a>
+        <a routerLink="/admin/catalogo/modulos">Todos los Módulos</a>
       }
     </nav>
   }

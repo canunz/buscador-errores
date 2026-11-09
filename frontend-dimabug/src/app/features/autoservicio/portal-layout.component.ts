@@ -9,8 +9,8 @@ import { AuthService } from '../../core/services/auth.service';
   template: `
     <div class="portal">
       <header class="portal-header">
-        <a class="marca" routerLink="/autoservicio">
-          DimaBug
+        <a class="marca" routerLink="/autoservicio" aria-label="DimaBug · Autoservicio">
+          <img src="assets/img/logo_dimabug.png" alt="DimaBug" width="136" height="64" />
           <span>Autoservicio</span>
         </a>
         <nav aria-label="Navegación pública">
@@ -51,6 +51,7 @@ import { AuthService } from '../../core/services/auth.service';
       box-shadow: 0 16px 36px rgba(7, 19, 54, 0.2);
     }
     a { color: inherit; text-decoration: none; }
+    .marca img { display:block; width:136px; height:64px; object-fit:contain; background:white; border-radius:10px; padding:6px; box-sizing:border-box; }
     .marca { font-size: 1.35rem; font-weight: 800; letter-spacing: -0.03em; }
     .marca span {
       display: block;

@@ -26,6 +26,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest(properties={"spring.config.import=classpath:application-smtp.properties","spring.datasource.url=jdbc:h2:mem:correo_sin_sucursal;MODE=MySQL;DB_CLOSE_DELAY=-1","spring.datasource.username=sa","spring.datasource.password=","spring.datasource.driver-class-name=org.h2.Driver","spring.jpa.hibernate.ddl-auto=create-drop","spring.sql.init.mode=never","jwt.secret=clave-sintetica-correo-solo-test-1234567890123456789","jwt.expiration=3600000","dimabug.automatizacion.modo=SMTP","dimabug.correo.remitente=qa-remitente@dimarsa.cl","dimabug.automatizacion.intervalo-ms=3600000","dimabug.correo.maximo-intentos-hora=2"})
 @AutoConfigureMockMvc @DirtiesContext(classMode=DirtiesContext.ClassMode.AFTER_CLASS) @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class CorreoSinSucursalHttpTest {
+    @org.springframework.test.context.bean.override.mockito.MockitoBean
+    cl.casol.backend.identidad.application.port.out.EnvioCodigoAccesoPort envioCodigo;
     @Autowired MockMvc mvc;@Autowired JdbcTemplate jdbc;@Autowired PasswordEncoder encoder;
     @MockitoBean JavaMailSender smtp;
     String token;
@@ -37,7 +39,7 @@ class CorreoSinSucursalHttpTest {
         try(var c=jdbc.getDataSource().getConnection()){assertTrue(c.getMetaData().getURL().startsWith("jdbc:h2:mem:correo_sin_sucursal"));}
         jdbc.update("insert into u_rol(rol_id,rol_nombre,rol_estado,rol_fecha_creacion,rol_fecha_actualizacion) values(1,'ADMINISTRADOR',true,CURRENT_TIMESTAMP,CURRENT_TIMESTAMP)");
         jdbc.update("insert into u_usuario(usuario_id,rol_id,usuario_nombre,usuario_email,usuario_password_hash,usuario_estado,usuario_fecha_creacion,usuario_fecha_actualizacion) values(1,1,'Correo QA','qa-correo@example.invalid',?,true,CURRENT_TIMESTAMP,CURRENT_TIMESTAMP)",encoder.encode("SoloPruebas123!"));
-        token=JsonPath.read(texto(mvc.perform(post("/api/auth/login").contentType(MediaType.APPLICATION_JSON).content(json(Map.of("email","qa-correo@example.invalid","password","SoloPruebas123!")))).andExpect(status().isOk())),"$.token");
+        token=LoginCodigoTestSupport.autenticar(mvc,envioCodigo,"qa-correo@example.invalid",jdbc);
     }
     @BeforeEach void smtpAislado(){
         reset(smtp);jdbc.update("delete from se_evento_ejecucion where tipo in ('SMTP_INICIADO','RECORDATORIO_SMTP_INICIADO')");
