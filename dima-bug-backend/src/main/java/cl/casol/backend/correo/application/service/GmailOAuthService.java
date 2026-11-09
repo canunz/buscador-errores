@@ -41,7 +41,10 @@ public class GmailOAuthService {
         store.autorizar(intento.versionCuenta(),cifrado.cifrar(tokens.acceso,"gmail:access"),cifrado.cifrar(tokens.refresco,"gmail:refresh"),tokens.expira,intento.actor());
     }
     private void validar(GoogleGmailPort.Tokens t,boolean renovar){if(t.acceso==null || t.acceso.isBlank() || t.expira==null || !t.expira.isAfter(reloj.instant().plusSeconds(30)) || !(t.scopes.equals(Set.of(SCOPE)) || renovar && t.scopes.isEmpty()))throw new GmailException(AUTORIZACION);}
-    public boolean disponible(){return configurado() && config.envioHabilitado() && store.cuenta().filter(c->"ACTIVA".equals(c.estado())).isPresent();}
+    public boolean disponible(){
+        try{return configurado() && config.envioHabilitado() && store.cuenta().filter(c->"ACTIVA".equals(c.estado())).isPresent();}
+        catch(RuntimeException ex){return false;}
+    }
     private static final class Acceso {final String token;final long version;Acceso(String token,long version){this.token=token;this.version=version;}}
     private synchronized Acceso acceso(){
         exigir();var c=store.cuenta().filter(v->"ACTIVA".equals(v.estado())).orElseThrow(()->new GmailException(AUTORIZACION));

@@ -3,13 +3,12 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService, CodigoAccesoError, SolicitudCodigoAcceso } from '../../../core/services/auth.service';
 
-type Paso = 'identificar' | 'codigo';
+type Paso = 'identificar' | 'codigo' | 'password';
 
 /**
- * Ingreso sin contraseña:
- * 1) el usuario escribe su correo; se valida que exista y se le envía un código de 6 dígitos;
- * 2) recién ahí se habilita la casilla del código (vence a los 5 minutos y se puede reenviar
- *    después de 1 minuto).
+ * 1) el usuario escribe su correo;
+ * 2) Administrador y Soporte ingresan con contraseña;
+ * 3) el resto recibe un código de 6 dígitos al correo.
  */
 @Component({
   selector: 'app-login',
@@ -26,6 +25,7 @@ export class LoginComponent implements OnDestroy {
   paso: Paso = 'identificar';
   loading = false;
   reenviando = false;
+  mostrarClave = false;
   error = '';
   aviso = '';
   identificador = '';
@@ -42,6 +42,10 @@ export class LoginComponent implements OnDestroy {
 
   codigoForm = this.fb.nonNullable.group({
     codigo: ['', [Validators.required, Validators.pattern(/^\d{6}$/)]],
+  });
+
+  passwordForm = this.fb.nonNullable.group({
+    password: ['', [Validators.required, Validators.minLength(6), Validators.maxLength(72)]],
   });
 
   get segundosParaVencer(): number {
@@ -82,9 +86,15 @@ export class LoginComponent implements OnDestroy {
       next: (res) => {
         this.loading = false;
         this.identificador = valor;
+        this.form.controls.email.disable();
+        if (res.modo === 'PASSWORD') {
+          this.paso = 'password';
+          this.aviso = '';
+          setTimeout(() => document.getElementById('password')?.focus(), 0);
+          return;
+        }
         this.iniciarContadores(res);
         this.paso = 'codigo';
-        this.form.controls.email.disable();
         this.aviso = 'Enviamos un código de 6 dígitos a su correo. Revise también la carpeta de spam.';
         setTimeout(() => document.getElementById('codigo')?.focus(), 0);
       },
@@ -128,6 +138,26 @@ export class LoginComponent implements OnDestroy {
           this.reenvioDesde = Date.now() + err.segundosRestantes * 1000;
         }
         this.error = err.message;
+      },
+    });
+  }
+
+  ingresarConPassword(): void {
+    this.error = '';
+    const password = this.passwordForm.controls.password.value;
+    if (this.passwordForm.invalid || !password) {
+      this.passwordForm.markAllAsTouched();
+      this.error = 'Ingrese su contraseña.';
+      return;
+    }
+    this.loading = true;
+    this.auth.login(this.identificador, password).subscribe({
+      next: () => {
+        this.router.navigateByUrl('/inicio');
+      },
+      error: (err: Error) => {
+        this.loading = false;
+        this.error = err.message || 'Correo o contraseña incorrectos.';
       },
     });
   }
@@ -180,7 +210,9 @@ export class LoginComponent implements OnDestroy {
     this.aviso = '';
     this.venceEn = 0;
     this.reenvioDesde = 0;
+    this.mostrarClave = false;
     this.codigoForm.reset({ codigo: '' });
+    this.passwordForm.reset({ password: '' });
   }
 
   ngOnDestroy(): void {

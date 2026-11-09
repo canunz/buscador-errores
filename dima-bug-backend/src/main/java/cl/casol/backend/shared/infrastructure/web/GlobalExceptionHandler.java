@@ -164,6 +164,13 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", ex.getMessage()));
     }
 
+    @ExceptionHandler(cl.casol.backend.identidad.domain.exception.RecuperacionNoDisponibleException.class)
+    public ResponseEntity<Map<String, String>> handleRecuperacionNoDisponible(
+            cl.casol.backend.identidad.domain.exception.RecuperacionNoDisponibleException ex
+    ) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", ex.getMessage()));
+    }
+
     @ExceptionHandler(CredencialesInvalidasException.class)
     public ResponseEntity<Map<String, String>> handleCredencialesInvalidas(
             CredencialesInvalidasException ex

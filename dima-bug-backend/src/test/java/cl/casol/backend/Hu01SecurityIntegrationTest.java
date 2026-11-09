@@ -8,6 +8,7 @@ import cl.casol.backend.identidad.domain.Usuario;
 import cl.casol.backend.identidad.application.service.SolicitudCodigo;
 import cl.casol.backend.identidad.domain.exception.CodigoAccesoInvalidoException;
 import cl.casol.backend.identidad.domain.exception.CorreoNoRegistradoException;
+import cl.casol.backend.identidad.domain.exception.CredencialesInvalidasException;
 import cl.casol.backend.identidad.domain.exception.ReenvioCodigoAnticipadoException;
 import cl.casol.backend.identidad.domain.exception.UsuarioInactivoException;
 import cl.casol.backend.identidad.infrastructure.security.JwtAuthenticationFilter;
@@ -145,11 +146,53 @@ class Hu01SecurityIntegrationTest {
     }
 
     @Test
-    void loginConContrasenaYaNoExiste() throws Exception {
+    void loginStaffConContrasenaEntregaJwt() throws Exception {
+        Rol rol = new Rol(2, "ADMINISTRADOR", null, true, null, null);
+        Usuario admin = new Usuario(2, rol, "Admin", "admin@example.com", "hash-bcrypt", true, null, null);
+        when(autenticarUsuarioService.autenticar("admin@example.com", "password")).thenReturn(admin);
+        when(tokenService.generarToken(admin)).thenReturn("jwt-admin");
+
+        mockMvc.perform(post("/api/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"email\":\"admin@example.com\",\"password\":\"password\"}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.token").value("jwt-admin"))
+                .andExpect(jsonPath("$.rol").value("ADMINISTRADOR"));
+    }
+
+    @Test
+    void loginContrasenaIncorrectaResponde401() throws Exception {
+        when(autenticarUsuarioService.autenticar(anyString(), anyString()))
+                .thenThrow(new CredencialesInvalidasException());
+
         mockMvc.perform(post("/api/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"email\":\"user@example.com\",\"password\":\"password\"}"))
                 .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void recuperarPasswordEsPublico() throws Exception {
+        when(autenticarUsuarioService.solicitarRecuperacion("admin@example.com"))
+                .thenReturn(new SolicitudCodigo(300, 4));
+
+        mockMvc.perform(post("/api/auth/recuperar/email")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"email\":\"admin@example.com\"}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.segundosVigencia").value(300));
+    }
+
+    @Test
+    void administradorRecibeModoPasswordSinEnviarCodigo() throws Exception {
+        when(autenticarUsuarioService.solicitarCodigo("admin@example.com"))
+                .thenReturn(SolicitudCodigo.password());
+
+        mockMvc.perform(post("/api/auth/codigo")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"email\":\"admin@example.com\"}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.modo").value("PASSWORD"));
     }
 
     @Test

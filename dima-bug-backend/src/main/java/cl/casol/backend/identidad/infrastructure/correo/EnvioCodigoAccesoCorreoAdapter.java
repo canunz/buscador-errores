@@ -73,8 +73,17 @@ public class EnvioCodigoAccesoCorreoAdapter implements EnvioCodigoAccesoPort, Di
 
     @Override
     public void enviar(String email, String nombre, String codigo, int minutosVigencia) {
-        if (gmail.disponible()) {
-            envios.execute(() -> enviarPorGmailApi(email, nombre, codigo, minutosVigencia));
+        despachar(email, nombre, codigo, minutosVigencia, false);
+    }
+
+    @Override
+    public void enviarRecuperacion(String email, String nombre, String codigo, int minutosVigencia) {
+        despachar(email, nombre, codigo, minutosVigencia, true);
+    }
+
+    private void despachar(String email, String nombre, String codigo, int minutosVigencia, boolean recuperacion) {
+        if (gmailApiLista()) {
+            envios.execute(() -> enviarPorGmailApi(email, nombre, codigo, minutosVigencia, recuperacion));
             return;
         }
         if (exigirGmailApi) {
@@ -84,51 +93,61 @@ public class EnvioCodigoAccesoCorreoAdapter implements EnvioCodigoAccesoPort, Di
         JavaMailSender sender = mailSender.getIfAvailable();
         if (sender == null || remitente.isEmpty()) {
             if (mostrarEnLog) {
-                // Solo para desarrollo local, cuando aún no se configura el correo.
-                log.warn("Correo no configurado. Código de acceso para {}: {}", email, codigo);
+                log.warn("Correo no configurado. Código {} para {}: {}", recuperacion ? "de recuperación" : "de acceso", email, codigo);
                 return;
             }
             throw new EnvioCodigoAccesoException(new IllegalStateException("spring.mail no configurado"));
         }
-        envios.execute(() -> enviarAhora(sender, email, nombre, codigo, minutosVigencia));
+        envios.execute(() -> enviarAhora(sender, email, nombre, codigo, minutosVigencia, recuperacion));
     }
 
-    private void enviarPorGmailApi(String email, String nombre, String codigo, int minutosVigencia) {
+    private boolean gmailApiLista() {
+        try {
+            return gmail.disponible();
+        } catch (RuntimeException ex) {
+            log.warn("Gmail API no disponible; se envía por SMTP. {}", ex.getMessage());
+            return false;
+        }
+    }
+
+    private void enviarPorGmailApi(String email, String nombre, String codigo, int minutosVigencia, boolean recuperacion) {
         try {
             String from = gmailConfig.remitente() == null || gmailConfig.remitente().isBlank()
                     ? remitente
                     : gmailConfig.remitente().strip();
             MimeMessage mensaje = new MimeMessage(Session.getInstance(new Properties()));
-            completarMensaje(mensaje, from, email, nombre, codigo, minutosVigencia);
+            completarMensaje(mensaje, from, email, nombre, codigo, minutosVigencia, recuperacion);
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             mensaje.writeTo(out);
             gmail.enviar(Base64.getUrlEncoder().withoutPadding().encodeToString(out.toByteArray()));
-            log.info("Código de acceso enviado a {} vía Gmail API", email);
+            log.info("Código {} enviado a {} vía Gmail API", recuperacion ? "de recuperación" : "de acceso", email);
         } catch (Exception e) {
-            log.error("No se pudo enviar el código de acceso a {}", email, e);
+            log.error("No se pudo enviar el código a {}", email, e);
         }
     }
 
-    private void enviarAhora(JavaMailSender sender, String email, String nombre, String codigo, int minutosVigencia) {
+    private void enviarAhora(JavaMailSender sender, String email, String nombre, String codigo, int minutosVigencia, boolean recuperacion) {
         try {
             MimeMessage mensaje = sender.createMimeMessage();
-            completarMensaje(mensaje, remitente, email, nombre, codigo, minutosVigencia);
+            completarMensaje(mensaje, remitente, email, nombre, codigo, minutosVigencia, recuperacion);
             sender.send(mensaje);
-            log.info("Código de acceso enviado a {}", email);
+            log.info("Código {} enviado a {}", recuperacion ? "de recuperación" : "de acceso", email);
         } catch (Exception e) {
-            log.error("No se pudo enviar el código de acceso a {}", email, e);
+            log.error("No se pudo enviar el código a {}", email, e);
         }
     }
 
-    private void completarMensaje(MimeMessage mensaje, String from, String email, String nombre, String codigo, int minutosVigencia) throws Exception {
+    private void completarMensaje(MimeMessage mensaje, String from, String email, String nombre, String codigo, int minutosVigencia, boolean recuperacion) throws Exception {
         ClassPathResource banner = new ClassPathResource(BANNER);
         boolean conBanner = banner.exists();
         MimeMessageHelper helper = new MimeMessageHelper(mensaje, true, "UTF-8");
         helper.setFrom(from, nombreRemitente);
         helper.setTo(email);
-        helper.setSubject("Tu código de acceso a DimaBug: " + codigo);
+        helper.setSubject(recuperacion
+                ? "Tu código de recuperación: " + codigo
+                : "Tu código de acceso a DimaBug: " + codigo);
         helper.setSentDate(new Date());
-        helper.setText(texto(nombre, codigo, minutosVigencia), html(nombre, codigo, minutosVigencia, conBanner));
+        helper.setText(texto(nombre, codigo, minutosVigencia, recuperacion), html(nombre, codigo, minutosVigencia, conBanner, recuperacion));
         if (conBanner) {
             helper.addInline(BANNER_CID, banner, "image/jpeg");
         }
@@ -141,7 +160,17 @@ public class EnvioCodigoAccesoCorreoAdapter implements EnvioCodigoAccesoPort, Di
         envios.shutdown();
     }
 
-    private String texto(String nombre, String codigo, int minutos) {
+    private String texto(String nombre, String codigo, int minutos, boolean recuperacion) {
+        if (recuperacion) {
+            return "Hola, " + saludo(nombre) + "\n\n"
+                    + "Se pidió recuperar la contraseña de tu cuenta de DimaBug. "
+                    + "Escribe este código en la pantalla de recuperación para continuar:\n\n"
+                    + "    " + codigo + "\n\n"
+                    + "Vence en " + minutos + " minutos y sirve para un solo cambio de clave. No lo compartas con nadie.\n\n"
+                    + "¿No fuiste tú? Puedes ignorar este correo. Sin este código nadie puede cambiar tu contraseña.\n\n"
+                    + "DimaBug · Soporte TI Holding Dimarsa\n"
+                    + "Mensaje automático, por favor no respondas este correo.";
+        }
         return "Hola, " + saludo(nombre) + "\n\n"
                 + "Se pidió ingresar a tu cuenta de DimaBug. "
                 + "Escribe este código en la pantalla de inicio de sesión para continuar:\n\n"
@@ -152,7 +181,7 @@ public class EnvioCodigoAccesoCorreoAdapter implements EnvioCodigoAccesoPort, Di
                 + "Mensaje automático, por favor no respondas este correo.";
     }
 
-    private String html(String nombre, String codigo, int minutos, boolean conBanner) {
+    private String html(String nombre, String codigo, int minutos, boolean conBanner, boolean recuperacion) {
         // Si el lector bloquea imágenes, la franja mantiene su alto y color y muestra "DimaBug".
         String cabecera = conBanner
                 ? """
@@ -168,7 +197,7 @@ public class EnvioCodigoAccesoCorreoAdapter implements EnvioCodigoAccesoPort, Di
         return """
                 <!DOCTYPE html>
                 <html lang="es">
-                <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Código de acceso DimaBug</title></head>
+                <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>%s</title></head>
                 <body bgcolor="#2a2a2a" style="margin:0;padding:0;background-color:#2a2a2a;">
                 <table role="presentation" width="100%%" cellpadding="0" cellspacing="0" border="0" bgcolor="#2a2a2a" style="background-color:#2a2a2a;">
                   <tr><td align="center" style="padding:24px 12px;">
@@ -176,21 +205,21 @@ public class EnvioCodigoAccesoCorreoAdapter implements EnvioCodigoAccesoPort, Di
                       %s
                       <tr><td style="padding:26px 28px 0 28px;">
                         <p style="margin:0 0 8px 0;font-size:15px;font-weight:bold;color:#f1f5f9;">Hola, %s</p>
-                        <p style="margin:0;font-size:13px;line-height:1.6;color:#b4b4b4;">Se pidió ingresar a tu cuenta de DimaBug. Escribe este código en la pantalla de inicio de sesión para continuar:</p>
+                        <p style="margin:0;font-size:13px;line-height:1.6;color:#b4b4b4;">%s</p>
                       </td></tr>
                       <tr><td style="padding:22px 28px 0 28px;">
-                        <p style="margin:0 0 10px 0;font-size:10px;letter-spacing:1px;color:#8a8a8a;">TU CÓDIGO DE ACCESO</p>
+                        <p style="margin:0 0 10px 0;font-size:10px;letter-spacing:1px;color:#8a8a8a;">%s</p>
                         <table role="presentation" width="100%%" cellpadding="0" cellspacing="0" border="0">
                           <tr><td align="center" bgcolor="#141414" style="background-color:#141414;border:1px solid #3b82f6;border-radius:6px;padding:20px 12px;">
                             <span style="font-family:Arial,Helvetica,sans-serif;font-size:28px;font-weight:bold;letter-spacing:8px;color:#dbeafe;">%s</span>
                           </td></tr>
                         </table>
-                        <p style="margin:16px 0 0 0;font-size:12px;line-height:1.5;color:#b4b4b4;text-align:center;">Vence en <strong style="color:#ffffff;">%d minutos</strong> y sirve para un solo ingreso. No lo compartas con nadie.</p>
+                        <p style="margin:16px 0 0 0;font-size:12px;line-height:1.5;color:#b4b4b4;text-align:center;">Vence en <strong style="color:#ffffff;">%d minutos</strong> y %s. No lo compartas con nadie.</p>
                       </td></tr>
                       <tr><td style="padding:22px 28px 26px 28px;">
                         <table role="presentation" width="100%%" cellpadding="0" cellspacing="0" border="0">
                           <tr><td bgcolor="#222222" style="background-color:#222222;border-left:3px solid #4a4a4a;border-radius:4px;padding:12px 14px;font-size:11px;line-height:1.6;color:#9a9a9a;">
-                            ¿No fuiste tú? Puedes ignorar este correo. Sin este código nadie puede entrar a tu cuenta.
+                            %s
                           </td></tr>
                         </table>
                       </td></tr>
@@ -203,7 +232,21 @@ public class EnvioCodigoAccesoCorreoAdapter implements EnvioCodigoAccesoPort, Di
                 </table>
                 </body>
                 </html>
-                """.formatted(cabecera, HtmlUtils.htmlEscape(saludo(nombre)), HtmlUtils.htmlEscape(codigo), minutos);
+                """.formatted(
+                        recuperacion ? "Código de recuperación DimaBug" : "Código de acceso DimaBug",
+                        cabecera,
+                        HtmlUtils.htmlEscape(saludo(nombre)),
+                        recuperacion
+                                ? "Se pidió recuperar la contraseña de tu cuenta de DimaBug. Escribe este código en la pantalla de recuperación para continuar:"
+                                : "Se pidió ingresar a tu cuenta de DimaBug. Escribe este código en la pantalla de inicio de sesión para continuar:",
+                        recuperacion ? "TU CÓDIGO DE RECUPERACIÓN" : "TU CÓDIGO DE ACCESO",
+                        HtmlUtils.htmlEscape(codigo),
+                        minutos,
+                        recuperacion ? "sirve para un solo cambio de clave" : "sirve para un solo ingreso",
+                        recuperacion
+                                ? "¿No fuiste tú? Puedes ignorar este correo. Sin este código nadie puede cambiar tu contraseña."
+                                : "¿No fuiste tú? Puedes ignorar este correo. Sin este código nadie puede entrar a tu cuenta."
+                );
     }
 
     /** Usa solo el primer nombre para que el saludo sea más cercano. */

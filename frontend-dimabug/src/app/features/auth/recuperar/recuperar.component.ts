@@ -28,7 +28,7 @@ export class RecuperarComponent {
   });
 
   codeForm = this.fb.nonNullable.group({
-    code: ['', [Validators.required, Validators.minLength(5), Validators.maxLength(5)]],
+    code: ['', [Validators.required, Validators.pattern(/^\d{6}$/)]],
   });
 
   passwordForm = this.fb.nonNullable.group({
@@ -65,7 +65,7 @@ export class RecuperarComponent {
     this.success = '';
     if (this.codeForm.invalid) {
       this.codeForm.markAllAsTouched();
-      this.error = 'Ingresa un código de 5 dígitos.';
+      this.error = 'Ingrese el código de 6 dígitos.';
       return;
     }
     this.loading = true;
@@ -96,7 +96,7 @@ export class RecuperarComponent {
       return;
     }
     this.loading = true;
-    this.auth.cambiarPassword(this.email, password1).subscribe({
+    this.auth.cambiarPassword(this.email, password1, this.codeForm.controls.code.value).subscribe({
       next: () => {
         this.loading = false;
         this.success = 'Contraseña actualizada. Ya puedes iniciar sesión.';
