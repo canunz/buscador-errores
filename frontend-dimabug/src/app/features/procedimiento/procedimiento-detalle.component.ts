@@ -1,11 +1,17 @@
+import { ModalidadPaso, ConfiguracionPaso, configuracionInicial } from '../../core/models/configuracion-paso.model';
+import { ConfiguracionPasoComponent } from '../../shared/ui/configuracion-paso.component';
+import { DatePipe } from '@angular/common';
+import { A11yModule } from '@angular/cdk/a11y';
 import { Component, HostListener, OnInit, ViewChild, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { finalize } from 'rxjs';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import {
   MaterialPaso,
   PasoProcedimiento,
   Procedimiento,
   TipoMaterialProcedimiento,
+  GuardarPasoRequest,
 } from '../../core/models/procedimiento.model';
 import { AuthService } from '../../core/services/auth.service';
 import { EjecucionService } from '../../core/services/ejecucion.service';
@@ -20,7 +26,7 @@ import {
 @Component({
   selector: 'app-procedimiento-detalle',
   standalone: true,
-  imports: [FormsModule, RouterLink, LoadingModalComponent, MaterialApoyoFormComponent],
+  imports: [A11yModule, FormsModule, DatePipe, RouterLink, LoadingModalComponent, MaterialApoyoFormComponent, ConfiguracionPasoComponent],
   templateUrl: './procedimiento-detalle.component.html',
   styleUrl: './procedimiento-detalle.component.css',
 })
@@ -34,7 +40,10 @@ export class ProcedimientoDetalleComponent implements OnInit {
   @ViewChild(MaterialApoyoFormComponent) materialEditor?: MaterialApoyoFormComponent;
 
   readonly esAdministrador = this.auth.isAdmin;
-  readonly puedeGestionar = this.auth.isStaff;
+  readonly puedeGestionar = this.auth.isAdmin;
+  readonly puedeEjecutar = this.auth.isStaff;
+  gestionandoPasos=false;pasoAEliminar:PasoProcedimiento|null=null;
+  historialAbierto=false;historialCargando=false;historialEdicion:{id:number;actorId:number;fecha:string;accion:string;antes:string|null;despues:string|null}[]=[];
   readonly tipos: TipoMaterialProcedimiento[] = ['IMAGEN', 'PDF', 'VIDEO', 'ENLACE'];
 
   item: Procedimiento | null = null;
@@ -46,7 +55,10 @@ export class ProcedimientoDetalleComponent implements OnInit {
   loading = true;
   error = '';
   iniciando = false;
+  navegandoEjecucion = false;
+  ejecucionCreadaId: number | null = null;
   publicando = false;
+
   guardandoPaso = false;
   guardandoMaterial = false;
   pasoAbierto = false;
@@ -54,6 +66,12 @@ export class ProcedimientoDetalleComponent implements OnInit {
   orden = 1;
   instruccion = '';
   esCritico = false;
+  modoEjecucion: ModalidadPaso = 'MANUAL';
+  configuracionPaso: ConfiguracionPaso | null = null;
+  configurandoPublicado = false;
+  private configuracionInicialJson = '';
+  private revisionConfiguracion = '';
+  mensajeEvidencia = '';
   materialPasoId: number | null = null;
   editMaterialId: number | null = null;
   materialNombre = '';
@@ -66,11 +84,11 @@ export class ProcedimientoDetalleComponent implements OnInit {
   recargaPasosPendiente = false;
   pasoPorVerificar = false;
   verificandoPaso = false;
-  private pasoInicial = { orden: 1, instruccion: '', esCritico: false };
-  private intentoPaso: { id: number | null; orden: number; instruccion: string; esCritico: boolean } | null = null;
-  operacionEnCurso(): boolean { return this.guardandoPaso || this.verificandoPaso || this.guardandoMaterial || this.publicando || this.eliminandoMaterial; }
+  private pasoInicial = { orden: 1, instruccion: '', esCritico: false, modoEjecucion: 'MANUAL', mensajeEvidencia: '' };
+  private intentoPaso: (GuardarPasoRequest & { id: number | null }) | null = null;
+  operacionEnCurso(): boolean { return this.gestionandoPasos || this.iniciando || this.guardandoPaso || this.verificandoPaso || this.guardandoMaterial || this.publicando || this.eliminandoMaterial; }
   tieneCambiosPendientes(): boolean {
-    return this.pasoPorVerificar || (this.pasoAbierto && (this.orden !== this.pasoInicial.orden || this.instruccion !== this.pasoInicial.instruccion || this.esCritico !== this.pasoInicial.esCritico));
+    return this.pasoPorVerificar || (this.pasoAbierto && (this.orden !== this.pasoInicial.orden || this.instruccion !== this.pasoInicial.instruccion || this.esCritico !== this.pasoInicial.esCritico || this.modoEjecucion !== this.pasoInicial.modoEjecucion || this.mensajeEvidencia !== this.pasoInicial.mensajeEvidencia || JSON.stringify(this.configuracionPaso) !== this.configuracionInicialJson));
   }
   @HostListener('window:beforeunload', ['$event']) antesDeSalir(event: BeforeUnloadEvent): void {
     if (this.operacionEnCurso() || this.tieneCambiosPendientes()) { event.preventDefault(); event.returnValue = ''; }
@@ -126,19 +144,44 @@ export class ProcedimientoDetalleComponent implements OnInit {
     return Object.values(this.materiales).reduce((total, items) => total + items.length, 0);
   }
 
-  abrirPaso(paso?: PasoProcedimiento): void {
-    if (!this.puedeGestionar() || this.item?.estado !== 'BORRADOR' || this.operacionEnCurso()) return;
+  moverPaso(paso:PasoProcedimiento,direccion:'ARRIBA'|'ABAJO'):void{
+    if(!this.item || !this.esAdministrador() || this.item.estado!=='BORRADOR' || this.operacionEnCurso())return;
+    if(this.tieneCambiosPendientes()){this.error='Guarda o descarta el paso pendiente antes de reordenar.';return;}
+    this.gestionandoPasos=true;this.error='';const seleccionado=this.pasoActual?.id;
+    this.procedimientos.moverPaso(this.item.id,paso.id,direccion,this.pasos.map(p=>p.id)).subscribe({next:pasos=>{this.gestionandoPasos=false;this.pasos=pasos;this.pasoIndex=Math.max(0,pasos.findIndex(p=>p.id===seleccionado));this.aviso='Orden guardado. Las revisiones anteriores se conservan.';},error:(e:Error)=>{this.gestionandoPasos=false;this.error=e.message;this.recargarPasos(false);}});
+  }
+  pedirEliminarPaso(paso:PasoProcedimiento):void{if(this.esAdministrador() && this.item?.estado==='BORRADOR' && !this.operacionEnCurso())this.pasoAEliminar=paso;}
+  eliminarPasoConfirmado():void{
+    if(!this.item || !this.pasoAEliminar || !this.esAdministrador() || this.operacionEnCurso())return;
+    const p=this.pasoAEliminar;this.gestionandoPasos=true;this.error='';
+    this.procedimientos.eliminarPaso(this.item.id,p.id).subscribe({next:()=>{this.gestionandoPasos=false;this.pasoAEliminar=null;this.pasos=this.pasos.filter(s=>s.id!==p.id);delete this.materiales[p.id];this.pasoIndex=Math.min(this.pasoIndex,Math.max(0,this.pasos.length-1));this.aviso='Paso eliminado del borrador. Las ejecuciones anteriores no cambiaron.';this.recargarPasos(false);},error:(e:Error)=>{this.gestionandoPasos=false;this.error=e.message;}});
+  }
+  cargarHistorial():void{
+    if(!this.item || !this.esAdministrador() || this.historialCargando)return;
+    this.historialAbierto=!this.historialAbierto;if(!this.historialAbierto)return;this.historialCargando=true;
+    this.procedimientos.historial(this.item.id).subscribe({next:h=>{this.historialEdicion=h;this.historialCargando=false;},error:()=>{this.historialCargando=false;this.error='No se pudo cargar la auditoría del procedimiento.';}});
+  }
+  abrirPaso(paso?: PasoProcedimiento, soloConfiguracion = false): void {
+    if (!this.puedeGestionar() || (this.item?.estado !== 'BORRADOR' && !(soloConfiguracion && this.esAdministrador())) || this.operacionEnCurso()) return;
     if (this.tieneCambiosPendientes()) { this.error = 'Conserve o descarte el paso pendiente antes de abrir otro.'; return; }
-    this.pasoAbierto = true;
+    this.pasoAbierto = true; this.configurandoPublicado = soloConfiguracion && this.item?.estado === 'PUBLICADO';
     this.editPasoId = paso?.id ?? null;
     this.orden = paso?.orden ?? this.siguienteOrden();
     this.instruccion = paso?.instruccion ?? '';
     this.esCritico = paso?.esCritico ?? false;
-    this.pasoInicial = { orden: this.orden, instruccion: this.instruccion, esCritico: this.esCritico };
+    this.modoEjecucion = paso?.modoEjecucion ?? 'MANUAL'; this.mensajeEvidencia = paso?.mensajeEvidencia ?? '';
+    this.configuracionPaso = configuracionInicial(this.modoEjecucion, this.esCritico, paso?.configuracion ?? { mensaje: paso?.mensajeEvidencia });
+    this.configuracionInicialJson = JSON.stringify(this.configuracionPaso); this.revisionConfiguracion = paso?.revisionConfiguracion ?? '';
+    this.pasoInicial = { orden: this.orden, instruccion: this.instruccion, esCritico: this.esCritico, modoEjecucion: this.modoEjecucion, mensajeEvidencia: this.mensajeEvidencia };
     this.intentoPaso = null;
     this.error = '';
   }
 
+  actualizarCriticidad(): void {
+    if (!this.esCritico || !this.configuracionPaso) return;
+    this.configuracionPaso = {...this.configuracionPaso, requiereAprobacion: true,
+      condicionFinalizacion: this.configuracionPaso.condicionFinalizacion === 'AL_ACTIVAR' ? 'CONFIRMACION_USUARIO' : this.configuracionPaso.condicionFinalizacion};
+  }
   cerrarPaso(): void {
     if (this.guardandoPaso || this.verificandoPaso) return;
     if (this.tieneCambiosPendientes() && !window.confirm('¿Descartar los datos pendientes del paso? Los registros confirmados del procedimiento se conservan.')) return;
@@ -146,12 +189,22 @@ export class ProcedimientoDetalleComponent implements OnInit {
   }
   guardarPaso(): void {
     if (this.guardandoPaso || this.verificandoPaso) return;
+    if (this.configurandoPublicado && this.item && this.editPasoId && this.configuracionPaso) {
+      this.guardandoPaso = true; this.error = '';
+      this.procedimientos.configurarPaso(this.item.id, this.editPasoId, this.modoEjecucion, this.configuracionPaso, this.revisionConfiguracion).subscribe({
+        next: paso => { this.guardandoPaso = false; this.confirmarPaso(paso); this.configurandoPublicado = false; this.aviso = 'Configuración guardada en este paso. Se aplicará a nuevas ejecuciones; el historial se conserva.'; },
+        error: (e: Error) => { this.guardandoPaso = false; this.error = e.message; },
+      }); return;
+    }
     if (!this.puedeGestionar() || this.item?.estado !== 'BORRADOR') { this.error = 'Solo se pueden editar pasos de un procedimiento en BORRADOR.'; return; }
     if (!Number.isInteger(this.item.id) || this.item.id < 1 || (this.editPasoId != null && (!Number.isInteger(this.editPasoId) || this.editPasoId < 1))) { this.error = 'El identificador del procedimiento o paso no es válido.'; return; }
     if (this.pasoPorVerificar) { this.verificarPasoPendiente(); return; }
     if (!this.instruccion.trim()) { this.error = 'La instrucción del paso es obligatoria.'; return; }
     if (!Number.isInteger(Number(this.orden)) || Number(this.orden) < 1 || Number(this.orden) > 2147483647) { this.error = 'El orden debe ser un entero positivo válido para el Backend.'; return; }
-    const request = { orden: Number(this.orden), instruccion: this.instruccion.trim(), esCritico: this.esCritico };
+    const request: GuardarPasoRequest = { orden: Number(this.orden), instruccion: this.instruccion.trim(), esCritico: this.esCritico };
+    if (this.modoEjecucion !== 'MANUAL' || this.pasoInicial.modoEjecucion !== 'MANUAL' || JSON.stringify(this.configuracionPaso) !== this.configuracionInicialJson) {
+      request.modoEjecucion = this.modoEjecucion; request.mensajeEvidencia = this.configuracionPaso?.mensaje ?? (this.mensajeEvidencia.trim() || null); request.configuracion = this.configuracionPaso;
+    }
     this.intentoPaso = { ...request, id: this.editPasoId }; this.aviso = ''; this.guardandoPaso = true; this.error = '';
     const llamada = this.editPasoId ? this.procedimientos.actualizarPaso(this.item.id, this.editPasoId, request) : this.procedimientos.crearPaso(this.item.id, request);
     llamada.subscribe({
@@ -177,7 +230,7 @@ export class ProcedimientoDetalleComponent implements OnInit {
       next: pasos => {
         this.verificandoPaso = false; this.pasos = pasos;
         const encontrado = pasos.find(p => intento.id == null ? p.orden === intento.orden : p.id === intento.id);
-        if (encontrado && encontrado.orden === intento.orden && encontrado.instruccion === intento.instruccion && encontrado.esCritico === intento.esCritico) {
+        if (encontrado && encontrado.orden === intento.orden && encontrado.instruccion === intento.instruccion && encontrado.esCritico === intento.esCritico && (encontrado.modoEjecucion ?? 'MANUAL') === (intento.modoEjecucion ?? 'MANUAL') && (encontrado.mensajeEvidencia ?? '') === (intento.mensajeEvidencia ?? '')) {
           this.pasoPorVerificar = false; this.intentoPaso = null; this.pasoAbierto = false; this.editPasoId = null;
           this.error = ''; this.aviso = `El servidor contiene el paso ID ${encontrado.id}, orden ${encontrado.orden}, con los datos enviados. No se reenviará la operación.`;
           this.recargaPasosPendiente = false;
@@ -342,16 +395,37 @@ export class ProcedimientoDetalleComponent implements OnInit {
   }
 
   iniciar(): void {
-    if (!this.item || this.item.estado !== 'PUBLICADO' || this.iniciando) return;
+    if (!this.item || this.item.estado !== 'PUBLICADO' || this.iniciando || this.navegandoEjecucion || this.cargandoPasos) return;
+    if (this.ejecucionCreadaId !== null) { void this.abrirEjecucionCreada(); return; }
     this.iniciando = true;
     this.error = '';
-    this.ejecuciones.iniciar(this.item.id).subscribe({
-      next: (ejecucion) => void this.router.navigate(['/ejecuciones', ejecucion.id]),
+    const inicio = this.ejecuciones.iniciar(this.item.id);
+    inicio.pipe(finalize(() => { this.iniciando = false; })).subscribe({
+      next: (ejecucion) => {
+        this.ejecucionCreadaId = ejecucion.id;
+        // El guard de salida debe ver terminada la creación antes de navegar.
+        this.iniciando = false;
+        void this.abrirEjecucionCreada();
+      },
       error: (err: Error) => {
         this.iniciando = false;
         this.error = err.message;
       },
     });
+  }
+
+  private async abrirEjecucionCreada(): Promise<void> {
+    if (this.ejecucionCreadaId === null || this.navegandoEjecucion) return;
+    this.navegandoEjecucion = true;
+    this.error = '';
+    try {
+      const abierta = await this.router.navigate(['/ejecuciones', this.ejecucionCreadaId]);
+      if (!abierta) this.error = 'La ejecución fue creada, pero no se pudo abrir. Pulsa «Abrir ejecución» para reintentar sin crear otra.';
+    } catch {
+      this.error = 'La ejecución fue creada, pero ocurrió un error al abrirla. Pulsa «Abrir ejecución» para reintentar sin crear otra.';
+    } finally {
+      this.navegandoEjecucion = false;
+    }
   }
 
   private cargar(id: number): void {

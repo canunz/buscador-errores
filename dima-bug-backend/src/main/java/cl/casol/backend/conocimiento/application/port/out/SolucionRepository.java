@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface SolucionRepository {
+    List<Solucion> buscarPublicas(String texto,int limite);
     List<Solucion> buscarActivasAutoservicioPorConocimiento(Integer conocimientoId);
     List<Solucion> buscarPorConocimientoOrdenadas(Integer conocimientoId);
     Optional<Solucion> buscarPorId(Integer id);

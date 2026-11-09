@@ -26,8 +26,6 @@ public interface UsuarioRepository {
 
     Usuario guardar(Usuario usuario);
 
-    void eliminar(Usuario usuario);
-
     /** Guarda la fecha y hora del último inicio de sesión. */
     void registrarIngreso(Integer id, java.time.LocalDateTime cuando);
 

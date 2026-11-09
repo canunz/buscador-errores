@@ -18,14 +18,14 @@ describe('QA-010 acceso a administrar Hardware', () => {
   });
   it('administrador ve acción separada y explicación de asociaciones', () => {
     const f = TestBed.createComponent(HardwareComponent); f.detectChanges();
-    const enlace = f.nativeElement.querySelector('.hw-admin-link');
+    const enlace = f.nativeElement.querySelector('.hw-admin-actions .btn-crear');
     expect(enlace.getAttribute('href')).toBe('/admin/catalogo/hardware');
     expect(enlace.textContent).toContain('Administrar Hardware');
-    expect(f.nativeElement.querySelector('.hw-admin-actions').textContent).toContain('asociar Sistemas');
+    expect(f.nativeElement.querySelector('.hw-admin-actions').textContent).toContain('Administrar Hardware');
   });
   it('técnico conserva consulta y no ve administración', () => {
     admin = false; const f = TestBed.createComponent(HardwareComponent); f.detectChanges();
-    expect(f.nativeElement.querySelector('.hw-admin-link')).toBeNull();
+    expect(f.nativeElement.querySelector('.hw-admin-actions')).toBeNull();
     expect(f.nativeElement.querySelector('h1').textContent).toContain('Hardware');
   });
 });

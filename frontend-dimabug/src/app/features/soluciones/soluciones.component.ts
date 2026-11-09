@@ -8,10 +8,12 @@ import { SolucionItem } from '../../core/models/catalogo.model';
 import { Conocimiento, TipoSolucion } from '../../core/models/conocimiento.model';
 import { AyudaFranjaComponent } from '../../shared/ui/ayuda-franja.component';
 import { LoadingModalComponent } from '../../shared/ui/loading-modal.component';
+import { MaterialesSolucionComponent } from './materiales-solucion.component';
+import { EnlaceNfcComponent } from './enlace-nfc.component';
 @Component({
   selector: 'app-soluciones',
   standalone: true,
-  imports: [FormsModule, ReactiveFormsModule, RouterLink, LoadingModalComponent, AyudaFranjaComponent],
+  imports: [FormsModule, ReactiveFormsModule, RouterLink, LoadingModalComponent, AyudaFranjaComponent, MaterialesSolucionComponent, EnlaceNfcComponent],
   templateUrl: './soluciones.component.html',
   styleUrls: ['../../shared/ui/catalogo-page.css', './soluciones.component.css'],
 })
@@ -35,6 +37,7 @@ export class SolucionesComponent implements OnInit {
   pendienteEstado: SolucionItem | null = null;
   operando = false;
   mensaje = '';
+  autoservicioEnCurso:number|null=null;
 
   ver(item: SolucionItem): void {
     this.detalle = item;
@@ -142,12 +145,12 @@ export class SolucionesComponent implements OnInit {
   }
 
   cambiarAutoservicio(item: SolucionItem): void {
-    if (!item.conocimientoId || !this.esAdministrador() || this.operando) return;
-    this.operando = true; this.error = ''; this.mensaje = '';
+    if (!item.conocimientoId || !this.esAdministrador() || this.operando || (item.activo===false&&!item.autoservicio)) return;
+    this.operando = true; this.autoservicioEnCurso=item.id;this.error = ''; this.mensaje = '';
     this.conocimientos.cambiarAutoservicioSolucion(item.conocimientoId, item.id, !item.autoservicio)
       .pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-        next: () => { this.operando = false; this.mensaje = 'Clasificación de autoservicio actualizada.'; this.cargar(true); },
-        error: (err: Error) => { this.operando = false; this.error = err.message; },
+        next: respuesta => { item.autoservicio=!!respuesta.autoservicio;this.operando = false;this.autoservicioEnCurso=null; this.mensaje = 'Clasificación de autoservicio actualizada.'; this.cargar(true); },
+        error: (err: Error) => { this.operando = false;this.autoservicioEnCurso=null; this.error = err.message; },
       });
   }
 

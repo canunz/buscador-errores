@@ -1,0 +1,39 @@
+{
+  "date": "2026-11-09",
+  "review_scope": [
+    "working_tree_candidates",
+    "git_index_blobs",
+    "configuration_placeholders",
+    "synthetic_fixtures",
+    "gitignore",
+    "generated_artifact_exclusions"
+  ],
+  "real_secret_values_detected": false,
+  "values_disclosed": false,
+  "automatic_findings": [],
+  "manual_review": "Coincidencias de asignaciones revisadas sin copiar valores; referencias de entorno/Read-Host y fixtures sintéticos. Dirección personal de prueba anonimizada en guía.",
+  "security_exclusions": [
+    ".env y variantes reales",
+    "application.properties privado",
+    "claves/keystores privados",
+    "credentials/client_secret/tokens JSON",
+    "respaldos privados",
+    "logs",
+    "uploads"
+  ],
+  "generated_exclusions": [
+    "target",
+    "dist",
+    "node_modules",
+    ".angular",
+    "__pycache__",
+    "entregables",
+    "entrega_duoc"
+  ],
+  "limits": [
+    "No prueba exhaustiva de ausencia de secretos",
+    "No escaneo OCR de imágenes; los binarios fuente retenidos son logos/modelo relacional, no capturas de credenciales",
+    "No se inspeccionan valores del entorno ni se publican logs/XML crudos",
+    "Historial remoto inicial sin commits nuevos a publicar; no se reescribe historial"
+  ]
+}

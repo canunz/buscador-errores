@@ -7,6 +7,8 @@ import java.util.Optional;
 public interface EjecucionRepository {
     Ejecucion guardar(Ejecucion ejecucion);
     Optional<Ejecucion> buscarPorId(Integer id);
+    /** Serializa todos los escritores del agregado; requiere transacción activa. */
+    void bloquear(Integer id);
     List<Ejecucion> buscarTodas();
     List<Ejecucion> buscarPorUsuario(Integer usuarioId);
 }

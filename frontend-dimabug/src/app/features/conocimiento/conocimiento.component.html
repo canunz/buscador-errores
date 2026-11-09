@@ -16,7 +16,7 @@
           {{ esAdministrador() ? 'Administrador' : (puedeGestionar() ? 'Soporte' : 'Consulta') }}
         </span>
         <h1>Conocimiento</h1>
-        <p>Errores ya resueltos por Soporte: qué pasa, por qué pasa, cómo comprobarlo y cómo solucionarlo.</p>
+        <p>Soluciones a fallas que ya fueron resueltas por Soporte.</p>
       </div>
       @if (puedeGestionar()) {
         <a routerLink="/conocimiento/nuevo" class="btn-crear">

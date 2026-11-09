@@ -75,8 +75,8 @@
 }
 
 .ej-pasos {
-  position: sticky;
-  top: 16px;
+  /* Solo la barra de progreso se ancla: la lista no compite por el mismo espacio. */
+  position: static;
   padding: 16px 12px;
 }
 
@@ -274,12 +274,18 @@
 
 /* ---------- Barra de cierre ---------- */
 .ej-cierre {
+  position: sticky;
+  top: 12px;
+  z-index: 10;
+  /* Fondo opaco y sin transformación de entrada sobre el contenido desplazable. */
+  background: var(--tk-tarjeta);
+  animation: none;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
   gap: 14px;
-  margin-top: 18px;
+  margin: 0 0 18px;
   padding: 14px 18px;
 }
 
@@ -411,4 +417,8 @@
   .ej-anillo { width: 100%; }
   .ej-cierre-acciones { width: 100%; }
   .ej-cierre-acciones .tk-btn { flex: 1; }
+  .ej-cierre { top: 8px; gap: 10px; padding: 12px; }
+  .ej-cierre-texto { flex-basis: 100%; min-width: 0; }
+  .ej-cierre-acciones { flex-wrap: wrap; }
+  .ej-cierre-acciones .tk-btn { white-space: normal; min-width: 0; }
 }

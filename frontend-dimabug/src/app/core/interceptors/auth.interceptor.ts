@@ -21,7 +21,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
             Authorization: `Bearer ${token}`,
           },
         })
-      : !trusted && req.headers.has('Authorization')
+      : (!trusted || publicRequest) && req.headers.has('Authorization')
         ? req.clone({ headers: req.headers.delete('Authorization') })
         : req;
 

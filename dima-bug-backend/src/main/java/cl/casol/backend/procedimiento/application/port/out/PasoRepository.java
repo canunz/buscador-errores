@@ -10,4 +10,7 @@ public interface PasoRepository {
     boolean existeOrden(Integer procedimientoId, Integer orden);
     boolean existeOrdenExcluyendoPaso(Integer procedimientoId, Integer orden, Integer pasoId);
     Paso guardar(Paso paso);
+    default void eliminar(Integer id){throw new UnsupportedOperationException();}
+    default void reordenar(List<Paso> pasos){throw new UnsupportedOperationException();}
+    default Paso configurar(Paso paso,Integer actorId){return guardar(paso);}
 }

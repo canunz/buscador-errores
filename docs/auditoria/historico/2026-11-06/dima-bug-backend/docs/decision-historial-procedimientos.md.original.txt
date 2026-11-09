@@ -1,0 +1,158 @@
+# RN-PROC-01 — snapshot histórico de pasos
+
+Fecha: 2026-10-09. **Regla aprobada por negocio e implementada para el MVP.**
+Sustituye el análisis previo pendiente de aprobación.
+
+## Regla y diseño implementado
+
+Al iniciar una ejecución se copian instrucción, orden y criticidad. Modificar
+posteriormente pasos/procedimiento no altera esa copia ni su asociación con
+ejecucionPasoId/pasoId. No se congelan nombre/descripción del procedimiento,
+materiales ni archivos: quedan fuera del alcance aprobado.
+
+| Campo nuevo | Significado |
+| --- | --- |
+| se_ejecucion.ejecucion_snapshot_capturado | NOT NULL, default 0 para filas anteriores; nuevas ejecuciones del servicio guardan 1 |
+| se_ejecucion_paso.paso_orden_capturado | INT nullable: orden copiado al inicio |
+| se_ejecucion_paso.paso_instruccion_capturada | TEXT nullable: instrucción copiada |
+| se_ejecucion_paso.paso_critico_capturado | TINYINT nullable: criticidad copiada; false no significa ausencia |
+
+Los tres campos de paso son todos NULL para legacy o todos no NULL. Lo validan
+EjecucionPaso y CHECK ck_ejecucion_paso_snapshot_completo. Se mantienen IDs, FK y
+UNIQUE(ejecucion_id,paso_id). La cabecera identifica legacy incluso sin checklist.
+La completitud cabecera/filas se garantiza en Application transaccional, no por
+el CHECK de una fila. No se hace backfill ni se inventan instrucciones anteriores.
+
+Las entidades/mappers conservan la copia. JPA declara updatable=false para estos
+campos y el indicador; actualizar resultados también preserva explícitamente
+los valores. No hay trigger contra SQL administrativo: la garantía es del flujo
+funcional/JPA. listarPasos y actualizarPaso no consultan Paso vigente para
+presentar historia. Legacy devuelve orden/instrucción/criticidad null y conserva
+IDs, cumplimiento, observaciones y fecha; se ordena por ejecucionPasoId porque su
+orden original es desconocido. Completar/cancelar conserva el indicador.
+
+### Captura y concurrencia
+
+iniciar, crear/modificar pasos y modificar/publicar procedimiento comparten una
+guardia pesimista sobre la fila del procedimiento. Se refresca estado y se recarga
+el conjunto de pasos bajo bloqueo, evitando snapshot/caché JPA obsoletos. La
+captura corresponde a esa lectura coherente antes de persistir, no al instante de
+llegada HTTP. Cabecera y checklist se confirman en una misma transacción.
+No hay bloqueo global ni clear global. Se conservan las protecciones P1 de cierre.
+Una transacción envolvente REQUIRED conserva locks hasta terminar.
+
+### Alternativas consideradas
+
+Snapshot es el menor alcance para la regla aprobada: aprovecha filas de checklist
+y conserva su contenido por ejecución. Versionado completo añadiría identidad de
+revisión, lifecycle de edición/publicación, asociaciones y migración más amplia.
+No se implementa porque negocio no pidió revisiones numeradas/seleccionables.
+Ninguna alternativa puede reconstruir instrucciones sobrescritas que no se guardaron.
+
+## Contrato HTTP y Angular
+
+Se mantienen rutas/parámetros y permisos. No se solicitan snapshots al cliente.
+
+| Response | Cambio exacto |
+| --- | --- |
+| EjecucionResponse: inicio/lista/detalle/completar/cancelar | Nuevo boolean heredada, inverso de snapshotCapturado |
+| EjecucionPasoResponse: lista/PATCH de elemento | Nuevo boolean heredado; orden, instruccion y esCritico pueden ser null en legacy |
+| Ejecuciones nuevas | Campos anteriores no NULL y tomados del snapshot; IDs/resultados mantienen significado |
+
+No se encontró proyecto Angular/package.json en este repositorio; no se comprobó
+su compilación ni UI. Debe adaptar modelos: heredada:boolean en ejecución,
+heredado:boolean en paso, orden:number|null, instruccion:string|null,
+esCritico:boolean|null. Mostrar «Registro heredado: definición original no
+disponible», sin sustituir null por datos actuales, orden 0 o criticidad false.
+Conservar asociación por IDs y no reconstruir el checklist desde pasos vigentes.
+No se necesitan campos nuevos en requests de resultados. La nulabilidad impide
+afirmar compatibilidad automática con modelos Angular estrictos anteriores.
+
+## Migración y plan operativo
+
+[V20261009_01__snapshot_pasos_ejecucion.sql](../src/main/resources/db/migration/V20261009_01__snapshot_pasos_ejecucion.sql)
+es aditiva/versionada: dos ALTER, sin UPDATE/backfill, DROP ni borrado de historia.
+ddl-auto=none y ausencia de Flyway/Liquibase significan que no se aplica
+automáticamente. **Solo se ejecutó sobre MySQL temporal de Testcontainers.**
+
+Precondiciones de una futura aplicación autorizada:
+
+1. Validar esquema/versiones anteriores, ausencia de estos campos/CHECK y compatibilidad
+   MySQL. Se ensayó 8.0.36, no se certifica el servidor objetivo.
+2. Respaldo coherente y recuperación ensayada en entorno aislado; registrar
+   conteos/IDs/resultados/fechas previos. No usar DEV como entorno de ensayo.
+3. Pausar escritores y coordinar backend/cliente. No mezclar escritores antiguos:
+   sus ejecuciones nuevas quedarían como legacy y no cumplirían RN-PROC-01.
+4. Aplicar el script en ventana aprobada; verificar cuatro columnas/CHECK, filas y
+   resultados conservados, flag=0 y tres NULL para datos preexistentes.
+5. Validar backend/cliente con datos sintéticos del entorno autorizado y reabrir
+   tráfico solo después de comprobación. No se ejecutó este plan en DEV/producción.
+
+MySQL DDL hace commit implícito: si falla el segundo ALTER, no suponer rollback
+de ambos. Mantener mantenimiento, inspeccionar estructura y ejecutar únicamente
+el paso pendiente una vez diagnosticado; no repetir ciegamente el script.
+
+**Rollback operativo:** conservar columnas/snapshots y preferir reparación hacia
+adelante. Retirar el artefacto nuevo requiere mantener funciones históricas en
+mantenimiento; el backend antiguo volvería a mostrar pasos actuales. No eliminar
+campos para retroceder. Restaurar respaldo solo si no hubo escrituras posteriores
+y con recuperación autorizada/validada; si hay datos nuevos, preservarlos y
+conciliarlos antes de restaurar. No se prepara DROP destructivo.
+Las ejecuciones EN_CURSO previas son legacy; actualizar resultados no las convierte
+en historia capturada. Nuevos pasos no se agregan a checklists ya iniciados.
+
+## Pruebas y resultados reales
+
+Comandos:
+
+    .\mvnw.cmd -B -Pintegration-mysql verify
+    .\mvnw.cmd -B test
+
+| Suite | PASS | FAIL | ERROR | SKIPPED | Tiempo Maven |
+| --- | ---: | ---: | ---: | ---: | --- |
+| Integración MySQL | 45 | 0 | 0 | 0 | 1:38 min |
+| Habitual | 474 | 0 | 0 | 0 | 28,145 s |
+
+Ambas BUILD SUCCESS, 2026-10-09: integración 14:36:37 -03:00 y habitual
+14:37:55 -03:00. Sin defecto funcional detectado en esta ampliación.
+Los errores SQL esperados asertados no son ERROR de suite.
+
+- Tres IT nuevas en MaterialesArchivoIT (24 métodos): snapshot tras edición y
+  resultados/nueva ejecución; legacy HTTP sin datos actuales; captura coherente
+  después de lectura concurrente obsoleta.
+- Dos unitarias nuevas en EjecucionPasoSnapshotTest: legacy sin definición y
+  rechazo de copia parcial, distinguiendo false de ausencia.
+- Unitarias existentes adaptadas a puertos/semántica aprobada y con aserciones de
+  captura/conservación. Asunciones de lectura de pasos actuales cambian según RN;
+  no se suavizaron ni eliminaron las aserciones originales de P1.
+- MySqlIntegrationSupport inserta filas sintéticas antes del ALTER y confirma
+  después flag=0, tres NULL y resultados intactos; limpia luego esos fixtures.
+- El fallo real 1205 de creación de checklist existente sigue pasando: cero
+  cabeceras/filas tras rollback, por lo que no quedan snapshots parciales.
+- P1 originales, checklist inverso, autorización y regresión permanecen verdes.
+
+Reportes locales: target/failsafe-reports y target/surefire-reports. DEV/producción
+no utilizados, almacenamiento @TempDir; contenedores temporales eliminados y
+verificados por sus IDs.
+
+## Archivos de esta implementación
+
+- Ejecución/domain: Ejecucion, EjecucionPaso, DetalleEjecucionPaso.
+- Ejecución/JPA/mapper: EjecucionEntity, EjecucionPasoEntity, EjecucionMapper.
+- DTO: EjecucionResponse, EjecucionPasoResponse.
+- Servicios: GestionarEjecucionService, MantenerPasoService, MantenerProcedimientoService.
+- Puertos/adaptadores: ProcedimientoRepository, PasoRepository,
+  ProcedimientoRepositoryAdapter, PasoRepositoryAdapter.
+- Migración nueva: V20261009_01__snapshot_pasos_ejecucion.sql.
+- Tests/soporte: MySqlIntegrationSupport, MaterialesArchivoIT,
+  GestionarEjecucionServiceTest, MantenerPasoServiceTest, MantenerProcedimientoServiceTest
+  y nuevo EjecucionPasoSnapshotTest.
+- Documentación: este archivo y auditoria-cobertura-riesgos-skill4.md.
+
+## Riesgos residuales
+
+Historia original de legacy irrecuperable; Angular no ensayado; despliegue/migración
+reales pendientes; contención/timeouts en transacciones envolventes largas; cabecera
+y materiales no congelados (fuera de RN). No se cambian seguimiento, seguridad o
+almacenamiento ni se introduce versionado completo. RN-PROC-01 queda implementada
+y validada en backend, sin declarar GO de producción.

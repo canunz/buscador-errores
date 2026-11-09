@@ -21,6 +21,7 @@ public class HardwareRepositoryAdapter implements HardwareRepository {
         return repository.findAllByActivoTrueOrderByNombreAsc().stream().map(CatalogoMapper::toDomain).toList();
     }
 
+    @Override public Optional<Hardware> buscarPorId(Integer id){return repository.findById(id).map(CatalogoMapper::toDomain);}
     @Override
     public Optional<Hardware> buscarActivoPorId(Integer id) {
         return repository.findByIdAndActivoTrue(id).map(CatalogoMapper::toDomain);

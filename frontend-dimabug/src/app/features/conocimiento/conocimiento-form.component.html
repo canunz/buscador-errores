@@ -5,14 +5,8 @@
     <app-ayuda-franja titulo="Conocimiento" detalle="Base de conocimiento. Documenta un caso con síntoma, causa, prueba de verificación y solución. El alta queda en borrador hasta que un administrador lo publica." />
     <div>
       <p>Conocimiento</p>
-      <h1>{{ esEdicion ? 'Editar conocimiento' : 'Nueva solución' }}</h1>
-      <span>
-        @if (esEdicion) {
-          Puedes corregir el caso. Publicarlo lo hace un administrador.
-        } @else {
-          El registro queda en borrador. Un administrador lo publica.
-        }
-      </span>
+      <h1>{{ esEdicion ? 'Editar solución' : 'Nueva solución' }}</h1>
+      <span>{{ esEdicion ? 'Edita el caso.' : 'El alta queda en borrador.' }}</span>
     </div>
     <a routerLink="/conocimiento" class="btn-ghost">Volver al listado</a>
   </div>

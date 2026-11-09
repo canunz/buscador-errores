@@ -1133,3 +1133,9 @@
   background: linear-gradient(90deg, #1f2937 25%, #273244 50%, #1f2937 75%);
   background-size: 200% 100%;
 }
+
+.editor-seccion{font-size:1rem;color:#122e65;margin:0 0 .3rem}.form-modal-dialog{width:min(820px,calc(100vw - 2rem));border-radius:1rem;box-shadow:0 22px 65px #0b1c3c40}.editor input,.editor textarea{border-radius:.6rem;min-height:44px}.editor :focus-visible{outline:3px solid #2563eb;outline-offset:3px}
+
+.paso-admin{display:flex;flex-wrap:wrap;gap:.4rem;padding:.4rem .6rem 1rem}.paso-admin button{min-height:44px;border:1px solid #b7c8e2;border-radius:.5rem;padding:.45rem .65rem;background:#f3f7ff;color:#173d7b;font:inherit;font-size:.8rem}.paso-admin button:disabled{opacity:.45}.auditoria-admin{margin:1rem auto;padding:1rem;max-width:1100px;border:1px solid #dbe4f0;border-radius:.8rem;background:#fff}.auditoria-admin li{margin:1rem 0}.auditoria-admin pre{white-space:pre-wrap;overflow-wrap:anywhere;font-size:.8rem;background:#f4f7fc;padding:.8rem;border-radius:.5rem}:focus-visible{outline:3px solid #2563eb;outline-offset:3px}
+
+.form-modal-dialog{box-sizing:border-box}.editor .fila{justify-content:flex-end;gap:.75rem}@media(max-width:600px){.form-modal-dialog{padding:20px 16px;max-height:90dvh}.editor .fila{flex-wrap:wrap}.editor .fila button{flex:1}}

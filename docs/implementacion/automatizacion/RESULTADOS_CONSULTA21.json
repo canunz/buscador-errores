@@ -1,0 +1,36 @@
+{
+  "fecha": "2026-11-08",
+  "ejecucion": 21,
+  "procedimiento_id": 10,
+  "pasos": 6,
+  "solicitudes_durante_diagnostico": 0,
+  "causas": [
+    "ngOnChanges incondicional y polling sin solicitud",
+    "solicitud nula usada como estado no cargado durante cada refresco",
+    "múltiples transacciones para un solo estado sobre MySQL mediante SSH"
+  ],
+  "medidas": {
+    "lecturas_separadas_ms": 6802,
+    "transacciones_separadas": 3,
+    "lectura_agregada_ms": 2458,
+    "transacciones_agregadas": 1
+  },
+  "pruebas": {
+    "java": 1020,
+    "angular": 362,
+    "fallos": 0,
+    "build_frontend": "OK"
+  },
+  "runtime": {
+    "backend_pid": 17468,
+    "backend_port": 9090,
+    "angular_pid": 38276,
+    "angular_port": 4200,
+    "salud": 200,
+    "proxy_salud": 200
+  },
+  "datos_modificados_en_diagnostico": false,
+  "nuevas_ejecuciones_en_diagnostico": 0,
+  "correos_enviados_en_diagnostico": 0,
+  "pendiente": "Confirmación en Chrome autenticado y envío simulado por la usuaria si decide probarlo"
+}

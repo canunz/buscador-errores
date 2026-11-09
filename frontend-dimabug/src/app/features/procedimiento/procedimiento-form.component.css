@@ -649,3 +649,5 @@ form.tarjeta {
 :host-context(.tema-oscuro) .pasos li:not(:last-child)::before {
   background: #1f2937;
 }
+
+select,textarea{width:100%;box-sizing:border-box;border:1px solid #a9bad3;border-radius:.6rem;min-height:44px;padding:.75rem;background:#fff;color:#172b4d;font:inherit}select:focus-visible,textarea:focus-visible{outline:3px solid #2563eb;outline-offset:3px}small{color:#52627c;line-height:1.5}

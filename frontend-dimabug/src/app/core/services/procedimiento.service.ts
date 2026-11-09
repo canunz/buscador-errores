@@ -1,3 +1,4 @@
+import { ModalidadPaso, ConfiguracionPaso } from '../models/configuracion-paso.model';
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, catchError, concat, finalize, forkJoin, map, of, shareReplay, switchMap, tap, throwError } from 'rxjs';
@@ -170,6 +171,20 @@ export class ProcedimientoService {
       catchError((err: HttpErrorResponse) => throwError(() => Object.assign(new Error(this.mensaje(err)), { status: err.status }))),
     );
   }
+  configurarPaso(procedimiento: number, paso: number, modoEjecucion: ModalidadPaso, configuracion: ConfiguracionPaso, revisionConfiguracion: string): Observable<PasoProcedimiento> {
+    return this.http.put<unknown>(`${this.base}/${procedimiento}/pasos/${paso}/configuracion`, { modoEjecucion, configuracion, revisionConfiguracion }).pipe(
+      map(res => this.normalizePaso(res)), catchError((e: HttpErrorResponse) => throwError(() => new Error(this.mensaje(e)))));
+  }
+  prepararEdicion(id:number):Observable<Procedimiento>{return this.http.post<unknown>(`${this.base}/${id}/edicion`,{}).pipe(map(r=>this.normalizeProcedimiento(r)),tap(p=>this.recordar(p)),catchError((e:HttpErrorResponse)=>throwError(()=>new Error(this.mensaje(e)))));}
+  eliminarPaso(id:number,paso:number):Observable<void>{return this.http.delete<void>(`${this.base}/${id}/pasos/${paso}`).pipe(tap(()=>{this.cachePasos.delete(id);this.cacheMateriales.delete(paso);}),catchError((e:HttpErrorResponse)=>throwError(()=>new Error(this.mensaje(e)))));}
+  moverPaso(id:number,paso:number,direccion:'ARRIBA'|'ABAJO',ordenEsperado:number[]):Observable<PasoProcedimiento[]>{return this.http.patch<unknown>(`${this.base}/${id}/pasos/${paso}/orden`,{direccion,ordenEsperado}).pipe(map(r=>this.asArray(r).map(p=>this.normalizePaso(p))),tap(p=>{this.cachePasos.set(id,p);this.guardarPasos(id,p);}),catchError((e:HttpErrorResponse)=>throwError(()=>new Error(this.mensaje(e)))));}
+  historial(id:number):Observable<{id:number;actorId:number;fecha:string;accion:string;antes:string|null;despues:string|null}[]>{return this.http.get<{id:number;actorId:number;fecha:string;accion:string;antes:string|null;despues:string|null}[]>(`${this.base}/${id}/historial`);}
+  crearVersionEvidencia(id: number): Observable<Procedimiento> {
+    return this.http.post<unknown>(`${this.base}/${id}/version-evidencia`, {}).pipe(
+      map((res) => this.normalizeProcedimiento(res)),
+      catchError((err: HttpErrorResponse) => throwError(() => new Error(this.mensaje(err)))),
+    );
+  }
 
   listarPasos(procedimientoId: number, force = false): Observable<PasoProcedimiento[]> {
     const fuente = this.http.get<unknown>(`${this.base}/${procedimientoId}/pasos`).pipe(
@@ -297,6 +312,11 @@ export class ProcedimientoService {
 
   private cuerpoProcedimiento(request: GuardarProcedimientoRequest): GuardarProcedimientoRequest {
     return {
+      ...(request.estado!==undefined?{estado:request.estado}:{}),
+      ...(request.hardwareId!==undefined?{hardwareId:request.hardwareId}:{}),
+      ...(request.sistemaId!==undefined?{sistemaId:request.sistemaId}:{}),
+      ...(request.moduloId!==undefined?{moduloId:request.moduloId}:{}),
+      ...(request.informacionComplementaria!==undefined?{informacionComplementaria:request.informacionComplementaria?.trim()||null}:{}),
       nombre: request.nombre.trim(),
       descripcion: request.descripcion?.trim() ? request.descripcion.trim() : null,
     };
@@ -454,6 +474,8 @@ export class ProcedimientoService {
       nombre: String(r['nombre'] ?? ''),
       descripcion: r['descripcion'] != null ? String(r['descripcion']) : null,
       estado: estado === 'PUBLICADO' ? 'PUBLICADO' : 'BORRADOR',
+      hardwareId:r['hardwareId']==null?null:Number(r['hardwareId']),
+      sistemaId:r['sistemaId']==null?null:Number(r['sistemaId']),moduloId:r['moduloId']==null?null:Number(r['moduloId']),informacionComplementaria:r['informacionComplementaria']==null?null:String(r['informacionComplementaria']),origenId:r['origenId']==null?null:Number(r['origenId']),revision:Number(r['revision']??1),vigente:r['vigente']!==false,
       creadoPor: this.usuario(r['creadoPor']),
       fechaCreacion: r['fechaCreacion'] != null ? String(r['fechaCreacion']) : null,
       modificadoPor: this.usuario(r['modificadoPor']),
@@ -480,6 +502,10 @@ export class ProcedimientoService {
       orden: Number(r['orden'] ?? 0),
       instruccion: String(r['instruccion'] ?? ''),
       esCritico: r['esCritico'] === true,
+      modoEjecucion: (r['modoEjecucion'] ?? 'MANUAL') as ModalidadPaso,
+      configuracion: r['configuracion'] as ConfiguracionPaso | null,
+      revisionConfiguracion: r['revisionConfiguracion'] != null ? String(r['revisionConfiguracion']) : undefined,
+      mensajeEvidencia: r['mensajeEvidencia'] != null ? String(r['mensajeEvidencia']) : null,
     };
   }
 

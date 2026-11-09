@@ -36,9 +36,22 @@ export function backendApiPath(value: string): string | null {
   }
 }
 
-export const PUBLIC_API_PATHS = ['/api/auth/codigo', '/api/auth/codigo/verificar', '/api/health'] as const;
+export const PUBLIC_API_PATHS = [
+  '/api/auth/login',
+  '/api/auth/codigo',
+  '/api/auth/codigo/verificar',
+  '/api/health',
+] as const;
 
 export function isPublicApiUrl(url: string): boolean {
   const path = backendApiPath(url);
-  return path === '/auth/codigo' || path === '/auth/codigo/verificar' || path === '/health';
+  return (
+    path === '/auth/login' ||
+    path === '/auth/codigo' ||
+    path === '/auth/codigo/verificar' ||
+    path === '/health' ||
+    (path !== null &&
+      (/^\/publico\/soluciones(?:\/\d+(?:\/materiales(?:\/\d+\/archivo)?)?)?$/.test(path) ||
+        path === '/publico/chatbot/consultas'))
+  );
 }

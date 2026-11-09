@@ -101,6 +101,46 @@ export class AuthService {
     return this.sessionSignal()?.token;
   }
 
+  solicitarCodigo(email: string): Observable<{ message: string; debugCode?: string }> {
+    return this.http
+      .post<{ message?: string; debugCode?: string; codigo?: string }>(apiUrl('/auth/recuperar/email'), {
+        email,
+      })
+      .pipe(
+        map((res) => ({
+          message: res.message || 'Te enviamos un código de 5 dígitos a tu correo.',
+          debugCode: res.debugCode || res.codigo,
+        })),
+        catchError((err: HttpErrorResponse) =>
+          throwError(() => new Error(this.httpError(err, 'No fue posible enviar el código. Intente más tarde.'))),
+        ),
+      );
+  }
+
+  validarCodigo(email: string, code: string): Observable<void> {
+    return this.http.post<unknown>(apiUrl('/auth/recuperar/codigo'), { email, code }).pipe(
+      map(() => void 0),
+      catchError((err: HttpErrorResponse) =>
+        throwError(() => new Error(this.httpError(err, 'El código ingresado no es válido.'))),
+      ),
+    );
+  }
+
+  cambiarPassword(email: string, newPassword: string): Observable<void> {
+    return this.http
+      .post<unknown>(apiUrl('/auth/recuperar/password'), {
+        email,
+        password: newPassword,
+        newPassword,
+      })
+      .pipe(
+        map(() => void 0),
+        catchError((err: HttpErrorResponse) =>
+          throwError(() => new Error(this.httpError(err, 'No fue posible actualizar la contraseña. Intente más tarde.'))),
+        ),
+      );
+  }
+
   private sessionFromLogin(res: LoginResponse): AuthSession {
     if (!res?.token) {
       throw new Error('La API no devolvió un token de autenticación.');

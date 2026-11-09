@@ -1,0 +1,2374 @@
+{
+  "date": "2026-11-06",
+  "timezone": "America/Santiago",
+  "branch": "codex/integracion-mvp",
+  "head": "e0d63d961b87c33d77937821c53802e6387a783e",
+  "original_integrity": {
+    "checked_files": 811,
+    "changed": 0,
+    "deleted": 0,
+    "excluded_directories": [
+      ".git",
+      "node_modules",
+      ".angular",
+      "target",
+      "dist",
+      ".build",
+      "__pycache__"
+    ]
+  },
+  "backend": {
+    "command": "mvnw.cmd -o test",
+    "exit_code": 0,
+    "result": "BUILD SUCCESS",
+    "finished_at": "2026-11-06T23:11:44-03:00",
+    "clean_build": false,
+    "totals": {
+      "tests": 920,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "suites": [
+      {
+        "name": "cl.casol.backend.AdminCatalogoSecurityIntegrationTest",
+        "tests": 7,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "path": "dima-bug-backend/target/surefire-reports/TEST-cl.casol.backend.AdminCatalogoSecurityIntegrationTest.xml",
+        "sha256": "ea47720de8984fb8e0250fe9487e98d7b03c9d7f5e6da49dda9c8bb8d8dfb791"
+      },
+      {
+        "name": "cl.casol.backend.AdminOrganizacionSecurityIntegrationTest",
+        "tests": 12,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "path": "dima-bug-backend/target/surefire-reports/TEST-cl.casol.backend.AdminOrganizacionSecurityIntegrationTest.xml",
+        "sha256": "4ecba35bed8b6461cbea55510db199f166869433a3ee375ab79109a8b2b7ab67"
+      },
+      {
+        "name": "cl.casol.backend.AdminPruebasSecurityIntegrationTest",
+        "tests": 8,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "path": "dima-bug-backend/target/surefire-reports/TEST-cl.casol.backend.AdminPruebasSecurityIntegrationTest.xml",
+        "sha256": "52f8b86639a9cd426e9a965217b42593bfc3f4baf3afabd31f9971298d0b7553"
+      },
+      {
+        "name": "cl.casol.backend.AdminSolucionCopiaSecurityTest",
+        "tests": 9,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "path": "dima-bug-backend/target/surefire-reports/TEST-cl.casol.backend.AdminSolucionCopiaSecurityTest.xml",
+        "sha256": "dc7560fc3f65ac018c982bb59416f1986613076e9e3875de4c1a602f27cca348"
+      },
+      {
+        "name": "cl.casol.backend.catalogo.application.service.AdministrarCatalogosServiceTest",
+        "tests": 14,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "path": "dima-bug-backend/target/surefire-reports/TEST-cl.casol.backend.catalogo.application.service.AdministrarCatalogosServiceTest.xml",
+        "sha256": "3bd6f1b184286773ac2077cb144eb79295bf934f1ad604241cdedc7f10bd23f3"
+      },
+      {
+        "name": "cl.casol.backend.catalogo.application.service.ConsultarSistemasServiceTest",
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "path": "dima-bug-backend/target/surefire-reports/TEST-cl.casol.backend.catalogo.application.service.ConsultarSistemasServiceTest.xml",
+        "sha256": "75647c81a00981c02b09aec9e228189ced3708f2cf6299dd030b429ed22972df"
+      },
+      {
+        "name": "cl.casol.backend.catalogo.application.service.ModulosQa011ServiceTest",
+        "tests": 12,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "path": "dima-bug-backend/target/surefire-reports/TEST-cl.casol.backend.catalogo.application.service.ModulosQa011ServiceTest.xml",
+        "sha256": "81cf88fd1d9bd03fa92dd34b724fbcf5b9cf012e3543202efdfaf2d94e7ff5f2"
+      },
+      {
+        "name": "cl.casol.backend.catalogo.infrastructure.persistence.adapter.ModuloReferenciasQa011Test",
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "path": "dima-bug-backend/target/surefire-reports/TEST-cl.casol.backend.catalogo.infrastructure.persistence.adapter.ModuloReferenciasQa011Test.xml",
+        "sha256": "b120dc9f7a1f420addd3074a303517781bc38ef65db91b6c8c0a7fda9ac85fac"
+      },
+      {
+        "name": "cl.casol.backend.CatalogoSecurityIntegrationTest",
+        "tests": 5,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "path": "dima-bug-backend/target/surefire-reports/TEST-cl.casol.backend.CatalogoSecurityIntegrationTest.xml",
+        "sha256": "7f3b39064cf78d29693b3fffb9f59832165814a5a2a0ad0ff7eb391a2ca4bb54"
+      },
+      {
+        "name": "cl.casol.backend.CatalogosOrganizacionSecurityIntegrationTest",
+        "tests": 13,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "path": "dima-bug-backend/target/surefire-reports/TEST-cl.casol.backend.CatalogosOrganizacionSecurityIntegrationTest.xml",
+        "sha256": "05eb00b0f8e1b3e6dbde6d03d317551243529413412363de9df2e2abea135b45"
+      },
+      {
+        "name": "cl.casol.backend.CausaSecurityIntegrationTest",
+        "tests": 14,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "path": "dima-bug-backend/target/surefire-reports/TEST-cl.casol.backend.CausaSecurityIntegrationTest.xml",
+        "sha256": "1275220b53c9a1bc5b1957c28e5a4f9ab20edfe04aecd0a56fcddc6f6853f8d9"
+      },
+      {
+        "name": "cl.casol.backend.ChatbotSecurityIntegrationTest",
+        "tests": 8,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "path": "dima-bug-backend/target/surefire-reports/TEST-cl.casol.backend.ChatbotSecurityIntegrationTest.xml",
+        "sha256": "1beb6702897052e26051cdb668ec63f757df6dc05a63317d665b99601228c9e2"
+      },
+      {
+        "name": "cl.casol.backend.conocimiento.application.service.AdministrarPruebasServiceTest",
+        "tests": 14,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "path": "dima-bug-backend/target/surefire-reports/TEST-cl.casol.backend.conocimiento.application.service.AdministrarPruebasServiceTest.xml",
+        "sha256": "6f8c31b8bdac411a5b32a40ef7c8f50b337b397a428972c286b46d0d87aaa504"
+      },
+      {
+        "name": "cl.casol.backend.conocimiento.application.service.AdministrarSolucionServiceTest",
+        "tests": 10,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "path": "dima-bug-backend/target/surefire-reports/TEST-cl.casol.backend.conocimiento.application.service.AdministrarSolucionServiceTest.xml",
+        "sha256": "61e1f8a7154aef49b4abc8c0a43958702bddefc0ce42016c6c78bf90615d911a"
+      },
+      {
+        "name": "cl.casol.backend.conocimiento.application.service.ArchivoMaterialServiceTest",
+        "tests": 25,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "path": "dima-bug-backend/target/surefire-reports/TEST-cl.casol.backend.conocimiento.application.service.ArchivoMaterialServiceTest.xml",
+        "sha256": "971e8d378cd362d4b825abe0c6dad36264e67b3ef0055083ec3b8554852619cf"
+      },
+      {
+        "name": "cl.casol.backend.conocimiento.application.service.BuscarConocimientoServiceTest",
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "path": "dima-bug-backend/target/surefire-reports/TEST-cl.casol.backend.conocimiento.application.service.BuscarConocimientoServiceTest.xml",
+        "sha256": "52154d1f6ac097c33c34f57606fd6879b0532fe17111211dab0e1cc4c01f6d1a"
+      },
+      {
+        "name": "cl.casol.backend.conocimiento.application.service.ConsultarChatbotServiceTest",
+        "tests": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "path": "dima-bug-backend/target/surefire-reports/TEST-cl.casol.backend.conocimiento.application.service.ConsultarChatbotServiceTest.xml",
+        "sha256": "9d8821532b01d6eaed9f17e46d8ca7f4aaa0d82a6748fdeabac541f5392c2379"
+      },
+      {
+        "name": "cl.casol.backend.conocimiento.application.service.CopiarSolucionServiceTest",
+        "tests": 16,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "path": "dima-bug-backend/target/surefire-reports/TEST-cl.casol.backend.conocimiento.application.service.CopiarSolucionServiceTest.xml",
+        "sha256": "3d76c17ef577f64071f6bac567a1849d072ed8595cb29560608447c690d768ce"
+      },
+      {
+        "name": "cl.casol.backend.conocimiento.application.service.GestionarAsignacionSolucionServiceTest",
+        "tests": 16,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "path": "dima-bug-backend/target/surefire-reports/TEST-cl.casol.backend.conocimiento.application.service.GestionarAsignacionSolucionServiceTest.xml",
+        "sha256": "2aac2856df57ee1876bf11cb46c4287f9540ac6e5550a57814887b4c4a81d49a"
+      },
+      {
+        "name": "cl.casol.backend.conocimiento.application.service.GestionarPruebasConocimientoServiceTest",
+        "tests": 14,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "path": "dima-bug-backend/target/surefire-reports/TEST-cl.casol.backend.conocimiento.application.service.GestionarPruebasConocimientoServiceTest.xml",
+        "sha256": "49569b4f35729ffe2b7da9e49fb18b714898ad8075c9615b894d928367708a30"
+      },
+      {
+        "name": "cl.casol.backend.conocimiento.application.service.IndexarConocimientoServiceTest",
+        "tests": 12,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "path": "dima-bug-backend/target/surefire-reports/TEST-cl.casol.backend.conocimiento.application.service.IndexarConocimientoServiceTest.xml",
+        "sha256": "d7336b8fc2ee94970080bed1bd0ca2702ecb2ba2f9995020860c89dbb588a6cd"
+      },
+      {
+        "name": "cl.casol.backend.conocimiento.application.service.MantenerCausaServiceTest",
+        "tests": 10,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "path": "dima-bug-backend/target/surefire-reports/TEST-cl.casol.backend.conocimiento.application.service.MantenerCausaServiceTest.xml",
+        "sha256": "cd9a9c790241898853fe37f7ae2e5f29cf1e2aef7f7b64e0da4962cca495ec5b"
+      },
+      {
+        "name": "cl.casol.backend.conocimiento.application.service.MantenerConocimientoServiceTest",
+        "tests": 15,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "path": "dima-bug-backend/target/surefire-reports/TEST-cl.casol.backend.conocimiento.application.service.MantenerConocimientoServiceTest.xml",
+        "sha256": "26cf4101a74c217f29f559dbca83419590c2bc67a4c8e61b0e412c798ac9c2e2"
+      },
+      {
+        "name": "cl.casol.backend.conocimiento.application.service.MantenerMaterialApoyoServiceTest",
+        "tests": 9,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "path": "dima-bug-backend/target/surefire-reports/TEST-cl.casol.backend.conocimiento.application.service.MantenerMaterialApoyoServiceTest.xml",
+        "sha256": "59e1ac89a0fb976292004b021c2c6a88f142edc12f1cf0a1d6af350a28e6ae3a"
+      },
+      {
+        "name": "cl.casol.backend.conocimiento.application.service.MantenerSintomaServiceTest",
+        "tests": 9,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "path": "dima-bug-backend/target/surefire-reports/TEST-cl.casol.backend.conocimiento.application.service.MantenerSintomaServiceTest.xml",
+        "sha256": "0b773d39893c2350d942f291de46417d109570dc4908eecc4f6e877d54c47d15"
+      },
+      {
+        "name": "cl.casol.backend.conocimiento.application.service.MantenerSolucionServiceTest",
+        "tests": 16,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "path": "dima-bug-backend/target/surefire-reports/TEST-cl.casol.backend.conocimiento.application.service.MantenerSolucionServiceTest.xml",
+        "sha256": "0c7bbdc618ded55e451264940e6911d8c34a4c66d283c5e8f792ab387934e768"
+      },
+      {
+        "name": "cl.casol.backend.conocimiento.application.service.ReutilizarMaterialServiceTest",
+        "tests": 16,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "path": "dima-bug-backend/target/surefire-reports/TEST-cl.casol.backend.conocimiento.application.service.ReutilizarMaterialServiceTest.xml",
+        "sha256": "e564714995b2459e98955f0cd09f3c103b9153e68a710bc54f129faba525eb04"
+      },
+      {
+        "name": "cl.casol.backend.conocimiento.application.service.SolucionConcurrenciaQa009Test",
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "path": "dima-bug-backend/target/surefire-reports/TEST-cl.casol.backend.conocimiento.application.service.SolucionConcurrenciaQa009Test.xml",
+        "sha256": "590e6022e77f26dd24d4d415085287bdc76334c015be03548b489b88fef65337"
+      },
+      {
+        "name": "cl.casol.backend.conocimiento.infrastructure.persistence.adapter.BusquedaAutoservicioTest",
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "path": "dima-bug-backend/target/surefire-reports/TEST-cl.casol.backend.conocimiento.infrastructure.persistence.adapter.BusquedaAutoservicioTest.xml",
+        "sha256": "71eaa75c91d26491290034a3ba1a6330cee11eb9af913ae21b96ed14c20d3d93"
+      },
+      {
+        "name": "cl.casol.backend.conocimiento.infrastructure.persistence.adapter.BusquedaConocimientoJdbcAdapterTest",
+        "tests": 4,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "path": "dima-bug-backend/target/surefire-reports/TEST-cl.casol.backend.conocimiento.infrastructure.persistence.adapter.BusquedaConocimientoJdbcAdapterTest.xml",
+        "sha256": "50934c01946a61c9138097b22d5d7bf3df560bcc5f28164edb5666a878ae0f53"
+      },
+      {
+        "name": "cl.casol.backend.conocimiento.infrastructure.persistence.adapter.BusquedaSolucionQa009Test",
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "path": "dima-bug-backend/target/surefire-reports/TEST-cl.casol.backend.conocimiento.infrastructure.persistence.adapter.BusquedaSolucionQa009Test.xml",
+        "sha256": "83cc9d95cd1a400f8565dc51d46779abd48206b27dfee4251ea50b001577c97f"
+      },
+      {
+        "name": "cl.casol.backend.conocimiento.infrastructure.persistence.adapter.MaterialApoyoRepositoryAdapterTest",
+        "tests": 5,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "path": "dima-bug-backend/target/surefire-reports/TEST-cl.casol.backend.conocimiento.infrastructure.persistence.adapter.MaterialApoyoRepositoryAdapterTest.xml",
+        "sha256": "98ea6b1133f623721ce0913ee6740fcdd6f60b275ccc093364580eebb1e05cc7"
+      },
+      {
+        "name": "cl.casol.backend.conocimiento.infrastructure.persistence.adapter.PruebaRepositoryAdapterTest",
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "path": "dima-bug-backend/target/surefire-reports/TEST-cl.casol.backend.conocimiento.infrastructure.persistence.adapter.PruebaRepositoryAdapterTest.xml",
+        "sha256": "77e4f0f7de3683c0edb0c4eb0a095f8802161abbe75757056ffd454bb0aaf593"
+      },
+      {
+        "name": "cl.casol.backend.conocimiento.infrastructure.persistence.adapter.PruebasPersistenciaQa013Test",
+        "tests": 6,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "path": "dima-bug-backend/target/surefire-reports/TEST-cl.casol.backend.conocimiento.infrastructure.persistence.adapter.PruebasPersistenciaQa013Test.xml",
+        "sha256": "cd03c3b2580cf909ff84a510f26116015f394cde6fa104e98d94957a290b0c58"
+      },
+      {
+        "name": "cl.casol.backend.conocimiento.infrastructure.persistence.adapter.SolucionPersistenciaQa009Test",
+        "tests": 5,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "path": "dima-bug-backend/target/surefire-reports/TEST-cl.casol.backend.conocimiento.infrastructure.persistence.adapter.SolucionPersistenciaQa009Test.xml",
+        "sha256": "1387c3734306a48eb232e0a20cf1781edba3bb8ad7e87cab331aa19e49c38023"
+      },
+      {
+        "name": "cl.casol.backend.conocimiento.infrastructure.persistence.CopiarSolucionJpaConcurrencyTest",
+        "tests": 9,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "path": "dima-bug-backend/target/surefire-reports/TEST-cl.casol.backend.conocimiento.infrastructure.persistence.CopiarSolucionJpaConcurrencyTest.xml",
+        "sha256": "00f73753767d147e7b3fb4d6d300c3cff30b7d7c788ebca1c184b52bcc4f4ebf"
+      },
+      {
+        "name": "cl.casol.backend.conocimiento.infrastructure.persistence.MaterialesSinOsivJpaTest",
+        "tests": 5,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "path": "dima-bug-backend/target/surefire-reports/TEST-cl.casol.backend.conocimiento.infrastructure.persistence.MaterialesSinOsivJpaTest.xml",
+        "sha256": "e80697637b065c9c1eac4ee10a2183d0e79c958f7d25046c9d2aa10799cfe763"
+      },
+      {
+        "name": "cl.casol.backend.ContenidoRestringidoSecurityIntegrationTest",
+        "tests": 12,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "path": "dima-bug-backend/target/surefire-reports/TEST-cl.casol.backend.ContenidoRestringidoSecurityIntegrationTest.xml",
+        "sha256": "54174aa65a682794874d25d41f6e1f90a4e9c46ed69b1530f4d8668bd68b14e1"
+      },
+      {
+        "name": "cl.casol.backend.ejecucion.application.service.GestionarEjecucionServiceTest",
+        "tests": 22,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "path": "dima-bug-backend/target/surefire-reports/TEST-cl.casol.backend.ejecucion.application.service.GestionarEjecucionServiceTest.xml",
+        "sha256": "eb729f9e19c520d3a9458473378422ab334a8f04a334263b2c77fd5378458b5d"
+      },
+      {
+        "name": "cl.casol.backend.EliminarMaterialApoyoTest",
+        "tests": 26,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "path": "dima-bug-backend/target/surefire-reports/TEST-cl.casol.backend.EliminarMaterialApoyoTest.xml",
+        "sha256": "3078f7e472edc58fb335e8bb392e1f17c5f12e85061f0d8ffa74e0f41c719256"
+      },
+      {
+        "name": "cl.casol.backend.Hu01SecurityIntegrationTest",
+        "tests": 8,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "path": "dima-bug-backend/target/surefire-reports/TEST-cl.casol.backend.Hu01SecurityIntegrationTest.xml",
+        "sha256": "4c93bbff0d4224d483c8680363de483125b3e3de890dc243f0e85a816d9ebc3d"
+      },
+      {
+        "name": "cl.casol.backend.Hu02SecurityIntegrationTest",
+        "tests": 14,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "path": "dima-bug-backend/target/surefire-reports/TEST-cl.casol.backend.Hu02SecurityIntegrationTest.xml",
+        "sha256": "7a0511db58cf7025729537f51179e52ea522b6eb9ced4f2ca7bf2349c1973dcd"
+      },
+      {
+        "name": "cl.casol.backend.Hu03SecurityIntegrationTest",
+        "tests": 14,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "path": "dima-bug-backend/target/surefire-reports/TEST-cl.casol.backend.Hu03SecurityIntegrationTest.xml",
+        "sha256": "ab080ac7172df8c5c361902178e4f2b40a53a8e2056947a192ccaece9ed8c257"
+      },
+      {
+        "name": "cl.casol.backend.Hu04SecurityIntegrationTest",
+        "tests": 5,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "path": "dima-bug-backend/target/surefire-reports/TEST-cl.casol.backend.Hu04SecurityIntegrationTest.xml",
+        "sha256": "d100160233071bdab0f949acfb77d7c9364174dc3f4b879b9385830c53d0b9de"
+      },
+      {
+        "name": "cl.casol.backend.Hu05SecurityIntegrationTest",
+        "tests": 10,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "path": "dima-bug-backend/target/surefire-reports/TEST-cl.casol.backend.Hu05SecurityIntegrationTest.xml",
+        "sha256": "e6f5c5cf89e9696017b7b261d29821c3eae1ac2ada778a35f61b42a4a4c953cf"
+      },
+      {
+        "name": "cl.casol.backend.Hu06SecurityIntegrationTest",
+        "tests": 7,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "path": "dima-bug-backend/target/surefire-reports/TEST-cl.casol.backend.Hu06SecurityIntegrationTest.xml",
+        "sha256": "bce03497c926ce8ccd5459248b37beb2d68eef358f59a1ac16b1ab05d38c85a8"
+      },
+      {
+        "name": "cl.casol.backend.Hu07SecurityIntegrationTest",
+        "tests": 14,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "path": "dima-bug-backend/target/surefire-reports/TEST-cl.casol.backend.Hu07SecurityIntegrationTest.xml",
+        "sha256": "7425c3a2cfb3af390f70b60151a29898d448c2daf3ecbb8ceb384aad68b573d8"
+      },
+      {
+        "name": "cl.casol.backend.identidad.application.service.AdministrarOrganizacionServiceTest",
+        "tests": 24,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "path": "dima-bug-backend/target/surefire-reports/TEST-cl.casol.backend.identidad.application.service.AdministrarOrganizacionServiceTest.xml",
+        "sha256": "fdb5bb632079352cf96a1977574a6951bd06470888bc32544c73660ea3623a03"
+      },
+      {
+        "name": "cl.casol.backend.identidad.application.service.AdministrarResponsablesServiceTest",
+        "tests": 18,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "path": "dima-bug-backend/target/surefire-reports/TEST-cl.casol.backend.identidad.application.service.AdministrarResponsablesServiceTest.xml",
+        "sha256": "11fd15036b4f22068eb3d691b0146376a81cd15e5fa20ae84820e844c567b6c8"
+      },
+      {
+        "name": "cl.casol.backend.identidad.application.service.AdministrarUsuariosServiceTest",
+        "tests": 13,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "path": "dima-bug-backend/target/surefire-reports/TEST-cl.casol.backend.identidad.application.service.AdministrarUsuariosServiceTest.xml",
+        "sha256": "32842383e219a22d3772a09aa182d31a3e96998d4a8abcd77b456343ea02a1b0"
+      },
+      {
+        "name": "cl.casol.backend.identidad.application.service.AutenticarUsuarioServiceTest",
+        "tests": 4,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "path": "dima-bug-backend/target/surefire-reports/TEST-cl.casol.backend.identidad.application.service.AutenticarUsuarioServiceTest.xml",
+        "sha256": "778ff8834f06a4c6cb81138fba0bb1a78270714819f46446fcde672f29bf8ff1"
+      },
+      {
+        "name": "cl.casol.backend.identidad.application.service.ConsultarOrganizacionServiceTest",
+        "tests": 5,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "path": "dima-bug-backend/target/surefire-reports/TEST-cl.casol.backend.identidad.application.service.ConsultarOrganizacionServiceTest.xml",
+        "sha256": "ffd5a687b76c3561ed549f30cbcff998931a60b93187539c60c5b211f197acaf"
+      },
+      {
+        "name": "cl.casol.backend.identidad.application.service.OrganizacionConcurrenciaTest",
+        "tests": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "path": "dima-bug-backend/target/surefire-reports/TEST-cl.casol.backend.identidad.application.service.OrganizacionConcurrenciaTest.xml",
+        "sha256": "87d23aca73b0fedf7fae45ee0dfd85282441a3d978039b3adfbdeee42b4b2582"
+      },
+      {
+        "name": "cl.casol.backend.identidad.application.service.OrganizacionOperacionalQa012Test",
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "path": "dima-bug-backend/target/surefire-reports/TEST-cl.casol.backend.identidad.application.service.OrganizacionOperacionalQa012Test.xml",
+        "sha256": "efb5e94c56023e9934b22fb5a4ded0c5715eca37abfa980537cd701ed45c809c"
+      },
+      {
+        "name": "cl.casol.backend.identidad.application.service.ReindexarOrganizacionTest",
+        "tests": 4,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "path": "dima-bug-backend/target/surefire-reports/TEST-cl.casol.backend.identidad.application.service.ReindexarOrganizacionTest.xml",
+        "sha256": "06d5da768933b19c475a929af5a661931bfa2b2de56429352f8e9856f344c35e"
+      },
+      {
+        "name": "cl.casol.backend.identidad.infrastructure.persistence.adapter.AdministracionOrganizacionRepositoryAdapterTest",
+        "tests": 6,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "path": "dima-bug-backend/target/surefire-reports/TEST-cl.casol.backend.identidad.infrastructure.persistence.adapter.AdministracionOrganizacionRepositoryAdapterTest.xml",
+        "sha256": "b6fbb376572943cb131a1bfb05b4be661636b83ab891f5ce1b6c9801a4b50a63"
+      },
+      {
+        "name": "cl.casol.backend.identidad.infrastructure.persistence.adapter.AdministracionResponsableRepositoryAdapterTest",
+        "tests": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "path": "dima-bug-backend/target/surefire-reports/TEST-cl.casol.backend.identidad.infrastructure.persistence.adapter.AdministracionResponsableRepositoryAdapterTest.xml",
+        "sha256": "7953dfee68be30f069732abac4a32c7d839953b75b67314ffbdd4e7e6385c49d"
+      },
+      {
+        "name": "cl.casol.backend.identidad.infrastructure.persistence.adapter.DepartamentoContactoRepositoryAdapterTest",
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "path": "dima-bug-backend/target/surefire-reports/TEST-cl.casol.backend.identidad.infrastructure.persistence.adapter.DepartamentoContactoRepositoryAdapterTest.xml",
+        "sha256": "039ac4808c8ff90fbbfc35c6f67dda252ee9c848f921983a2758eaa835748032"
+      },
+      {
+        "name": "cl.casol.backend.identidad.infrastructure.security.BCryptPasswordEncoderAdapterTest",
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "path": "dima-bug-backend/target/surefire-reports/TEST-cl.casol.backend.identidad.infrastructure.security.BCryptPasswordEncoderAdapterTest.xml",
+        "sha256": "622a9b991ad563b3b8ea4c62cd0139549a0077ca405b2406300b52dfab2095d2"
+      },
+      {
+        "name": "cl.casol.backend.identidad.infrastructure.security.JwtTokenServiceAdapterTest",
+        "tests": 4,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "path": "dima-bug-backend/target/surefire-reports/TEST-cl.casol.backend.identidad.infrastructure.security.JwtTokenServiceAdapterTest.xml",
+        "sha256": "fbd30d84cf1542eb8ecf3ac89bcdfe695c61e303d72261533f4ece805a9d841b"
+      },
+      {
+        "name": "cl.casol.backend.LimitesCompatibilidadStagingTest",
+        "tests": 10,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "path": "dima-bug-backend/target/surefire-reports/TEST-cl.casol.backend.LimitesCompatibilidadStagingTest.xml",
+        "sha256": "45ce61ddcdf11c681e34c2db62cf34b5eac2510b9cf0c5978f358565f78bcc7f"
+      },
+      {
+        "name": "cl.casol.backend.LimitesMvpP0Test",
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "path": "dima-bug-backend/target/surefire-reports/TEST-cl.casol.backend.LimitesMvpP0Test.xml",
+        "sha256": "f73274410dd1241fdec99d0a68575b4bbf518524f5749517e09db57390c13d9f"
+      },
+      {
+        "name": "cl.casol.backend.MaterialApoyoSecurityIntegrationTest",
+        "tests": 20,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "path": "dima-bug-backend/target/surefire-reports/TEST-cl.casol.backend.MaterialApoyoSecurityIntegrationTest.xml",
+        "sha256": "7593055643e9b13b79063ad3e1c23bdaa64dd78fdb2dbe393fe29152879af782"
+      },
+      {
+        "name": "cl.casol.backend.MaterialArchivoDestinoTest",
+        "tests": 13,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "path": "dima-bug-backend/target/surefire-reports/TEST-cl.casol.backend.MaterialArchivoDestinoTest.xml",
+        "sha256": "04531fa0281f28e2b07a0c06ffb352579bb080b9ad597aa06bd9bafc159643b8"
+      },
+      {
+        "name": "cl.casol.backend.MaterialArchivoSecurityIntegrationTest",
+        "tests": 18,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "path": "dima-bug-backend/target/surefire-reports/TEST-cl.casol.backend.MaterialArchivoSecurityIntegrationTest.xml",
+        "sha256": "2f904fafa8f27198df18a34a3cf596e5ab58c49e56b176a269047e00de981f0b"
+      },
+      {
+        "name": "cl.casol.backend.procedimiento.application.service.MantenerMaterialPasoServiceTest",
+        "tests": 7,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "path": "dima-bug-backend/target/surefire-reports/TEST-cl.casol.backend.procedimiento.application.service.MantenerMaterialPasoServiceTest.xml",
+        "sha256": "e8ddde7ec2dae6114d08017f979df2085caa647846856072c70cab373d613a71"
+      },
+      {
+        "name": "cl.casol.backend.procedimiento.application.service.MantenerPasoServiceTest",
+        "tests": 12,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "path": "dima-bug-backend/target/surefire-reports/TEST-cl.casol.backend.procedimiento.application.service.MantenerPasoServiceTest.xml",
+        "sha256": "068e0c6dab75707637c7363b12927ce6697ab556155cb70e317569023cc96b99"
+      },
+      {
+        "name": "cl.casol.backend.procedimiento.application.service.MantenerProcedimientoServiceTest",
+        "tests": 8,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "path": "dima-bug-backend/target/surefire-reports/TEST-cl.casol.backend.procedimiento.application.service.MantenerProcedimientoServiceTest.xml",
+        "sha256": "95671dcd4a56caa527d36965a969ab4502f3da1f4d10cafa900d776161d7981d"
+      },
+      {
+        "name": "cl.casol.backend.PruebaSecurityIntegrationTest",
+        "tests": 19,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "path": "dima-bug-backend/target/surefire-reports/TEST-cl.casol.backend.PruebaSecurityIntegrationTest.xml",
+        "sha256": "de3fb205b8c3932648a9bc66fd0cdfce3b8dced6776fdcc1a03708ffa5281398"
+      },
+      {
+        "name": "cl.casol.backend.ReutilizarMaterialSecurityTest",
+        "tests": 8,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "path": "dima-bug-backend/target/surefire-reports/TEST-cl.casol.backend.ReutilizarMaterialSecurityTest.xml",
+        "sha256": "74164234b45c6a75e19b8a8d50612d142de34783e26ab24e8e94a143d750f25d"
+      },
+      {
+        "name": "cl.casol.backend.seguimiento.application.service.RegistrarEfectividadSolucionServiceTest",
+        "tests": 19,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "path": "dima-bug-backend/target/surefire-reports/TEST-cl.casol.backend.seguimiento.application.service.RegistrarEfectividadSolucionServiceTest.xml",
+        "sha256": "e17efa657ca1e51b846cac812e1494c9fc6a7c06da31ee682c02508b17fe0d10"
+      },
+      {
+        "name": "cl.casol.backend.seguimiento.infrastructure.persistence.adapter.ResultadoSolucionRepositoryAdapterTest",
+        "tests": 8,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "path": "dima-bug-backend/target/surefire-reports/TEST-cl.casol.backend.seguimiento.infrastructure.persistence.adapter.ResultadoSolucionRepositoryAdapterTest.xml",
+        "sha256": "4ea605ab18d1e8fe1420669bc89fd95831ff95376c153b58fbadcb5a6644e53d"
+      },
+      {
+        "name": "cl.casol.backend.shared.application.service.VisibilidadContenidoServiceTest",
+        "tests": 4,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "path": "dima-bug-backend/target/surefire-reports/TEST-cl.casol.backend.shared.application.service.VisibilidadContenidoServiceTest.xml",
+        "sha256": "c1904aaa1199ca1301a157ce2953e432f798caa1b979a000dc7fa947cd77eb6c"
+      },
+      {
+        "name": "cl.casol.backend.shared.infrastructure.config.DataSourceEnvironmentTest",
+        "tests": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "path": "dima-bug-backend/target/surefire-reports/TEST-cl.casol.backend.shared.infrastructure.config.DataSourceEnvironmentTest.xml",
+        "sha256": "7a78dc1d308598f8716c7fc143cf4c22ad76cafc733b0c73db4ae576d9f35e80"
+      },
+      {
+        "name": "cl.casol.backend.shared.infrastructure.storage.AlmacenamientoArchivoFilesystemAdapterTest",
+        "tests": 11,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "path": "dima-bug-backend/target/surefire-reports/TEST-cl.casol.backend.shared.infrastructure.storage.AlmacenamientoArchivoFilesystemAdapterTest.xml",
+        "sha256": "9511e366fb813169c44efccda10730e878f2e3d29f7c24791e21d2338e5c65b8"
+      },
+      {
+        "name": "cl.casol.backend.SintomaSecurityIntegrationTest",
+        "tests": 13,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "path": "dima-bug-backend/target/surefire-reports/TEST-cl.casol.backend.SintomaSecurityIntegrationTest.xml",
+        "sha256": "740c8e1eb3c7826dd2ce2de4cab356af24cb0cd3d0ec991284f1fc7433fdf6d2"
+      },
+      {
+        "name": "cl.casol.backend.SolucionSecurityIntegrationTest",
+        "tests": 41,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "path": "dima-bug-backend/target/surefire-reports/TEST-cl.casol.backend.SolucionSecurityIntegrationTest.xml",
+        "sha256": "258b2fc9072711ed367109f214e12b09bd7cfe12f8b2a80a6accc6feea2e9813"
+      },
+      {
+        "name": "cl.casol.backend.tickets.application.service.AdjuntarArchivoTicketServiceTest",
+        "tests": 7,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "path": "dima-bug-backend/target/surefire-reports/TEST-cl.casol.backend.tickets.application.service.AdjuntarArchivoTicketServiceTest.xml",
+        "sha256": "08e82939bc08b8f9b554cd936302c36185c2b8fb1718d2744b1f5433de381322"
+      },
+      {
+        "name": "cl.casol.backend.tickets.application.service.AsignarTicketServiceTest",
+        "tests": 8,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "path": "dima-bug-backend/target/surefire-reports/TEST-cl.casol.backend.tickets.application.service.AsignarTicketServiceTest.xml",
+        "sha256": "5ed055378516ab9550965283ea4495a741606533f2a15ffd28bd4ce658e00524"
+      },
+      {
+        "name": "cl.casol.backend.tickets.application.service.CambiarEstadoTicketServiceTest",
+        "tests": 15,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "path": "dima-bug-backend/target/surefire-reports/TEST-cl.casol.backend.tickets.application.service.CambiarEstadoTicketServiceTest.xml",
+        "sha256": "3ba1f136a09ecd5a0a918e2500845558c3365cd441ad8cdf077e28909a3624d7"
+      },
+      {
+        "name": "cl.casol.backend.tickets.application.service.CambiarPrioridadTicketServiceTest",
+        "tests": 6,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "path": "dima-bug-backend/target/surefire-reports/TEST-cl.casol.backend.tickets.application.service.CambiarPrioridadTicketServiceTest.xml",
+        "sha256": "42eb2c7e6bd06dec53f779e6e0c097e992139a79ab1fc8b23e9aba756ce18f76"
+      },
+      {
+        "name": "cl.casol.backend.tickets.application.service.ComentarTicketServiceTest",
+        "tests": 6,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "path": "dima-bug-backend/target/surefire-reports/TEST-cl.casol.backend.tickets.application.service.ComentarTicketServiceTest.xml",
+        "sha256": "a37b64e510f62a1a4039e0494d6e97d97b3076a924eac8c10ca0200023fac4e0"
+      },
+      {
+        "name": "cl.casol.backend.tickets.application.service.ConsultarTicketsServiceTest",
+        "tests": 7,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "path": "dima-bug-backend/target/surefire-reports/TEST-cl.casol.backend.tickets.application.service.ConsultarTicketsServiceTest.xml",
+        "sha256": "a39631ce0374c37aa116c837da3510ef36752aaa359088dbae054443ae3841d1"
+      },
+      {
+        "name": "cl.casol.backend.tickets.application.service.CrearTicketServiceTest",
+        "tests": 5,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "path": "dima-bug-backend/target/surefire-reports/TEST-cl.casol.backend.tickets.application.service.CrearTicketServiceTest.xml",
+        "sha256": "b55e1dc94c8c483534c9df37a742623a0198ee9c49473f8330c75416390d4722"
+      },
+      {
+        "name": "cl.casol.backend.tickets.application.service.EtiquetarTicketServiceTest",
+        "tests": 4,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "path": "dima-bug-backend/target/surefire-reports/TEST-cl.casol.backend.tickets.application.service.EtiquetarTicketServiceTest.xml",
+        "sha256": "48789e8336d6d9cf93eb7804072b4e986f30a80f39bb2957394e330dee8844d7"
+      },
+      {
+        "name": "cl.casol.backend.tickets.application.service.GestionarEtiquetasServiceTest",
+        "tests": 6,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "path": "dima-bug-backend/target/surefire-reports/TEST-cl.casol.backend.tickets.application.service.GestionarEtiquetasServiceTest.xml",
+        "sha256": "47d3f906b5012e761a1588aff9809741fdbed57c0a4429831f338d98d446f454"
+      },
+      {
+        "name": "cl.casol.backend.tickets.application.service.ResolverTicketServiceTest",
+        "tests": 6,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "path": "dima-bug-backend/target/surefire-reports/TEST-cl.casol.backend.tickets.application.service.ResolverTicketServiceTest.xml",
+        "sha256": "6b8e18e9f62329eafb2cc2c11d1d4362ff5eca428623e5b9f36b126630946821"
+      },
+      {
+        "name": "cl.casol.backend.tickets.arquitectura.TicketsArquitecturaTest",
+        "tests": 6,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "path": "dima-bug-backend/target/surefire-reports/TEST-cl.casol.backend.tickets.arquitectura.TicketsArquitecturaTest.xml",
+        "sha256": "e4027dbe40b639e2ebdfb0f4d32374c3dee75b7a22d8815d3f523d0311e81e08"
+      },
+      {
+        "name": "cl.casol.backend.tickets.domain.AdjuntoTicketTest",
+        "tests": 4,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "path": "dima-bug-backend/target/surefire-reports/TEST-cl.casol.backend.tickets.domain.AdjuntoTicketTest.xml",
+        "sha256": "029a4ba3458a46331cfbd91462f724005293d29979709b59493d372478d4a668"
+      },
+      {
+        "name": "cl.casol.backend.tickets.domain.EtiquetaTest",
+        "tests": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "path": "dima-bug-backend/target/surefire-reports/TEST-cl.casol.backend.tickets.domain.EtiquetaTest.xml",
+        "sha256": "8d9a434bf2709dc2997fe3e5a46b341200ea7729940f3dc55ec3a8220790e3f2"
+      },
+      {
+        "name": "cl.casol.backend.tickets.domain.TicketTest",
+        "tests": 56,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "path": "dima-bug-backend/target/surefire-reports/TEST-cl.casol.backend.tickets.domain.TicketTest.xml",
+        "sha256": "ffce44775179afff1a3eb60519e76da62ce83a672f638e381f5cc964ae3fca7b"
+      },
+      {
+        "name": "cl.casol.backend.TicketSecurityIntegrationTest",
+        "tests": 12,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "path": "dima-bug-backend/target/surefire-reports/TEST-cl.casol.backend.TicketSecurityIntegrationTest.xml",
+        "sha256": "5a23300a39c1426ea3d5a961a9a77bd74b002f0abadc569161e00559b48213e8"
+      }
+    ],
+    "mysql_tested": false
+  },
+  "frontend": {
+    "command": "npm.cmd test -- --watch=false --browsers=ChromeHeadless",
+    "exit_code": 0,
+    "summary": "TOTAL: 284 SUCCESS",
+    "browser": "Chrome Headless 157.0.0.0",
+    "warnings": [
+      "Karma 404 assets/img/logo_dimabug.png"
+    ],
+    "type_checks": [
+      {
+        "project": "tsconfig.app.json",
+        "exit_code": 0
+      },
+      {
+        "project": "tsconfig.spec.json",
+        "exit_code": 0
+      }
+    ],
+    "e2e_backend_mysql": false
+  },
+  "npm_audit": {
+    "command": "npm.cmd audit --json --ignore-scripts",
+    "vulnerabilities": {
+      "info": 0,
+      "low": 2,
+      "moderate": 28,
+      "high": 20,
+      "critical": 4,
+      "total": 54
+    },
+    "file": "DEPENDENCIAS_NPM.json",
+    "lockfile_sha256": "600efb75fc1d5e7e97d291072e09bee1d1e2bb55c88ea2f64060ff8cd37a44ed",
+    "fix_executed": false,
+    "maven_sca_executed": false
+  },
+  "initial_documents": [
+    {
+      "path": "README.md",
+      "sha256": "9d94cc0d716dbf6045dd4b2b99c60aca338f50398a81e269de1b658ba6be53a8",
+      "status": "Incompleto",
+      "lines": 3
+    },
+    {
+      "path": "dima-bug-backend/docs/aceptacion-riesgo-archivos-skill4.md",
+      "sha256": "85e26032656849cbe5455e1609e6ed183fd03b7e621d85895180415cbb6c7880",
+      "status": "Incompleto",
+      "lines": 152
+    },
+    {
+      "path": "dima-bug-backend/docs/adr/ADR-001-arquitectura-backend.md",
+      "sha256": "5eea350db1240a96928361ba29979a3a9f27cdeb44b3afb66e8fd426e3cfd85b",
+      "status": "Desactualizado",
+      "lines": 32
+    },
+    {
+      "path": "dima-bug-backend/docs/adr/ADR-002-almacenamiento-archivos.md",
+      "sha256": "d5819bd087debaaa9647e71225b7ec1505815702f17bb2dcb9f40c3905903a8a",
+      "status": "Vigente",
+      "lines": 35
+    },
+    {
+      "path": "dima-bug-backend/docs/arquitectura.md",
+      "sha256": "f441fb0c4c797f0e7b82af6bb646bf0f2622c854d0c0247e699b04855f97f634",
+      "status": "Desactualizado",
+      "lines": 62
+    },
+    {
+      "path": "dima-bug-backend/docs/auditoria-cobertura-riesgos-skill4.md",
+      "sha256": "8417a9edb2c6534396b9e138000c0fd43072e2607c419e3d3deaccb8501db68f",
+      "status": "Desactualizado",
+      "lines": 322
+    },
+    {
+      "path": "dima-bug-backend/docs/autorizacion-http-integracion.md",
+      "sha256": "3c4db0cefe2d4e025246e0173ac3b367d3f248a5dbfa3c1c5ff78b8018ccc284",
+      "status": "Incompleto",
+      "lines": 145
+    },
+    {
+      "path": "dima-bug-backend/docs/base-de-datos.md",
+      "sha256": "1386bf198c92619cfe174ebaa4de8b4f8a96e9cefd95d8636e38829cf19f20a6",
+      "status": "Desactualizado",
+      "lines": 61
+    },
+    {
+      "path": "dima-bug-backend/docs/ci-pruebas-backend.md",
+      "sha256": "ee05539c1ee518b20939f372f058489265810a4f924958d44a6af2b9180dc5d4",
+      "status": "Desactualizado",
+      "lines": 142
+    },
+    {
+      "path": "dima-bug-backend/docs/concurrencia-integracion.md",
+      "sha256": "c9382876443bc39b5f90e62b1bff7bb848a2e9933ad9c9b6033244ab38dbd600",
+      "status": "Desactualizado",
+      "lines": 311
+    },
+    {
+      "path": "dima-bug-backend/docs/configuracion-dev.md",
+      "sha256": "db5d91c4cefa3f970f43fa8b37ae5101de4a59c9fc9c29eed6ff9441617015b1",
+      "status": "Desactualizado",
+      "lines": 86
+    },
+    {
+      "path": "dima-bug-backend/docs/decision-historial-procedimientos.md",
+      "sha256": "a1ccf3b83544db729f23142519e7f6d8b9c3372c6e1cc7de408e1cb39637eef2",
+      "status": "Desactualizado",
+      "lines": 158
+    },
+    {
+      "path": "dima-bug-backend/docs/decision-riesgos-residuales-skill4.md",
+      "sha256": "d951ebb58c9514050f46a7b1104938229ed74ce10690f2fdbac8e53d60281eae",
+      "status": "Incompleto",
+      "lines": 148
+    },
+    {
+      "path": "dima-bug-backend/docs/handoff-skill4-a-skill5.md",
+      "sha256": "23e38fa0d2de3db931f04306c878d1bab0cfd135ecc1cfb79ac097926d29a9fd",
+      "status": "Desactualizado",
+      "lines": 286
+    },
+    {
+      "path": "dima-bug-backend/docs/integracion-mysql.md",
+      "sha256": "7651c843e34c43d32b8d5295b102b6217d57afbd1a34e6b76b7b7c3d48ab989e",
+      "status": "Desactualizado",
+      "lines": 228
+    },
+    {
+      "path": "dima-bug-backend/docs/materiales-archivo.md",
+      "sha256": "e45bd13015b70ae98cd90da6dfd859283972e72e721f17434bf5785ba8005b63",
+      "status": "Desactualizado",
+      "lines": 110
+    },
+    {
+      "path": "dima-bug-backend/docs/materiales-integracion.md",
+      "sha256": "b500b9655412ba9ed7b38d2ad9acadb7c170356d30cbdad22b79de5994bfb982",
+      "status": "Incompleto",
+      "lines": 133
+    },
+    {
+      "path": "dima-bug-backend/docs/migracion-fk-usuarios.md",
+      "sha256": "571a2c47b2d079db8ee2896428d3c5d2e223c9bf0e51efcee9483bac73439c8e",
+      "status": "Incompleto",
+      "lines": 164
+    },
+    {
+      "path": "dima-bug-backend/docs/procedimientos-ejecuciones-resultados-integracion.md",
+      "sha256": "0d4e0ec916907ebc2da5a47eda7321c3642f8b6ce2b28e0795395c134b741141",
+      "status": "Incompleto",
+      "lines": 154
+    },
+    {
+      "path": "dima-bug-backend/docs/seguridad-integracion.md",
+      "sha256": "1a8c134d739f140de94b197716d22c6e3ecc69a7c7c1c113e3f92bb04969a1d3",
+      "status": "Desactualizado",
+      "lines": 221
+    },
+    {
+      "path": "dima-bug-backend/docs/seguridad.md",
+      "sha256": "662dc4bb0ef37c2dd91893117d4fd5cded92b0e73b73682d97c2f1beeda4434b",
+      "status": "Desactualizado",
+      "lines": 61
+    },
+    {
+      "path": "entregables/modelo-relacional/LEEME.md",
+      "sha256": "f6e8b84af0a305df37a8779c222db36cc3177ef9283bf7ccbec7e6047392ae91",
+      "status": "Desactualizado",
+      "lines": 58
+    },
+    {
+      "path": "frontend-dimabug/README.md",
+      "sha256": "30631c1ef9d318d7fb6cd42d4635d97c2f53f95a4c38135f714bf5302918538e",
+      "status": "Desactualizado",
+      "lines": 48
+    },
+    {
+      "path": "frontend-dimabug/docs/QA009_IMPLEMENTACION.md",
+      "sha256": "896266c105fd052d29f6b2b34c5dfafcf5e190129720af752c0a01998034346c",
+      "status": "Vigente",
+      "lines": 135
+    },
+    {
+      "path": "frontend-dimabug/docs/QA010_SISTEMAS_HARDWARE.md",
+      "sha256": "f63b3d8fc4e9e7d73d8165289d35096d9040a1e8b6095e460d161adabb907e14",
+      "status": "Vigente",
+      "lines": 104
+    },
+    {
+      "path": "frontend-dimabug/docs/QA011_DIAGNOSTICO_MODULOS.md",
+      "sha256": "2638f10702abb0dc6013bec7d01d982dd9fb7841240ecda3ad7bba3f87f57c90",
+      "status": "Vigente",
+      "lines": 236
+    },
+    {
+      "path": "frontend-dimabug/docs/QA011_IMPLEMENTACION_MODULOS.md",
+      "sha256": "9b835bd01e764450492e3aa0f8a897a9538f9a4033ee6b3b49534094ad4e77a1",
+      "status": "Vigente",
+      "lines": 104
+    },
+    {
+      "path": "frontend-dimabug/docs/QA012_DIAGNOSTICO_DEPARTAMENTOS.md",
+      "sha256": "e4f4b021605487d9dc9a8387a08c50783e291888a4ddefc9b35ffb54c7c74f1b",
+      "status": "Vigente",
+      "lines": 241
+    },
+    {
+      "path": "frontend-dimabug/docs/QA012_DISENO_PERSISTENCIA.md",
+      "sha256": "4bb68d0efd1b092ed3b5d6c6d0b44f94dda2f792eb24ecef5a18a8b4ea9811f3",
+      "status": "Vigente",
+      "lines": 287
+    },
+    {
+      "path": "frontend-dimabug/docs/QA012_IMPLEMENTACION_DEPARTAMENTOS.md",
+      "sha256": "aa4793028547c3fd7f09e0bb5d822fdfab4c36ae0c51f9c77232cd4fb5fe2cfe",
+      "status": "Desactualizado",
+      "lines": 235
+    },
+    {
+      "path": "frontend-dimabug/docs/QA013_DIAGNOSTICO_PRUEBAS_PASOS.md",
+      "sha256": "f9e64485ac6f749de3b43c8774c80be6e05fc345b66bee7e3baa3e7e34772f9d",
+      "status": "Vigente",
+      "lines": 208
+    },
+    {
+      "path": "frontend-dimabug/docs/QA013_IMPLEMENTACION_PRUEBAS_PASOS.md",
+      "sha256": "5d54ed28d66085ce2d7091bbe7e00db6492e13e9ec17d1bbc74cb760d0a78877",
+      "status": "Vigente",
+      "lines": 225
+    },
+    {
+      "path": "frontend-dimabug/docs/QA014_DIAGNOSTICO_NUEVO_PROCEDIMIENTO.md",
+      "sha256": "31555bb5325727a85948b4dac8d41770cccd447917083366523c65fcf8dfff3f",
+      "status": "Vigente",
+      "lines": 182
+    },
+    {
+      "path": "frontend-dimabug/docs/QA014_IMPLEMENTACION_NUEVO_PROCEDIMIENTO.md",
+      "sha256": "e9cea42fb4cf3654c61e98b114c3663bbed8c72d64ae40db7443ef322b2971bd",
+      "status": "Vigente",
+      "lines": 144
+    },
+    {
+      "path": "frontend-dimabug/docs/QA015_AUDITORIA_INTEGRACION.md",
+      "sha256": "516593e29684f8cf2e55081a9772fe8d304c0fa9f2740aab4b0968c236ff3fb6",
+      "status": "Incompleto",
+      "lines": 475
+    },
+    {
+      "path": "frontend-dimabug/docs/QA016_1_DIAGNOSTICO_DOCKER.md",
+      "sha256": "5db23462e18497cd6f7acbaaa22656322dd5e4c4fc36fb45805cf48072b13d45",
+      "status": "Vigente",
+      "lines": 113
+    },
+    {
+      "path": "frontend-dimabug/docs/QA016_2_PREPARACION_DOCKER_WSL2.md",
+      "sha256": "dd7c906a4af8576edb439cbe07a00b3ad66106eb98901461f09d293d1c3bb1e2",
+      "status": "Vigente",
+      "lines": 89
+    },
+    {
+      "path": "frontend-dimabug/docs/QA016_3_RECUPERACION_ESQUEMA_MYSQL.md",
+      "sha256": "e6047ad4ca5381af4e8b23427032948dc08a272bb06b5c158cb7c16e873827fb",
+      "status": "Desactualizado",
+      "lines": 144
+    },
+    {
+      "path": "frontend-dimabug/docs/QA016_PLAN_MYSQL_AISLADO.md",
+      "sha256": "eb100a38c6eaa7b64d4c303a35d25659e1ddcf2e1953a3507de4345d65837ba0",
+      "status": "Vigente",
+      "lines": 247
+    },
+    {
+      "path": "frontend-dimabug/docs/QA_ARCHIVOS.txt",
+      "sha256": "34bf6696c904c5bc35c0afdcf96f6d06c80de7349ab972bddfd0721d66a23ef6",
+      "status": "Vigente",
+      "lines": 91
+    },
+    {
+      "path": "frontend-dimabug/docs/QA_EMPAQUETADO_STAGING.md",
+      "sha256": "3af716f9162c1a7ed3d6dcd7770b03054459bfa370c85425dade67385a8abe06",
+      "status": "Desactualizado",
+      "lines": 86
+    },
+    {
+      "path": "frontend-dimabug/docs/QA_MVP_ESTABILIZACION.md",
+      "sha256": "4bb4b2ee2ef8a37f778ebf80d0569d4fb2819076692f9c5adf20cb0404fe5377",
+      "status": "Desactualizado",
+      "lines": 151
+    },
+    {
+      "path": "frontend-dimabug/docs/QA_RESULTADOS.txt",
+      "sha256": "a577176b7178cf67b6924c948a0e276082598629e5c93b3aa96b9f5e0a3c3900",
+      "status": "Vigente",
+      "lines": 19
+    }
+  ],
+  "broken_local_markdown_references": [
+    {
+      "source": "dima-bug-backend/docs/arquitectura.md",
+      "line": 62,
+      "target": "../README.md#pendientes-técnicos-detectados"
+    },
+    {
+      "source": "dima-bug-backend/docs/auditoria-cobertura-riesgos-skill4.md",
+      "line": 313,
+      "target": "../src/test/java/cl/casol/backend/integration/"
+    },
+    {
+      "source": "dima-bug-backend/docs/auditoria-cobertura-riesgos-skill4.md",
+      "line": 320,
+      "target": "../src/main/resources/application.properties"
+    },
+    {
+      "source": "dima-bug-backend/docs/auditoria-cobertura-riesgos-skill4.md",
+      "line": 320,
+      "target": "../src/test/resources/integration-mysql.properties"
+    },
+    {
+      "source": "dima-bug-backend/docs/auditoria-cobertura-riesgos-skill4.md",
+      "line": 320,
+      "target": "../src/test/resources/db/dimabug-esquema.sql"
+    },
+    {
+      "source": "dima-bug-backend/docs/ci-pruebas-backend.md",
+      "line": 8,
+      "target": "../.github/workflows/backend-tests.yml"
+    },
+    {
+      "source": "dima-bug-backend/docs/ci-pruebas-backend.md",
+      "line": 44,
+      "target": "../src/test/java/cl/casol/backend/integration/MySqlIntegrationSupport.java"
+    },
+    {
+      "source": "dima-bug-backend/docs/configuracion-dev.md",
+      "line": 12,
+      "target": "../src/main/resources/application.properties"
+    },
+    {
+      "source": "dima-bug-backend/docs/configuracion-dev.md",
+      "line": 81,
+      "target": "../README.md#pruebas"
+    },
+    {
+      "source": "dima-bug-backend/docs/configuracion-dev.md",
+      "line": 86,
+      "target": "../README.md#pendientes-técnicos-detectados"
+    },
+    {
+      "source": "dima-bug-backend/docs/decision-historial-procedimientos.md",
+      "line": 73,
+      "target": "../src/main/resources/db/migration/V20261009_01__snapshot_pasos_ejecucion.sql"
+    },
+    {
+      "source": "dima-bug-backend/docs/decision-riesgos-residuales-skill4.md",
+      "line": 142,
+      "target": "../src/test/java/cl/casol/backend/integration/MaterialesArchivoIT.java"
+    },
+    {
+      "source": "dima-bug-backend/docs/handoff-skill4-a-skill5.md",
+      "line": 146,
+      "target": "../src/main/resources/application.properties"
+    },
+    {
+      "source": "dima-bug-backend/docs/handoff-skill4-a-skill5.md",
+      "line": 166,
+      "target": "../src/main/resources/db/migration/V20261008_01__agregar_fk_usuarios_autoria_seguimiento.sql"
+    },
+    {
+      "source": "dima-bug-backend/docs/handoff-skill4-a-skill5.md",
+      "line": 166,
+      "target": "../src/main/resources/db/diagnostico/D20261008_01__usuarios_referencias_huerfanas.sql"
+    },
+    {
+      "source": "dima-bug-backend/docs/handoff-skill4-a-skill5.md",
+      "line": 167,
+      "target": "../src/main/resources/db/migration/V20261009_01__snapshot_pasos_ejecucion.sql"
+    },
+    {
+      "source": "dima-bug-backend/docs/handoff-skill4-a-skill5.md",
+      "line": 227,
+      "target": "../.github/workflows/backend-tests.yml"
+    },
+    {
+      "source": "dima-bug-backend/docs/integracion-mysql.md",
+      "line": 48,
+      "target": "../src/main/resources/db/diagnostico/D20261008_01__usuarios_referencias_huerfanas.sql"
+    },
+    {
+      "source": "dima-bug-backend/docs/integracion-mysql.md",
+      "line": 49,
+      "target": "../src/main/resources/db/migration/V20261008_01__agregar_fk_usuarios_autoria_seguimiento.sql"
+    },
+    {
+      "source": "dima-bug-backend/docs/materiales-archivo.md",
+      "line": 110,
+      "target": "../README.md#pendientes-técnicos-detectados"
+    },
+    {
+      "source": "dima-bug-backend/docs/migracion-fk-usuarios.md",
+      "line": 8,
+      "target": "../src/main/resources/db/diagnostico/D20261008_01__usuarios_referencias_huerfanas.sql"
+    },
+    {
+      "source": "dima-bug-backend/docs/migracion-fk-usuarios.md",
+      "line": 9,
+      "target": "../src/main/resources/db/migration/V20261008_01__agregar_fk_usuarios_autoria_seguimiento.sql"
+    }
+  ],
+  "table_count": 31,
+  "jpa_entities": 28,
+  "join_tables": 2,
+  "jdbc_only_tables": 1,
+  "sql_foreign_key_declarations": [
+    {
+      "path": "dima-bug-backend/src/main/resources/db/migration/V20261017_01__modulo_tickets.sql",
+      "line": 48,
+      "declaration": "CONSTRAINT fk_tte_ticket   FOREIGN KEY (ticket_id)   REFERENCES ticket (id) ON DELETE CASCADE,"
+    },
+    {
+      "path": "dima-bug-backend/src/main/resources/db/migration/V20261017_01__modulo_tickets.sql",
+      "line": 49,
+      "declaration": "CONSTRAINT fk_tte_etiqueta FOREIGN KEY (etiqueta_id) REFERENCES ticket_etiqueta (id)"
+    },
+    {
+      "path": "dima-bug-backend/src/main/resources/db/migration/V20261017_01__modulo_tickets.sql",
+      "line": 61,
+      "declaration": "CONSTRAINT fk_ticket_comentario_ticket FOREIGN KEY (ticket_id) REFERENCES ticket (id) ON DELETE CASCADE"
+    },
+    {
+      "path": "dima-bug-backend/src/main/resources/db/migration/V20261017_01__modulo_tickets.sql",
+      "line": 74,
+      "declaration": "CONSTRAINT fk_ticket_historial_ticket FOREIGN KEY (ticket_id) REFERENCES ticket (id) ON DELETE CASCADE"
+    },
+    {
+      "path": "dima-bug-backend/src/main/resources/db/migration/V20261017_02__tickets_adjuntos_y_nivel_etiqueta.sql",
+      "line": 21,
+      "declaration": "CONSTRAINT fk_ticket_adjunto_ticket FOREIGN KEY (ticket_id) REFERENCES ticket (id) ON DELETE CASCADE,"
+    },
+    {
+      "path": "dima-bug-backend/src/main/resources/db/migration/V20261017_02__tickets_adjuntos_y_nivel_etiqueta.sql",
+      "line": 22,
+      "declaration": "CONSTRAINT fk_ticket_adjunto_comentario FOREIGN KEY (comentario_id) REFERENCES ticket_comentario (id) ON DELETE CASCADE"
+    }
+  ],
+  "endpoints": [
+    {
+      "method": "GET",
+      "route": "/api/admin/catalogos/{tipo}",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/catalogo/infrastructure/web/AdminCatalogoController.java",
+      "line": 14
+    },
+    {
+      "method": "GET",
+      "route": "/api/admin/catalogos/{tipo}/{id}",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/catalogo/infrastructure/web/AdminCatalogoController.java",
+      "line": 17
+    },
+    {
+      "method": "POST",
+      "route": "/api/admin/catalogos/{tipo}",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/catalogo/infrastructure/web/AdminCatalogoController.java",
+      "line": 20
+    },
+    {
+      "method": "PUT",
+      "route": "/api/admin/catalogos/{tipo}/{id}",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/catalogo/infrastructure/web/AdminCatalogoController.java",
+      "line": 24
+    },
+    {
+      "method": "PATCH",
+      "route": "/api/admin/catalogos/{tipo}/{id}/estado",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/catalogo/infrastructure/web/AdminCatalogoController.java",
+      "line": 27
+    },
+    {
+      "method": "GET",
+      "route": "/api/frecuencias",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/catalogo/infrastructure/web/FrecuenciaController.java",
+      "line": 17
+    },
+    {
+      "method": "GET",
+      "route": "/api/hardware",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/catalogo/infrastructure/web/HardwareController.java",
+      "line": 16
+    },
+    {
+      "method": "GET",
+      "route": "/api/hardware/{id}",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/catalogo/infrastructure/web/HardwareController.java",
+      "line": 21
+    },
+    {
+      "method": "GET",
+      "route": "/api/hardware/{id}/sistemas",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/catalogo/infrastructure/web/HardwareController.java",
+      "line": 24
+    },
+    {
+      "method": "GET",
+      "route": "/api/sistemas",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/catalogo/infrastructure/web/SistemaController.java",
+      "line": 17
+    },
+    {
+      "method": "GET",
+      "route": "/api/sistemas/{id}",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/catalogo/infrastructure/web/SistemaController.java",
+      "line": 22
+    },
+    {
+      "method": "GET",
+      "route": "/api/sistemas/{id}/modulos",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/catalogo/infrastructure/web/SistemaController.java",
+      "line": 25
+    },
+    {
+      "method": "GET",
+      "route": "/api/sistemas/{id}/hardware",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/catalogo/infrastructure/web/SistemaController.java",
+      "line": 30
+    },
+    {
+      "method": "GET",
+      "route": "/api/admin/pruebas",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/infrastructure/web/AdminPruebaController.java",
+      "line": 14
+    },
+    {
+      "method": "GET",
+      "route": "/api/admin/pruebas/{id}",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/infrastructure/web/AdminPruebaController.java",
+      "line": 15
+    },
+    {
+      "method": "POST",
+      "route": "/api/admin/pruebas",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/infrastructure/web/AdminPruebaController.java",
+      "line": 16
+    },
+    {
+      "method": "PUT",
+      "route": "/api/admin/pruebas/{id}",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/infrastructure/web/AdminPruebaController.java",
+      "line": 17
+    },
+    {
+      "method": "PATCH",
+      "route": "/api/admin/pruebas/{id}/estado",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/infrastructure/web/AdminPruebaController.java",
+      "line": 18
+    },
+    {
+      "method": "GET",
+      "route": "/api/admin/conocimientos/{conocimientoId}/soluciones",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/infrastructure/web/AdminSolucionController.java",
+      "line": 13
+    },
+    {
+      "method": "PATCH",
+      "route": "/api/admin/conocimientos/{conocimientoId}/soluciones/{solucionId}/estado",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/infrastructure/web/AdminSolucionController.java",
+      "line": 17
+    },
+    {
+      "method": "PATCH",
+      "route": "/api/admin/conocimientos/{conocimientoId}/soluciones/{solucionId}/autoservicio",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/infrastructure/web/AdminSolucionController.java",
+      "line": 22
+    },
+    {
+      "method": "POST",
+      "route": "/api/admin/conocimientos/{conocimientoId}/soluciones/copias",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/infrastructure/web/AdminSolucionCopiaController.java",
+      "line": 12
+    },
+    {
+      "method": "GET",
+      "route": "/api/conocimientos/{conocimientoId}/causas",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/infrastructure/web/CausaController.java",
+      "line": 20
+    },
+    {
+      "method": "POST",
+      "route": "/api/conocimientos/{conocimientoId}/causas",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/infrastructure/web/CausaController.java",
+      "line": 25
+    },
+    {
+      "method": "PUT",
+      "route": "/api/conocimientos/{conocimientoId}/causas/{causaId}",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/infrastructure/web/CausaController.java",
+      "line": 32
+    },
+    {
+      "method": "POST",
+      "route": "/api/chatbot/consultas",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/infrastructure/web/ChatbotController.java",
+      "line": 15
+    },
+    {
+      "method": "GET",
+      "route": "/api/conocimientos/buscar",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/infrastructure/web/ConocimientoController.java",
+      "line": 29
+    },
+    {
+      "method": "GET",
+      "route": "/api/conocimientos",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/infrastructure/web/ConocimientoController.java",
+      "line": 40
+    },
+    {
+      "method": "GET",
+      "route": "/api/conocimientos/{id}",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/infrastructure/web/ConocimientoController.java",
+      "line": 49
+    },
+    {
+      "method": "POST",
+      "route": "/api/conocimientos",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/infrastructure/web/ConocimientoController.java",
+      "line": 58
+    },
+    {
+      "method": "PUT",
+      "route": "/api/conocimientos/{id}",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/infrastructure/web/ConocimientoController.java",
+      "line": 67
+    },
+    {
+      "method": "PATCH",
+      "route": "/api/conocimientos/{id}/estado",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/infrastructure/web/ConocimientoController.java",
+      "line": 75
+    },
+    {
+      "method": "DELETE",
+      "route": "/api/conocimientos/{id}",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/infrastructure/web/ConocimientoController.java",
+      "line": 88
+    },
+    {
+      "method": "GET",
+      "route": "/api/conocimientos/{conocimientoId}/pruebas",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/infrastructure/web/ConocimientoPruebaController.java",
+      "line": 17
+    },
+    {
+      "method": "POST",
+      "route": "/api/conocimientos/{conocimientoId}/pruebas",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/infrastructure/web/ConocimientoPruebaController.java",
+      "line": 22
+    },
+    {
+      "method": "PUT",
+      "route": "/api/conocimientos/{conocimientoId}/pruebas/{pruebaId}",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/infrastructure/web/ConocimientoPruebaController.java",
+      "line": 29
+    },
+    {
+      "method": "GET",
+      "route": "/api/conocimientos/{conocimientoId}/materiales",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/infrastructure/web/MaterialApoyoController.java",
+      "line": 23
+    },
+    {
+      "method": "POST",
+      "route": "/api/conocimientos/{conocimientoId}/materiales",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/infrastructure/web/MaterialApoyoController.java",
+      "line": 28
+    },
+    {
+      "method": "PUT",
+      "route": "/api/conocimientos/{conocimientoId}/materiales/{materialId}",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/infrastructure/web/MaterialApoyoController.java",
+      "line": 37
+    },
+    {
+      "method": "DELETE",
+      "route": "/api/conocimientos/{conocimientoId}/materiales/{materialId}",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/infrastructure/web/MaterialApoyoController.java",
+      "line": 45
+    },
+    {
+      "method": "POST",
+      "route": "/api/conocimientos/{conocimientoId}/materiales/archivo",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/infrastructure/web/MaterialConocimientoArchivoController.java",
+      "line": 16
+    },
+    {
+      "method": "GET",
+      "route": "/api/conocimientos/{conocimientoId}/materiales/{materialId}/archivo",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/infrastructure/web/MaterialConocimientoArchivoController.java",
+      "line": 22
+    },
+    {
+      "method": "GET",
+      "route": "/api/pruebas",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/infrastructure/web/PruebaController.java",
+      "line": 15
+    },
+    {
+      "method": "POST",
+      "route": "/api/conocimientos/{conocimientoId}/materiales/reutilizaciones",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/infrastructure/web/ReutilizarMaterialController.java",
+      "line": 12
+    },
+    {
+      "method": "GET",
+      "route": "/api/conocimientos/{conocimientoId}/sintomas",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/infrastructure/web/SintomaController.java",
+      "line": 20
+    },
+    {
+      "method": "POST",
+      "route": "/api/conocimientos/{conocimientoId}/sintomas",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/infrastructure/web/SintomaController.java",
+      "line": 25
+    },
+    {
+      "method": "PUT",
+      "route": "/api/conocimientos/{conocimientoId}/sintomas/{sintomaId}",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/infrastructure/web/SintomaController.java",
+      "line": 32
+    },
+    {
+      "method": "GET",
+      "route": "/api/conocimientos/{conocimientoId}/soluciones/{solucionId}/asignaciones",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/infrastructure/web/SolucionAsignacionController.java",
+      "line": 15
+    },
+    {
+      "method": "POST",
+      "route": "/api/conocimientos/{conocimientoId}/soluciones/{solucionId}/asignaciones",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/infrastructure/web/SolucionAsignacionController.java",
+      "line": 19
+    },
+    {
+      "method": "PUT",
+      "route": "/api/conocimientos/{conocimientoId}/soluciones/{solucionId}/asignaciones/{asignacionId}",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/infrastructure/web/SolucionAsignacionController.java",
+      "line": 25
+    },
+    {
+      "method": "GET",
+      "route": "/api/conocimientos/{conocimientoId}/soluciones",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/infrastructure/web/SolucionController.java",
+      "line": 15
+    },
+    {
+      "method": "POST",
+      "route": "/api/conocimientos/{conocimientoId}/soluciones",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/infrastructure/web/SolucionController.java",
+      "line": 18
+    },
+    {
+      "method": "PUT",
+      "route": "/api/conocimientos/{conocimientoId}/soluciones/{solucionId}",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/infrastructure/web/SolucionController.java",
+      "line": 23
+    },
+    {
+      "method": "POST",
+      "route": "/api/procedimientos/{procedimientoId}/ejecuciones",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/ejecucion/infrastructure/web/EjecucionController.java",
+      "line": 14
+    },
+    {
+      "method": "GET",
+      "route": "/api/ejecuciones/{id}",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/ejecucion/infrastructure/web/EjecucionController.java",
+      "line": 17
+    },
+    {
+      "method": "GET",
+      "route": "/api/ejecuciones",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/ejecucion/infrastructure/web/EjecucionController.java",
+      "line": 19
+    },
+    {
+      "method": "GET",
+      "route": "/api/ejecuciones/{id}/pasos",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/ejecucion/infrastructure/web/EjecucionController.java",
+      "line": 21
+    },
+    {
+      "method": "PATCH",
+      "route": "/api/ejecuciones/{id}/pasos/{ejecucionPasoId}",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/ejecucion/infrastructure/web/EjecucionController.java",
+      "line": 23
+    },
+    {
+      "method": "PATCH",
+      "route": "/api/ejecuciones/{id}/completar",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/ejecucion/infrastructure/web/EjecucionController.java",
+      "line": 28
+    },
+    {
+      "method": "PATCH",
+      "route": "/api/ejecuciones/{id}/cancelar",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/ejecucion/infrastructure/web/EjecucionController.java",
+      "line": 30
+    },
+    {
+      "method": "GET",
+      "route": "/api/admin/departamentos/{departamentoId}/contactos",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/identidad/infrastructure/web/AdminDepartamentoContactoController.java",
+      "line": 13
+    },
+    {
+      "method": "GET",
+      "route": "/api/admin/departamentos/{departamentoId}/contactos/{id}",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/identidad/infrastructure/web/AdminDepartamentoContactoController.java",
+      "line": 17
+    },
+    {
+      "method": "POST",
+      "route": "/api/admin/departamentos/{departamentoId}/contactos",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/identidad/infrastructure/web/AdminDepartamentoContactoController.java",
+      "line": 20
+    },
+    {
+      "method": "PUT",
+      "route": "/api/admin/departamentos/{departamentoId}/contactos/{id}",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/identidad/infrastructure/web/AdminDepartamentoContactoController.java",
+      "line": 25
+    },
+    {
+      "method": "PATCH",
+      "route": "/api/admin/departamentos/{departamentoId}/contactos/{id}/estado",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/identidad/infrastructure/web/AdminDepartamentoContactoController.java",
+      "line": 28
+    },
+    {
+      "method": "GET",
+      "route": "/api/admin/departamentos",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/identidad/infrastructure/web/AdminDepartamentoController.java",
+      "line": 14
+    },
+    {
+      "method": "GET",
+      "route": "/api/admin/departamentos/{id}",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/identidad/infrastructure/web/AdminDepartamentoController.java",
+      "line": 15
+    },
+    {
+      "method": "POST",
+      "route": "/api/admin/departamentos",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/identidad/infrastructure/web/AdminDepartamentoController.java",
+      "line": 16
+    },
+    {
+      "method": "PUT",
+      "route": "/api/admin/departamentos/{id}",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/identidad/infrastructure/web/AdminDepartamentoController.java",
+      "line": 19
+    },
+    {
+      "method": "PATCH",
+      "route": "/api/admin/departamentos/{id}/estado",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/identidad/infrastructure/web/AdminDepartamentoController.java",
+      "line": 22
+    },
+    {
+      "method": "GET",
+      "route": "/api/admin/responsables",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/identidad/infrastructure/web/AdminResponsableController.java",
+      "line": 15
+    },
+    {
+      "method": "GET",
+      "route": "/api/admin/responsables/{id}",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/identidad/infrastructure/web/AdminResponsableController.java",
+      "line": 16
+    },
+    {
+      "method": "POST",
+      "route": "/api/admin/responsables",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/identidad/infrastructure/web/AdminResponsableController.java",
+      "line": 17
+    },
+    {
+      "method": "PUT",
+      "route": "/api/admin/responsables/{id}",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/identidad/infrastructure/web/AdminResponsableController.java",
+      "line": 21
+    },
+    {
+      "method": "PATCH",
+      "route": "/api/admin/responsables/{id}/estado",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/identidad/infrastructure/web/AdminResponsableController.java",
+      "line": 24
+    },
+    {
+      "method": "POST",
+      "route": "/api/auth/login",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/identidad/infrastructure/web/AuthController.java",
+      "line": 33
+    },
+    {
+      "method": "GET",
+      "route": "/api/auth/me",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/identidad/infrastructure/web/AuthController.java",
+      "line": 56
+    },
+    {
+      "method": "GET",
+      "route": "/api/departamentos",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/identidad/infrastructure/web/DepartamentoController.java",
+      "line": 16
+    },
+    {
+      "method": "GET",
+      "route": "/api/departamentos/{id}/responsables",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/identidad/infrastructure/web/DepartamentoController.java",
+      "line": 21
+    },
+    {
+      "method": "GET",
+      "route": "/api/departamentos/{id}/contactos",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/identidad/infrastructure/web/DepartamentoController.java",
+      "line": 26
+    },
+    {
+      "method": "GET",
+      "route": "/api/roles",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/identidad/infrastructure/web/RolController.java",
+      "line": 21
+    },
+    {
+      "method": "GET",
+      "route": "/api/usuarios",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/identidad/infrastructure/web/UsuarioController.java",
+      "line": 35
+    },
+    {
+      "method": "GET",
+      "route": "/api/usuarios/{id}",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/identidad/infrastructure/web/UsuarioController.java",
+      "line": 40
+    },
+    {
+      "method": "POST",
+      "route": "/api/usuarios",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/identidad/infrastructure/web/UsuarioController.java",
+      "line": 45
+    },
+    {
+      "method": "PUT",
+      "route": "/api/usuarios/{id}",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/identidad/infrastructure/web/UsuarioController.java",
+      "line": 53
+    },
+    {
+      "method": "PATCH",
+      "route": "/api/usuarios/{id}/password",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/identidad/infrastructure/web/UsuarioController.java",
+      "line": 61
+    },
+    {
+      "method": "PATCH",
+      "route": "/api/usuarios/{id}/estado",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/identidad/infrastructure/web/UsuarioController.java",
+      "line": 67
+    },
+    {
+      "method": "POST",
+      "route": "/api/procedimientos/{procedimientoId}/pasos/{pasoId}/materiales/archivo",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/procedimiento/infrastructure/web/MaterialPasoArchivoController.java",
+      "line": 16
+    },
+    {
+      "method": "GET",
+      "route": "/api/procedimientos/{procedimientoId}/pasos/{pasoId}/materiales/{materialId}/archivo",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/procedimiento/infrastructure/web/MaterialPasoArchivoController.java",
+      "line": 22
+    },
+    {
+      "method": "GET",
+      "route": "/api/procedimientos/{procedimientoId}/pasos/{pasoId}/materiales",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/procedimiento/infrastructure/web/MaterialPasoController.java",
+      "line": 20
+    },
+    {
+      "method": "POST",
+      "route": "/api/procedimientos/{procedimientoId}/pasos/{pasoId}/materiales",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/procedimiento/infrastructure/web/MaterialPasoController.java",
+      "line": 21
+    },
+    {
+      "method": "PUT",
+      "route": "/api/procedimientos/{procedimientoId}/pasos/{pasoId}/materiales/{materialId}",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/procedimiento/infrastructure/web/MaterialPasoController.java",
+      "line": 23
+    },
+    {
+      "method": "DELETE",
+      "route": "/api/procedimientos/{procedimientoId}/pasos/{pasoId}/materiales/{materialId}",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/procedimiento/infrastructure/web/MaterialPasoController.java",
+      "line": 24
+    },
+    {
+      "method": "GET",
+      "route": "/api/procedimientos/{procedimientoId}/pasos",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/procedimiento/infrastructure/web/PasoController.java",
+      "line": 15
+    },
+    {
+      "method": "POST",
+      "route": "/api/procedimientos/{procedimientoId}/pasos",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/procedimiento/infrastructure/web/PasoController.java",
+      "line": 16
+    },
+    {
+      "method": "PUT",
+      "route": "/api/procedimientos/{procedimientoId}/pasos/{pasoId}",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/procedimiento/infrastructure/web/PasoController.java",
+      "line": 18
+    },
+    {
+      "method": "GET",
+      "route": "/api/procedimientos",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/procedimiento/infrastructure/web/ProcedimientoController.java",
+      "line": 20
+    },
+    {
+      "method": "GET",
+      "route": "/api/procedimientos/{id}",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/procedimiento/infrastructure/web/ProcedimientoController.java",
+      "line": 21
+    },
+    {
+      "method": "POST",
+      "route": "/api/procedimientos",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/procedimiento/infrastructure/web/ProcedimientoController.java",
+      "line": 22
+    },
+    {
+      "method": "PUT",
+      "route": "/api/procedimientos/{id}",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/procedimiento/infrastructure/web/ProcedimientoController.java",
+      "line": 24
+    },
+    {
+      "method": "PATCH",
+      "route": "/api/procedimientos/{id}/estado",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/procedimiento/infrastructure/web/ProcedimientoController.java",
+      "line": 25
+    },
+    {
+      "method": "POST",
+      "route": "/api/conocimientos/{conocimientoId}/soluciones/{solucionId}/resultados",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/seguimiento/infrastructure/web/ResultadoSolucionController.java",
+      "line": 16
+    },
+    {
+      "method": "GET",
+      "route": "/api/conocimientos/{conocimientoId}/soluciones/{solucionId}/resultados",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/seguimiento/infrastructure/web/ResultadoSolucionController.java",
+      "line": 21
+    },
+    {
+      "method": "GET",
+      "route": "/api/conocimientos/{conocimientoId}/soluciones/{solucionId}/efectividad",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/seguimiento/infrastructure/web/ResultadoSolucionController.java",
+      "line": 24
+    },
+    {
+      "method": "GET",
+      "route": "/api/health",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/shared/infrastructure/web/HealthController.java",
+      "line": 13
+    },
+    {
+      "method": "GET",
+      "route": "/",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/shared/infrastructure/web/RootController.java",
+      "line": 11
+    },
+    {
+      "method": "POST",
+      "route": "/api/tickets/{ticketId}/adjuntos",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/tickets/infrastructure/web/AdjuntoTicketController.java",
+      "line": 29
+    },
+    {
+      "method": "GET",
+      "route": "/api/tickets/{ticketId}/adjuntos/{adjuntoId}",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/tickets/infrastructure/web/AdjuntoTicketController.java",
+      "line": 43
+    },
+    {
+      "method": "GET",
+      "route": "/api/etiquetas",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/tickets/infrastructure/web/EtiquetaController.java",
+      "line": 24
+    },
+    {
+      "method": "POST",
+      "route": "/api/etiquetas",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/tickets/infrastructure/web/EtiquetaController.java",
+      "line": 31
+    },
+    {
+      "method": "PUT",
+      "route": "/api/etiquetas/{id}",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/tickets/infrastructure/web/EtiquetaController.java",
+      "line": 37
+    },
+    {
+      "method": "PATCH",
+      "route": "/api/etiquetas/{id}/estado",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/tickets/infrastructure/web/EtiquetaController.java",
+      "line": 43
+    },
+    {
+      "method": "PATCH",
+      "route": "/api/tickets/{id}/prioridad",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/tickets/infrastructure/web/PrioridadTicketController.java",
+      "line": 19
+    },
+    {
+      "method": "POST",
+      "route": "/api/tickets",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/tickets/infrastructure/web/TicketController.java",
+      "line": 45
+    },
+    {
+      "method": "GET",
+      "route": "/api/tickets",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/tickets/infrastructure/web/TicketController.java",
+      "line": 53
+    },
+    {
+      "method": "GET",
+      "route": "/api/tickets/conteo",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/tickets/infrastructure/web/TicketController.java",
+      "line": 69
+    },
+    {
+      "method": "GET",
+      "route": "/api/tickets/sugerencias",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/tickets/infrastructure/web/TicketController.java",
+      "line": 74
+    },
+    {
+      "method": "GET",
+      "route": "/api/tickets/{id}",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/tickets/infrastructure/web/TicketController.java",
+      "line": 79
+    },
+    {
+      "method": "PATCH",
+      "route": "/api/tickets/{id}/asignacion",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/tickets/infrastructure/web/TicketController.java",
+      "line": 84
+    },
+    {
+      "method": "PATCH",
+      "route": "/api/tickets/{id}/estado",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/tickets/infrastructure/web/TicketController.java",
+      "line": 90
+    },
+    {
+      "method": "PATCH",
+      "route": "/api/tickets/{id}/resolucion",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/tickets/infrastructure/web/TicketController.java",
+      "line": 97
+    },
+    {
+      "method": "POST",
+      "route": "/api/tickets/{id}/conocimiento",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/tickets/infrastructure/web/TicketController.java",
+      "line": 104
+    },
+    {
+      "method": "POST",
+      "route": "/api/tickets/{id}/comentarios",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/tickets/infrastructure/web/TicketController.java",
+      "line": 110
+    },
+    {
+      "method": "PUT",
+      "route": "/api/tickets/{id}/etiquetas",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/tickets/infrastructure/web/TicketController.java",
+      "line": 118
+    }
+  ],
+  "source_hashes": [
+    {
+      "path": ".gitignore",
+      "sha256": "21ca2831ee43ff465b304f40f2eab3d9e9a507d63b92d64be116c6b9269e1c3f"
+    },
+    {
+      "path": "dima-bug-backend/pom.xml",
+      "sha256": "a58976b5d921477133915a77d4c85033f954fc6064795cc6c80bf948f9ba3465"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/catalogo/infrastructure/persistence/entity/FrecuenciaEntity.java",
+      "sha256": "9fd2574d2503fd96993193b1b8c3b3c8e79bdaad1928ff592a93c9c43b5a1a3a"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/catalogo/infrastructure/persistence/entity/HardwareEntity.java",
+      "sha256": "ae5d10a21e5060737a3326ba1ff542f0d4ec5ca583d6ed1370521570c31a7860"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/catalogo/infrastructure/persistence/entity/ModuloEntity.java",
+      "sha256": "6d71e38c277cc89a1d0d6575061b97c8495e8e94f8d4097f0b68228d878ab5ab"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/catalogo/infrastructure/persistence/entity/SistemaEntity.java",
+      "sha256": "52003835f6aa488799290cf197818d7b644dd92a7cd8a1cd779aa927cfd72412"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/catalogo/infrastructure/web/AdminCatalogoController.java",
+      "sha256": "d7a0bbd1f4539ea530856f04bc4e6db1451bc1803dbfb614d2e082d1696a0e22"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/catalogo/infrastructure/web/FrecuenciaController.java",
+      "sha256": "d0b951dad0cd2165f5b8d8f517dcbcc917404ec88994b05c7bd8f2b732deec15"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/catalogo/infrastructure/web/HardwareController.java",
+      "sha256": "fec61b882a6945df745e7f8ac4a77f28d9a0e6dccb89764616334ef5279fe026"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/catalogo/infrastructure/web/SistemaController.java",
+      "sha256": "a135342e10b1ca4559938ee0d0e5190c03673747b1b66121c7e919be90e760f9"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/infrastructure/persistence/adapter/BusquedaConocimientoJdbcAdapter.java",
+      "sha256": "1de5915fe5a2ac5cb981ef666435580660449a56db5ac3cfe60a60ec279e3f16"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/infrastructure/persistence/entity/CausaEntity.java",
+      "sha256": "9dafcea2f26b410d2b2347ce9d1b5cef258985b425de804e6bb4b0343f201031"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/infrastructure/persistence/entity/ConocimientoEntity.java",
+      "sha256": "e1bb2fa386fd239baf4a4e44737821a659a0080fa71e9f775ca587e5ad1af1e4"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/infrastructure/persistence/entity/ConocimientoPruebaEntity.java",
+      "sha256": "22ce476edccbc47c66645a5297bf00751fe5faec40a3533d521a00eefc95f179"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/infrastructure/persistence/entity/MaterialApoyoEntity.java",
+      "sha256": "bc3f4fed0d342935dc1b521e14df6f4d64996728ce404d7a98d2aabfbd7fd229"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/infrastructure/persistence/entity/PruebaEntity.java",
+      "sha256": "759304b0a202f5349603be3e456c5fe4879aca7d13d6825402a66eb2a43107d3"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/infrastructure/persistence/entity/SintomaEntity.java",
+      "sha256": "f56ea993deacbebc0631a310136e3148f57dc24e7a19105b0b71e02210807c36"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/infrastructure/persistence/entity/SolucionAsignacionEntity.java",
+      "sha256": "b1514ef9df1d6d4d9d02e9bb877f40f7711944b3ea4b5cf5a1da4c897c8948b6"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/infrastructure/persistence/entity/SolucionEntity.java",
+      "sha256": "3f680f10915b2576d7e234563fd4e431d17eee5f6edf9ae0e216d61bf8a5d8ba"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/infrastructure/web/AdminPruebaController.java",
+      "sha256": "708cd4bb492a97681ad7a42d463cdd45618d2a794532b1c799016adb7063a096"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/infrastructure/web/AdminSolucionController.java",
+      "sha256": "d5dffb0ae9ae603c534591f98f02401bcb9e768dca12fe54c4a08e272897c672"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/infrastructure/web/AdminSolucionCopiaController.java",
+      "sha256": "9a2c6bf6250de05e064b3606a885245351750daa7ddfe50bf8c6ed1bd041f8e6"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/infrastructure/web/CausaController.java",
+      "sha256": "f8d65650181b73a028fce20b39bdd52cb8a03bfd436e05e78dc61217e732d0e2"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/infrastructure/web/ChatbotController.java",
+      "sha256": "872df774bece5e1de3d776de242e033fc5e7362eb56394cb1d92d69abda3c830"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/infrastructure/web/ConocimientoController.java",
+      "sha256": "1153a4cfec913d25d50801566ee924f9b70f657fcc5dbc37ee6ce00686dc5a63"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/infrastructure/web/ConocimientoPruebaController.java",
+      "sha256": "4b54a2a1d429a4834eca12aba76d985613de747d4e0990af4212200e74a27b10"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/infrastructure/web/MaterialApoyoController.java",
+      "sha256": "6709733097502f8a80d13fa620bc2a2531cb7672ae8fa93e11d9d1fca9ef217b"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/infrastructure/web/MaterialConocimientoArchivoController.java",
+      "sha256": "17b5289a754b50ba622a20310111f25fb74d4f02af6a6f6f558ddb33dd27fe27"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/infrastructure/web/PruebaController.java",
+      "sha256": "df7a0f7888879a2de5b2f3fb424540396ea61895139165dbe7674adeae90ecfe"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/infrastructure/web/ReutilizarMaterialController.java",
+      "sha256": "d66cae115b943b55e37d38d12e816e171bf8097908847dd055deaf2f3b05ef24"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/infrastructure/web/SintomaController.java",
+      "sha256": "4565ed93107be26e4b3399ec6bb0cde0c536b9145f2a4190e94b3d57c0d56248"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/infrastructure/web/SolucionAsignacionController.java",
+      "sha256": "3a253d658eae37ea926b4b04716faacfadb8359edbbef83ff2635906496c8329"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/infrastructure/web/SolucionController.java",
+      "sha256": "9a2893344b1ae96fbec9713fd088166653b2831125d3b5c3321687f4c519d589"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/ejecucion/application/service/GestionarEjecucionService.java",
+      "sha256": "36f4bb2240b021f56ab569a8b9bd6a14bd2334c4e355f763a382966dda3eac2e"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/ejecucion/infrastructure/persistence/entity/EjecucionEntity.java",
+      "sha256": "87b5da90fe1d44d6c07b225c3df4b31a79aa7225b2c99972acd6b5380e382292"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/ejecucion/infrastructure/persistence/entity/EjecucionPasoEntity.java",
+      "sha256": "8f211e4ed3d87440f96a18420a42e87df372ff08d6e1341217b909c0625486de"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/ejecucion/infrastructure/persistence/repository/EjecucionJpaRepository.java",
+      "sha256": "992f03226aebd02922e2be9e13a978e4fb1a224c3fd9a539411b68a205017c87"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/ejecucion/infrastructure/web/EjecucionController.java",
+      "sha256": "7aaf3ce04bc00fb41502d66c22d43a0c05e7f91c5b7c9be0bfb405b984423721"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/identidad/application/service/AutenticarUsuarioService.java",
+      "sha256": "765d7710f67eb94a644517ce66d5b3c2391a95a6f63fb15d78f9434dac75b87a"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/identidad/infrastructure/persistence/entity/DepartamentoContactoEntity.java",
+      "sha256": "8e784f0d1b72c911176a954f484de7acbc10461d0aeae9f49021349462a17c2e"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/identidad/infrastructure/persistence/entity/DepartamentoEntity.java",
+      "sha256": "437667c67086ace7b5a3817db0888da5c4ed473accee80d4814dbe4f4fac6c8b"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/identidad/infrastructure/persistence/entity/OrganizacionControlEntity.java",
+      "sha256": "8c08ebb2b2d831d3bb65e5acf9631fa98412cd1ce86a5f1989c1f81a1822d208"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/identidad/infrastructure/persistence/entity/ResponsableEntity.java",
+      "sha256": "cdcf5ae7e7b4557637d35ee6cc54f827931049b4014806837468997768733141"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/identidad/infrastructure/persistence/entity/RolEntity.java",
+      "sha256": "b1b01001ddbc134c8de880824ef7df78f2db63b4f613d22125b4cda24e9b9221"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/identidad/infrastructure/persistence/entity/UsuarioEntity.java",
+      "sha256": "c4af050a822f855c31b6b99ad83ded2da3d0ca41154445cc5a27ed5ded54edb6"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/identidad/infrastructure/web/AdminDepartamentoContactoController.java",
+      "sha256": "4c535ab6a854b3686430f07876862793965450417755f227ab04ad7757664baf"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/identidad/infrastructure/web/AdminDepartamentoController.java",
+      "sha256": "04b63e11a9dcbd78c135025486477a62c9bf24ccf3bee28a8f1fea0d44ec1bd4"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/identidad/infrastructure/web/AdminResponsableController.java",
+      "sha256": "1aee399335dc1ce8e082c36583f55053fbe8daa1873b903dc774484c52cd473c"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/identidad/infrastructure/web/AuthController.java",
+      "sha256": "ff25c6cefa0ceb12ec5080ca99e14737c2515844160c54c56b460c609f6decd4"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/identidad/infrastructure/web/DepartamentoController.java",
+      "sha256": "f336265d6ab58a4fc365eccfe6c25c2975e2dfc36bfcaa9bff03825c81940302"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/identidad/infrastructure/web/RolController.java",
+      "sha256": "e5409272ee37dff7d805af77f195217c8e8f7aec527d532e291f8516d8256aa3"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/identidad/infrastructure/web/UsuarioController.java",
+      "sha256": "80dbeba52dc69807d1215f8c840e48dd4c7dd0adaebdcb2bd336f18328706f5b"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/procedimiento/infrastructure/persistence/entity/PasoEntity.java",
+      "sha256": "ec9b3fa1aa0759e36a14ee93e09941f437441bd522ff3f4b474ee2cb610161de"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/procedimiento/infrastructure/persistence/entity/ProcedimientoEntity.java",
+      "sha256": "da8060f7ef82ad39fe41b94d539606135360f2c69dad24702f35a52e594330d9"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/procedimiento/infrastructure/web/MaterialPasoArchivoController.java",
+      "sha256": "fbd46e0cf7eeb9b6644e5a35779690a91838a288dce3e12844997c50e71b1227"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/procedimiento/infrastructure/web/MaterialPasoController.java",
+      "sha256": "4e7068f2d6ae8231668438eeff524b176c525631dee6d4ccea0a437cb5b4817b"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/procedimiento/infrastructure/web/PasoController.java",
+      "sha256": "3f1a69085369ab081fae5adac2560ecca2ed01d8a1ac942ba712bca68ebe0a2e"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/procedimiento/infrastructure/web/ProcedimientoController.java",
+      "sha256": "63f0ebdc34ff614c8aa6b71c8b132d5076fb15e08b134c7d7d230cc23e6a8802"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/seguimiento/infrastructure/persistence/entity/ResultadoSolucionEntity.java",
+      "sha256": "7dc6f1cbc9c53b2b844c929f61408ea62b3b610b0946a50243c97c9b4cfcb024"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/seguimiento/infrastructure/web/ResultadoSolucionController.java",
+      "sha256": "a3eccc8600d2b567e4e3980840f09cc652ec3f1b473e3d2b082c9ed80800f610"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/shared/infrastructure/security/SecurityConfig.java",
+      "sha256": "9fdbe49bf7c699d206229ecc4e41ec8cd0deed9c548da4f4b97a5819eaea62e1"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/shared/infrastructure/web/HealthController.java",
+      "sha256": "6d47465fa13f89820c8b28ce4a7d54670f55bf707789dd862a2c8725a1660868"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/shared/infrastructure/web/RootController.java",
+      "sha256": "b800aa6816a7413436a9c39418f31f822ca69702c7faad07db41705aaf3018ff"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/tickets/infrastructure/persistence/entity/AdjuntoTicketEntity.java",
+      "sha256": "3bcf3250054c963defe9f7c6939288a00ea7f0a4a8c35641e1014e58cc75e3c6"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/tickets/infrastructure/persistence/entity/ComentarioTicketEntity.java",
+      "sha256": "46e685301c80c46938b9b2350b6832c3da9b465ed4e6e90bc99fd49e85412c1a"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/tickets/infrastructure/persistence/entity/EtiquetaEntity.java",
+      "sha256": "1f67642d078924541582cbc8f8c4c23cf2ee2a6b675e3004dd3981d11f75b076"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/tickets/infrastructure/persistence/entity/HistorialEstadoTicketEntity.java",
+      "sha256": "23dba82b3e8d807efc202effacaa122b3ed0ab11e0458d5417f262aa00fa79de"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/tickets/infrastructure/persistence/entity/TicketEntity.java",
+      "sha256": "776f12d8a5700721afe66c71e2a58232c55c9d6ef78b88b707beb6332976970e"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/tickets/infrastructure/web/AdjuntoTicketController.java",
+      "sha256": "aa0603947e32713ec3a66b47a555da34317da8821e9697bdaf5f512502595c6b"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/tickets/infrastructure/web/EtiquetaController.java",
+      "sha256": "2658a521d01e0a80841d94764be379fbdd7aa4f552129fd19e03e30d97cc4f21"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/tickets/infrastructure/web/PrioridadTicketController.java",
+      "sha256": "f9adcf65cb082759a0d7dcbc817e84ff2f9b6d129212bed99e05f03a2b1b3dad"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/tickets/infrastructure/web/TicketController.java",
+      "sha256": "c505c4df6e9081c55722d8ac41d720db218ccc8d8de04b10a726c53516046aee"
+    },
+    {
+      "path": "dima-bug-backend/src/main/resources/db/migration/V20261017_01__modulo_tickets.sql",
+      "sha256": "65d06c7db3a56be10410a402413a9ad946f6c6b2237a897281bdb44c1a5240da"
+    },
+    {
+      "path": "dima-bug-backend/src/main/resources/db/migration/V20261017_02__tickets_adjuntos_y_nivel_etiqueta.sql",
+      "sha256": "9aa9f9e55fa42126a63f07f78146bb9da1d23844eabe67e95260f1e42b5733a8"
+    },
+    {
+      "path": "dima-bug-backend/src/test/java/cl/casol/backend/tickets/arquitectura/TicketsArquitecturaTest.java",
+      "sha256": "3f3a8bb1db3f8182f1a002087bb08a6fafd4c271e739e45ffedcf1a432b38882"
+    },
+    {
+      "path": "frontend-dimabug/package-lock.json",
+      "sha256": "600efb75fc1d5e7e97d291072e09bee1d1e2bb55c88ea2f64060ff8cd37a44ed"
+    },
+    {
+      "path": "frontend-dimabug/package.json",
+      "sha256": "ca3d8288d67216ff69029aa2eff36232b671ffdc386628182469e48a2849b265"
+    },
+    {
+      "path": "frontend-dimabug/proxy.conf.json",
+      "sha256": "7b8e0e2c4fe8f3a788a7724a1464f225f2f1b7a79ba4fc0dffe15d3a8b6d076c"
+    }
+  ],
+  "limitations": [
+    "No physical MySQL schema checked",
+    "No UAT or production build executed",
+    "No remote deployment or CI checked",
+    "First sandbox runs interrupted before complete suite",
+    "No claim of absence of secrets across Git history"
+  ]
+}

@@ -1,0 +1,47 @@
+{
+  "fecha": "2026-11-08",
+  "funcionalidad": "Edición administrativa de procedimientos con revisiones protegidas",
+  "estrategia": "Publicados conservados; edición en borrador de revisión con nuevos IDs de pasos y copias independientes de archivos",
+  "migracion": "06_edicion_administrativa_procedimientos.sql aplicada por usuaria y verificada por Hibernate",
+  "pruebas": {
+    "backend": 1026,
+    "frontend": 369,
+    "fallos": 0,
+    "errores": 0,
+    "build_frontend": "OK",
+    "casos": [
+      "roles administrador/técnico/soporte/usuario",
+      "alta y modificación general",
+      "sistema y módulo",
+      "agregar, editar, mover y eliminar pasos",
+      "automatización y evidencias requeridas",
+      "auditoría actor/fecha/cambios",
+      "archivo original descargable tras eliminar copia",
+      "ejecuciones finalizadas, en curso y legadas conservadas",
+      "preparación concurrente idempotente",
+      "guardar/publicar atómico",
+      "técnicos conservan inicio de ejecuciones"
+    ]
+  },
+  "runtime": {
+    "backend_pid": 42244,
+    "backend_port": 9090,
+    "health": 200,
+    "angular_pid": 38276,
+    "angular_port": 4200,
+    "status": 200,
+    "proxy_health": 200,
+    "historial_sin_sesion": 401
+  },
+  "datos": {
+    "revisiones_creadas_en_staging_por_pruebas": 0,
+    "ejecuciones_creadas_en_staging_por_pruebas": 0,
+    "correos_reales_enviados": 0
+  },
+  "limites": [
+    "La revisión editable usa un nuevo ID y las ejecuciones conservan el original",
+    "Los enlaces históricos continúan apuntando a su revisión",
+    "Los archivos de pasos eliminados en borrador no se purgan automáticamente",
+    "No se afirma una revisión visual automatizada de la sesión real del administrador"
+  ]
+}

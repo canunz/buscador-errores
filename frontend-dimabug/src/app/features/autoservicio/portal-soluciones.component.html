@@ -1,0 +1,93 @@
+@if (!esDetalle) {
+  <header class="franja">
+    <div>
+      <p>Portal público</p>
+      <h1>¿En qué podemos ayudarte?</h1>
+      <span>Encuentra instrucciones de autoservicio o consulta al asistente DimaBug.</span>
+    </div>
+    <a class="btn-crear" routerLink="/chatbot">Asistente DimaBug</a>
+  </header>
+
+  <form class="buscador" (ngSubmit)="buscar()">
+    <label for="buscar-solucion">Buscar soluciones</label>
+    <div class="buscador-fila">
+      <input
+        id="buscar-solucion"
+        name="q"
+        [(ngModel)]="q"
+        maxlength="150"
+        placeholder="Describe el problema"
+        autocomplete="off"
+      />
+      <button type="submit" class="btn-buscar" [disabled]="cargando">Buscar</button>
+    </div>
+  </form>
+} @else {
+  <a class="volver" routerLink="/autoservicio">← Volver a soluciones</a>
+}
+
+@if (error) {
+  <div class="aviso" role="alert">
+    @if (noDisponible) {
+      <h1>Recurso no disponible</h1>
+    }
+    <p>{{ error }}</p>
+    <button type="button" class="btn-sec" (click)="buscar()">Reintentar</button>
+  </div>
+}
+
+@if (!error && detalle; as d) {
+  <header class="franja">
+    <div>
+      <p>Solución pública</p>
+      <h1>{{ d.titulo }}</h1>
+    </div>
+  </header>
+  <article class="ficha">
+    <h2>Instrucciones públicas</h2>
+    <p class="instrucciones">{{ d.instrucciones }}</p>
+    <h2>Material de apoyo</h2>
+    @if (errorMateriales) {
+      <p role="alert">{{ errorMateriales }}</p>
+      <button class="btn-sec" type="button" (click)="cargarMateriales()">Reintentar materiales</button>
+    }
+    <ul>
+      @for (m of materiales; track m.id) {
+        @let url = api.enlace(m.url);
+        @let archivoUrl = archivo(m);
+        <li>
+          <span><strong>{{ m.nombre }}</strong> · {{ m.tipo }}</span>
+          @if (archivoUrl) {
+            <a class="btn-sec" [href]="archivoUrl" target="_blank" rel="noopener noreferrer">Abrir documento</a>
+          } @else if (url) {
+            <a class="btn-sec" [href]="url" target="_blank" rel="noopener noreferrer">Abrir recurso</a>
+          }
+        </li>
+      } @empty {
+        @if (!errorMateriales) {
+          <li>No hay materiales públicos para esta solución.</li>
+        }
+      }
+    </ul>
+  </article>
+} @else if (!esDetalle && !error) {
+  <div class="resultados">
+    @if (cargando && !items.length) {
+      @for (n of [1, 2, 3]; track n) {
+        <article class="tarjeta esqueleto" aria-hidden="true"></article>
+      }
+      <p class="sr-only" role="status">Cargando…</p>
+    } @else {
+      @for (s of items; track s.id) {
+        <article class="tarjeta">
+          <p class="tipo">{{ s.tipo === 'DERIVACION' ? 'Derivación' : 'Pasos a seguir' }}</p>
+          <h2><a [routerLink]="['/autoservicio/soluciones', s.id]">{{ s.titulo }}</a></h2>
+          <p>{{ s.instrucciones.slice(0, 180) }}{{ s.instrucciones.length > 180 ? '…' : '' }}</p>
+          <a class="consultar" [routerLink]="['/autoservicio/soluciones', s.id]">Consultar solución →</a>
+        </article>
+      } @empty {
+        <p class="vacio">No encontramos soluciones públicas. Prueba otra búsqueda o consulta al asistente.</p>
+      }
+    }
+  </div>
+}

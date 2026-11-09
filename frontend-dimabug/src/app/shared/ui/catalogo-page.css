@@ -109,20 +109,23 @@
 }
 
 .col-acciones {
-  width: 210px;
+  width: 1%;
+  white-space: nowrap;
 }
 
 .act {
   border: 0;
   border-radius: 999px;
-  padding: 8px 12px;
+  padding: 7px 10px;
   font: inherit;
-  font-size: 12.5px;
+  font-size: 12px;
   font-weight: 800;
   cursor: pointer;
   text-decoration: none;
   display: inline-flex;
   align-items: center;
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 
 .act.edit {
@@ -300,8 +303,11 @@ td strong {
 
 .acciones {
   display: flex;
-  gap: 8px;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 6px;
   justify-content: flex-start;
+  white-space: nowrap;
 }
 
 .btn-icon {
@@ -733,9 +739,10 @@ td strong {
 
 .acciones {
   display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
+  flex-wrap: nowrap;
+  gap: 6px;
   align-items: center;
+  white-space: nowrap;
 }
 
 .detalle-modal {

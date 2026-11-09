@@ -35,10 +35,6 @@ public class UsuarioEntity {
     @Column(name = "usuario_fecha_actualizacion", nullable = false)
     private LocalDateTime fechaActualizacion;
 
-    /** Solo se escribe al iniciar sesión (consulta aparte), así editar el usuario no lo borra. */
-    @Column(name = "usuario_ultimo_ingreso", insertable = false, updatable = false)
-    private LocalDateTime ultimoIngreso;
-
     protected UsuarioEntity() {
     }
 
@@ -85,9 +81,5 @@ public class UsuarioEntity {
 
     public LocalDateTime getFechaActualizacion() {
         return fechaActualizacion;
-    }
-
-    public LocalDateTime getUltimoIngreso() {
-        return ultimoIngreso;
     }
 }

@@ -1,0 +1,154 @@
+> Referencia histórica conservada. Describe una entrega previa y puede diferir del checkout actual. [Documentación vigente](../../docs/README.md). Los enlaces a archivos ausentes se identifican expresamente; [original íntegro y hash](../../docs/auditoria/historico/README.md).
+
+# Propuesta de aceptación temporal del riesgo de recuperación de archivos
+
+Fecha de preparación: 2026-10-09. Alcance: MVP de DimaBug, Skill 4.
+
+**Estado: PROPUESTO PARA ACEPTACIÓN — NO APROBADO.** No existe una aprobación
+registrada en este documento. Skill 4 mantiene **CIERRE CON CONDICIONES**.
+Este documento no autoriza el despliegue ni declara GO de producción.
+
+## Alcance y evidencia
+
+La propuesta comprende la consistencia entre los metadatos MySQL y los archivos
+locales de materiales de apoyo de conocimientos y pasos de procedimientos.
+Los enlaces externos quedan fuera del alcance de recuperación del filesystem.
+No se propone aceptar fallos de autorización ni exposición de archivos privados.
+
+La auditoría registra 45 pruebas de integración y 474 habituales PASS, sin
+FAIL/ERROR/SKIPPED. Estos resultados son evidencia previa; no se ejecutaron pruebas
+para preparar este documento. RN-PROC-01 está implementada en backend y no forma
+parte de esta aceptación.
+
+Evidencias de referencia:
+
+- [Auditoría Skill 4](auditoria-cobertura-riesgos-skill4.md): estado y resultados vigentes.
+- [Decisión de riesgos residuales](decision-riesgos-residuales-skill4.md): análisis de
+  recuperación y condiciones propuestas. Sus conclusiones históricas sobre pasos
+  anteriores a RN-PROC-01 no se trasladan a esta propuesta.
+- [Integración de materiales](materiales-integracion.md): compensación ante FK real
+  1452, fallo real de escritura, fallo de eliminación posterior al commit,
+  descarga 404 con metadatos existentes, contenido y autorización HTTP.
+- [Integración de seguridad](seguridad-integracion.md): JWT, BCrypt y respuestas
+  HTTP verificadas. No demuestra backups ni recuperación después de un crash.
+
+El servicio
+[`ArchivoMaterialService`](../src/main/java/cl/casol/backend/conocimiento/application/service/ArchivoMaterialService.java)
+guarda bytes antes de persistir y registra compensación en `afterCompletion`.
+La compensación se ejecuta si el estado no es `STATUS_COMMITTED`; su fallo se
+registra y conserva el error original. La eliminación confirma primero los cambios
+MySQL y después intenta borrar el archivo. No hay atomicidad distribuida BD/filesystem
+ni reconciliación durable automática comprobada.
+El
+[`adaptador filesystem`](../src/main/java/cl/casol/backend/shared/infrastructure/storage/AlmacenamientoArchivoFilesystemAdapter.java)
+usa referencias UUID, creación exclusiva, validación de ruta y limpieza de escritura
+parcial como mejor esfuerzo. Estos controles no garantizan recuperación durable.
+
+## Escenarios residuales
+
+Impacto y prioridad son una valoración técnica propuesta para el MVP. La probabilidad
+no puede cuantificarse con las pruebas: no existen tasas de incidentes ni evidencia
+del entorno desplegado. P1 condicionado significa que la criticidad aumenta cuando
+el material es indispensable o su retención/exposición tiene consecuencias graves;
+esa clasificación requiere validación del responsable del riesgo.
+
+| ID | Descripción y consecuencia | Impacto / prioridad | Probabilidad | Controles existentes | Limitaciones | Riesgo residual |
+| --- | --- | --- | --- | --- | --- | --- |
+| RA-01 | Interrupción del proceso entre escritura y resolución de la transacción, o entre commit de eliminación y borrado físico. Puede quedar un archivo sin metadatos o una operación sin recuperación confirmada. | Inconsistencia, consumo de espacio y retención no deseada. P2; P1 si el material es crítico. | No estimable; depende de interrupciones y de la ventana de operación. | Callback transaccional y compensación; limpieza posterior al commit en eliminación. | Un proceso terminado abruptamente puede no ejecutar callbacks ni emitir el log del fallo. No se ensayó un crash real. | Ventana sin recuperación automática durable. |
+| RA-02 | Falla el borrado de compensación después de un fallo de persistencia. Los bytes permanecen sin metadatos. | Huérfanos, acumulación y retención de contenido. P2; P1 condicionado. | No estimable; plausible con errores de disco, permisos o disponibilidad. | Registro del fallo y preservación de la excepción original. | La prueba unitaria con mocks demuestra manejo del error, no limpieza real bajo fallo doble. Sin reintento durable comprobado. | Limpieza pendiente de intervención y conservación de la referencia del incidente. |
+| RA-03 | MySQL y filesystem fallan simultáneamente. Puede fallar tanto la operación original como su compensación o recuperación. | Inconsistencia y recuperación manual sin garantía de contenido. P2; P1 para documentos indispensables sin copia recuperable. | No estimable; no hay ensayo real de fallo simultáneo ni datos operativos. | Transacción MySQL y compensación de mejor esfuerzo; errores de almacenamiento reportados. | Los fallos individuales probados no demuestran recuperación del fallo combinado. | Posible pérdida o retención de bytes que exige verificar ambos sistemas. |
+| RA-04 | Resultado incierto del commit: MySQL podría haber confirmado, aunque el cliente no pueda determinarlo. Una compensación podría borrar bytes todavía referenciados. | Referencia válida en BD con contenido ausente; pérdida de acceso. P1 potencial. | Indeterminada; escenario no reproducido. | Callback distingue `STATUS_COMMITTED` de otros estados; errores registrados cuando el proceso continúa. | El código compensa también ante un estado distinto de confirmado, incluido un resultado desconocido. No hay resolución durable del resultado. La consecuencia es una inferencia, no un defecto reproducido. | Requiere aceptación explícita separada y procedimiento de investigación del estado real antes de limpieza. |
+| RA-05 | Archivo huérfano después de eliminación confirmada, fallo de limpieza o interrupción. No queda material consultable por su ID. | Espacio ocupado y retención involuntaria. P2; P1 si el contenido exige control especial. | No estimable; el fallo de eliminación posterior al commit sí fue reproducido. | Fallo conocido genera log con referencia y HTTP 500; la descarga requiere metadatos y autorización. | Repetir DELETE no recupera la referencia de la fila eliminada. Un crash puede no dejar log. No se verificó la publicación del directorio en infraestructura. | Huérfanos persisten hasta inventario y limpieza controlada. |
+| RA-06 | Metadatos apuntan a bytes inexistentes por pérdida, borrado externo o recuperación incompleta. | Descarga imposible y posible pérdida de instrucciones de apoyo. P2; P1 si son indispensables. | No estimable; ausencia de archivo con metadatos sí fue reproducida. | Descarga devuelve 404; no entrega contenido inventado. | El 404 no repara ni restaura bytes. No hay backup/restauración operativa acreditada. | Referencia inválida y recuperación condicionada a una copia disponible. |
+
+RA-01 a RA-04 describen causas; RA-05 y RA-06 describen estados resultantes.
+No deben contarse como seis incidentes independientes ni sumarse sus probabilidades.
+
+## Decisión propuesta y límites
+
+| Categoría | Estado al preparar el documento |
+| --- | --- |
+| A. Riesgo aceptado formalmente | **Ninguno**. Responsable, decisión y fecha están pendientes. |
+| B. Riesgo propuesto para aceptación | RA-01 a RA-06, solo bajo las condiciones de este documento. RA-04 exige una decisión explícita sobre commit incierto. |
+| C. Riesgo no aceptado | Todos los escenarios siguen sin aceptación vigente. Además, esta propuesta excluye fuga de contenido, bypass de autorización, almacenamiento manipulable por actores no confiables y pérdida irrecuperable de documentos indispensables sin una decisión específica. |
+
+Se propone aceptar temporalmente la necesidad de recuperación manual ante fallos
+excepcionales, no afirmar que los archivos se recuperarán automáticamente.
+Si el negocio requiere recuperación garantizada o pérdida cero de materiales
+indispensables, esta propuesta no satisface ese requisito: debe definirse otra
+mitigación antes de aceptar el riesgo.
+
+## Condiciones mínimas de aceptación
+
+- **Responsable de aceptación:** persona designada por el negocio con autoridad
+  sobre el riesgo del MVP, en coordinación con el responsable de riesgos TI.
+  Nombre y autoridad: **PENDIENTES**. QA aporta evidencia; no sustituye la aprobación.
+- **Responsable operativo:** persona/equipo designado para inventario, incidentes
+  y restauración. Nombre y disponibilidad: **PENDIENTES**.
+- **Alcance:** solo estos escenarios de recuperación de materiales locales del MVP,
+  con tipos de contenido y criticidad validados por el negocio. No comprende otros
+  módulos ni permisos, y no autoriza borrar registros o archivos sin revisión.
+- **Vigencia propuesta:** máximo 30 días calendario desde la aprobación explícita,
+  sin renovación automática. Fecha inicial/final: **PENDIENTES**. El aprobador debe
+  confirmar o cambiar este plazo; no es una decisión ya adoptada.
+- **Revisión:** antes del despliegue se verifica el cumplimiento de las condiciones
+  operativas; al vencer la vigencia o ante un disparador se requiere nueva decisión.
+  El cierre de Skill 4 no implica cumplimiento de Skill 5.
+- **Activación:** registrar aprobación trazable y evidencias de las medidas mínimas
+  siguientes. Hasta entonces no se puede presentar este riesgo como aceptado.
+
+### Medidas mínimas propuestas y acciones de Skill 5
+
+Estas medidas están pendientes de implementación/verificación; no se atribuyen al
+entorno actual. El plazo indicado es una propuesta de condición operativa.
+
+| Acción | Evidencia requerida | Responsable | Plazo propuesto |
+| --- | --- | --- | --- |
+| Verificar directorio privado, persistente, permisos mínimos y ausencia de publicación estática. Revisar root y ancestros, symlinks y junctions; impedir escritores no confiables. | Revisión documentada del almacenamiento y permisos. Los controles UUID/ruta y `NOFOLLOW_LINKS` del componente final no prueban seguridad de todos los ancestros. | Operaciones/seguridad, por designar. | Antes de activar la aceptación para despliegue. |
+| Definir y ensayar restauración coordinada de MySQL y archivos en entorno aislado, con objetivos de recuperación y retención aprobados. | Backup recuperable y resultado del ensayo; RPO/RTO, frecuencia y responsable definidos por el equipo. | Operaciones y responsable del riesgo, por designar. | Antes de activar la aceptación para despliegue. |
+| Preparar inventario en ambas direcciones y runbook de reconciliación. | Procedimiento que identifica huérfanos y referencias rotas, excluye operaciones en curso y exige revisión antes de cuarentena o borrado. | Operaciones/backend, por designar. | Antes de activar la aceptación para despliegue. |
+| Preparar atención de compensación fallida y commit incierto. | Alertas/logs accesibles sin secretos; procedimiento que conserva evidencia y consulta el estado confirmado antes de reintentar o limpiar. Frecuencia de revisión y escalamiento definidos. | Operaciones/backend, por designar. | Antes de activar la aceptación para despliegue. |
+| Evaluar reconciliación/reintentos durables si la frecuencia o criticidad supera lo aceptado. | Decisión técnica y de negocio; no una garantía incluida en el MVP actual. | Arquitectura y responsable del riesgo, por designar. | En la revisión de vigencia o antes si hay disparador. |
+
+Los backups reducen la pérdida, pero no eliminan por sí solos la ventana de
+inconsistencia ni garantizan restauración a un punto coherente. La cuarentena también
+es retención de contenido: necesita acceso restringido y una política definida.
+
+### Condiciones que obligan a reevaluar
+
+- Incidente de pérdida de contenido, commit incierto, compensación fallida o aumento
+  de huérfanos/referencias rotas que exceda la capacidad de atención acordada.
+- Fallo del ensayo de restauración, ausencia de copia recuperable o incumplimiento
+  del runbook, de su frecuencia de revisión o de la vigencia.
+- Cambio de volumen, criticidad o tipos de documentos; inclusión de información
+  sensible o nuevas exigencias de retención que no se hayan evaluado.
+- Cambio de hosting, filesystem, permisos, publicación HTTP o aparición de symlinks,
+  junctions o escritores no confiables.
+- Cambio funcional en escritura, transacciones, compensación o eliminación.
+
+Los umbrales operativos concretos están **PENDIENTES** de definición; no existen
+valores medidos que permitan fijarlos aquí. Ante un disparador, el responsable debe
+revisar la aceptación antes de seguir utilizándola como justificación del riesgo.
+
+## Registro para revisión y aprobación
+
+| Campo | Valor |
+| --- | --- |
+| Responsable con autoridad / cargo | PENDIENTE |
+| Responsable operativo | PENDIENTE |
+| Clasificación de criticidad del contenido | PENDIENTE |
+| Decisión: aprobar, rechazar o solicitar cambios | PENDIENTE — no aprobada |
+| Escenarios aceptados y exclusiones | PENDIENTE, enumerar RA-01 a RA-06 individualmente |
+| Decisión explícita sobre RA-04 / commit incierto | PENDIENTE |
+| Evidencias de medidas mínimas y excepciones autorizadas | PENDIENTE |
+| Fecha de aprobación / inicio / fin / revisión | PENDIENTE |
+| RPO/RTO, frecuencia de inventario y escalamiento | PENDIENTE |
+| Referencia trazable de aprobación | PENDIENTE |
+
+La revisión puede aprobar solo parte de los escenarios. Una excepción a las medidas
+mínimas necesita describir su riesgo adicional y una aprobación específica; no se
+presume por aprobar el documento en general. Un rechazo o falta de aprobación
+mantiene el riesgo sin aceptar y exige revisar las condiciones de cierre de Skill 4.
+
+Documento preparado para revisión. No se modificaron controles funcionales, no se
+ejecutaron pruebas, migraciones ni conexiones a DEV/producción para elaborarlo.

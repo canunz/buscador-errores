@@ -1,0 +1,33 @@
+<section class="tk-pagina sucursales">
+  <a routerLink="/admin">Volver a administración</a>
+  <header class="tk-franja"><div><h1>Sucursales y responsables</h1><p>Directorio autorizado del piloto. Solo correos de responsables con dominio &#64;dimarsa.cl.</p></div></header>
+  @if (error) { <p role="alert">{{ error }}</p> }
+  @if (aviso) { <p role="status">{{ aviso }}</p> }
+  <section class="tk-card formulario">
+    <h2>{{ editando ? 'Editar sucursal' : 'Nueva sucursal' }}</h2>
+    <form #form="ngForm" (ngSubmit)="guardar()">
+      <fieldset [disabled]="guardando"><legend>Datos de la sucursal</legend>
+        <label class="tk-campo">Código <input name="codigo" [(ngModel)]="datos.codigo" required maxlength="30" pattern="[A-Za-z0-9][A-Za-z0-9_-]{0,29}" /></label>
+        <label class="tk-campo">Nombre <input name="nombre" [(ngModel)]="datos.nombre" required maxlength="100" /></label>
+        <label class="tk-campo">Ciudad<input name="ciudad" [(ngModel)]="datos.ciudad" maxlength="100" /></label>
+        <label class="tk-campo">Cargo del responsable<input name="responsableCargo" [(ngModel)]="datos.responsableCargo" maxlength="100" /></label>
+        <label class="tk-campo">Nombre del responsable <input name="responsableNombre" [(ngModel)]="datos.responsableNombre" required maxlength="100" /></label>
+        <label class="tk-campo">Correo del responsable <input name="responsableEmail" type="email" [(ngModel)]="datos.responsableEmail" required email maxlength="120" /><small>Un solo destinatario &#64;dimarsa.cl. No ingreses contraseñas.</small></label>
+        <app-destinatarios-editor [value]="datos.destinatarios || []" (valueChange)="datos.destinatarios=$event" [disabled]="guardando" titulo="Otros responsables y destinatarios en copia" />
+        <p>Al guardar la sucursal, los correos agregados quedan disponibles para próximas ejecuciones.</p>
+        <div class="acciones"><button class="tk-btn tk-btn-primario" type="submit" [disabled]="form.invalid || !valido() || loading">{{ guardando ? 'Guardando…' : 'Guardar sucursal' }}</button>
+        <button class="tk-btn tk-btn-sec" type="button" (click)="nuevo()">{{ editando ? 'Cancelar edición' : 'Limpiar' }}</button></div>
+      </fieldset>
+    </form>
+  </section>
+  <section class="tk-card listado">
+    <div class="acciones"><h2>Catálogo</h2><button class="tk-btn tk-btn-sec" type="button" [disabled]="loading || guardando" (click)="cargar()">Actualizar lista</button></div>
+    @if (loading) { <p role="status">Cargando sucursales…</p> }
+    @else if (!sucursales.length) { <p>No hay sucursales registradas.</p> }
+    <div class="tabla"><table><thead><tr><th scope="col">Código / sucursal</th><th scope="col">Responsable</th><th scope="col">Estado</th><th scope="col">Acciones</th></tr></thead>
+      <tbody>@for (s of sucursales; track s.id) { <tr><td><strong>{{ s.codigo }}</strong><br />{{ s.nombre }}</td><td>{{ s.responsableNombre }}<br />{{ s.responsableEmail }}</td><td>{{ s.activa ? 'Activa' : 'Inactiva' }}</td>
+        <td><div class="acciones"><button class="tk-btn tk-btn-sec" type="button" [disabled]="guardando" (click)="editar(s)" [attr.aria-label]="'Editar ' + s.nombre">Editar</button>
+        <button class="tk-btn tk-btn-sec" type="button" [disabled]="guardando || tieneCambiosPendientes()" (click)="alternar(s)" [attr.aria-label]="(s.activa ? 'Desactivar ' : 'Activar ') + s.nombre">{{ s.activa ? 'Desactivar' : 'Activar' }}</button></div></td></tr> }
+      </tbody></table></div>
+  </section>
+</section>

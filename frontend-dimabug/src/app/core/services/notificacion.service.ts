@@ -10,6 +10,7 @@ import { ConocimientoService } from './conocimiento.service';
 import { EjecucionService } from './ejecucion.service';
 import { ProcedimientoService } from './procedimiento.service';
 import { TicketAvisosService } from './ticket-avisos.service';
+import { AutomatizacionEjecucionService } from './automatizacion-ejecucion.service';
 
 export interface Aviso {
   id: string;
@@ -26,6 +27,7 @@ export class NotificacionService {
   private readonly conocimientos = inject(ConocimientoService);
   private readonly procedimientos = inject(ProcedimientoService);
   private readonly ticketAvisos = inject(TicketAvisosService);
+  private readonly automatizacion = inject(AutomatizacionEjecucionService);
 
   propiasAhora(): Aviso[] {
     const tickets = this.ticketAvisos.enCache();
@@ -54,9 +56,10 @@ export class NotificacionService {
           conocimientos: this.conocimientos.listar().pipe(catchError(() => of(this.conocimientos.listaEnSesion()))),
           procedimientos: this.procedimientos.listar().pipe(catchError(() => of(this.procedimientos.listaEnSesion()))),
           tickets: this.ticketAvisos.avisos(),
+          evidencias: this.automatizacion.avisos().pipe(catchError(() => of([]))),
         }).pipe(
-          map(({ ejecuciones, conocimientos, procedimientos, tickets }) =>
-            this.unir(tickets, this.armar(ejecuciones, conocimientos, procedimientos)),
+          map(({ ejecuciones, conocimientos, procedimientos, tickets, evidencias }) =>
+            this.unir([...tickets, ...evidencias], this.armar(ejecuciones, conocimientos, procedimientos)),
           ),
         )
     ).pipe(

@@ -1,29 +1,114 @@
 <app-loading-modal [visible]="loading" mensaje="Cargando Pruebas" />
 <section class="cat-page pr-page">
- <div class="franja"><app-ayuda-franja titulo="Pruebas" detalle="Pruebas de diagnóstico reutilizables. Las asociaciones históricas se conservan al desactivar." />
-  <div><p>Catálogos</p><h1>Pruebas</h1><span>{{ items.length }} pruebas consultadas</span></div>
-  @if (esAdministrador()) { <button type="button" class="btn-crear" (click)="abrirFormulario()" [disabled]="saving || loading">Añadir Prueba</button> }
- </div>
- @if (esAdministrador() && tieneDatosLocales) { <div class="pr-respaldo"><p>Hay datos anteriores de este navegador. No se importan al sistema.</p><button type="button" (click)="respaldar()">Respaldar datos locales anteriores</button></div> }
- @if (error) { <p role="alert" class="alert">{{ error }} <button type="button" (click)="cargar()">Reintentar</button></p> }
- @if (mensaje) { <p role="status">{{ mensaje }}</p> }
- <div class="tabla-wrap"><table><thead><tr><th>Acciones</th><th>Prueba</th><th>Resultado esperado</th><th>Estado</th></tr></thead><tbody>
- @for (p of items; track p.id) { <tr><td><div class="acciones"><button type="button" (click)="ver(p)">Ver</button>
-  @if (esAdministrador()) { <button type="button" (click)="abrirFormulario(p)" [disabled]="saving || loading">Editar</button><button type="button" (click)="pedirCambioEstado(p)" [disabled]="saving || loading">{{ p.activo ? 'Desactivar' : 'Reactivar' }}</button> }
- </div></td><td>{{ p.descripcion }}</td><td>{{ p.resultadoEsperado || 'No indicado' }}</td><td>{{ p.activo ? 'Activa' : 'Inactiva' }}</td></tr>
- } @empty { <tr><td colspan="4">{{ loading ? 'Cargando…' : error ? 'No se pudo consultar el catálogo.' : 'No hay pruebas disponibles.' }}</td></tr> }
- </tbody></table></div>
+  <div class="franja">
+    <app-ayuda-franja titulo="Pruebas" detalle="Chequeos reutilizables para confirmar un síntoma. Se asocian a un conocimiento y, al desactivarlas, el historial se conserva." />
+    <div>
+      <p>Catálogos</p>
+      <h1>Pruebas</h1>
+      <span>Pasos de verificación que el técnico aplica antes de dar por resuelto un caso. {{ items.length }} prueba{{ items.length === 1 ? '' : 's' }} en el catálogo.</span>
+    </div>
+    @if (esAdministrador()) {
+      <button type="button" class="btn-crear" (click)="abrirFormulario()" [disabled]="saving || loading">Añadir Prueba</button>
+    }
+  </div>
+
+  @if (error) { <p role="alert" class="alert">{{ error }} <button type="button" (click)="cargar()">Reintentar</button></p> }
+  @if (mensaje) { <p role="status" class="catalogo-ok">{{ mensaje }}</p> }
+
+  <div class="tabla-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th class="col-acciones">Acciones</th>
+          <th>Prueba</th>
+          <th>Resultado esperado</th>
+          <th>Estado</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (p of items; track p.id) {
+          <tr>
+            <td>
+              <div class="acciones">
+                <button type="button" class="act ver" (click)="ver(p)">Ver</button>
+                @if (esAdministrador()) {
+                  <button type="button" class="act edit" (click)="abrirFormulario(p)" [disabled]="saving || loading">Editar</button>
+                  <button type="button" class="act del" (click)="pedirCambioEstado(p)" [disabled]="saving || loading">{{ p.activo ? 'Desactivar' : 'Reactivar' }}</button>
+                }
+              </div>
+            </td>
+            <td><strong class="nombre">{{ p.descripcion }}</strong></td>
+            <td><p class="resultado">{{ p.resultadoEsperado || 'No indicado' }}</p></td>
+            <td><span class="estado" [class.activo]="p.activo" [class.inactivo]="!p.activo">{{ p.activo ? 'Activa' : 'Inactiva' }}</span></td>
+          </tr>
+        } @empty {
+          <tr><td colspan="4" class="vacio">{{ loading ? 'Cargando…' : error ? 'No se pudo consultar el catálogo.' : 'No hay pruebas disponibles.' }}</td></tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  @if (esAdministrador() && tieneDatosLocales) {
+    <p class="pr-respaldo">Quedan datos viejos solo en este navegador. No entran al sistema. <button type="button" (click)="respaldar()">Descargar respaldo local</button></p>
+  }
 </section>
-@if (detalle) { <div class="detalle-modal" role="dialog" aria-modal="true" aria-labelledby="pr-detalle"><div class="detalle-modal-fondo" (click)="cerrarDetalle()"></div><article class="detalle-modal-card">
- <header class="detalle-modal-franja"><h2 id="pr-detalle">{{ detalle.descripcion }}</h2><button type="button" aria-label="Cerrar detalle" (click)="cerrarDetalle()">✕</button></header>
- <div class="detalle-modal-cuerpo"><h3>Resultado esperado</h3><p>{{ detalle.resultadoEsperado || 'No indicado' }}</p><p>{{ detalle.activo ? 'Activa' : 'Inactiva' }}</p></div></article></div> }
-@if (formulario) { <div class="modal pr-form-modal" role="dialog" aria-modal="true" aria-labelledby="pr-form-titulo"><div class="modal-backdrop"></div><div class="modal-dialog modal-pro">
- <header class="modal-head"><h2 id="pr-form-titulo">{{ editItem ? 'Editar Prueba' : 'Añadir Prueba' }}</h2><button type="button" aria-label="Cerrar formulario" (click)="cerrarFormulario()" [disabled]="saving">✕</button></header>
- @if (formError) { <p role="alert" class="alert">{{ formError }}</p> }
- <form [formGroup]="form" (ngSubmit)="guardar()" class="form-grid"><label class="full">Descripción *<textarea formControlName="descripcion" maxlength="500" required></textarea></label><label class="full">Resultado esperado<textarea formControlName="resultadoEsperado" maxlength="500"></textarea></label>
- <p class="full">Esta prueba se reutiliza: editarla actualiza los datos mostrados en todos los conocimientos asociados.</p>
- <div class="form-actions full"><button type="button" (click)="cerrarFormulario()" [disabled]="saving">Cancelar</button><button type="submit" [disabled]="saving">{{ saving ? 'Guardando…' : 'Guardar' }}</button></div></form></div></div> }
-@if (pendienteEstado) { <div class="confirm-capa" role="alertdialog" aria-modal="true" aria-labelledby="pr-estado"><div class="confirm-fondo"></div><div class="confirm-dialog">
- <h2 id="pr-estado">{{ pendienteEstado.activo ? 'Desactivar' : 'Reactivar' }} Prueba</h2><p>{{ pendienteEstado.descripcion }}</p><p>Se conservan todas sus asociaciones. Al desactivar, no podrá seleccionarse para nuevas asociaciones.</p>
- @if (formError) { <p role="alert" class="alert">{{ formError }}</p> }
- <div class="confirm-acciones"><button type="button" (click)="cancelarEstado()" [disabled]="saving">Cancelar</button><button type="button" (click)="confirmarEstado()" [disabled]="saving">{{ saving ? 'Guardando…' : 'Confirmar' }}</button></div></div></div> }
+
+@if (detalle) {
+  <div class="detalle-modal" role="dialog" aria-modal="true" aria-labelledby="pr-detalle">
+    <div class="detalle-modal-fondo" (click)="cerrarDetalle()"></div>
+    <article class="detalle-modal-card">
+      <header class="detalle-modal-franja">
+        <div>
+          <p>Prueba</p>
+          <h2 id="pr-detalle">{{ detalle.descripcion }}</h2>
+        </div>
+        <button type="button" class="detalle-modal-cerrar" aria-label="Cerrar detalle" (click)="cerrarDetalle()">✕</button>
+      </header>
+      <div class="detalle-modal-cuerpo">
+        <div class="detalle-bloque">
+          <h3>Resultado esperado</h3>
+          <p class="detalle-texto">{{ detalle.resultadoEsperado || 'No indicado' }}</p>
+        </div>
+        <p>{{ detalle.activo ? 'Activa' : 'Inactiva' }}</p>
+      </div>
+    </article>
+  </div>
+}
+
+@if (formulario) {
+  <div class="modal pr-form-modal" role="dialog" aria-modal="true" aria-labelledby="pr-form-titulo">
+    <div class="modal-backdrop"></div>
+    <div class="modal-dialog modal-pro">
+      <header class="modal-head">
+        <h2 id="pr-form-titulo">{{ editItem ? 'Editar Prueba' : 'Añadir Prueba' }}</h2>
+        <button type="button" aria-label="Cerrar formulario" (click)="cerrarFormulario()" [disabled]="saving">✕</button>
+      </header>
+      @if (formError) { <p role="alert" class="alert">{{ formError }}</p> }
+      <form [formGroup]="form" (ngSubmit)="guardar()" class="form-grid">
+        <label class="full">Descripción *<textarea formControlName="descripcion" maxlength="500" required></textarea></label>
+        <label class="full">Resultado esperado<textarea formControlName="resultadoEsperado" maxlength="500"></textarea></label>
+        <p class="full">Esta prueba se reutiliza: editarla actualiza los datos mostrados en todos los conocimientos asociados.</p>
+        <div class="form-actions full">
+          <button type="button" class="btn-sec" (click)="cerrarFormulario()" [disabled]="saving">Cancelar</button>
+          <button type="submit" class="btn-crear" [disabled]="saving">{{ saving ? 'Guardando…' : 'Guardar' }}</button>
+        </div>
+      </form>
+    </div>
+  </div>
+}
+
+@if (pendienteEstado) {
+  <div class="confirm-capa" role="alertdialog" aria-modal="true" aria-labelledby="pr-estado">
+    <div class="confirm-fondo"></div>
+    <div class="confirm-dialog">
+      <h2 id="pr-estado">{{ pendienteEstado.activo ? 'Desactivar' : 'Reactivar' }} Prueba</h2>
+      <p>{{ pendienteEstado.descripcion }}</p>
+      <p>Se conservan todas sus asociaciones. Al desactivar, no podrá seleccionarse para nuevas asociaciones.</p>
+      @if (formError) { <p role="alert" class="alert">{{ formError }}</p> }
+      <div class="confirm-acciones">
+        <button type="button" (click)="cancelarEstado()" [disabled]="saving">Cancelar</button>
+        <button type="button" (click)="confirmarEstado()" [disabled]="saving">{{ saving ? 'Guardando…' : 'Confirmar' }}</button>
+      </div>
+    </div>
+  </div>
+}

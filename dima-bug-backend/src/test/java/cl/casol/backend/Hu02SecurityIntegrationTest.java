@@ -85,7 +85,7 @@ class Hu02SecurityIntegrationTest {
         autenticarComo("jwt-tecnico", "tecnico@dimarsa.cl", "TECNICO");
         mockMvc.perform(post("/api/usuarios").header("Authorization", "Bearer jwt-tecnico")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"nombre\":\"Nuevo\",\"email\":\"nuevo@dimarsa.cl\",\"rolId\":2}"))
+                        .content("{\"nombre\":\"Nuevo\",\"email\":\"nuevo@dimarsa.cl\",\"password\":\"ClaveInicialSegura\",\"rolId\":2}"))
                 .andExpect(status().isForbidden());
     }
 
@@ -122,14 +122,14 @@ class Hu02SecurityIntegrationTest {
     @Test
     void administradorPuedeCrearSinExponerPassword() throws Exception {
         autenticarComo("jwt-admin", "admin@dimarsa.cl", "ADMINISTRADOR");
-        when(usuariosService.crear("Nuevo", "nuevo@dimarsa.cl", 2))
+        when(usuariosService.crear("Nuevo", "nuevo@dimarsa.cl", "ClaveInicialSegura", 2))
                 .thenReturn(usuario(3, "nuevo@dimarsa.cl", "TECNICO", true));
 
         mockMvc.perform(post("/api/usuarios")
                         .header("Authorization", "Bearer jwt-admin")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"nombre\":\"Nuevo\",\"email\":\"nuevo@dimarsa.cl\","
-                                + "\"rolId\":2}"))
+                                + "\"password\":\"ClaveInicialSegura\",\"rolId\":2}"))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.email").value("nuevo@dimarsa.cl"))
                 .andExpect(content().string(org.hamcrest.Matchers.not(
@@ -144,21 +144,21 @@ class Hu02SecurityIntegrationTest {
                         .header("Authorization", "Bearer jwt-admin")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"nombre\":\"Nuevo\",\"email\":\"invalido\","
-                                + "\"rolId\":2}"))
+                                + "\"password\":\"clave\",\"rolId\":2}"))
                 .andExpect(status().isBadRequest());
     }
 
     @Test
     void emailDuplicadoResponde409() throws Exception {
         autenticarComo("jwt-admin", "admin@dimarsa.cl", "ADMINISTRADOR");
-        when(usuariosService.crear(anyString(), anyString(), org.mockito.ArgumentMatchers.anyInt()))
+        when(usuariosService.crear(anyString(), anyString(), anyString(), org.mockito.ArgumentMatchers.anyInt()))
                 .thenThrow(new EmailDuplicadoException());
 
         mockMvc.perform(post("/api/usuarios")
                         .header("Authorization", "Bearer jwt-admin")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"nombre\":\"Nuevo\",\"email\":\"usado@dimarsa.cl\","
-                                + "\"rolId\":2}"))
+                                + "\"password\":\"clave\",\"rolId\":2}"))
                 .andExpect(status().isConflict());
     }
 
@@ -167,7 +167,7 @@ class Hu02SecurityIntegrationTest {
         autenticarComo("jwt-admin", "admin@dimarsa.cl", "ADMINISTRADOR");
         Usuario modificado = usuario(2, "nuevo@dimarsa.cl", "ADMINISTRADOR", true);
         Usuario desactivado = usuario(2, "nuevo@dimarsa.cl", "ADMINISTRADOR", false);
-        when(usuariosService.modificar(2, "Nuevo nombre", "nuevo@dimarsa.cl", 1)).thenReturn(modificado);
+        when(usuariosService.modificar(2, "Nuevo nombre", "nuevo@dimarsa.cl", 1, null)).thenReturn(modificado);
         when(usuariosService.cambiarEstado(2, false, "admin@dimarsa.cl")).thenReturn(desactivado);
 
         mockMvc.perform(put("/api/usuarios/2")

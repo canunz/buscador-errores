@@ -44,7 +44,20 @@ public class SecurityConfig {
                 )
 
                 .authorizeHttpRequests(auth -> auth
+                        // Callback de vinculación Gmail: valida estado/PKCE, no crea una sesión de DimaBug.
+                        .requestMatchers(HttpMethod.GET,"/login/oauth2/code/google").permitAll()
+                        .requestMatchers(HttpMethod.GET,"/api/publico/soluciones","/api/publico/soluciones/*","/api/publico/soluciones/*/materiales","/api/publico/soluciones/*/materiales/*/archivo").permitAll()
+                        .requestMatchers(HttpMethod.POST,"/api/publico/chatbot/consultas").permitAll()
+                        .requestMatchers("/api/publico/**").denyAll()
                         .requestMatchers("/api/admin/**").hasRole("ADMINISTRADOR")
+                        .requestMatchers(HttpMethod.POST,"/api/procedimientos/*/ejecuciones").hasAnyRole("ADMINISTRADOR","TECNICO","SOPORTE")
+                        .requestMatchers(HttpMethod.GET,"/api/procedimientos/*/historial").hasRole("ADMINISTRADOR")
+                        .requestMatchers(HttpMethod.POST,"/api/procedimientos","/api/procedimientos/**").hasRole("ADMINISTRADOR")
+                        .requestMatchers(HttpMethod.PUT,"/api/procedimientos/**").hasRole("ADMINISTRADOR")
+                        .requestMatchers(HttpMethod.PATCH,"/api/procedimientos/**").hasRole("ADMINISTRADOR")
+                        .requestMatchers(HttpMethod.DELETE,"/api/procedimientos/**").hasRole("ADMINISTRADOR")
+                        .requestMatchers("/api/sucursales", "/api/sucursales/**")
+                        .hasAnyRole("ADMINISTRADOR", "TECNICO", "SOPORTE")
                         .requestMatchers(HttpMethod.POST, "/api/chatbot/consultas")
                         .hasAnyRole("ADMINISTRADOR", "TECNICO", "SOPORTE", "USUARIO")
                         // Módulo de tickets: los permisos finos por rol se validan en cada caso de uso.
@@ -79,6 +92,7 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/error",
                                 "/api/health",
+                                "/api/auth/login",
                                 "/api/auth/codigo",
                                 "/api/auth/codigo/verificar"
                         ).permitAll()

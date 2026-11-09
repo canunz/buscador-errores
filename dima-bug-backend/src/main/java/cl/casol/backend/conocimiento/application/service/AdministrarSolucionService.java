@@ -37,6 +37,7 @@ public class AdministrarSolucionService {
         conocimientos.bloquear(conocimientoId);
         padre(conocimientoId);
         Solucion s = perteneciente(soluciones.bloquearPorConocimiento(conocimientoId), solucionId);
+        if(autoservicio && !s.activo())throw new SolucionInactivaException();
         return s.autoservicio() == autoservicio ? s : guardar(s, s.activo(), autoservicio);
     }
     private Solucion guardar(Solucion s, boolean activo, boolean autoservicio) {

@@ -45,11 +45,11 @@ describe('JWT limitado al backend autorizado', () => {
     const req = backend.expectOne(url); expect(req.request.headers.has('Authorization')).toBeFalse(); req.flush({});
   });
   it('login y health exactos son públicos, sus imitaciones no', () => {
-    for (const url of ['/api/auth/codigo?next=1', '/api/auth/codigo/verificar', '/api/health']) {
+    for (const url of ['/api/auth/login?next=1', '/api/health']) {
       http.get(url).subscribe(); const req = backend.expectOne(url);
       expect(req.request.headers.has('Authorization')).toBeFalse(); req.flush({});
     }
-    for (const url of ['/api/tickets?next=/api/auth/codigo', '/api/health/privado']) {
+    for (const url of ['/api/tickets?next=/api/auth/login', '/api/health/privado']) {
       expect(isPublicApiUrl(url)).toBeFalse(); http.get(url).subscribe();
       const req = backend.expectOne(url); expect(req.request.headers.has('Authorization')).toBeTrue(); req.flush({});
     }
@@ -78,4 +78,11 @@ describe('JWT limitado al backend autorizado', () => {
     backend.expectOne('/api/auth/me').flush({}, { status: 401, statusText: 'Unauthorized' });
     expect(auth.logout).toHaveBeenCalledTimes(1);
   });
+  it('las rutas públicas no adjuntan JWT ni conservan Authorization explícito',()=>{
+    for(const url of ['/api/publico/soluciones','/api/publico/soluciones/1','/api/publico/soluciones/1/materiales','/api/publico/soluciones/1/materiales/2/archivo','/api/publico/chatbot/consultas']){
+      http.get(url,{headers:{Authorization:'Bearer no-enviar'}}).subscribe();const req=backend.expectOne(url);expect(req.request.headers.has('Authorization')).toBeFalse();req.flush({});
+    }
+    expect(isPublicApiUrl('/api/admin/soluciones/1/materiales')).toBeFalse();expect(isPublicApiUrl('https://ajeno.invalid/api/publico/soluciones')).toBeFalse();
+  });
+
 });

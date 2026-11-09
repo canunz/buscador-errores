@@ -4,6 +4,7 @@ import { Router, Routes } from '@angular/router';
 import { adminGuard, authGuard, guestGuard, staffGuard } from './core/guards/auth.guard';
 import { ShellLayoutComponent } from './shared/layout/shell-layout.component';
 import { LoginComponent } from './features/auth/login/login.component';
+import { RecuperarComponent } from './features/auth/recuperar/recuperar.component';
 import { InicioComponent } from './features/inicio/inicio.component';
 import { UsuariosComponent } from './features/usuarios/usuarios.component';
 import { HardwareComponent } from './features/hardware/hardware.component';
@@ -15,6 +16,7 @@ import { ConocimientoFormComponent } from './features/conocimiento/conocimiento-
 import { ConocimientoDetalleComponent } from './features/conocimiento/conocimiento-detalle.component';
 import { ErrorNuevoComponent } from './features/error-nuevo/error-nuevo.component';
 import { AdminComponent } from './features/admin/admin.component';
+import { AdminSucursalesComponent } from './features/admin/admin-sucursales.component';
 import { AdminCatalogoComponent } from './features/admin/admin-catalogo.component';
 import { EjecucionesComponent } from './features/secciones/ejecuciones.component';
 import { EjecucionChecklistComponent } from './features/ejecucion/ejecucion-checklist.component';
@@ -29,20 +31,19 @@ import { AuthService } from './core/services/auth.service';
 export const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'inicio' },
   { path: 'login', component: LoginComponent, canActivate: [guestGuard] },
-  { path: 'recuperar', redirectTo: 'login' },
+  { path: 'recuperar', component: RecuperarComponent, canActivate: [guestGuard] },
   {
     path: '',
     component: ShellLayoutComponent,
     canActivate: [authGuard],
     children: [
       { path: 'inicio', component: InicioComponent },
-      { path: 'chatbot', loadComponent: () => import('./features/chatbot/chatbot.component').then(m => m.ChatbotComponent) },
       { path: 'plataforma/hardware', component: HardwareComponent, canActivate: [staffGuard] },
       { path: 'departamentos', component: DepartamentosComponent, canActivate: [staffGuard] },
       { path: 'pruebas', component: PruebasComponent, canActivate: [staffGuard] },
       { path: 'procedimientos', component: ProcedimientoListaComponent },
-      { path: 'procedimientos/nuevo', component: ProcedimientoFormComponent, canActivate: [staffGuard], canDeactivate: [cambiosProcedimientoGuard] },
-      { path: 'procedimientos/:id/editar', component: ProcedimientoFormComponent, canActivate: [staffGuard], canDeactivate: [cambiosProcedimientoGuard] },
+      { path: 'procedimientos/nuevo', component: ProcedimientoFormComponent, canActivate: [adminGuard], canDeactivate: [cambiosProcedimientoGuard] },
+      { path: 'procedimientos/:id/editar', component: ProcedimientoFormComponent, canActivate: [adminGuard], canDeactivate: [cambiosProcedimientoGuard] },
       { path: 'procedimientos/:id', component: ProcedimientoDetalleComponent, canDeactivate: [cambiosProcedimientoGuard] },
       { path: 'soluciones', component: SolucionesComponent, canActivate: [staffGuard] },
       { path: 'conocimiento', component: ConocimientoComponent },
@@ -51,11 +52,13 @@ export const routes: Routes = [
       { path: 'conocimiento/:id', component: ConocimientoDetalleComponent },
       { path: 'notificaciones', component: NotificacionesComponent },
       { path: 'ejecuciones', component: EjecucionesComponent, canActivate: [staffGuard] },
-      { path: 'ejecuciones/:id', component: EjecucionChecklistComponent, canActivate: [staffGuard] },
+      { path: 'ejecuciones/:id', component: EjecucionChecklistComponent, canActivate: [staffGuard], canDeactivate: [cambiosProcedimientoGuard] },
       { path: 'favoritos', component: FavoritosComponent },
       { path: 'reportes', component: ReportesComponent },
       { path: 'error/nuevo', component: ErrorNuevoComponent, canActivate: [staffGuard] },
       { path: 'admin', component: AdminComponent, canActivate: [adminGuard] },
+      { path: 'admin/gmail', loadComponent: () => import('./features/admin/admin-gmail.component').then(m => m.AdminGmailComponent), canActivate: [adminGuard] },
+      { path: 'admin/sucursales', component: AdminSucursalesComponent, canActivate: [adminGuard], canDeactivate: [cambiosProcedimientoGuard] },
       { path: 'admin/catalogo/:tipo', component: AdminCatalogoComponent, canActivate: [adminGuard] },
       { path: 'usuarios', component: UsuariosComponent, canActivate: [adminGuard] },
       {
@@ -81,5 +84,11 @@ export const routes: Routes = [
       },
     ],
   },
+  {path:'',loadComponent:()=>import('./features/autoservicio/portal-layout.component').then(m=>m.PortalLayoutComponent),children:[
+    {path:'chatbot',loadComponent:()=>import('./features/chatbot/chatbot.component').then(m=>m.ChatbotComponent)},
+    {path:'autoservicio',loadComponent:()=>import('./features/autoservicio/portal-soluciones.component').then(m=>m.PortalSolucionesComponent)},
+    {path:'autoservicio/soluciones/:id',loadComponent:()=>import('./features/autoservicio/portal-soluciones.component').then(m=>m.PortalSolucionesComponent)},
+    {path:'autoservicio/:id',loadComponent:()=>import('./features/autoservicio/portal-soluciones.component').then(m=>m.PortalSolucionesComponent)},
+  ]},
   { path: '**', redirectTo: 'inicio' },
 ];

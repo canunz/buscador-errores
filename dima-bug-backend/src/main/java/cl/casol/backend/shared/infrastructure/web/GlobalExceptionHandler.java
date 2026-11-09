@@ -83,6 +83,11 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("message","El registro cambió en otra sesión. Recarga y revisa los cambios"));
     }
 
+    @ExceptionHandler(cl.casol.backend.ejecucion.domain.exception.ConflictoEjecucionException.class)
+    public ResponseEntity<Map<String,String>> handleConflictoEjecucion(RuntimeException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("message",ex.getMessage()));
+    }
+
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<Map<String, String>> handleIntegridad(DataIntegrityViolationException ex) {
         return ResponseEntity.status(HttpStatus.CONFLICT)
@@ -91,7 +96,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler({cl.casol.backend.conocimiento.domain.exception.CopiaSolucionInvalidaException.class, cl.casol.backend.conocimiento.domain.exception.PruebaInvalidaException.class, cl.casol.backend.identidad.domain.exception.OrganizacionInvalidaException.class, cl.casol.backend.catalogo.domain.exception.CatalogoInvalidoException.class, RolInactivoException.class, AutoDesactivacionException.class,
             ClasificacionInvalidaException.class, AsignacionSolucionInvalidaException.class,
-            EstadoProcedimientoInvalidoException.class, ReglaEjecucionException.class,
+            EstadoProcedimientoInvalidoException.class, cl.casol.backend.shared.domain.DestinatarioInvalidoException.class, ReglaEjecucionException.class, cl.casol.backend.correo.application.service.GmailException.class,
             EstadoConocimientoNoEvaluableException.class, cl.casol.backend.conocimiento.domain.exception.TituloSolucionInvalidoException.class})
     public ResponseEntity<Map<String, String>> handleReglaNegocio(RuntimeException ex) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", ex.getMessage()));
@@ -118,24 +123,6 @@ public class GlobalExceptionHandler {
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(Map.of("message", "Request inválido"));
-    }
-
-    @ExceptionHandler(CredencialesInvalidasException.class)
-    public ResponseEntity<Map<String, String>> handleCredencialesInvalidas(
-            CredencialesInvalidasException ex
-    ) {
-        return ResponseEntity
-                .status(HttpStatus.UNAUTHORIZED)
-                .body(Map.of("message", ex.getMessage()));
-    }
-
-    @ExceptionHandler({
-            org.springframework.dao.DataAccessException.class,
-            org.springframework.jdbc.CannotGetJdbcConnectionException.class
-    })
-    public ResponseEntity<Map<String, String>> handleBaseDeDatos(Exception ex) {
-        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
-                .body(Map.of("message", "No se pudo conectar con la base de datos. Intente de nuevo."));
     }
 
     @ExceptionHandler(cl.casol.backend.identidad.domain.exception.CorreoNoRegistradoException.class)
@@ -175,6 +162,24 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(cl.casol.backend.identidad.domain.exception.AutoEliminacionException.class)
     public ResponseEntity<Map<String, String>> handleAutoEliminacion(RuntimeException ex) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", ex.getMessage()));
+    }
+
+    @ExceptionHandler(CredencialesInvalidasException.class)
+    public ResponseEntity<Map<String, String>> handleCredencialesInvalidas(
+            CredencialesInvalidasException ex
+    ) {
+        return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED)
+                .body(Map.of("message", ex.getMessage()));
+    }
+
+    @ExceptionHandler({
+            org.springframework.dao.DataAccessException.class,
+            org.springframework.jdbc.CannotGetJdbcConnectionException.class
+    })
+    public ResponseEntity<Map<String, String>> handleBaseDeDatos(Exception ex) {
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
+                .body(Map.of("message", "No se pudo conectar con la base de datos. Intente de nuevo."));
     }
 
     @ExceptionHandler(UsuarioInactivoException.class)

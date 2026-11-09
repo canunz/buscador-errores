@@ -35,7 +35,6 @@
             <th>Rol</th>
             <th>Estado</th>
             <th>Creado</th>
-            <th>Último ingreso</th>
           </tr>
         </thead>
         <tbody>
@@ -77,15 +76,6 @@
                       }
                       <span class="sr">{{ u.usuarioEstado ? 'Inactivar' : 'Activar' }}</span>
                     </button>
-                    <button type="button" class="btn-accion eliminar" title="Eliminar" (click)="eliminar(u)">
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                        <path d="M4 7h16" />
-                        <path d="M10 11v6M14 11v6" />
-                        <path d="M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12" />
-                        <path d="M9 7V4h6v3" />
-                      </svg>
-                      <span class="sr">Eliminar</span>
-                    </button>
                   } @else {
                     <span class="propia" title="Tu cuenta">
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -107,11 +97,10 @@
                 </span>
               </td>
               <td>{{ u.usuarioFechaCreacion ? (u.usuarioFechaCreacion | date: 'dd/MM/yyyy HH:mm') : '—' }}</td>
-              <td>{{ u.usuarioUltimoIngreso ? (u.usuarioUltimoIngreso | date: 'dd/MM/yyyy HH:mm') : 'Nunca' }}</td>
             </tr>
           } @empty {
             <tr>
-              <td colspan="8" class="vacio">No hay usuarios registrados.</td>
+              <td colspan="7" class="vacio">No hay usuarios registrados.</td>
             </tr>
           }
         </tbody>
@@ -152,8 +141,6 @@
           <div>
             <dt>Creado</dt>
             <dd>{{ detalle.usuarioFechaCreacion ? (detalle.usuarioFechaCreacion | date: 'dd/MM/yyyy HH:mm') : '—' }}</dd>
-            <dt>Último ingreso</dt>
-            <dd>{{ detalle.usuarioUltimoIngreso ? (detalle.usuarioUltimoIngreso | date: 'dd/MM/yyyy HH:mm') : 'Nunca' }}</dd>
           </div>
         </dl>
       </div>
@@ -221,7 +208,20 @@
             </button>
             <small class="ayuda">{{ form.controls.activo.value ? 'Puede iniciar sesión.' : 'No puede iniciar sesión.' }}</small>
           </div>
-          <p class="ayuda ayuda-acceso">El usuario ingresa con un código de acceso que le llega a este correo. No necesita contraseña.</p>
+          <label [class.invalido]="invalido('password1')">
+            <span>Contraseña <em>*</em></span>
+            <input type="password" formControlName="password1" placeholder="Mínimo 6 caracteres" autocomplete="new-password" />
+            @if (textoCampo('password1')) {
+              <small class="error">{{ textoCampo('password1') }}</small>
+            }
+          </label>
+          <label [class.invalido]="invalido('password2')">
+            <span>Confirmar contraseña <em>*</em></span>
+            <input type="password" formControlName="password2" placeholder="Repite la contraseña" autocomplete="new-password" />
+            @if (textoCampo('password2')) {
+              <small class="error">{{ textoCampo('password2') }}</small>
+            }
+          </label>
         </div>
         <div class="acciones-modal">
           <button type="button" class="btn-sec" (click)="closeModal()">Cancelar</button>

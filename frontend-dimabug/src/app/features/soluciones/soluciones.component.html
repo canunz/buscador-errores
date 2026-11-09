@@ -8,10 +8,10 @@
       <h1>Soluciones</h1>
       <span>{{ filtrados.length }} solución{{ filtrados.length === 1 ? '' : 'es' }} desde conocimiento</span>
     </div>
+    <button type="button" class="btn-crear" (click)="openCreate()" [disabled]="operando">Añadir solución</button>
   </div>
 
   <div class="toolbar">
-    <button type="button" class="btn-crear" (click)="openCreate()" [disabled]="operando">Añadir solución</button>
     <label class="search">
       <span class="sr">Buscar</span>
       <input
@@ -47,20 +47,10 @@
             <tr>
               <td>
                 <div class="acciones">
-                  <button type="button" class="btn-accion ver" title="Ver detalle" aria-label="Ver detalle" (click)="ver(item)">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                      <circle cx="12" cy="12" r="3" />
-                    </svg>
-                  </button>
-                  <button type="button" class="btn-accion editar" title="Editar" aria-label="Editar" (click)="openEdit(item)" [disabled]="item.activo === false || operando">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                      <path d="M12 20h9" />
-                      <path d="M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4 12.5-12.5z" />
-                    </svg>
-                  </button>
+                  <button type="button" class="act ver" (click)="ver(item)">Ver</button>
+                  <button type="button" class="act edit" (click)="openEdit(item)" [disabled]="item.activo === false || operando">Editar</button>
                   @if (esAdministrador()) {
-                    <button type="button" class="btn-accion estado-solucion" (click)="pedirEstado(item)" [disabled]="operando">
+                    <button type="button" class="act del estado-solucion" (click)="pedirEstado(item)" [disabled]="operando">
                       {{ item.activo === false ? 'Reactivar' : 'Desactivar' }}
                     </button>
                   }
@@ -77,11 +67,11 @@
               <td>{{ item.conocimientoTitulo || '—' }}</td>
               <td><span [class.solucion-inactiva]="item.activo === false">{{ item.activo === false ? 'Inactiva' : 'Activa' }}</span></td>
               <td>
-                <span>{{ item.autoservicio ? 'Habilitado' : 'Deshabilitado' }}</span>
+                @if (!esAdministrador()) {<span>{{ item.autoservicio ? 'Activado' : 'Desactivado' }}</span>}
                 @if (item.activo === false && item.autoservicio) { <small>No disponible mientras esté inactiva</small> }
                 @if (esAdministrador()) {
-                  <button type="button" class="autoservicio-control" [disabled]="operando" (click)="cambiarAutoservicio(item)">
-                    {{ item.autoservicio ? 'Deshabilitar autoservicio' : 'Habilitar autoservicio' }}
+                  <button type="button" class="autoservicio-control" role="switch" [class.activado]="item.autoservicio" [attr.aria-checked]="!!item.autoservicio" [attr.aria-label]="'Autoservicio de '+item.nombre" [attr.aria-busy]="autoservicioEnCurso===item.id" [disabled]="operando || (item.activo===false && !item.autoservicio)" (click)="cambiarAutoservicio(item)">
+                    <span class="switch-pista" aria-hidden="true"><span></span></span>{{ autoservicioEnCurso===item.id?'Actualizando…':item.autoservicio?'Activado':'Desactivado' }}
                   </button>
                 }
               </td>
@@ -155,6 +145,8 @@
             </ul>
           </section>
         }
+        @if(esAdministrador() && detalle.activo!==false && detalle.autoservicio){<app-enlace-nfc [solucionId]="detalle.id" />}
+        @if(esAdministrador()){<app-materiales-solucion [solucionId]="detalle.id" [activa]="detalle.activo!==false" />}
         @if (detalle.conocimientoId) {
           <section class="detalle-bloque">
             <a class="btn-crear" [routerLink]="['/conocimiento', detalle.conocimientoId]">Abrir guía</a>

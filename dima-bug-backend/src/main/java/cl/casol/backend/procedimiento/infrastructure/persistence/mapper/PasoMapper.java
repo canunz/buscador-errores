@@ -6,9 +6,9 @@ import cl.casol.backend.procedimiento.infrastructure.persistence.entity.PasoEnti
 public final class PasoMapper {
     private PasoMapper() { }
     public static Paso toDomain(PasoEntity e) {
-        return new Paso(e.getId(), e.getProcedimientoId(), e.getOrden(), e.getInstruccion(), e.isEsCritico());
+        return new Paso(e.getId(), e.getProcedimientoId(), e.getOrden(), e.getInstruccion(), e.isEsCritico(),e.getModoEjecucion(),e.getMensajeEvidencia(),e.getConfiguracion());
     }
     public static PasoEntity toEntity(Paso p) {
-        return new PasoEntity(p.id(), p.procedimientoId(), p.orden(), p.instruccion(), p.esCritico());
+        var e=new PasoEntity(p.id(), p.procedimientoId(), p.orden(), p.instruccion(), p.esCritico(),p.modoEjecucion(),p.mensajeEvidencia());e.configurar(p.configuracion());return e;
     }
 }

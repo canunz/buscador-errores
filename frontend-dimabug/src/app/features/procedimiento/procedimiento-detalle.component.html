@@ -44,23 +44,24 @@
               {{ item.estado === 'PUBLICADO' ? 'Publicado' : 'Borrador' }}
             </span>
           }
-          @if (puedeGestionar()) {
+          @if (puedeEjecutar()) {
             <div class="hero-destaco">
-              @if (item.estado === 'BORRADOR') { <a class="hero-btn secundario" [routerLink]="['/procedimientos', item.id, 'editar']">Editar</a> }
+              @if (esAdministrador()) { <a class="hero-btn secundario" [routerLink]="['/procedimientos', item.id, 'editar']">Editar procedimiento</a> }
               @if (esAdministrador() && item.estado === 'BORRADOR') {
                 <button type="button" class="hero-btn publish" (click)="publicar()" [disabled]="publicando">
                   {{ publicando ? 'Publicando…' : 'Publicar' }}
                 </button>
               }
               @if (item.estado === 'PUBLICADO') {
-                <button type="button" class="hero-btn" (click)="iniciar()" [disabled]="iniciando">
-                  {{ iniciando ? 'Iniciando…' : 'Iniciar procedimiento' }}
+                <button type="button" class="hero-btn" (click)="iniciar()" [disabled]="iniciando || navegandoEjecucion || cargandoPasos">
+                  {{ iniciando ? 'Iniciando…' : navegandoEjecucion ? 'Abriendo…' : ejecucionCreadaId !== null ? 'Abrir ejecución' : 'Iniciar procedimiento' }}
                 </button>
               }
             </div>
           }
         </div>
         <h1>{{ item.nombre }}</h1>
+        @if(item.origenId){<p class="rol-nota">Revisión {{ item.revision }} · <a [routerLink]="['/procedimientos',item.origenId]">Consultar procedimiento original</a></p>}
         @if (item.descripcion) {
           <p class="lead">{{ item.descripcion }}</p>
         }
@@ -92,6 +93,7 @@
         <span [style.width.%]="pasos.length ? ((pasoIndex + 1) / pasos.length) * 100 : 0"></span>
       </div>
     </header>
+
 
     <div class="barra-estado">
       <p class="rol-nota">
@@ -141,25 +143,27 @@
               <small [title]="p.instruccion">{{ p.instruccion }}</small>
             </span>
           </button>
+          @if(esAdministrador() && item.estado==='BORRADOR'){
+            <div class="paso-admin" [attr.aria-label]="'Administrar paso '+p.orden">
+              <button type="button" (click)="abrirPaso(p)" [disabled]="operacionEnCurso()">Editar</button>
+              <button type="button" (click)="pedirEliminarPaso(p)" [disabled]="operacionEnCurso()">Eliminar</button>
+              <button type="button" (click)="moverPaso(p,'ARRIBA')" [disabled]="i===0 || operacionEnCurso()" [attr.aria-label]="'Mover arriba paso '+p.orden">↑ Arriba</button>
+              <button type="button" (click)="moverPaso(p,'ABAJO')" [disabled]="i===pasos.length-1 || operacionEnCurso()" [attr.aria-label]="'Mover abajo paso '+p.orden">↓ Abajo</button>
+            </div>
+          }
         }
       </nav>
 
       @for (paso of pasoActual ? [pasoActual] : []; track paso.id) {
         <div class="guia-unica">
           <section class="guide entra" [class.warn]="paso.esCritico">
+
             <header class="guide-head">
               <div>
                 <p class="step-label">Paso {{ pasoIndex + 1 }} de {{ pasos.length }} · Orden {{ paso.orden }}</p>
                 <h2>Qué hacer</h2>
               </div>
-              @if (puedeGestionar() && item.estado === 'BORRADOR') {
-                <button type="button" class="icon-btn" title="Editar paso" aria-label="Editar paso" (click)="abrirPaso(paso)">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                    <path d="M12 20h9" />
-                    <path d="M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4 12.5-12.5z" />
-                  </svg>
-                </button>
-              }
+
             </header>
 
             <div class="instruccion">
@@ -246,7 +250,7 @@
 @if (materialPasoId != null) {
   <div class="form-modal">
     <div class="form-modal-fondo" (click)="cerrarMaterial()"></div>
-    <div class="form-modal-dialog" role="dialog" aria-modal="true">
+    <div class="form-modal-dialog" role="dialog" aria-modal="true" aria-label="Editar paso" cdkTrapFocus [cdkTrapFocusAutoCapture]="true">
       <h2>{{ editMaterialId ? 'Editar material' : 'Agregar material' }}</h2>
       <app-material-apoyo-form
         [enviando]="guardandoMaterial"
@@ -259,26 +263,33 @@
   </div>
 }
 
+@if(esAdministrador() && item){<section class="auditoria-admin"><button type="button" class="link-btn" (click)="cargarHistorial()" [attr.aria-expanded]="historialAbierto">Historial de cambios · revisión {{ item.revision || 1 }}</button>
+@if(historialAbierto){@if(historialCargando){<p role="status">Cargando auditoría…</p>}@else{<ol>@for(e of historialEdicion;track e.id){<li><strong>{{ e.accion }}</strong><p>{{ e.fecha | date:'dd/MM/yyyy HH:mm:ss' }} · Administrador #{{ e.actorId }}</p><details><summary>Ver cambios registrados</summary><p>Antes</p><pre>{{ e.antes || 'Sin registro previo' }}</pre><p>Después</p><pre>{{ e.despues || 'Registro eliminado del borrador' }}</pre></details></li>}@empty{<li>No hay cambios registrados para esta revisión.</li>}</ol>}}</section>}
+@if(pasoAEliminar;as p){<div class="form-modal"><div class="form-modal-fondo"></div><section class="form-modal-dialog" role="alertdialog" aria-modal="true" aria-labelledby="eliminar-paso-titulo" cdkTrapFocus [cdkTrapFocusAutoCapture]="true"><h2 id="eliminar-paso-titulo">Eliminar paso {{ p.orden }}</h2><p>Se eliminará este paso y sus materiales del borrador actual. Las revisiones publicadas y sus ejecuciones se conservan.</p><p>{{ p.instruccion }}</p><div class="fila"><button type="button" class="btn-cancelar" [disabled]="gestionandoPasos" (click)="pasoAEliminar=null">Cancelar</button><button type="button" class="btn-primario" [disabled]="gestionandoPasos" (click)="eliminarPasoConfirmado()">{{ gestionandoPasos?'Eliminando…':'Eliminar paso' }}</button></div></section></div>}
+
 @if (pasoAbierto) {
   <div class="form-modal">
     <div class="form-modal-fondo" (click)="cerrarPaso()"></div>
-    <div class="form-modal-dialog" role="dialog" aria-modal="true">
-      <h2>{{ editPasoId ? 'Editar paso' : 'Agregar paso' }}</h2>
+    <div class="form-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="editor-paso-titulo" cdkTrapFocus [cdkTrapFocusAutoCapture]="true">
+      <h2 id="editor-paso-titulo">{{ configurandoPublicado ? 'Configurar este paso' : editPasoId ? 'Editar paso' : 'Agregar paso' }}</h2>
+      @if(configurandoPublicado){<p>Se conserva este mismo paso. La configuración se aplica a nuevas ejecuciones; las finalizadas y sus instrucciones no cambian.</p>}
       @if (error) { <p class="alert error" role="alert">{{ error }}</p> }
       @if (pasoPorVerificar) { <p>Los datos del intento anterior se conservan. Verifique su resultado antes de reintentar.</p><button type="button" (click)="verificarPasoPendiente()" [disabled]="verificandoPaso">Verificar en servidor</button> }
       <form class="editor" (ngSubmit)="guardarPaso()">
+        <h3 class="editor-seccion">Información del paso</h3>
         <label>
           Orden *
-          <input name="orden" type="number" min="1" step="1" [(ngModel)]="orden" [disabled]="guardandoPaso || verificandoPaso || pasoPorVerificar" />
+          <input name="orden" type="number" min="1" step="1" [(ngModel)]="orden" [disabled]="configurandoPublicado || guardandoPaso || verificandoPaso || pasoPorVerificar" />
         </label>
         <label>
           Instrucción *
-          <textarea name="instruccion" rows="4" [(ngModel)]="instruccion" [disabled]="guardandoPaso || verificandoPaso || pasoPorVerificar" placeholder="Describa qué debe hacer el técnico en este paso."></textarea>
+          <textarea name="instruccion" rows="4" [(ngModel)]="instruccion" [disabled]="configurandoPublicado || guardandoPaso || verificandoPaso || pasoPorVerificar" placeholder="Describa qué debe hacer el técnico en este paso."></textarea>
         </label>
         <label class="check">
-          <input name="critico" type="checkbox" [(ngModel)]="esCritico" [disabled]="guardandoPaso || verificandoPaso || pasoPorVerificar" />
+          <input name="critico" type="checkbox" [(ngModel)]="esCritico" (ngModelChange)="actualizarCriticidad()" [disabled]="configurandoPublicado || guardandoPaso || verificandoPaso || pasoPorVerificar" />
           Paso crítico: debe verificarse antes de continuar
         </label>
+        <app-configuracion-paso [(modo)]="modoEjecucion" [(value)]="configuracionPaso" [critico]="esCritico" [disabled]="guardandoPaso || verificandoPaso || pasoPorVerificar" />
         <div class="fila">
           <button type="button" class="btn-cancelar" (click)="cerrarPaso()" [disabled]="guardandoPaso || verificandoPaso">Cancelar</button>
           <button type="submit" class="btn-primario" [disabled]="guardandoPaso || verificandoPaso">

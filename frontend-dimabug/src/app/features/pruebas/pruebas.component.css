@@ -1,3 +1,8 @@
+.pr-page .catalogo-ok {
+  margin: 0 0 12px;
+  color: #065f46;
+}
+
 .pr-page .tabla-wrap {
   border-radius: 18px;
   border-color: #dce3f0;
@@ -27,13 +32,15 @@
 }
 
 .pr-page .col-acciones {
-  width: 180px;
+  width: 1%;
+  white-space: nowrap;
 }
 
 .pr-page .acciones {
   display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
+  flex-wrap: nowrap;
+  gap: 6px;
+  white-space: nowrap;
 }
 
 .pr-page .act {
@@ -105,9 +112,27 @@
   color: #f8fafc;
 }
 
-.pr-page .acciones { flex-wrap: wrap; gap: 8px; }
-.pr-page td { overflow-wrap: anywhere; }
-.pr-respaldo { padding: 12px; border: 1px solid #cbd5e1; margin-bottom: 12px; border-radius: 12px; }
+.pr-page .acciones { flex-wrap: nowrap; gap: 6px; white-space: nowrap; }
+.pr-page td:not(:first-child) { overflow-wrap: anywhere; }
+.pr-respaldo {
+  margin: 14px 0 0;
+  padding: 10px 12px;
+  border: 1px solid #e7e9f0;
+  border-radius: 12px;
+  color: #64748b;
+  font-size: 13px;
+}
+
+.pr-respaldo button {
+  margin-left: 8px;
+  border: 0;
+  background: transparent;
+  color: #1e4fd6;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: underline;
+}
 .pr-form-modal { z-index: 80; }
 .pr-form-modal .alert { margin: 12px 20px; }
 @media (max-width: 720px) { .pr-page .franja { flex-direction: column; align-items: stretch; } }

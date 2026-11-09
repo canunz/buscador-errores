@@ -1,0 +1,30 @@
+{
+  "fecha": "2026-11-07",
+  "estado": "Propuesta sin implementar",
+  "archivos_preexistentes_verificados": 973,
+  "preexistentes_alterados_o_ausentes": [],
+  "enlaces_locales_rotos": [],
+  "historias": [
+    "AUT-01",
+    "AUT-02",
+    "AUT-03",
+    "AUT-04",
+    "AUT-05",
+    "AUT-06",
+    "AUT-07"
+  ],
+  "pruebas_nuevas_ejecutadas": false,
+  "conexion_buzon_o_base": false,
+  "correos_enviados": false,
+  "issues_creados": false,
+  "artefactos": {
+    "BACKLOG_JIRA_PROPUESTO.md": {
+      "sha256": "498cb1e3f1247f4dfb5e3dade4bf7b10a60fc20c70fb0558143430b84ee4feae",
+      "bytes": 19453
+    },
+    "DIAGNOSTICO_Y_PROPUESTA.md": {
+      "sha256": "cf48099907a9437814811ce20f31724054e35efcf75db0ec77b23ac98f6778dd",
+      "bytes": 61311
+    }
+  }
+}

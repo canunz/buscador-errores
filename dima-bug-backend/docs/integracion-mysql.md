@@ -1,0 +1,230 @@
+> Referencia histórica conservada. Describe una entrega previa y puede diferir del checkout actual. [Documentación vigente](../../docs/README.md). Los enlaces a archivos ausentes se identifican expresamente; [original íntegro y hash](../../docs/auditoria/historico/README.md).
+
+# Primera integración JDBC con MySQL
+
+La clase `MySqlReferentialIntegrityIT` usa JDBC real y Testcontainers 2.0.5,
+gestionado por Spring Boot 4.1.1. No arranca Spring, no carga application.properties
+ni lee DB_URL, DB_USERNAME o DB_PASSWORD. No verifica todavía servicios ni JPA.
+
+## Requisitos y ejecución exclusiva
+
+Docker Desktop iniciado en modo Linux, JDK 21 y acceso a Maven Central y al registro
+de imágenes. Desde la raíz del proyecto, configurar Java solo en la sesión PowerShell:
+
+```powershell
+$env:JAVA_HOME = '<RUTA_JDK_21>'
+$env:PATH = "$env:JAVA_HOME\bin;$env:PATH"
+.\mvnw.cmd -version
+.\mvnw.cmd -B -Pintegration-mysql verify
+```
+
+El perfil omite Surefire y ejecuta exclusivamente `MySqlReferentialIntegrityIT`, `ConocimientoJpaIT`, `AutenticacionHttpIT`, `MaterialesArchivoIT` y `ProcedimientosEjecucionesResultadosIT`
+mediante Failsafe. `mvnw.cmd test` conserva las pruebas habituales; el sufijo IT
+queda fuera de los patrones normales de Surefire. El perfil sí compila todas las
+clases de test. Informes: `target/failsafe-reports`.
+
+## Aislamiento e inicialización
+
+- Imagen fija `mysql:8.0.36`, esquema `dimabug_integration`, puerto aleatorio,
+  credenciales sintéticas y password aleatorio por instancia. La versión fija
+  sirve para este primer ensayo; validar la versión objetivo de producción después.
+- Sin reutilización, bind mounts, volúmenes persistentes ni Docker Compose.
+  `/var/lib/mysql` usa tmpfs: sus datos desaparecen al destruir el contenedor.
+- La URL se construye desde el contenedor en ejecución; antes de conectar se
+  comprueba que corresponde exactamente a su host, puerto y esquema. Se rechazan
+  hosts no loopback. No hay fallback cuando Docker falla.
+- El cliente nativo mysql dentro del contenedor importa la copia saneada y luego
+  la migración. La contraseña no se pasa como argumento de línea de comandos.
+- Se comprueban 24 tablas, FOREIGN_KEY_CHECKS=1, cero huérfanos y las cinco FK
+  con tabla/columna destino y ambas acciones RESTRICT.
+- El soporte cierra el contenedor al terminar y ante un fallo de inicialización.
+  Testcontainers mantiene su mecanismo estándar de limpieza de recursos.
+
+`src/test/resources/db/dimabug-esquema.sql` contiene únicamente los CREATE TABLE
+del export auditado: conserva columnas, PK, índices, FK, CHECK, motores y collations.
+Se retiraron cabeceras, datos, DROP, USE y contadores AUTO_INCREMENT de las tablas.
+Se suspenden FK solo dentro de la importación inicial de tablas vacías para resolver
+el orden del dump y se restauran en la misma sesión. La migración las mantiene activas.
+No se cambia el esquema de producción ni se genera DDL desde JPA.
+
+Se reutilizan [diagnóstico — referencia no disponible](../../docs/auditoria/REFERENCIAS_HISTORICAS.md#archivos-no-disponibles)
+y [migración — referencia no disponible](../../docs/auditoria/REFERENCIAS_HISTORICAS.md#archivos-no-disponibles).
+La división por punto y coma del diagnóstico se limita a este recurso SELECT controlado;
+el dump y la migración se importan con el cliente nativo, no con ese divisor.
+
+## Escenario comprobado
+
+Una prueba comprueba conexión, crea rol y usuario sintéticos, inserta y recupera
+un procedimiento válido, exige error MySQL 1452 para creador inexistente y 1451
+al borrar el usuario referenciado. Verifica SQLState 23000 y conservación de las
+filas válidas. No simula persistencia ni convierte ausencia de Docker en skip.
+
+## Resultado real del primer ensayo
+
+2026-10-08: `mvnw.cmd -Pintegration-mysql verify` terminó con BUILD SUCCESS.
+Java Temurin 21.0.12.1, Maven Wrapper 3.9.16, Docker Engine 29.8.2/Linux,
+Testcontainers 2.0.5 y MySQL 8.0.36.
+
+- PASS: 1; FAIL: 0; ERROR: 0; SKIPPED: 0.
+- Tiempo de la clase, incluyendo preparación y cierre: 45,07 s.
+- Tiempo total Maven: 1:01 min, incluyendo resolución de dependencias y primera descarga de imagen.
+- Diagnóstico de las cinco referencias y verificación de FK completados.
+- Sin errores de prueba. El sandbox bloqueó inicialmente la API Docker; la
+  ejecución se realizó con autorización fuera del sandbox, manteniendo el aislamiento.
+- No se ejecutaron las pruebas habituales ni se accedió a DEV.
+
+Las siguientes ampliaciones quedan pendientes: otras cuatro FK con fixtures propios,
+FULLTEXT y consistencia BD/filesystem.
+
+## Integración Spring Boot + JPA de Conocimiento
+
+`ConocimientoJpaIT` reutiliza `MySqlIntegrationSupport` con otra instancia temporal
+por clase. Arranca un contexto Spring Boot de persistencia sin web ni JWT, con
+autoconfiguración JPA/Hibernate y JdbcTemplate. Importa componentes funcionales
+reales; no contiene mocks ni sustituciones de servicios o repositorios.
+
+El soporte registra un DataSource antes del arranque del contexto. Cada conexión
+se construye y valida desde el contenedor; el DataSource rechaza credenciales
+externas. `spring.config.location` selecciona únicamente
+`src/test/resources/integration-mysql.properties`, sin cargar application.properties.
+Los argumentos fijan `ddl-auto=none` y `spring.sql.init.mode=never`.
+No se modifica configuración funcional ni se usa un perfil DEV.
+
+Flujo real probado:
+
+1. `MantenerConocimientoService.crear` valida los puertos HardwareRepository,
+   SistemaRepository, ModuloRepository, FrecuenciaRepository y UsuarioRepository.
+2. Sus adaptadores funcionales usan repositorios Spring Data JPA y los mappers
+   de catálogo/usuario. ConocimientoRepositoryAdapter persiste ConocimientoEntity
+   y referencias a HardwareEntity, SistemaEntity, ModuloEntity, FrecuenciaEntity
+   y UsuarioEntity mediante ConocimientoJpaRepository.
+3. `IndexarConocimientoService` usa DocumentoBusquedaConocimientoRepository,
+   implementado por BusquedaConocimientoJdbcAdapter, que hace flush del EntityManager
+   y escribe co_conocimiento_busqueda con JDBC en la misma transacción.
+
+Los fixtures SQL son sintéticos: rol, usuario, sistema, módulo, hardware, relación
+hardware-sistema y frecuencia. Se limpian antes y después de cada método en orden
+compatible con las FK, exclusivamente dentro del contenedor propio.
+
+El primer escenario crea mediante Application, recupera mediante el servicio y
+valida campos, relaciones, autor y estado BORRADOR. Una conexión JDBC independiente
+comprueba el commit en MySQL; se comprueba también la proyección de búsqueda.
+
+El segundo llama al servicio dentro de una TransactionTemplate real y provoca
+una excepción de la operación envolvente después de comprobar ambas escrituras.
+Una conexión independiente confirma ausencia de conocimiento y proyección y
+conservación del usuario fixture. Comprueba participación y rollback conjunto
+JPA/JDBC; no simula un fallo interno del indexador ni certifica todos sus fallos posibles.
+
+Alcance: contexto Boot de persistencia y Application real. No certifica el arranque
+completo con controladores, JWT, filesystem ni toda la configuración desplegada.
+No cambia el esquema funcional ni las entidades. Defectos funcionales detectados
+durante el ensayo, si los hay, se documentan sin corregirlos.
+
+### Resultado real de la ampliación JPA
+
+2026-10-08, comando `mvnw.cmd -B -Pintegration-mysql verify`: BUILD SUCCESS.
+
+| Clase | PASS | FAIL | ERROR | SKIPPED | Tiempo de clase |
+| --- | --- | --- | --- | --- | --- |
+| ConocimientoJpaIT | 2 | 0 | 0 | 0 | 23,09 s |
+| MySqlReferentialIntegrityIT | 1 | 0 | 0 | 0 | 7,808 s |
+| Total | 3 | 0 | 0 | 0 | Maven completo: 40,230 s |
+
+Hibernate 7.4.5.Final conectó al MySQL 8.0.36 temporal. Creación, recuperación,
+relaciones, commit independiente y rollback JPA/JDBC pasaron. No se detectaron
+defectos funcionales en estos escenarios. Persisten advertencias de compilación
+de API deprecada y operaciones unchecked en tests existentes, que no se ejecutaron
+ni se modificaron. La ampliación cambia solo POM, soporte y archivos de pruebas/documentación.
+
+Riesgos pendientes en ese ensayo: excepciones internas del indexador, carreras concurrentes,
+otras operaciones de Conocimiento y validación contra la versión objetivo MySQL.
+Los reportes reales están en `target/failsafe-reports`; no se versionan artefactos de build.
+
+## Actualización, eliminación lógica y fallo interno de indexación
+
+Se amplía la misma clase ConocimientoJpaIT y se importa BuscarConocimientoService
+real. Se reutilizan fixtures, limpieza y contenedor; no se cambia producción ni esquema.
+
+Coordinación comprobada en el código funcional:
+
+- MantenerConocimientoService.modificar tiene @Transactional, guarda por JPA y
+  llama a IndexarConocimientoService.indexar dentro de la transacción.
+- El indexador usa propagación REQUIRED. BusquedaConocimientoJdbcAdapter.obtener
+  hace flush de EntityManager antes de consultar los campos y relaciones por JDBC.
+- Su método guardar realiza INSERT ... ON DUPLICATE KEY UPDATE sobre la proyección.
+  JpaTransactionManager y JdbcTemplate comparten el DataSource y conexión transaccional.
+- MantenerConocimientoService.eliminar conserva la fila con estado ELIMINADO y
+  llama a indexador.eliminar; el adaptador borra la proyección en esa transacción.
+- El repositorio oculta eliminados en consultas normales; la búsqueda JDBC requiere
+  PUBLICADO y, cuando hay texto, consulta FULLTEXT sobre la proyección.
+
+Escenarios nuevos:
+
+1. Modificación: crear/publicar, demostrar búsqueda por token original, modificar
+   título/descripcion/comentario y verificar JPA, SQL y proyección. El token viejo
+   desaparece de FULLTEXT y el nuevo recupera el mismo conocimiento.
+2. Eliminación: partir de un publicado visible en FULLTEXT, eliminar por Application,
+   verificar fila ELIMINADO y autor modificador, ausencia de proyección, exclusión
+   de búsqueda con/sin texto y consultas normales. Repetir eliminación es idempotente.
+3. Error SQL interno: crear un conocimiento y bloquear su fila de proyección con
+   SELECT ... FOR UPDATE en una conexión independiente del mismo contenedor.
+   En la transacción que llama al servicio real, fijar innodb_lock_wait_timeout=1
+   solo para esa sesión. El upsert de guardar debe fallar con MySQL 1205.
+   Se exige ese código y una traza del método guardar del adaptador real: cualquier
+   fallo distinto no cuenta como evidencia de este escenario.
+
+El escenario 3 restaura el timeout previo en finally, libera el bloqueo mediante
+rollback en finally y cierra la conexión. Verifica que JPA conservó título,
+descripción y modificador originales, que la proyección quedó idéntica y que no
+se agregaron filas parciales. Después ejecuta una modificación válida para demostrar
+recuperación. Cada método vuelve a limpiar fixtures; no depende del orden de JUnit.
+
+El error 1205 es esperado y asertado, no un defecto funcional. Este ensayo no utiliza
+triggers, cambios de permisos, DDL, mocks ni un indexador sustituto. Su transacción
+envolvente permite configurar la misma sesión; el servicio real conserva su proxy
+y participa mediante REQUIRED. No demuestra otros fallos SQL ni races generales.
+
+### Resultados reales de esta ampliación
+
+2026-10-08: `mvnw.cmd -B -Pintegration-mysql verify`, BUILD SUCCESS.
+
+| Clase | PASS | FAIL | ERROR | SKIPPED | Tiempo |
+| --- | --- | --- | --- | --- | --- |
+| ConocimientoJpaIT | 5 | 0 | 0 | 0 | 38,29 s |
+| MySqlReferentialIntegrityIT | 1 | 0 | 0 | 0 | 15,52 s |
+| Total | 6 | 0 | 0 | 0 | Maven completo: 1:11 min |
+
+La primera ejecución tuvo 5 PASS, 0 FAIL, 1 ERROR y 0 SKIPPED en 42,458 s.
+La comprobación del eliminado llamaba directamente al adaptador fuera de una
+transacción y produjo LazyInitializationException al mapear FrecuenciaEntity.
+Se corrigió exclusivamente esa lectura del test con una transacción read-only,
+como la que proporcionan los servicios Application; no se modificó producción.
+La ejecución final pasó los seis escenarios. El timeout SQL 1205 del escenario
+de fallo interno es esperado y sus aserciones pasaron, incluido el origen guardar,
+la reversión y la modificación posterior tras liberar la fila.
+
+Evidencias: informes TXT/XML en target/failsafe-reports; la traza y código SQL del
+timeout son comprobados por la propia prueba. No se detectó un defecto funcional
+en los casos de uso ejecutados. La dependencia del mapper respecto de una sesión
+activa es una limitación del contrato del adaptador; futuras llamadas directas
+fuera de Application necesitan respetar ese límite (riesgo arquitectónico P2).
+
+Archivos actualizados en esta ampliación: ConocimientoJpaIT.java y este documento.
+Sin archivos nuevos, cambios de esquema funcional, entidades, lógica, configuración
+funcional, POM ni MySqlIntegrationSupport. No se ejecutaron unitarias ni se accedió a DEV.
+
+Pendientes: rollback de eliminación ante fallo de borrado de proyección, otros
+errores SQL del indexador, deadlocks/concurrencia general, casos de ranking FULLTEXT
+y comportamientos en la versión MySQL objetivo de producción. El bloqueo controlado
+no demuestra cobertura de todas las carreras concurrentes.
+
+La ampliación HTTP real de seguridad y sus hallazgos se documentan en
+[autenticación y autorización](seguridad-integracion.md). Esa clase importa
+la seguridad funcional y usa exclusivamente usuarios/secreto sintéticos.
+
+La cobertura de filesystem temporal, compensación y materiales por HTTP se
+documenta en [materiales de integración](materiales-integracion.md).
+
+La integración por servicios reales de procedimientos, checklist de ejecución y
+efectividad se documenta en [procedimientos, ejecuciones y resultados](procedimientos-ejecuciones-resultados-integracion.md).

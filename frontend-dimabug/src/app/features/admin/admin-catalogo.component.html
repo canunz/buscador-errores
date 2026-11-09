@@ -1,27 +1,36 @@
 <app-loading-modal [visible]="loading" mensaje="Cargando catálogo" />
-<section class="maestro">
+<section class="cat-page cat-admin">
   <div class="franja">
     <app-ayuda-franja titulo="Administración de catálogos" detalle="Los cambios se guardan en el sistema. Desactivar conserva los registros y sus referencias históricas." />
-    <p class="crumb"><a routerLink="/admin">Administración</a></p>
+    <div>
+      <p><a routerLink="/admin">Administración</a></p>
+      <h1>{{ disponible ? titulos[tipo] : 'Pendiente de implementación' }}</h1>
+      <span>{{ items.length }} registro{{ items.length === 1 ? '' : 's' }}</span>
+    </div>
+    @if (disponible) {
+      <button class="btn-crear" type="button" (click)="abrir()" [disabled]="loading || saving">{{ crearYAsociar ? 'Crear sistema y asociar' : 'Añadir' }}</button>
+    }
+  </div>
+
+  @if (hardwareOrigenId || tipo === 'modulos') {
     <nav class="catalogo-contexto" aria-label="Navegación de catálogos">
-      @if (hardwareOrigenId) { <a routerLink="/plataforma/hardware" [queryParams]="{ hardwareId: hardwareOrigenId }">Volver al Hardware de origen</a> }
-      <a routerLink="/admin/catalogo/sistemas" [queryParams]="{ hardwareId: hardwareOrigenId }">Todos los Sistemas</a>
+      @if (hardwareOrigenId) {
+        <a routerLink="/plataforma/hardware" [queryParams]="{ hardwareId: hardwareOrigenId }">Volver al Hardware de origen</a>
+      }
       @if (tipo === 'modulos' && sistemaContextoId) {
         <a routerLink="/admin/catalogo/sistemas" [queryParams]="{ editarId: sistemaContextoId, hardwareId: hardwareOrigenId }">Volver al Sistema</a>
-        <a routerLink="/admin/catalogo/modulos">Todos los Módulos</a>
       }
     </nav>
-    <div class="franja-row"><div><h1>{{ disponible ? titulos[tipo] : 'Pendiente de implementación' }}</h1><p class="lead">{{ items.length }} registros</p></div>
-      @if (disponible) { <button class="btn-crear" type="button" (click)="abrir()" [disabled]="loading || saving">{{ crearYAsociar ? 'Crear sistema y asociar' : 'Añadir' }}</button> }
-    </div>
-  </div>
+  }
+
   @if (!disponible) { <p>Este catálogo queda pendiente para un Sprint posterior.</p> }
   @if (error) { <p class="alert" role="alert">{{ error }} <button type="button" (click)="recargar()">Reintentar</button></p> }
   @if (mensaje) { <p class="catalogo-mensaje" role="status">{{ mensaje }}</p> }
+
   @if (disponible && !loading) {
     @if (tipo === 'modulos') {
       <div class="modulos-filtros" [formGroup]="filtrosModulos" role="group" aria-label="Filtros de Módulos">
-        <label>Sistema<select formControlName="sistemaId"><option [ngValue]="null">Todos los Sistemas</option>
+        <label>Sistema<select formControlName="sistemaId"><option [ngValue]="null">Todos los sistemas</option>
           @for (s of sistemas; track s.id) { <option [ngValue]="s.id">{{ s.nombre }}{{ s.activo ? '' : ' (inactivo)' }}</option> }
         </select></label>
         <label>Estado<select formControlName="estado"><option value="todos">Todos</option><option value="activos">Activos</option><option value="inactivos">Inactivos</option></select></label>
@@ -29,26 +38,51 @@
         <p class="modulos-resultados" role="status">{{ itemsVisibles.length }} de {{ items.length }} módulos</p>
       </div>
     }
-    <div class="tabla-wrap"><table><thead><tr><th>Acciones</th><th>Nombre</th><th>Detalle</th><th>Estado</th></tr></thead>
-      <tbody>@for (item of itemsVisibles; track item.id) {
-        <tr><td><div class="acts"><button class="act edit" type="button" (click)="abrir(item)" [disabled]="saving">Editar</button>
-          @if (tipo === 'sistemas') { <a class="act" routerLink="/admin/catalogo/modulos" [queryParams]="{ sistemaId: item.id, hardwareId: hardwareOrigenId }">Módulos</a> }
-          <button class="act" type="button" (click)="pendienteEstado = item" [disabled]="saving">{{ item.activo ? 'Desactivar' : 'Activar' }}</button></div></td>
-          <td><strong>{{ item.nombre }}</strong></td><td>
-            @switch (tipo) {
-              @case ('hardware') {
-                <div class="hw-admin-detail"><span class="hw-admin-label">Sistema operativo</span><span>{{ item.sistemaOperativo || 'Sin sistema operativo' }}</span></div>
-                <div class="hw-admin-detail"><span class="hw-admin-label">Sistemas asociados</span><span>{{ nombresSistemas(item.sistemaIds) }}</span></div>
-              }
-              @case ('sistemas') { {{ item.descripcion || '—' }} }
-              @case ('modulos') { {{ nombreSistema(item.sistemaId) }} }
-              @case ('frecuencias') { Orden: {{ item.orden }} }
-            }
-          </td><td>{{ item.activo ? 'Activo' : 'Inactivo' }}</td></tr>
-      } @empty { <tr><td colspan="4" class="vacio">{{ error ? 'No se pudo cargar el catálogo.' : tipo === 'modulos' && items.length ? 'No hay módulos que coincidan con los filtros.' : 'No hay registros. Usa Añadir para crear el primero.' }}</td></tr> }</tbody>
-    </table></div>
+    <div class="tabla-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th class="col-acciones">Acciones</th>
+            <th>Nombre</th>
+            <th>Detalle</th>
+            <th>Estado</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (item of itemsVisibles; track item.id) {
+            <tr>
+              <td>
+                <div class="acciones">
+                  <button class="act edit" type="button" (click)="abrir(item)" [disabled]="saving">Editar</button>
+                  @if (tipo === 'sistemas') {
+                    <a class="act" routerLink="/admin/catalogo/modulos" [queryParams]="{ sistemaId: item.id, hardwareId: hardwareOrigenId }">Módulos</a>
+                  }
+                  <button class="act del" type="button" (click)="pendienteEstado = item" [disabled]="saving">{{ item.activo ? 'Desactivar' : 'Activar' }}</button>
+                </div>
+              </td>
+              <td><strong>{{ item.nombre }}</strong></td>
+              <td>
+                @switch (tipo) {
+                  @case ('hardware') {
+                    <div class="hw-admin-detail"><span class="hw-admin-label">Sistema operativo</span><span>{{ item.sistemaOperativo || 'Sin sistema operativo' }}</span></div>
+                    <div class="hw-admin-detail"><span class="hw-admin-label">Sistemas asociados</span><span>{{ nombresSistemas(item.sistemaIds) }}</span></div>
+                  }
+                  @case ('sistemas') { {{ item.descripcion || '—' }} }
+                  @case ('modulos') { {{ nombreSistema(item.sistemaId) }} }
+                  @case ('frecuencias') { Orden: {{ item.orden }} }
+                }
+              </td>
+              <td><span class="estado" [class.activo]="item.activo" [class.inactivo]="!item.activo">{{ item.activo ? 'Activo' : 'Inactivo' }}</span></td>
+            </tr>
+          } @empty {
+            <tr><td colspan="4" class="vacio">{{ error ? 'No se pudo cargar el catálogo.' : tipo === 'modulos' && items.length ? 'No hay módulos que coincidan con los filtros.' : 'No hay registros. Usa Añadir para crear el primero.' }}</td></tr>
+          }
+        </tbody>
+      </table>
+    </div>
   }
 </section>
+
 @if (pendienteEstado) {
   <div class="confirm-capa"><div class="confirm-fondo"></div><div class="confirm-dialog" role="alertdialog" aria-modal="true" aria-labelledby="estado-titulo">
     <h2 id="estado-titulo">{{ pendienteEstado.activo ? 'Desactivar' : 'Activar' }} {{ pendienteEstado.nombre }}</h2>
@@ -59,6 +93,7 @@
     <div class="confirm-acciones"><button type="button" (click)="pendienteEstado = null" [disabled]="saving">Cancelar</button><button type="button" (click)="confirmarEstado()" [disabled]="saving">{{ saving ? 'Guardando…' : 'Confirmar' }}</button></div>
   </div></div>
 }
+
 @if (modalOpen) {
   <div class="modal" role="dialog" aria-modal="true" aria-labelledby="catalogo-titulo"><div class="modal-backdrop"></div><div class="modal-dialog modal-pro">
     <header class="modal-head" [class.hw-admin-head]="tipo === 'hardware'">

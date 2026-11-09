@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { Observable, catchError, concat, map, of, shareReplay, switchMap, take, tap } from 'rxjs';
+import { Observable, catchError, concat, map, of, shareReplay, tap } from 'rxjs';
 import { ClasificacionService } from './clasificacion.service';
 import { ConocimientoService } from './conocimiento.service';
 import { OrganizacionService } from './organizacion.service';
@@ -94,7 +94,7 @@ export class InicioService {
   private readonly conocimientos = inject(ConocimientoService);
   private readonly organizacion = inject(OrganizacionService);
   private readonly clasificacion = inject(ClasificacionService);
-  private readonly storageKey = 'dimabug.inicio.dashboard.v4';
+  private readonly storageKey = 'dimabug.inicio.dashboard.v5';
   private dashboardCache$: Observable<InicioDashboard> | null = null;
 
   /**
@@ -120,36 +120,16 @@ export class InicioService {
     const ahora = this.dashboardAhora();
     const stale = ahora;
 
-    const network$ = this.organizacion.listarPruebas().pipe(
-      catchError(() => of([] as PruebaCatalogo[])),
-      switchMap((pruebas) => {
-        if (pruebas.length) {
-          const quick = this.build(pruebas, null, null, stale);
-          return concat(
-            of(quick),
-            this.conocimientos.listar().pipe(
-              take(1),
-              map((conocimientos) => this.build(pruebas, conocimientos, null, stale)),
-              catchError(() => of(this.build(pruebas, stale?.escala ? null : [], null, stale))),
-            ),
-          );
-        }
-
-        return this.clasificacion.listarHardware().pipe(
-          catchError(() => of([] as CatalogoRef[])),
-          switchMap((hardware) => {
-            const quick = this.build([], null, hardware, stale);
-            return concat(
-              of(quick),
-              this.conocimientos.listar().pipe(
-                take(1),
-                map((conocimientos) => this.build([], conocimientos, hardware, stale)),
-                catchError(() => of(this.build([], stale?.escala ? null : [], hardware, stale))),
-              ),
-            );
-          }),
-        );
-      }),
+    const network$ = this.conocimientos.listar(true).pipe(
+      catchError(() => of(this.conocimientos.listaEnSesion())),
+      map((conocimientos) =>
+        this.build(
+          this.organizacion.snapshotPruebas(),
+          conocimientos,
+          this.clasificacion.snapshotHardware(),
+          stale,
+        ),
+      ),
     );
 
     this.dashboardCache$ = concat(of(ahora), network$).pipe(
@@ -263,13 +243,15 @@ export class InicioService {
     const porMes = new Map(meses.map((mes) => [mes.clave, { total: 0, reutilizables: 0 }]));
     let conFecha = 0;
 
+    const primerMes = meses[0]?.clave;
     for (const item of publicados) {
       const clave = this.mesDe(item.fechaCreacion);
       if (!clave) {
         continue;
       }
       conFecha++;
-      const bucket = porMes.get(clave);
+      const destino = porMes.get(clave) ? clave : primerMes && clave < primerMes ? primerMes : null;
+      const bucket = destino ? porMes.get(destino) : undefined;
       if (!bucket) {
         continue;
       }
@@ -425,11 +407,18 @@ export class InicioService {
     return meses;
   }
 
-  private mesDe(fecha: string | null): string | null {
-    if (!fecha) {
+  private mesDe(fecha: string | null | unknown): string | null {
+    if (fecha == null) {
       return null;
     }
-    const match = /^(\d{4})-(\d{2})/.exec(fecha.trim());
+    if (Array.isArray(fecha) && fecha.length >= 2) {
+      const anio = Number(fecha[0]);
+      const mes = Number(fecha[1]);
+      if (anio > 0 && mes >= 1 && mes <= 12) {
+        return `${anio}-${String(mes).padStart(2, '0')}`;
+      }
+    }
+    const match = /^(\d{4})-(\d{2})/.exec(String(fecha).trim());
     return match ? `${match[1]}-${match[2]}` : null;
   }
 

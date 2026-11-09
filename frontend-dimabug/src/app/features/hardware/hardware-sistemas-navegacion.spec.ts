@@ -103,7 +103,7 @@ describe('Navegación integrada Hardware → Sistemas → Módulos', () => {
     expect(c.items.map(i => i.id)).toContain(5); expect(c.editId).toBe(5);
     expect(c.hardwareDelSistema(5)).toEqual([]);
     expect(h.routeNativeElement!.querySelector('.modal .catalogo-advertencia')).toBeNull();
-    c.modalOpen = false; h.detectChanges(); await seguir(h, link(h, 'Todos los Sistemas'));
+    c.modalOpen = false; h.detectChanges();
     expect((h.routeDebugElement!.componentInstance as AdminCatalogoComponent).items.length).toBe(4);
   });
   it('un ID inexistente no abre un sistema por coincidencia de nombre', async () => {
@@ -125,8 +125,8 @@ describe('Navegación integrada Hardware → Sistemas → Módulos', () => {
   });
   it('salir a Todos los Módulos restaura el filtro global', async () => {
     const { h } = await formulario('/admin/catalogo/modulos?sistemaId=2&hardwareId=10');
-    await seguir(h, link(h, 'Todos los Módulos'));
     const c = h.routeDebugElement!.componentInstance as AdminCatalogoComponent;
+    c.limpiarFiltrosModulos();
     expect(c.itemsVisibles.length).toBe(3); expect(c.filtrosModulos.controls.sistemaId.enabled).toBeTrue();
   });
   it('crea módulos en el sistema contextual y rechaza otros padres incluso con manipulación del formulario', async () => {

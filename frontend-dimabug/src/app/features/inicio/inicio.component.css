@@ -1303,6 +1303,10 @@
   .grid-accesos {
     grid-template-columns: 1fr;
   }
+
+  .invita-texto h2 {
+    font-size: 18px;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

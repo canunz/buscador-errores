@@ -85,6 +85,14 @@ export class ShellLayoutComponent {
     this.menuOpen = false;
   }
 
+  esAdminMenuActivo(): boolean {
+    const url = this.router.url.split('?')[0];
+    if (url === '/admin/catalogo/sistemas' || url === '/admin/catalogo/modulos') {
+      return false;
+    }
+    return url === '/admin' || url.startsWith('/admin/');
+  }
+
   toggleUsuarioMenu(event: Event): void {
     event.stopPropagation();
     this.usuarioMenuOpen = !this.usuarioMenuOpen;

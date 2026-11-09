@@ -30,6 +30,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest({MaterialApoyoController.class,SintomaController.class,MaterialConocimientoArchivoController.class,PasoController.class,ResultadoSolucionController.class})
 @Import({SecurityConfig.class,JwtAuthenticationFilter.class,GlobalExceptionHandler.class,VisibilidadContenidoConfig.class,VisibilidadContenidoService.class})
 class ContenidoRestringidoSecurityIntegrationTest {
+    @org.springframework.test.context.bean.override.mockito.MockitoBean cl.casol.backend.procedimiento.application.service.AuditoriaProcedimientoService auditoriaProcedimiento;
+
     @Autowired MockMvc mvc;
     @MockitoBean MantenerMaterialApoyoService materiales;
     @MockitoBean MantenerSintomaService sintomas;

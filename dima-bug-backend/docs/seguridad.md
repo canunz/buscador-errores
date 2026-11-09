@@ -1,0 +1,63 @@
+> Referencia histórica conservada. Describe una entrega previa y puede diferir del checkout actual. [Documentación vigente](../../docs/README.md). Los enlaces a archivos ausentes se identifican expresamente; [original íntegro y hash](../../docs/auditoria/historico/README.md).
+
+# Seguridad implementada
+
+## Autenticación
+
+[SecurityConfig](../src/main/java/cl/casol/backend/shared/infrastructure/security/SecurityConfig.java)
+configura sesiones `STATELESS`, desactiva CSRF y agrega `JwtAuthenticationFilter`
+antes de `UsernamePasswordAuthenticationFilter`.
+
+`POST /api/auth/login` recibe email y password. `AutenticarUsuarioService` verifica
+existencia, usuario activo y contraseña mediante `PasswordEncoderPort`, implementado
+con BCrypt. Devuelve un JWT y datos del usuario; `GET /api/auth/me` requiere
+autenticación y devuelve email y estado de autenticación.
+
+[JwtTokenServiceAdapter](../src/main/java/cl/casol/backend/identidad/infrastructure/security/JwtTokenServiceAdapter.java)
+firma con una clave HMAC derivada de los bytes UTF-8 de `JWT_SECRET`. Incluye
+subject=email, fecha de emisión y expiración; verifica firma, subject y expiración.
+El código usa `signWith(secretKey)`, sin fijar un algoritmo único en la documentación.
+Los requisitos de clave/duración están en [configuración](configuracion-dev.md).
+
+Cada request protegido debe enviar `Authorization: Bearer <TOKEN>`. El filtro
+valida el token, vuelve a buscar al usuario en BD y exige que esté activo.
+Construye la autoridad desde el rol actual como `ROLE_` más el nombre normalizado.
+El rol no se toma de un claim JWT. El filtro no comprueba explícitamente si el
+registro del rol está activo. No se identificaron refresh tokens, logout con
+revocación ni lista de tokens revocados.
+
+## Autorización HTTP
+
+Las reglas se aplican en el orden declarado:
+
+| Rutas | Regla |
+| --- | --- |
+| `DELETE /api/conocimientos/{id}` | ADMINISTRADOR. |
+| `/api/sistemas/**`, `/api/hardware/**`, `/api/conocimientos/**`, `/api/frecuencias/**`, `/api/departamentos/**`, `/api/pruebas/**`, `/api/procedimientos/**`, `/api/ejecuciones/**` | ADMINISTRADOR o TECNICO. |
+| `/api/usuarios/**`, `/api/roles/**` | ADMINISTRADOR. |
+| `/api/health`, `/api/auth/login` | Públicos; controllers implementan GET y POST, respectivamente. |
+| Resto de rutas | Autenticación requerida. |
+
+El DELETE del conocimiento completo tiene una regla específica; no abarca DELETE
+de materiales anidados. Los dos roles pueden mantener y eliminar materiales.
+
+Además de la cadena HTTP:
+
+- Publicar conocimiento o procedimiento exige ADMINISTRADOR en sus controllers.
+- El estado ELIMINADO de conocimiento solo se asigna mediante DELETE; es un borrado
+  lógico del conocimiento, distinto del borrado físico del registro de material.
+- `GestionarEjecucionService` restringe acceso a ejecuciones de otro usuario,
+  con excepción de ADMINISTRADOR.
+- Los casos de uso de materiales verifican pertenencia al conocimiento o al paso
+  y procedimiento; ver [materiales](materiales-archivo.md).
+
+La cadena configura 401 para falta de autenticación y 403 para acceso denegado.
+Los errores de login se traducen en el handler global: credenciales inválidas a
+401 y usuario inactivo a 403. No se identificó configuración CORS explícita ni
+seguridad por anotaciones de método habilitada; no se afirma que estén implementadas.
+
+## Pendiente operativo
+
+La configuración actual habilita DEBUG en clases JWT; el filtro registra emails
+y metadatos de autenticación. Se requiere revisar su uso por ambiente. Esta guía
+no modifica el logging ni incluye credenciales o tokens reales.

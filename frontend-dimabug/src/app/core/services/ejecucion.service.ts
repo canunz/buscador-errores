@@ -1,3 +1,6 @@
+import { plazoConsulta, MENSAJE_PLAZO_CONSULTA } from '../http/plazo-consulta';
+import { TimeoutError } from 'rxjs';
+import { ConfiguracionPaso, DestinatarioPaso } from '../models/configuracion-paso.model';
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, catchError, concat, map, of, shareReplay, tap, throwError } from 'rxjs';
@@ -11,6 +14,8 @@ import {
   EstadoEjecucion,
   ProcedimientoResumen,
   EstadoProcedimiento,
+  EstadoEjecucionPaso,
+  ModoEjecucionPaso,
 } from '../models/ejecucion.model';
 
 @Injectable({ providedIn: 'root' })
@@ -23,8 +28,8 @@ export class EjecucionService {
     return this.leerLista() ?? [];
   }
 
-  iniciar(procedimientoId: number): Observable<Ejecucion> {
-    return this.http.post<unknown>(apiUrl(`/procedimientos/${procedimientoId}/ejecuciones`), null).pipe(
+  iniciar(procedimientoId: number, contexto?: { sucursalId: number; claveInicio: string; destinatariosAdicionales?: DestinatarioPaso[] }): Observable<Ejecucion> {
+    return this.http.post<unknown>(apiUrl(`/procedimientos/${procedimientoId}/ejecuciones`), contexto ?? null).pipe(
       map((res) => this.normalizeEjecucion(res)),
       tap((item) => this.recordar([item, ...this.listaEnSesion().filter((actual) => actual.id !== item.id)])),
       catchError((err: HttpErrorResponse) => throwError(() => new Error(this.mensaje(err)))),
@@ -142,31 +147,33 @@ export class EjecucionService {
     });
   }
 
-  obtener(id: number): Observable<Ejecucion> {
+  obtener(id: number, force = false): Observable<Ejecucion> {
     const actual = this.detalleCache.get(id);
-    if (actual) {
+    if (!force && actual) {
       return actual;
     }
-    const stale = this.detalleEnSesion(id);
+    const stale = force ? null : this.detalleEnSesion(id);
     const network$ = this.http.get<unknown>(apiUrl(`/ejecuciones/${id}`)).pipe(
+      plazoConsulta(),
       map((res) => this.normalizeEjecucion(res)),
       tap((item) => this.guardarDetalle(item)),
       catchError((err: HttpErrorResponse) => throwError(() => new Error(this.mensaje(err)))),
     );
     const fuente = stale ? concat(of(stale), network$) : network$;
-    const compartida = fuente.pipe(shareReplay({ bufferSize: 1, refCount: false }));
+    const compartida = fuente.pipe(shareReplay({ bufferSize: 1, refCount: true }));
     this.detalleCache.set(id, compartida);
     return compartida;
   }
 
-  obtenerPasos(id: number): Observable<EjecucionPaso[]> {
+  obtenerPasos(id: number, force = false): Observable<EjecucionPaso[]> {
     const actual = this.pasosCache.get(id);
-    if (actual) {
+    if (!force && actual) {
       return actual;
     }
     const marca = this.marcaPasos(id);
-    const stale = this.pasosEnSesion(id);
+    const stale = force ? null : this.pasosEnSesion(id);
     const network$ = this.http.get<unknown>(apiUrl(`/ejecuciones/${id}/pasos`)).pipe(
+      plazoConsulta(),
       map((res) => this.asArray(res).map((item) => this.normalizePaso(item))),
       tap((pasos) => {
         if (this.marcaPasos(id) !== marca) {
@@ -177,7 +184,7 @@ export class EjecucionService {
       catchError((err: HttpErrorResponse) => throwError(() => new Error(this.mensaje(err)))),
     );
     const fuente = stale?.length ? concat(of(stale), network$) : network$;
-    const compartida = fuente.pipe(shareReplay({ bufferSize: 1, refCount: false }));
+    const compartida = fuente.pipe(shareReplay({ bufferSize: 1, refCount: true }));
     this.pasosCache.set(id, compartida);
     return compartida;
   }
@@ -192,6 +199,7 @@ export class EjecucionService {
       .patch<unknown>(apiUrl(`/ejecuciones/${ejecucionId}/pasos/${ejecucionPasoId}`), {
         cumplido: request.cumplido,
         observacion,
+        versionEsperada: request.versionEsperada,
       })
       .pipe(
         map((res) => this.normalizePaso(res)),
@@ -199,6 +207,11 @@ export class EjecucionService {
       );
   }
 
+  siguiente(id: number, paso: EjecucionPaso, observacion: string): Observable<EjecucionPaso> {
+    return this.http.post<unknown>(apiUrl(`/ejecuciones/${id}/pasos/${paso.ejecucionPasoId}/siguiente`), {
+      versionEsperada: paso.version ?? 0, confirmacionCritica: paso.esCritico, observacion,
+    }).pipe(map(res => this.normalizePaso(res)), catchError((e: HttpErrorResponse) => throwError(() => new Error(this.mensaje(e)))));
+  }
   completar(id: number): Observable<Ejecucion> {
     return this.http.patch<unknown>(apiUrl(`/ejecuciones/${id}/completar`), null).pipe(
       map((res) => this.normalizeEjecucion(res)),
@@ -286,7 +299,8 @@ export class EjecucionService {
     }
   }
 
-  private mensaje(err: HttpErrorResponse): string {
+  private mensaje(err: HttpErrorResponse | TimeoutError): string {
+    if(err instanceof TimeoutError)return MENSAJE_PLAZO_CONSULTA;
     if (err.status === 403) {
       return 'No tienes permisos para acceder o modificar esta ejecución.';
     }
@@ -335,6 +349,11 @@ export class EjecucionService {
       cumplido: r['cumplido'] === true,
       observacion: r['observacion'] != null && String(r['observacion']).trim() ? String(r['observacion']) : null,
       fecha: r['fecha'] != null ? String(r['fecha']) : null,
+      estado: (r['estado'] ?? (r['cumplido'] === true ? 'COMPLETADO' : 'PENDIENTE')) as EstadoEjecucionPaso,
+      version: typeof r['version'] === 'number' ? r['version'] : undefined,
+      contratoVersion: typeof r['contratoVersion'] === 'number' ? r['contratoVersion'] : null,
+      modoEjecucion: (r['modoEjecucion'] ?? 'MANUAL') as ModoEjecucionPaso,
+      configuracion: r['configuracion'] as ConfiguracionPaso | null,
     };
   }
 
