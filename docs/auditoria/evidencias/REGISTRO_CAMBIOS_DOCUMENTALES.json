@@ -1,0 +1,726 @@
+{
+  "date": "2026-11-06",
+  "authorization": "Usuaria: Autorizo. Continuación de fases 5 a 8, exclusivamente documental.",
+  "source_head": "e0d63d961b87c33d77937821c53802e6387a783e",
+  "protected_file_count": 758,
+  "protected_changes": [],
+  "audit_original_sha256": "60c908ea57f3797a24679bc170e840fe51415dd3aeb4184445b3eb9fd65f5eab",
+  "backups": [
+    {
+      "path": "README.md",
+      "backup": "docs/auditoria/historico/2026-11-06/README.md.original.txt",
+      "sha256": "9d94cc0d716dbf6045dd4b2b99c60aca338f50398a81e269de1b658ba6be53a8"
+    },
+    {
+      "path": "frontend-dimabug/README.md",
+      "backup": "docs/auditoria/historico/2026-11-06/frontend-dimabug/README.md.original.txt",
+      "sha256": "30631c1ef9d318d7fb6cd42d4635d97c2f53f95a4c38135f714bf5302918538e"
+    },
+    {
+      "path": "dima-bug-backend/docs/aceptacion-riesgo-archivos-skill4.md",
+      "backup": "docs/auditoria/historico/2026-11-06/dima-bug-backend/docs/aceptacion-riesgo-archivos-skill4.md.original.txt",
+      "sha256": "85e26032656849cbe5455e1609e6ed183fd03b7e621d85895180415cbb6c7880"
+    },
+    {
+      "path": "dima-bug-backend/docs/adr/ADR-001-arquitectura-backend.md",
+      "backup": "docs/auditoria/historico/2026-11-06/dima-bug-backend/docs/adr/ADR-001-arquitectura-backend.md.original.txt",
+      "sha256": "5eea350db1240a96928361ba29979a3a9f27cdeb44b3afb66e8fd426e3cfd85b"
+    },
+    {
+      "path": "dima-bug-backend/docs/adr/ADR-002-almacenamiento-archivos.md",
+      "backup": "docs/auditoria/historico/2026-11-06/dima-bug-backend/docs/adr/ADR-002-almacenamiento-archivos.md.original.txt",
+      "sha256": "d5819bd087debaaa9647e71225b7ec1505815702f17bb2dcb9f40c3905903a8a"
+    },
+    {
+      "path": "dima-bug-backend/docs/arquitectura.md",
+      "backup": "docs/auditoria/historico/2026-11-06/dima-bug-backend/docs/arquitectura.md.original.txt",
+      "sha256": "f441fb0c4c797f0e7b82af6bb646bf0f2622c854d0c0247e699b04855f97f634"
+    },
+    {
+      "path": "dima-bug-backend/docs/auditoria-cobertura-riesgos-skill4.md",
+      "backup": "docs/auditoria/historico/2026-11-06/dima-bug-backend/docs/auditoria-cobertura-riesgos-skill4.md.original.txt",
+      "sha256": "8417a9edb2c6534396b9e138000c0fd43072e2607c419e3d3deaccb8501db68f"
+    },
+    {
+      "path": "dima-bug-backend/docs/autorizacion-http-integracion.md",
+      "backup": "docs/auditoria/historico/2026-11-06/dima-bug-backend/docs/autorizacion-http-integracion.md.original.txt",
+      "sha256": "3c4db0cefe2d4e025246e0173ac3b367d3f248a5dbfa3c1c5ff78b8018ccc284"
+    },
+    {
+      "path": "dima-bug-backend/docs/base-de-datos.md",
+      "backup": "docs/auditoria/historico/2026-11-06/dima-bug-backend/docs/base-de-datos.md.original.txt",
+      "sha256": "1386bf198c92619cfe174ebaa4de8b4f8a96e9cefd95d8636e38829cf19f20a6"
+    },
+    {
+      "path": "dima-bug-backend/docs/ci-pruebas-backend.md",
+      "backup": "docs/auditoria/historico/2026-11-06/dima-bug-backend/docs/ci-pruebas-backend.md.original.txt",
+      "sha256": "ee05539c1ee518b20939f372f058489265810a4f924958d44a6af2b9180dc5d4"
+    },
+    {
+      "path": "dima-bug-backend/docs/concurrencia-integracion.md",
+      "backup": "docs/auditoria/historico/2026-11-06/dima-bug-backend/docs/concurrencia-integracion.md.original.txt",
+      "sha256": "c9382876443bc39b5f90e62b1bff7bb848a2e9933ad9c9b6033244ab38dbd600"
+    },
+    {
+      "path": "dima-bug-backend/docs/configuracion-dev.md",
+      "backup": "docs/auditoria/historico/2026-11-06/dima-bug-backend/docs/configuracion-dev.md.original.txt",
+      "sha256": "db5d91c4cefa3f970f43fa8b37ae5101de4a59c9fc9c29eed6ff9441617015b1"
+    },
+    {
+      "path": "dima-bug-backend/docs/decision-historial-procedimientos.md",
+      "backup": "docs/auditoria/historico/2026-11-06/dima-bug-backend/docs/decision-historial-procedimientos.md.original.txt",
+      "sha256": "a1ccf3b83544db729f23142519e7f6d8b9c3372c6e1cc7de408e1cb39637eef2"
+    },
+    {
+      "path": "dima-bug-backend/docs/decision-riesgos-residuales-skill4.md",
+      "backup": "docs/auditoria/historico/2026-11-06/dima-bug-backend/docs/decision-riesgos-residuales-skill4.md.original.txt",
+      "sha256": "d951ebb58c9514050f46a7b1104938229ed74ce10690f2fdbac8e53d60281eae"
+    },
+    {
+      "path": "dima-bug-backend/docs/handoff-skill4-a-skill5.md",
+      "backup": "docs/auditoria/historico/2026-11-06/dima-bug-backend/docs/handoff-skill4-a-skill5.md.original.txt",
+      "sha256": "23e38fa0d2de3db931f04306c878d1bab0cfd135ecc1cfb79ac097926d29a9fd"
+    },
+    {
+      "path": "dima-bug-backend/docs/integracion-mysql.md",
+      "backup": "docs/auditoria/historico/2026-11-06/dima-bug-backend/docs/integracion-mysql.md.original.txt",
+      "sha256": "7651c843e34c43d32b8d5295b102b6217d57afbd1a34e6b76b7b7c3d48ab989e"
+    },
+    {
+      "path": "dima-bug-backend/docs/materiales-archivo.md",
+      "backup": "docs/auditoria/historico/2026-11-06/dima-bug-backend/docs/materiales-archivo.md.original.txt",
+      "sha256": "e45bd13015b70ae98cd90da6dfd859283972e72e721f17434bf5785ba8005b63"
+    },
+    {
+      "path": "dima-bug-backend/docs/materiales-integracion.md",
+      "backup": "docs/auditoria/historico/2026-11-06/dima-bug-backend/docs/materiales-integracion.md.original.txt",
+      "sha256": "b500b9655412ba9ed7b38d2ad9acadb7c170356d30cbdad22b79de5994bfb982"
+    },
+    {
+      "path": "dima-bug-backend/docs/migracion-fk-usuarios.md",
+      "backup": "docs/auditoria/historico/2026-11-06/dima-bug-backend/docs/migracion-fk-usuarios.md.original.txt",
+      "sha256": "571a2c47b2d079db8ee2896428d3c5d2e223c9bf0e51efcee9483bac73439c8e"
+    },
+    {
+      "path": "dima-bug-backend/docs/procedimientos-ejecuciones-resultados-integracion.md",
+      "backup": "docs/auditoria/historico/2026-11-06/dima-bug-backend/docs/procedimientos-ejecuciones-resultados-integracion.md.original.txt",
+      "sha256": "0d4e0ec916907ebc2da5a47eda7321c3642f8b6ce2b28e0795395c134b741141"
+    },
+    {
+      "path": "dima-bug-backend/docs/seguridad-integracion.md",
+      "backup": "docs/auditoria/historico/2026-11-06/dima-bug-backend/docs/seguridad-integracion.md.original.txt",
+      "sha256": "1a8c134d739f140de94b197716d22c6e3ecc69a7c7c1c113e3f92bb04969a1d3"
+    },
+    {
+      "path": "dima-bug-backend/docs/seguridad.md",
+      "backup": "docs/auditoria/historico/2026-11-06/dima-bug-backend/docs/seguridad.md.original.txt",
+      "sha256": "662dc4bb0ef37c2dd91893117d4fd5cded92b0e73b73682d97c2f1beeda4434b"
+    }
+  ],
+  "changes": [
+    {
+      "path": "docs/01_Proyecto/Descripcion_Proyecto.md",
+      "action": "created",
+      "before_sha256": null,
+      "after_sha256": "65cfcb1425636f4728bc88657e02b2b089f67af9c9cd0f8ed852ed7438c0b3dd"
+    },
+    {
+      "path": "docs/01_Proyecto/Objetivos_Alcance.md",
+      "action": "created",
+      "before_sha256": null,
+      "after_sha256": "fd1a2bd9eb9e3d0a6a95ceb22f364549690f73e4dee74658acb86a29941dce65"
+    },
+    {
+      "path": "docs/01_Proyecto/Metodologia.md",
+      "action": "created",
+      "before_sha256": null,
+      "after_sha256": "53404a3c16f1a184e2401f048641f768fb78364075773d788e5b162cc3d743f1"
+    },
+    {
+      "path": "docs/03_Arquitectura/Arquitectura_General.md",
+      "action": "created",
+      "before_sha256": null,
+      "after_sha256": "af229aae3bad0113e71c34f763c7b7618806f1091acb12f633d20443a51438de"
+    },
+    {
+      "path": "docs/03_Arquitectura/Arquitectura_Backend.md",
+      "action": "created",
+      "before_sha256": null,
+      "after_sha256": "ebabea080fc7c54d6cfeb21e909e22228e29c0ba5f0d3337bf1048fbce6776da"
+    },
+    {
+      "path": "docs/03_Arquitectura/Arquitectura_Frontend.md",
+      "action": "created",
+      "before_sha256": null,
+      "after_sha256": "9cd1cd54ea269cd13267bfadba267032d4d656e1d83b1cb972bbabf7c92b37ce"
+    },
+    {
+      "path": "docs/04_Base_Datos/Migraciones.md",
+      "action": "created",
+      "before_sha256": null,
+      "after_sha256": "74fe044f61a2ef4fa3bb71dddecb11f521b9127eb38f226b1f421c47e983f934"
+    },
+    {
+      "path": "docs/05_API/Autenticacion.md",
+      "action": "created",
+      "before_sha256": null,
+      "after_sha256": "1495b4f8b9036fd9bed1344f6ecc834e2a62f3d0cb7e5ed6d7aa081f8a505e6d"
+    },
+    {
+      "path": "docs/05_API/Errores_HTTP.md",
+      "action": "created",
+      "before_sha256": null,
+      "after_sha256": "63b2f12b18c90e631feed928fda520196b199bc63ecb717668575762de41b74d"
+    },
+    {
+      "path": "docs/06_Seguridad/Arquitectura_Seguridad.md",
+      "action": "created",
+      "before_sha256": null,
+      "after_sha256": "35413b67a84ff66f9ec197d65fa85d0287062472b4fcfac5299200ad3b53f8c1"
+    },
+    {
+      "path": "docs/06_Seguridad/Controles_Seguridad.md",
+      "action": "created",
+      "before_sha256": null,
+      "after_sha256": "36e9ec8585688af698e5a90ebfb0a74ab97190cc453e74093bd3cf9a3f5d2796"
+    },
+    {
+      "path": "docs/07_Pruebas/Estrategia_Pruebas.md",
+      "action": "created",
+      "before_sha256": null,
+      "after_sha256": "5f9750b5b940dfb8a473b7b74bdccb1f10a5086b2666c7e9320cb50e83d788cd"
+    },
+    {
+      "path": "docs/07_Pruebas/Resultados_Pruebas.md",
+      "action": "created",
+      "before_sha256": null,
+      "after_sha256": "f9bce28f2e153819d294c7cc7ecad3e96ddf4d4ba89214a47f5321f7e45eeb41"
+    },
+    {
+      "path": "docs/08_Despliegue/Instalacion_Local.md",
+      "action": "created",
+      "before_sha256": null,
+      "after_sha256": "265e04537213f64d8e1073fc5e265f6ebd331a3293ad95cf77cf61dac181a7a9"
+    },
+    {
+      "path": "docs/08_Despliegue/Variables_Entorno.md",
+      "action": "created",
+      "before_sha256": null,
+      "after_sha256": "6010bdcf5c2c2c299a8ed1555b6594f57de193b6d011eaff00ce61b704e2f04c"
+    },
+    {
+      "path": "docs/08_Despliegue/Despliegue_STAGING.md",
+      "action": "created",
+      "before_sha256": null,
+      "after_sha256": "6ddc73083fbbaf2c34fe1b48143a5efc6848b2b49d75eb7f1c23575ab7026b23"
+    },
+    {
+      "path": "docs/09_Manuales/Manual_Usuario.md",
+      "action": "created",
+      "before_sha256": null,
+      "after_sha256": "97fd214cbf3850ecc0120a0a9252042c20d4832b414a211f60a778d10a78763f"
+    },
+    {
+      "path": "docs/09_Manuales/Manual_Tecnico.md",
+      "action": "created",
+      "before_sha256": null,
+      "after_sha256": "07e6589657e1d25af5316594d13ea9dd5d9d313403e16cf8a00df86dfc668ec6"
+    },
+    {
+      "path": "docs/04_Base_Datos/Diccionario_Datos.md",
+      "action": "created",
+      "before_sha256": null,
+      "after_sha256": "72a0e90c2c3f282532df8c1a0468e4b714466a1e70ac5f25755df1c8189a0836"
+    },
+    {
+      "path": "docs/04_Base_Datos/Modelo_Relacional.md",
+      "action": "created",
+      "before_sha256": null,
+      "after_sha256": "29d6533e8e1efe97807cbf6b00d5680f3a4b1a85aff289c4651925d9dec8c131"
+    },
+    {
+      "path": "docs/auditoria/evidencias/MODELO_LOGICO.json",
+      "action": "created",
+      "before_sha256": null,
+      "after_sha256": "9a3e1ddd26b8cbd97db3c4c11c720e49977b1e53dc478bd6b952f52e548bbc38"
+    },
+    {
+      "path": "docs/05_API/Endpoints.md",
+      "action": "created",
+      "before_sha256": null,
+      "after_sha256": "1dac2e0d9648de96e3a5c1b7a25afebacce55f9a72d9f0f96fcdc6b4fba96cc9"
+    },
+    {
+      "path": "docs/05_API/Contratos_DTO.md",
+      "action": "created",
+      "before_sha256": null,
+      "after_sha256": "511e879f3b9ccfbaa919cd22ff7ea0129f415851a01e3f1851f28f256175c5cd"
+    },
+    {
+      "path": "docs/auditoria/evidencias/CONTRATOS_API.json",
+      "action": "created",
+      "before_sha256": null,
+      "after_sha256": "f10651b3f12e8a8c9abb6c55f5ee99c572c882e743f03361cc37467fafbae35f"
+    },
+    {
+      "path": "docs/02_Requisitos/Requisitos_Funcionales.md",
+      "action": "created",
+      "before_sha256": null,
+      "after_sha256": "dfd9ce8e84248ad8eb10c915499c3485aefc82577aeeef09afbf9e74dad8a49c"
+    },
+    {
+      "path": "docs/02_Requisitos/Requisitos_No_Funcionales.md",
+      "action": "created",
+      "before_sha256": null,
+      "after_sha256": "347e569517ae7fae3244f25cd55d646a6b66faa871ee6d35be836c09a899bb09"
+    },
+    {
+      "path": "docs/02_Requisitos/Historias_Usuario.md",
+      "action": "created",
+      "before_sha256": null,
+      "after_sha256": "646267b430abe639473d9f67c4b595f3770271bdc1b5e53d8062bdaaa497a298"
+    },
+    {
+      "path": "docs/02_Requisitos/Casos_Uso.md",
+      "action": "created",
+      "before_sha256": null,
+      "after_sha256": "0b08bb6d2952880d1760b4dfc2b24c49d5a5ebd7dacb393d9b39695c94be7b5f"
+    },
+    {
+      "path": "docs/auditoria/MATRIZ_TRAZABILIDAD.md",
+      "action": "created",
+      "before_sha256": null,
+      "after_sha256": "6dc588323a43668fa00f90f16a9d739e5d047611e97322683af64593f0aab6a0"
+    },
+    {
+      "path": "docs/07_Pruebas/Matriz_Trazabilidad.md",
+      "action": "created",
+      "before_sha256": null,
+      "after_sha256": "15dce312c0503b2763932d57b7b9ca821e86cdb54da46b342661ddc4a20c928a"
+    },
+    {
+      "path": "docs/README.md",
+      "action": "created",
+      "before_sha256": null,
+      "after_sha256": "cf6aa1e797f17cf51a9a5a67d1b788bf896c79e426c46e32c1cf52ba4311eb7d"
+    },
+    {
+      "path": "README.md",
+      "action": "updated",
+      "before_sha256": "9d94cc0d716dbf6045dd4b2b99c60aca338f50398a81e269de1b658ba6be53a8",
+      "after_sha256": "f1d7671ba2ffbf43da99160f53d228e897b141f6cbe99addb509362ffc54f569"
+    },
+    {
+      "path": "frontend-dimabug/README.md",
+      "action": "updated",
+      "before_sha256": "30631c1ef9d318d7fb6cd42d4635d97c2f53f95a4c38135f714bf5302918538e",
+      "after_sha256": "b069a1d6c5091ab34da4c787a0e926b1557b6dc177b2c82601cbcbd7abc4d852"
+    },
+    {
+      "path": "dima-bug-backend/README.md",
+      "action": "created",
+      "before_sha256": null,
+      "after_sha256": "a7d545f7d1bc9e46832c3bebc695a5a3587f70885a1d745b1cb20dacc58d0936"
+    },
+    {
+      "path": "dima-bug-backend/docs/aceptacion-riesgo-archivos-skill4.md",
+      "action": "updated",
+      "before_sha256": "85e26032656849cbe5455e1609e6ed183fd03b7e621d85895180415cbb6c7880",
+      "after_sha256": "53866c25ffb254818f17fa904dc89d3ac24c80b4d3f3dc4795c7efc711a14d9d"
+    },
+    {
+      "path": "dima-bug-backend/docs/adr/ADR-001-arquitectura-backend.md",
+      "action": "updated",
+      "before_sha256": "5eea350db1240a96928361ba29979a3a9f27cdeb44b3afb66e8fd426e3cfd85b",
+      "after_sha256": "985f1a393507673ccf04ec44e6d645384447f422dbfe32ba867b8e93820962fe"
+    },
+    {
+      "path": "dima-bug-backend/docs/adr/ADR-002-almacenamiento-archivos.md",
+      "action": "updated",
+      "before_sha256": "d5819bd087debaaa9647e71225b7ec1505815702f17bb2dcb9f40c3905903a8a",
+      "after_sha256": "6f86ea3d0265046ba5930408ac46096ad76ac110a04ec903000b2b73a0af77d7"
+    },
+    {
+      "path": "dima-bug-backend/docs/arquitectura.md",
+      "action": "updated",
+      "before_sha256": "f441fb0c4c797f0e7b82af6bb646bf0f2622c854d0c0247e699b04855f97f634",
+      "after_sha256": "aec3e59ff0f6e072f7faadd39d24c61b09e8c3ae811515f425e0ea7ebb837768"
+    },
+    {
+      "path": "dima-bug-backend/docs/auditoria-cobertura-riesgos-skill4.md",
+      "action": "updated",
+      "before_sha256": "8417a9edb2c6534396b9e138000c0fd43072e2607c419e3d3deaccb8501db68f",
+      "after_sha256": "7a0f2cd1ef4286db293bc392fc1f9a5d5aa4e5178fa0f39776d4aee006470af1"
+    },
+    {
+      "path": "dima-bug-backend/docs/autorizacion-http-integracion.md",
+      "action": "updated",
+      "before_sha256": "3c4db0cefe2d4e025246e0173ac3b367d3f248a5dbfa3c1c5ff78b8018ccc284",
+      "after_sha256": "a75e4ac207d7e28a9f87dfa98c92d3604ecaef3b413a43f914bc68cdd1559f69"
+    },
+    {
+      "path": "dima-bug-backend/docs/base-de-datos.md",
+      "action": "updated",
+      "before_sha256": "1386bf198c92619cfe174ebaa4de8b4f8a96e9cefd95d8636e38829cf19f20a6",
+      "after_sha256": "b0bd359735632a49e0cad002b71509684800190320acc76a8ee7dbfac508ecc4"
+    },
+    {
+      "path": "dima-bug-backend/docs/ci-pruebas-backend.md",
+      "action": "updated",
+      "before_sha256": "ee05539c1ee518b20939f372f058489265810a4f924958d44a6af2b9180dc5d4",
+      "after_sha256": "7542be85a2add4d8188662996726e04c3b286d718490dd7b0c3ec4a9bb140c10"
+    },
+    {
+      "path": "dima-bug-backend/docs/concurrencia-integracion.md",
+      "action": "updated",
+      "before_sha256": "c9382876443bc39b5f90e62b1bff7bb848a2e9933ad9c9b6033244ab38dbd600",
+      "after_sha256": "c3ab55f3cabeca3944ef6efa6590102d8447e69202ea4f591c370372565fa1bd"
+    },
+    {
+      "path": "dima-bug-backend/docs/configuracion-dev.md",
+      "action": "updated",
+      "before_sha256": "db5d91c4cefa3f970f43fa8b37ae5101de4a59c9fc9c29eed6ff9441617015b1",
+      "after_sha256": "32968251e3513781ce17446ac4e02456467a68ea6633bc9ee9a20275a51cbdd7"
+    },
+    {
+      "path": "dima-bug-backend/docs/decision-historial-procedimientos.md",
+      "action": "updated",
+      "before_sha256": "a1ccf3b83544db729f23142519e7f6d8b9c3372c6e1cc7de408e1cb39637eef2",
+      "after_sha256": "5f8b54747e14f1e0f6ef144dfcf86e44bcad0f26efb5f9118c5f862c8924e2f0"
+    },
+    {
+      "path": "dima-bug-backend/docs/decision-riesgos-residuales-skill4.md",
+      "action": "updated",
+      "before_sha256": "d951ebb58c9514050f46a7b1104938229ed74ce10690f2fdbac8e53d60281eae",
+      "after_sha256": "e72409b52a9047aceb3ff893fb7960d199c4d4f2b977c9e34d7b26abf1be12e3"
+    },
+    {
+      "path": "dima-bug-backend/docs/handoff-skill4-a-skill5.md",
+      "action": "updated",
+      "before_sha256": "23e38fa0d2de3db931f04306c878d1bab0cfd135ecc1cfb79ac097926d29a9fd",
+      "after_sha256": "b075250204637a39ad3bfe39dc560d4da2b58333d98f488c938cda50b31e1be9"
+    },
+    {
+      "path": "dima-bug-backend/docs/integracion-mysql.md",
+      "action": "updated",
+      "before_sha256": "7651c843e34c43d32b8d5295b102b6217d57afbd1a34e6b76b7b7c3d48ab989e",
+      "after_sha256": "e93ae8d73d02c40526a126433e1468e2f253804c0136068f33d9574aae124ede"
+    },
+    {
+      "path": "dima-bug-backend/docs/materiales-archivo.md",
+      "action": "updated",
+      "before_sha256": "e45bd13015b70ae98cd90da6dfd859283972e72e721f17434bf5785ba8005b63",
+      "after_sha256": "d6c092d0d89712da2041d2a7cd8d7505a0fc0dbd5bdb5a100ef621c6cbf8de63"
+    },
+    {
+      "path": "dima-bug-backend/docs/materiales-integracion.md",
+      "action": "updated",
+      "before_sha256": "b500b9655412ba9ed7b38d2ad9acadb7c170356d30cbdad22b79de5994bfb982",
+      "after_sha256": "0b6ae1fb06e4c7e44d3a2d554eeaddf205293a764656867f110aecb82f0591da"
+    },
+    {
+      "path": "dima-bug-backend/docs/migracion-fk-usuarios.md",
+      "action": "updated",
+      "before_sha256": "571a2c47b2d079db8ee2896428d3c5d2e223c9bf0e51efcee9483bac73439c8e",
+      "after_sha256": "1961c0dcd3d8ae1c9f7d363070bcd42e65c4ce071fd9b3914f4388b261386a87"
+    },
+    {
+      "path": "dima-bug-backend/docs/procedimientos-ejecuciones-resultados-integracion.md",
+      "action": "updated",
+      "before_sha256": "0d4e0ec916907ebc2da5a47eda7321c3642f8b6ce2b28e0795395c134b741141",
+      "after_sha256": "85fe840bda01ec319b1991a72aa82a0e82cb55b0e4fdd40c32ff3c60b461e51a"
+    },
+    {
+      "path": "dima-bug-backend/docs/seguridad-integracion.md",
+      "action": "updated",
+      "before_sha256": "1a8c134d739f140de94b197716d22c6e3ecc69a7c7c1c113e3f92bb04969a1d3",
+      "after_sha256": "86a8db6bbc63fa6fa2ba698a2413ce8a3b9964fc04e968240752e7c1b815a102"
+    },
+    {
+      "path": "dima-bug-backend/docs/seguridad.md",
+      "action": "updated",
+      "before_sha256": "662dc4bb0ef37c2dd91893117d4fd5cded92b0e73b73682d97c2f1beeda4434b",
+      "after_sha256": "95885e14b028f1b10f25ccc6cb13f2d46b8d0450cb2381a881063b80d32e8185"
+    },
+    {
+      "path": "docs/auditoria/REFERENCIAS_HISTORICAS.md",
+      "action": "created",
+      "before_sha256": null,
+      "after_sha256": "ce77d33d583d2bb3c401b73f11ee4e1970b95a40cf3ca83069f36c92f870e05e"
+    },
+    {
+      "path": "docs/auditoria/historico/README.md",
+      "action": "created",
+      "before_sha256": null,
+      "after_sha256": "acd52f29ae752e907c2a2b0e6587e10def20cc0e08e00ea0ecc1d58ed94c7d3a"
+    },
+    {
+      "path": "docs/03_Arquitectura/Diagramas/DimaBug_Modelo_Relacional_v2.drawio",
+      "action": "created",
+      "after_sha256": "89eebb5f1cefc04bfad09f7606c3a0d0adc51c851b944088bf44cff8b8b4dfbc"
+    },
+    {
+      "path": "docs/03_Arquitectura/Diagramas/DimaBug_Modelo_Relacional_v2.png",
+      "action": "created",
+      "after_sha256": "74629246f8e53fae9d964f5e8c9640e3184fb8bb88d7652eb6702c963eb57de6"
+    },
+    {
+      "path": "docs/03_Arquitectura/Diagramas/DimaBug_Modelo_Relacional_v2.svg",
+      "action": "created",
+      "after_sha256": "416cd6e3317480a7e2d47e0f9982a2d2436d98b91ebc2d6d60b28d4b4d820e51"
+    },
+    {
+      "path": "docs/03_Arquitectura/Diagramas/README.md",
+      "action": "created",
+      "before_sha256": null,
+      "after_sha256": "fc3e3dfb0ddf208e58b1bca1190c7bd19d621c68b3747fdc7afc26b75ff10986"
+    },
+    {
+      "path": "docs/auditoria/evidencias/REGISTRO_CAMBIOS_DOCUMENTALES.json",
+      "action": "created",
+      "before_sha256": null,
+      "integrity": "Self hash omitted to avoid circular digest; original backups and package have independent hashes."
+    },
+    {
+      "path": "docs/auditoria/REPORTE_FINAL_DOCUMENTACION.md",
+      "action": "created",
+      "before_sha256": null,
+      "after_sha256": "18930bcd7634f10589e3f2e7be58be2b3a3fa94bf1ef66346f9a45c833693f20"
+    },
+    {
+      "path": "entrega_duoc/02_Evidencias_Aplicacion/RESUMEN_PRUEBAS.json",
+      "action": "created",
+      "before_sha256": null,
+      "after_sha256": "4e570ca5e8cb587ea8395c6c2f031464e065eb9a4a2f518a6e8d5e9b52c292d0"
+    },
+    {
+      "path": "entrega_duoc/02_Evidencias_Aplicacion/MANIFIESTO_FUENTES.json",
+      "action": "created",
+      "before_sha256": null,
+      "after_sha256": "158c39c06f64e16dbe699a86a100b89fae683f6f6ddb99b233201d156470f8eb"
+    },
+    {
+      "path": "entrega_duoc/02_Evidencias_Aplicacion/README.md",
+      "action": "created",
+      "before_sha256": null,
+      "after_sha256": "d5dd623ad59bebcb805d6b3ef5711423f6d8e1a590eadf3b65459e42750f89ab"
+    },
+    {
+      "path": "entrega_duoc/03_Evidencias_Base_Datos/README.md",
+      "action": "created",
+      "before_sha256": null,
+      "after_sha256": "9cd01f8f9cf37df0822db8365d887d8e443dc235f4d119a2687491345a1b843b"
+    },
+    {
+      "path": "entrega_duoc/01_Evidencias_Documentacion/README.md",
+      "action": "created",
+      "before_sha256": null,
+      "after_sha256": "dff1b58285e84cf73ae240c14c54cccb2ca972a2748f38500af66e23ee5c923f"
+    },
+    {
+      "path": "entrega_duoc/README.md",
+      "action": "created",
+      "before_sha256": null,
+      "after_sha256": "ee73549b0fbd4bf484489b0664b8c14e5b9f7dc781153e5be4046ecf07ff2447"
+    },
+    {
+      "path": "docs/auditoria/evidencias/VALIDACION_DOCUMENTAL.json",
+      "action": "created",
+      "before_sha256": null,
+      "after_sha256": "f719a07b3091ebe863553809ff56462997837fb0c6118a903088a2015327c5e2"
+    },
+    {
+      "path": "entrega_duoc/MANIFIESTO.json",
+      "action": "created",
+      "before_sha256": null,
+      "after_sha256": "7871e1f9267cc6231b9b2e6a0a9b2f8dc2d12d0d9ea2eaa8de7fc8ed943b3e1f"
+    }
+  ],
+  "tests_rerun": false,
+  "application_or_sql_executed": false,
+  "package_zip": {
+    "path": "entregables/DimaBug_Entrega_Duoc_Documentacion_2026-11-06.zip",
+    "sha256": "f06e86c3ecd872b2b4258df619041d9b4ce91d13a251893ead3d1ce0495c62d1"
+  },
+  "packaged_documents": [
+    {
+      "source": "docs/README.md",
+      "copy": "entrega_duoc/01_Evidencias_Documentacion/docs/README.md",
+      "sha256": "05234751dfd7380c681b790e472a49fcb6f92f8684d6b7d51899764ab0f6b33e"
+    },
+    {
+      "source": "docs/01_Proyecto/Descripcion_Proyecto.md",
+      "copy": "entrega_duoc/01_Evidencias_Documentacion/docs/01_Proyecto/Descripcion_Proyecto.md",
+      "sha256": "c94205edacb04a9b530b384801e09367b7e9d0bf712b0da9e35003373f950806"
+    },
+    {
+      "source": "docs/01_Proyecto/Metodologia.md",
+      "copy": "entrega_duoc/01_Evidencias_Documentacion/docs/01_Proyecto/Metodologia.md",
+      "sha256": "ca62375d4a667ef34590ea275a6a15bf8c286530edf30878a35c44f091be848b"
+    },
+    {
+      "source": "docs/01_Proyecto/Objetivos_Alcance.md",
+      "copy": "entrega_duoc/01_Evidencias_Documentacion/docs/01_Proyecto/Objetivos_Alcance.md",
+      "sha256": "c6282ae5b99dae72799c6cd66affd026cd3f97befcf8e46fc171238141d5bca2"
+    },
+    {
+      "source": "docs/02_Requisitos/Casos_Uso.md",
+      "copy": "entrega_duoc/01_Evidencias_Documentacion/docs/02_Requisitos/Casos_Uso.md",
+      "sha256": "18aaadc44611a7d268e9b7f309eaf96b02ed98340053dfe727f22fd991d2a6ed"
+    },
+    {
+      "source": "docs/02_Requisitos/Historias_Usuario.md",
+      "copy": "entrega_duoc/01_Evidencias_Documentacion/docs/02_Requisitos/Historias_Usuario.md",
+      "sha256": "3baa027aa1064e71b1c6900453d6afb62413e9f74e2425ff20d1d1aa922e3afa"
+    },
+    {
+      "source": "docs/02_Requisitos/Requisitos_Funcionales.md",
+      "copy": "entrega_duoc/01_Evidencias_Documentacion/docs/02_Requisitos/Requisitos_Funcionales.md",
+      "sha256": "f4357749659d65ff7244dadaee05af97074ee253071423a9cdadf17fd7fc5236"
+    },
+    {
+      "source": "docs/02_Requisitos/Requisitos_No_Funcionales.md",
+      "copy": "entrega_duoc/01_Evidencias_Documentacion/docs/02_Requisitos/Requisitos_No_Funcionales.md",
+      "sha256": "1d0f4ae600ec319514a850618b788e344e9ffd4dd80ec9403ccdfebc47bca363"
+    },
+    {
+      "source": "docs/03_Arquitectura/Arquitectura_Backend.md",
+      "copy": "entrega_duoc/01_Evidencias_Documentacion/docs/03_Arquitectura/Arquitectura_Backend.md",
+      "sha256": "4182cbb771e6ce51714c87bae1fb898db5b81fc816dddf6bd595e163dcc3d12c"
+    },
+    {
+      "source": "docs/03_Arquitectura/Arquitectura_Frontend.md",
+      "copy": "entrega_duoc/01_Evidencias_Documentacion/docs/03_Arquitectura/Arquitectura_Frontend.md",
+      "sha256": "e816a86a9c872a7a6fbddcbd46503468b867b7198c85fc4495151f3b8bbbea9d"
+    },
+    {
+      "source": "docs/03_Arquitectura/Arquitectura_General.md",
+      "copy": "entrega_duoc/01_Evidencias_Documentacion/docs/03_Arquitectura/Arquitectura_General.md",
+      "sha256": "957128ddfe51ad983f41f19660c3991dc05a2d0ff6019dbf10ff131a8831c99d"
+    },
+    {
+      "source": "docs/04_Base_Datos/Diccionario_Datos.md",
+      "copy": "entrega_duoc/03_Evidencias_Base_Datos/docs/04_Base_Datos/Diccionario_Datos.md",
+      "sha256": "b47b2725592a70a3a9693d5e2d459364c501b226eb3ac46f69eeb76c80d416bd"
+    },
+    {
+      "source": "docs/04_Base_Datos/Migraciones.md",
+      "copy": "entrega_duoc/03_Evidencias_Base_Datos/docs/04_Base_Datos/Migraciones.md",
+      "sha256": "ac203a18ae767018aeed61c4a99ab33999241cdccc4534028227e84a041a5b28"
+    },
+    {
+      "source": "docs/04_Base_Datos/Modelo_Relacional.md",
+      "copy": "entrega_duoc/03_Evidencias_Base_Datos/docs/04_Base_Datos/Modelo_Relacional.md",
+      "sha256": "a770d79fd307745ba06a3574469b5594e1c82ec80072ea643bb7fc74b7d38174"
+    },
+    {
+      "source": "docs/05_API/Autenticacion.md",
+      "copy": "entrega_duoc/01_Evidencias_Documentacion/docs/05_API/Autenticacion.md",
+      "sha256": "4aa80ffbae389b971e491389bc79e89393fbb4803b76ba7229472615c5292eaf"
+    },
+    {
+      "source": "docs/05_API/Contratos_DTO.md",
+      "copy": "entrega_duoc/01_Evidencias_Documentacion/docs/05_API/Contratos_DTO.md",
+      "sha256": "5fe4eecdd2e2bf45b0b26b6b75ca48de855c6a2af7d620b6ee3e0138ccd89ea7"
+    },
+    {
+      "source": "docs/05_API/Endpoints.md",
+      "copy": "entrega_duoc/01_Evidencias_Documentacion/docs/05_API/Endpoints.md",
+      "sha256": "6e7576f9b8a7da54a8ce2f08c4d70bbd0b27d9d556d0b7e42529bbff326b1d04"
+    },
+    {
+      "source": "docs/05_API/Errores_HTTP.md",
+      "copy": "entrega_duoc/01_Evidencias_Documentacion/docs/05_API/Errores_HTTP.md",
+      "sha256": "ba64be8739af2eb10f1e7b4edc7f7a270f322ed7010462f5fd540420660e7a5a"
+    },
+    {
+      "source": "docs/06_Seguridad/Arquitectura_Seguridad.md",
+      "copy": "entrega_duoc/01_Evidencias_Documentacion/docs/06_Seguridad/Arquitectura_Seguridad.md",
+      "sha256": "670bb7395e2e9d68874c01bdea8afa30b1257133a1e5fa1f8b795a00a45e8548"
+    },
+    {
+      "source": "docs/06_Seguridad/Controles_Seguridad.md",
+      "copy": "entrega_duoc/01_Evidencias_Documentacion/docs/06_Seguridad/Controles_Seguridad.md",
+      "sha256": "b88b8c495346f90bae3dfad472f74d34e0b3731f0cd068be667efa08cde32138"
+    },
+    {
+      "source": "docs/07_Pruebas/Estrategia_Pruebas.md",
+      "copy": "entrega_duoc/01_Evidencias_Documentacion/docs/07_Pruebas/Estrategia_Pruebas.md",
+      "sha256": "b5407d2a0694ca3f3d0cdd41f8080036074d03c85fadd15381833976561bb483"
+    },
+    {
+      "source": "docs/07_Pruebas/Matriz_Trazabilidad.md",
+      "copy": "entrega_duoc/01_Evidencias_Documentacion/docs/07_Pruebas/Matriz_Trazabilidad.md",
+      "sha256": "1ca543964c925e2572d14d42caa9f94de689efd83c1aad627ba39728838d9a8b"
+    },
+    {
+      "source": "docs/07_Pruebas/Resultados_Pruebas.md",
+      "copy": "entrega_duoc/01_Evidencias_Documentacion/docs/07_Pruebas/Resultados_Pruebas.md",
+      "sha256": "085ddd633361c3b493ffa196e799966253236ad90bfad9b11409956a131bb582"
+    },
+    {
+      "source": "docs/08_Despliegue/Despliegue_STAGING.md",
+      "copy": "entrega_duoc/01_Evidencias_Documentacion/docs/08_Despliegue/Despliegue_STAGING.md",
+      "sha256": "7c4a789bae74f45a52b2d98591942d2ec86d9cb36a0184dc61ead8243690b36b"
+    },
+    {
+      "source": "docs/08_Despliegue/Instalacion_Local.md",
+      "copy": "entrega_duoc/01_Evidencias_Documentacion/docs/08_Despliegue/Instalacion_Local.md",
+      "sha256": "a86b453557f435923480fb8bc5255e20e23f032f46fd2b556ede19e785bb2482"
+    },
+    {
+      "source": "docs/08_Despliegue/Variables_Entorno.md",
+      "copy": "entrega_duoc/01_Evidencias_Documentacion/docs/08_Despliegue/Variables_Entorno.md",
+      "sha256": "b0c2b431012379ad70ec9505ba0799b6f1da5e2b62d0c47441ff9b8c0d9b8413"
+    },
+    {
+      "source": "docs/09_Manuales/Manual_Tecnico.md",
+      "copy": "entrega_duoc/01_Evidencias_Documentacion/docs/09_Manuales/Manual_Tecnico.md",
+      "sha256": "273e713a325fc928fb81b48d25a8558bdbf0f45e15915aadd614d5cfee778de7"
+    },
+    {
+      "source": "docs/09_Manuales/Manual_Usuario.md",
+      "copy": "entrega_duoc/01_Evidencias_Documentacion/docs/09_Manuales/Manual_Usuario.md",
+      "sha256": "c6ca417759f53870983cc6d5061ea6e11eb162ad46b146aaf51baf72f6dcc1a3"
+    },
+    {
+      "source": "docs/auditoria/MATRIZ_TRAZABILIDAD.md",
+      "copy": "entrega_duoc/01_Evidencias_Documentacion/docs/auditoria/MATRIZ_TRAZABILIDAD.md",
+      "sha256": "3004e67a109f6c520702565e01f4e7db2433386d3429cef3f71a3381bc3b0fb8"
+    },
+    {
+      "source": "docs/auditoria/REFERENCIAS_HISTORICAS.md",
+      "copy": "entrega_duoc/01_Evidencias_Documentacion/docs/auditoria/REFERENCIAS_HISTORICAS.md",
+      "sha256": "62e95b2bbe253138e4279b673a87ed10503d97bb1f81339f4e419658f994e64a"
+    },
+    {
+      "source": "docs/auditoria/REPORTE_FINAL_DOCUMENTACION.md",
+      "copy": "entrega_duoc/01_Evidencias_Documentacion/docs/auditoria/REPORTE_FINAL_DOCUMENTACION.md",
+      "sha256": "18930bcd7634f10589e3f2e7be58be2b3a3fa94bf1ef66346f9a45c833693f20"
+    },
+    {
+      "source": "docs/03_Arquitectura/Diagramas/DimaBug_Modelo_Relacional_v2.drawio",
+      "copy": "entrega_duoc/03_Evidencias_Base_Datos/Diagramas/DimaBug_Modelo_Relacional_v2.drawio",
+      "sha256": "89eebb5f1cefc04bfad09f7606c3a0d0adc51c851b944088bf44cff8b8b4dfbc"
+    },
+    {
+      "source": "docs/03_Arquitectura/Diagramas/DimaBug_Modelo_Relacional_v2.png",
+      "copy": "entrega_duoc/03_Evidencias_Base_Datos/Diagramas/DimaBug_Modelo_Relacional_v2.png",
+      "sha256": "74629246f8e53fae9d964f5e8c9640e3184fb8bb88d7652eb6702c963eb57de6"
+    },
+    {
+      "source": "docs/03_Arquitectura/Diagramas/DimaBug_Modelo_Relacional_v2.svg",
+      "copy": "entrega_duoc/03_Evidencias_Base_Datos/Diagramas/DimaBug_Modelo_Relacional_v2.svg",
+      "sha256": "416cd6e3317480a7e2d47e0f9982a2d2436d98b91ebc2d6d60b28d4b4d820e51"
+    },
+    {
+      "source": "docs/03_Arquitectura/Diagramas/README.md",
+      "copy": "entrega_duoc/03_Evidencias_Base_Datos/Diagramas/README.md",
+      "sha256": "df74172b17d791af7183d9a0afbe06b95da83d68ff644b5e4040dfc64bbf2042"
+    }
+  ],
+  "documentation_generator": {
+    "path": "docs/auditoria/herramientas/preparar_documentacion.py",
+    "sha256": "a516410457bf082730af3f9dbeef2f2c917b85f2cd7868f62330f338c682e8a1"
+  }
+}

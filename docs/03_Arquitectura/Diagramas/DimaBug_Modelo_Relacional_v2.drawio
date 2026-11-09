@@ -1,0 +1,1296 @@
+<?xml version='1.0' encoding='utf-8'?>
+<mxfile host="app.diagrams.net" version="24.7.17">
+  <diagram name="Modelo global · 31 tablas · atributos resumidos">
+    <mxGraphModel page="1" pageWidth="1680" pageHeight="1420">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="title" value="Modelo global · 31 tablas · atributos resumidos" style="text;html=0;align=left;fontSize=28;fontStyle=1;fontColor=#101F50;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="30" y="20" width="1620" height="45" />
+        </mxCell>
+        <mxCell id="u_departamento" value="u_departamento" style="swimlane;html=0;startSize=34;rounded=1;fillColor=#2455CE;swimlaneFillColor=#F6F8FC;fontColor=#FFFFFF;strokeColor=#CAD3E2;align=left;spacingLeft=10;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="30" y="180" width="300" height="105" />
+        </mxCell>
+        <mxCell id="u_departamento_f0" value="PK  departamento_id" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="u_departamento">
+          <mxGeometry as="geometry" x="0" y="37" width="300" height="22" />
+        </mxCell>
+        <mxCell id="u_departamento_f1" value="departamento_nombre" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="u_departamento">
+          <mxGeometry as="geometry" x="0" y="57" width="300" height="22" />
+        </mxCell>
+        <mxCell id="u_departamento_f2" value="departamento_estado" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="u_departamento">
+          <mxGeometry as="geometry" x="0" y="77" width="300" height="22" />
+        </mxCell>
+        <mxCell id="u_departamento_contacto" value="u_departamento_contacto" style="swimlane;html=0;startSize=34;rounded=1;fillColor=#2455CE;swimlaneFillColor=#F6F8FC;fontColor=#FFFFFF;strokeColor=#CAD3E2;align=left;spacingLeft=10;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="30" y="306" width="300" height="105" />
+        </mxCell>
+        <mxCell id="u_departamento_contacto_f0" value="PK  contacto_id" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="u_departamento_contacto">
+          <mxGeometry as="geometry" x="0" y="37" width="300" height="22" />
+        </mxCell>
+        <mxCell id="u_departamento_contacto_f1" value="REF  departamento_id" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="u_departamento_contacto">
+          <mxGeometry as="geometry" x="0" y="57" width="300" height="22" />
+        </mxCell>
+        <mxCell id="u_departamento_contacto_f2" value="contacto_tipo" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="u_departamento_contacto">
+          <mxGeometry as="geometry" x="0" y="77" width="300" height="22" />
+        </mxCell>
+        <mxCell id="u_organizacion_control" value="u_organizacion_control" style="swimlane;html=0;startSize=34;rounded=1;fillColor=#2455CE;swimlaneFillColor=#F6F8FC;fontColor=#FFFFFF;strokeColor=#CAD3E2;align=left;spacingLeft=10;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="30" y="432" width="300" height="105" />
+        </mxCell>
+        <mxCell id="u_organizacion_control_f0" value="PK  control_id" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="u_organizacion_control">
+          <mxGeometry as="geometry" x="0" y="37" width="300" height="22" />
+        </mxCell>
+        <mxCell id="u_responsable" value="u_responsable" style="swimlane;html=0;startSize=34;rounded=1;fillColor=#2455CE;swimlaneFillColor=#F6F8FC;fontColor=#FFFFFF;strokeColor=#CAD3E2;align=left;spacingLeft=10;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="30" y="558" width="300" height="105" />
+        </mxCell>
+        <mxCell id="u_responsable_f0" value="PK  responsable_id" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="u_responsable">
+          <mxGeometry as="geometry" x="0" y="37" width="300" height="22" />
+        </mxCell>
+        <mxCell id="u_responsable_f1" value="REF  departamento_id" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="u_responsable">
+          <mxGeometry as="geometry" x="0" y="57" width="300" height="22" />
+        </mxCell>
+        <mxCell id="u_responsable_f2" value="responsable_nombre" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="u_responsable">
+          <mxGeometry as="geometry" x="0" y="77" width="300" height="22" />
+        </mxCell>
+        <mxCell id="u_rol" value="u_rol" style="swimlane;html=0;startSize=34;rounded=1;fillColor=#2455CE;swimlaneFillColor=#F6F8FC;fontColor=#FFFFFF;strokeColor=#CAD3E2;align=left;spacingLeft=10;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="30" y="684" width="300" height="105" />
+        </mxCell>
+        <mxCell id="u_rol_f0" value="PK  rol_id" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="u_rol">
+          <mxGeometry as="geometry" x="0" y="37" width="300" height="22" />
+        </mxCell>
+        <mxCell id="u_rol_f1" value="rol_nombre" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="u_rol">
+          <mxGeometry as="geometry" x="0" y="57" width="300" height="22" />
+        </mxCell>
+        <mxCell id="u_rol_f2" value="rol_descripcion" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="u_rol">
+          <mxGeometry as="geometry" x="0" y="77" width="300" height="22" />
+        </mxCell>
+        <mxCell id="u_usuario" value="u_usuario" style="swimlane;html=0;startSize=34;rounded=1;fillColor=#2455CE;swimlaneFillColor=#F6F8FC;fontColor=#FFFFFF;strokeColor=#CAD3E2;align=left;spacingLeft=10;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="30" y="810" width="300" height="105" />
+        </mxCell>
+        <mxCell id="u_usuario_f0" value="PK  usuario_id" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="u_usuario">
+          <mxGeometry as="geometry" x="0" y="37" width="300" height="22" />
+        </mxCell>
+        <mxCell id="u_usuario_f1" value="JPA  rol_id" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="u_usuario">
+          <mxGeometry as="geometry" x="0" y="57" width="300" height="22" />
+        </mxCell>
+        <mxCell id="u_usuario_f2" value="usuario_nombre" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="u_usuario">
+          <mxGeometry as="geometry" x="0" y="77" width="300" height="22" />
+        </mxCell>
+        <mxCell id="cl_frecuencia" value="cl_frecuencia" style="swimlane;html=0;startSize=34;rounded=1;fillColor=#087E8B;swimlaneFillColor=#F6F8FC;fontColor=#FFFFFF;strokeColor=#CAD3E2;align=left;spacingLeft=10;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="360" y="180" width="300" height="105" />
+        </mxCell>
+        <mxCell id="cl_frecuencia_f0" value="PK  frecuencia_id" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="cl_frecuencia">
+          <mxGeometry as="geometry" x="0" y="37" width="300" height="22" />
+        </mxCell>
+        <mxCell id="cl_frecuencia_f1" value="frecuencia_nombre" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="cl_frecuencia">
+          <mxGeometry as="geometry" x="0" y="57" width="300" height="22" />
+        </mxCell>
+        <mxCell id="cl_frecuencia_f2" value="frecuencia_orden" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="cl_frecuencia">
+          <mxGeometry as="geometry" x="0" y="77" width="300" height="22" />
+        </mxCell>
+        <mxCell id="cl_hardware" value="cl_hardware" style="swimlane;html=0;startSize=34;rounded=1;fillColor=#087E8B;swimlaneFillColor=#F6F8FC;fontColor=#FFFFFF;strokeColor=#CAD3E2;align=left;spacingLeft=10;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="360" y="306" width="300" height="105" />
+        </mxCell>
+        <mxCell id="cl_hardware_f0" value="PK  hardware_id" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="cl_hardware">
+          <mxGeometry as="geometry" x="0" y="37" width="300" height="22" />
+        </mxCell>
+        <mxCell id="cl_hardware_f1" value="hardware_nombre" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="cl_hardware">
+          <mxGeometry as="geometry" x="0" y="57" width="300" height="22" />
+        </mxCell>
+        <mxCell id="cl_hardware_f2" value="hardware_sistema_operativo" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="cl_hardware">
+          <mxGeometry as="geometry" x="0" y="77" width="300" height="22" />
+        </mxCell>
+        <mxCell id="cl_hardware_sistema" value="cl_hardware_sistema" style="swimlane;html=0;startSize=34;rounded=1;fillColor=#087E8B;swimlaneFillColor=#F6F8FC;fontColor=#FFFFFF;strokeColor=#CAD3E2;align=left;spacingLeft=10;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="360" y="432" width="300" height="105" />
+        </mxCell>
+        <mxCell id="cl_hardware_sistema_f0" value="JPA  hardware_id [ND]" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="cl_hardware_sistema">
+          <mxGeometry as="geometry" x="0" y="37" width="300" height="22" />
+        </mxCell>
+        <mxCell id="cl_hardware_sistema_f1" value="JPA  sistema_id [ND]" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="cl_hardware_sistema">
+          <mxGeometry as="geometry" x="0" y="57" width="300" height="22" />
+        </mxCell>
+        <mxCell id="cl_modulo" value="cl_modulo" style="swimlane;html=0;startSize=34;rounded=1;fillColor=#087E8B;swimlaneFillColor=#F6F8FC;fontColor=#FFFFFF;strokeColor=#CAD3E2;align=left;spacingLeft=10;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="360" y="558" width="300" height="105" />
+        </mxCell>
+        <mxCell id="cl_modulo_f0" value="PK  modulo_id" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="cl_modulo">
+          <mxGeometry as="geometry" x="0" y="37" width="300" height="22" />
+        </mxCell>
+        <mxCell id="cl_modulo_f1" value="JPA  sistema_id ?" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="cl_modulo">
+          <mxGeometry as="geometry" x="0" y="57" width="300" height="22" />
+        </mxCell>
+        <mxCell id="cl_modulo_f2" value="modulo_nombre" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="cl_modulo">
+          <mxGeometry as="geometry" x="0" y="77" width="300" height="22" />
+        </mxCell>
+        <mxCell id="cl_sistema" value="cl_sistema" style="swimlane;html=0;startSize=34;rounded=1;fillColor=#087E8B;swimlaneFillColor=#F6F8FC;fontColor=#FFFFFF;strokeColor=#CAD3E2;align=left;spacingLeft=10;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="360" y="684" width="300" height="105" />
+        </mxCell>
+        <mxCell id="cl_sistema_f0" value="PK  sistema_id" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="cl_sistema">
+          <mxGeometry as="geometry" x="0" y="37" width="300" height="22" />
+        </mxCell>
+        <mxCell id="cl_sistema_f1" value="sistema_nombre" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="cl_sistema">
+          <mxGeometry as="geometry" x="0" y="57" width="300" height="22" />
+        </mxCell>
+        <mxCell id="cl_sistema_f2" value="sistema_descripcion" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="cl_sistema">
+          <mxGeometry as="geometry" x="0" y="77" width="300" height="22" />
+        </mxCell>
+        <mxCell id="co_causa" value="co_causa" style="swimlane;html=0;startSize=34;rounded=1;fillColor=#6C49B8;swimlaneFillColor=#F6F8FC;fontColor=#FFFFFF;strokeColor=#CAD3E2;align=left;spacingLeft=10;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="690" y="180" width="300" height="105" />
+        </mxCell>
+        <mxCell id="co_causa_f0" value="PK  causa_id" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="co_causa">
+          <mxGeometry as="geometry" x="0" y="37" width="300" height="22" />
+        </mxCell>
+        <mxCell id="co_causa_f1" value="REF  conocimiento_id" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="co_causa">
+          <mxGeometry as="geometry" x="0" y="57" width="300" height="22" />
+        </mxCell>
+        <mxCell id="co_causa_f2" value="causa_descripcion" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="co_causa">
+          <mxGeometry as="geometry" x="0" y="77" width="300" height="22" />
+        </mxCell>
+        <mxCell id="co_conocimiento" value="co_conocimiento" style="swimlane;html=0;startSize=34;rounded=1;fillColor=#6C49B8;swimlaneFillColor=#F6F8FC;fontColor=#FFFFFF;strokeColor=#CAD3E2;align=left;spacingLeft=10;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="690" y="306" width="300" height="105" />
+        </mxCell>
+        <mxCell id="co_conocimiento_f0" value="PK  conocimiento_id" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="co_conocimiento">
+          <mxGeometry as="geometry" x="0" y="37" width="300" height="22" />
+        </mxCell>
+        <mxCell id="co_conocimiento_f1" value="JPA  hardware_id ?" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="co_conocimiento">
+          <mxGeometry as="geometry" x="0" y="57" width="300" height="22" />
+        </mxCell>
+        <mxCell id="co_conocimiento_f2" value="JPA  sistema_id ?" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="co_conocimiento">
+          <mxGeometry as="geometry" x="0" y="77" width="300" height="22" />
+        </mxCell>
+        <mxCell id="co_conocimiento_busqueda" value="co_conocimiento_busqueda" style="swimlane;html=0;startSize=34;rounded=1;fillColor=#6C49B8;swimlaneFillColor=#F6F8FC;fontColor=#FFFFFF;strokeColor=#CAD3E2;align=left;spacingLeft=10;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="690" y="432" width="300" height="105" />
+        </mxCell>
+        <mxCell id="co_conocimiento_busqueda_f0" value="JDBC  conocimiento_id [ND]" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="co_conocimiento_busqueda">
+          <mxGeometry as="geometry" x="0" y="37" width="300" height="22" />
+        </mxCell>
+        <mxCell id="co_conocimiento_busqueda_f1" value="contenido_busqueda" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="co_conocimiento_busqueda">
+          <mxGeometry as="geometry" x="0" y="57" width="300" height="22" />
+        </mxCell>
+        <mxCell id="co_conocimiento_prueba" value="co_conocimiento_prueba" style="swimlane;html=0;startSize=34;rounded=1;fillColor=#6C49B8;swimlaneFillColor=#F6F8FC;fontColor=#FFFFFF;strokeColor=#CAD3E2;align=left;spacingLeft=10;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="690" y="558" width="300" height="105" />
+        </mxCell>
+        <mxCell id="co_conocimiento_prueba_f0" value="PK/REF  conocimiento_id" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="co_conocimiento_prueba">
+          <mxGeometry as="geometry" x="0" y="37" width="300" height="22" />
+        </mxCell>
+        <mxCell id="co_conocimiento_prueba_f1" value="PK/JPA  prueba_id" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="co_conocimiento_prueba">
+          <mxGeometry as="geometry" x="0" y="57" width="300" height="22" />
+        </mxCell>
+        <mxCell id="co_conocimiento_prueba_f2" value="prueba_orden" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="co_conocimiento_prueba">
+          <mxGeometry as="geometry" x="0" y="77" width="300" height="22" />
+        </mxCell>
+        <mxCell id="co_material_apoyo" value="co_material_apoyo" style="swimlane;html=0;startSize=34;rounded=1;fillColor=#6C49B8;swimlaneFillColor=#F6F8FC;fontColor=#FFFFFF;strokeColor=#CAD3E2;align=left;spacingLeft=10;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="690" y="684" width="300" height="105" />
+        </mxCell>
+        <mxCell id="co_material_apoyo_f0" value="PK  material_id" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="co_material_apoyo">
+          <mxGeometry as="geometry" x="0" y="37" width="300" height="22" />
+        </mxCell>
+        <mxCell id="co_material_apoyo_f1" value="REF  conocimiento_id ?" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="co_material_apoyo">
+          <mxGeometry as="geometry" x="0" y="57" width="300" height="22" />
+        </mxCell>
+        <mxCell id="co_material_apoyo_f2" value="REF  paso_id ?" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="co_material_apoyo">
+          <mxGeometry as="geometry" x="0" y="77" width="300" height="22" />
+        </mxCell>
+        <mxCell id="co_prueba" value="co_prueba" style="swimlane;html=0;startSize=34;rounded=1;fillColor=#6C49B8;swimlaneFillColor=#F6F8FC;fontColor=#FFFFFF;strokeColor=#CAD3E2;align=left;spacingLeft=10;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="690" y="810" width="300" height="105" />
+        </mxCell>
+        <mxCell id="co_prueba_f0" value="PK  prueba_id" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="co_prueba">
+          <mxGeometry as="geometry" x="0" y="37" width="300" height="22" />
+        </mxCell>
+        <mxCell id="co_prueba_f1" value="prueba_descripcion" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="co_prueba">
+          <mxGeometry as="geometry" x="0" y="57" width="300" height="22" />
+        </mxCell>
+        <mxCell id="co_prueba_f2" value="prueba_resultado_esperado" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="co_prueba">
+          <mxGeometry as="geometry" x="0" y="77" width="300" height="22" />
+        </mxCell>
+        <mxCell id="co_sintoma" value="co_sintoma" style="swimlane;html=0;startSize=34;rounded=1;fillColor=#6C49B8;swimlaneFillColor=#F6F8FC;fontColor=#FFFFFF;strokeColor=#CAD3E2;align=left;spacingLeft=10;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="690" y="936" width="300" height="105" />
+        </mxCell>
+        <mxCell id="co_sintoma_f0" value="PK  sintoma_id" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="co_sintoma">
+          <mxGeometry as="geometry" x="0" y="37" width="300" height="22" />
+        </mxCell>
+        <mxCell id="co_sintoma_f1" value="REF  conocimiento_id" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="co_sintoma">
+          <mxGeometry as="geometry" x="0" y="57" width="300" height="22" />
+        </mxCell>
+        <mxCell id="co_sintoma_f2" value="sintoma_descripcion" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="co_sintoma">
+          <mxGeometry as="geometry" x="0" y="77" width="300" height="22" />
+        </mxCell>
+        <mxCell id="co_solucion" value="co_solucion" style="swimlane;html=0;startSize=34;rounded=1;fillColor=#6C49B8;swimlaneFillColor=#F6F8FC;fontColor=#FFFFFF;strokeColor=#CAD3E2;align=left;spacingLeft=10;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="690" y="1062" width="300" height="105" />
+        </mxCell>
+        <mxCell id="co_solucion_f0" value="PK  solucion_id" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="co_solucion">
+          <mxGeometry as="geometry" x="0" y="37" width="300" height="22" />
+        </mxCell>
+        <mxCell id="co_solucion_f1" value="REF  conocimiento_id" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="co_solucion">
+          <mxGeometry as="geometry" x="0" y="57" width="300" height="22" />
+        </mxCell>
+        <mxCell id="co_solucion_f2" value="solucion_descripcion" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="co_solucion">
+          <mxGeometry as="geometry" x="0" y="77" width="300" height="22" />
+        </mxCell>
+        <mxCell id="co_solucion_asignacion" value="co_solucion_asignacion" style="swimlane;html=0;startSize=34;rounded=1;fillColor=#6C49B8;swimlaneFillColor=#F6F8FC;fontColor=#FFFFFF;strokeColor=#CAD3E2;align=left;spacingLeft=10;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="690" y="1188" width="300" height="105" />
+        </mxCell>
+        <mxCell id="co_solucion_asignacion_f0" value="PK  asignacion_id" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="co_solucion_asignacion">
+          <mxGeometry as="geometry" x="0" y="37" width="300" height="22" />
+        </mxCell>
+        <mxCell id="co_solucion_asignacion_f1" value="JPA  solucion_id" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="co_solucion_asignacion">
+          <mxGeometry as="geometry" x="0" y="57" width="300" height="22" />
+        </mxCell>
+        <mxCell id="co_solucion_asignacion_f2" value="JPA  responsable_id ?" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="co_solucion_asignacion">
+          <mxGeometry as="geometry" x="0" y="77" width="300" height="22" />
+        </mxCell>
+        <mxCell id="pr_paso" value="pr_paso" style="swimlane;html=0;startSize=34;rounded=1;fillColor=#AD6818;swimlaneFillColor=#F6F8FC;fontColor=#FFFFFF;strokeColor=#CAD3E2;align=left;spacingLeft=10;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="1020" y="180" width="300" height="105" />
+        </mxCell>
+        <mxCell id="pr_paso_f0" value="PK  paso_id" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="pr_paso">
+          <mxGeometry as="geometry" x="0" y="37" width="300" height="22" />
+        </mxCell>
+        <mxCell id="pr_paso_f1" value="REF  procedimiento_id" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="pr_paso">
+          <mxGeometry as="geometry" x="0" y="57" width="300" height="22" />
+        </mxCell>
+        <mxCell id="pr_paso_f2" value="paso_orden" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="pr_paso">
+          <mxGeometry as="geometry" x="0" y="77" width="300" height="22" />
+        </mxCell>
+        <mxCell id="pr_procedimiento" value="pr_procedimiento" style="swimlane;html=0;startSize=34;rounded=1;fillColor=#AD6818;swimlaneFillColor=#F6F8FC;fontColor=#FFFFFF;strokeColor=#CAD3E2;align=left;spacingLeft=10;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="1020" y="306" width="300" height="105" />
+        </mxCell>
+        <mxCell id="pr_procedimiento_f0" value="PK  procedimiento_id" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="pr_procedimiento">
+          <mxGeometry as="geometry" x="0" y="37" width="300" height="22" />
+        </mxCell>
+        <mxCell id="pr_procedimiento_f1" value="JPA  creado_por" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="pr_procedimiento">
+          <mxGeometry as="geometry" x="0" y="57" width="300" height="22" />
+        </mxCell>
+        <mxCell id="pr_procedimiento_f2" value="JPA  modificado_por ?" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="pr_procedimiento">
+          <mxGeometry as="geometry" x="0" y="77" width="300" height="22" />
+        </mxCell>
+        <mxCell id="se_ejecucion" value="se_ejecucion" style="swimlane;html=0;startSize=34;rounded=1;fillColor=#AD6818;swimlaneFillColor=#F6F8FC;fontColor=#FFFFFF;strokeColor=#CAD3E2;align=left;spacingLeft=10;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="1020" y="432" width="300" height="105" />
+        </mxCell>
+        <mxCell id="se_ejecucion_f0" value="PK  ejecucion_id" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="se_ejecucion">
+          <mxGeometry as="geometry" x="0" y="37" width="300" height="22" />
+        </mxCell>
+        <mxCell id="se_ejecucion_f1" value="REF  procedimiento_id" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="se_ejecucion">
+          <mxGeometry as="geometry" x="0" y="57" width="300" height="22" />
+        </mxCell>
+        <mxCell id="se_ejecucion_f2" value="JPA  usuario_id" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="se_ejecucion">
+          <mxGeometry as="geometry" x="0" y="77" width="300" height="22" />
+        </mxCell>
+        <mxCell id="se_ejecucion_paso" value="se_ejecucion_paso" style="swimlane;html=0;startSize=34;rounded=1;fillColor=#AD6818;swimlaneFillColor=#F6F8FC;fontColor=#FFFFFF;strokeColor=#CAD3E2;align=left;spacingLeft=10;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="1020" y="558" width="300" height="105" />
+        </mxCell>
+        <mxCell id="se_ejecucion_paso_f0" value="PK  ejecucion_paso_id" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="se_ejecucion_paso">
+          <mxGeometry as="geometry" x="0" y="37" width="300" height="22" />
+        </mxCell>
+        <mxCell id="se_ejecucion_paso_f1" value="REF  ejecucion_id" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="se_ejecucion_paso">
+          <mxGeometry as="geometry" x="0" y="57" width="300" height="22" />
+        </mxCell>
+        <mxCell id="se_ejecucion_paso_f2" value="REF  paso_id" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="se_ejecucion_paso">
+          <mxGeometry as="geometry" x="0" y="77" width="300" height="22" />
+        </mxCell>
+        <mxCell id="se_resultado" value="se_resultado" style="swimlane;html=0;startSize=34;rounded=1;fillColor=#AD6818;swimlaneFillColor=#F6F8FC;fontColor=#FFFFFF;strokeColor=#CAD3E2;align=left;spacingLeft=10;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="1020" y="684" width="300" height="105" />
+        </mxCell>
+        <mxCell id="se_resultado_f0" value="PK  resultado_id" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="se_resultado">
+          <mxGeometry as="geometry" x="0" y="37" width="300" height="22" />
+        </mxCell>
+        <mxCell id="se_resultado_f1" value="REF  solucion_id" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="se_resultado">
+          <mxGeometry as="geometry" x="0" y="57" width="300" height="22" />
+        </mxCell>
+        <mxCell id="se_resultado_f2" value="REF  usuario_id" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="se_resultado">
+          <mxGeometry as="geometry" x="0" y="77" width="300" height="22" />
+        </mxCell>
+        <mxCell id="ticket" value="ticket" style="swimlane;html=0;startSize=34;rounded=1;fillColor=#B83D60;swimlaneFillColor=#F6F8FC;fontColor=#FFFFFF;strokeColor=#CAD3E2;align=left;spacingLeft=10;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="1350" y="180" width="300" height="105" />
+        </mxCell>
+        <mxCell id="ticket_f0" value="PK  id" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="ticket">
+          <mxGeometry as="geometry" x="0" y="37" width="300" height="22" />
+        </mxCell>
+        <mxCell id="ticket_f1" value="REF  solicitante_id" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="ticket">
+          <mxGeometry as="geometry" x="0" y="57" width="300" height="22" />
+        </mxCell>
+        <mxCell id="ticket_f2" value="REF  asignado_id ?" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="ticket">
+          <mxGeometry as="geometry" x="0" y="77" width="300" height="22" />
+        </mxCell>
+        <mxCell id="ticket_adjunto" value="ticket_adjunto" style="swimlane;html=0;startSize=34;rounded=1;fillColor=#B83D60;swimlaneFillColor=#F6F8FC;fontColor=#FFFFFF;strokeColor=#CAD3E2;align=left;spacingLeft=10;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="1350" y="306" width="300" height="105" />
+        </mxCell>
+        <mxCell id="ticket_adjunto_f0" value="PK  id" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="ticket_adjunto">
+          <mxGeometry as="geometry" x="0" y="37" width="300" height="22" />
+        </mxCell>
+        <mxCell id="ticket_adjunto_f1" value="SQL  ticket_id" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="ticket_adjunto">
+          <mxGeometry as="geometry" x="0" y="57" width="300" height="22" />
+        </mxCell>
+        <mxCell id="ticket_adjunto_f2" value="SQL  comentario_id ?" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="ticket_adjunto">
+          <mxGeometry as="geometry" x="0" y="77" width="300" height="22" />
+        </mxCell>
+        <mxCell id="ticket_comentario" value="ticket_comentario" style="swimlane;html=0;startSize=34;rounded=1;fillColor=#B83D60;swimlaneFillColor=#F6F8FC;fontColor=#FFFFFF;strokeColor=#CAD3E2;align=left;spacingLeft=10;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="1350" y="432" width="300" height="105" />
+        </mxCell>
+        <mxCell id="ticket_comentario_f0" value="PK  id" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="ticket_comentario">
+          <mxGeometry as="geometry" x="0" y="37" width="300" height="22" />
+        </mxCell>
+        <mxCell id="ticket_comentario_f1" value="SQL  ticket_id" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="ticket_comentario">
+          <mxGeometry as="geometry" x="0" y="57" width="300" height="22" />
+        </mxCell>
+        <mxCell id="ticket_comentario_f2" value="REF  autor_id" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="ticket_comentario">
+          <mxGeometry as="geometry" x="0" y="77" width="300" height="22" />
+        </mxCell>
+        <mxCell id="ticket_etiqueta" value="ticket_etiqueta" style="swimlane;html=0;startSize=34;rounded=1;fillColor=#B83D60;swimlaneFillColor=#F6F8FC;fontColor=#FFFFFF;strokeColor=#CAD3E2;align=left;spacingLeft=10;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="1350" y="558" width="300" height="105" />
+        </mxCell>
+        <mxCell id="ticket_etiqueta_f0" value="PK  id" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="ticket_etiqueta">
+          <mxGeometry as="geometry" x="0" y="37" width="300" height="22" />
+        </mxCell>
+        <mxCell id="ticket_etiqueta_f1" value="nombre" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="ticket_etiqueta">
+          <mxGeometry as="geometry" x="0" y="57" width="300" height="22" />
+        </mxCell>
+        <mxCell id="ticket_etiqueta_f2" value="color" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="ticket_etiqueta">
+          <mxGeometry as="geometry" x="0" y="77" width="300" height="22" />
+        </mxCell>
+        <mxCell id="ticket_historial_estado" value="ticket_historial_estado" style="swimlane;html=0;startSize=34;rounded=1;fillColor=#B83D60;swimlaneFillColor=#F6F8FC;fontColor=#FFFFFF;strokeColor=#CAD3E2;align=left;spacingLeft=10;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="1350" y="684" width="300" height="105" />
+        </mxCell>
+        <mxCell id="ticket_historial_estado_f0" value="PK  id" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="ticket_historial_estado">
+          <mxGeometry as="geometry" x="0" y="37" width="300" height="22" />
+        </mxCell>
+        <mxCell id="ticket_historial_estado_f1" value="SQL  ticket_id" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="ticket_historial_estado">
+          <mxGeometry as="geometry" x="0" y="57" width="300" height="22" />
+        </mxCell>
+        <mxCell id="ticket_historial_estado_f2" value="REF  usuario_id" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="ticket_historial_estado">
+          <mxGeometry as="geometry" x="0" y="77" width="300" height="22" />
+        </mxCell>
+        <mxCell id="ticket_ticket_etiqueta" value="ticket_ticket_etiqueta" style="swimlane;html=0;startSize=34;rounded=1;fillColor=#B83D60;swimlaneFillColor=#F6F8FC;fontColor=#FFFFFF;strokeColor=#CAD3E2;align=left;spacingLeft=10;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="1350" y="810" width="300" height="105" />
+        </mxCell>
+        <mxCell id="ticket_ticket_etiqueta_f0" value="PK/SQL  ticket_id" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="ticket_ticket_etiqueta">
+          <mxGeometry as="geometry" x="0" y="37" width="300" height="22" />
+        </mxCell>
+        <mxCell id="ticket_ticket_etiqueta_f1" value="PK/SQL  etiqueta_id" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="ticket_ticket_etiqueta">
+          <mxGeometry as="geometry" x="0" y="57" width="300" height="22" />
+        </mxCell>
+        <mxCell id="legend" value="PK = clave declarada; SQL = FK en script; JPA = relación mapeada; REF/JDBC = referencia, sin FK física certificada. ? = nulo JPA; ND = DDL no disponible." style="text;html=0;align=left;fontSize=13;fontColor=#53627A;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="30" y="1365" width="1620" height="35" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram name="Identidad y roles · detalle y referencias externas">
+    <mxGraphModel page="1" pageWidth="1310" pageHeight="746">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="title" value="Identidad y roles · detalle y referencias externas" style="text;html=0;align=left;fontSize=28;fontStyle=1;fontColor=#101F50;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="30" y="20" width="1250" height="45" />
+        </mxCell>
+        <mxCell id="u_departamento" value="u_departamento" style="swimlane;html=0;startSize=34;rounded=1;fillColor=#2455CE;swimlaneFillColor=#F6F8FC;fontColor=#FFFFFF;strokeColor=#CAD3E2;align=left;spacingLeft=10;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="30" y="100" width="385" height="138" />
+        </mxCell>
+        <mxCell id="u_departamento_f0" value="PK  departamento_id" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="u_departamento">
+          <mxGeometry as="geometry" x="0" y="37" width="385" height="22" />
+        </mxCell>
+        <mxCell id="u_departamento_f1" value="departamento_nombre" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="u_departamento">
+          <mxGeometry as="geometry" x="0" y="57" width="385" height="22" />
+        </mxCell>
+        <mxCell id="u_departamento_f2" value="departamento_estado" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="u_departamento">
+          <mxGeometry as="geometry" x="0" y="77" width="385" height="22" />
+        </mxCell>
+        <mxCell id="u_departamento_f3" value="departamento_version" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="u_departamento">
+          <mxGeometry as="geometry" x="0" y="97" width="385" height="22" />
+        </mxCell>
+        <mxCell id="u_departamento_contacto" value="u_departamento_contacto" style="swimlane;html=0;startSize=34;rounded=1;fillColor=#2455CE;swimlaneFillColor=#F6F8FC;fontColor=#FFFFFF;strokeColor=#CAD3E2;align=left;spacingLeft=10;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="460" y="100" width="385" height="178" />
+        </mxCell>
+        <mxCell id="u_departamento_contacto_f0" value="PK  contacto_id" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="u_departamento_contacto">
+          <mxGeometry as="geometry" x="0" y="37" width="385" height="22" />
+        </mxCell>
+        <mxCell id="u_departamento_contacto_f1" value="REF  departamento_id" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="u_departamento_contacto">
+          <mxGeometry as="geometry" x="0" y="57" width="385" height="22" />
+        </mxCell>
+        <mxCell id="u_departamento_contacto_f2" value="contacto_tipo" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="u_departamento_contacto">
+          <mxGeometry as="geometry" x="0" y="77" width="385" height="22" />
+        </mxCell>
+        <mxCell id="u_departamento_contacto_f3" value="contacto_valor" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="u_departamento_contacto">
+          <mxGeometry as="geometry" x="0" y="97" width="385" height="22" />
+        </mxCell>
+        <mxCell id="u_departamento_contacto_f4" value="contacto_estado" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="u_departamento_contacto">
+          <mxGeometry as="geometry" x="0" y="117" width="385" height="22" />
+        </mxCell>
+        <mxCell id="u_departamento_contacto_f5" value="contacto_version" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="u_departamento_contacto">
+          <mxGeometry as="geometry" x="0" y="137" width="385" height="22" />
+        </mxCell>
+        <mxCell id="u_organizacion_control" value="u_organizacion_control" style="swimlane;html=0;startSize=34;rounded=1;fillColor=#2455CE;swimlaneFillColor=#F6F8FC;fontColor=#FFFFFF;strokeColor=#CAD3E2;align=left;spacingLeft=10;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="890" y="100" width="385" height="78" />
+        </mxCell>
+        <mxCell id="u_organizacion_control_f0" value="PK  control_id" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="u_organizacion_control">
+          <mxGeometry as="geometry" x="0" y="37" width="385" height="22" />
+        </mxCell>
+        <mxCell id="u_responsable" value="u_responsable" style="swimlane;html=0;startSize=34;rounded=1;fillColor=#2455CE;swimlaneFillColor=#F6F8FC;fontColor=#FFFFFF;strokeColor=#CAD3E2;align=left;spacingLeft=10;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="30" y="343" width="385" height="178" />
+        </mxCell>
+        <mxCell id="u_responsable_f0" value="PK  responsable_id" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="u_responsable">
+          <mxGeometry as="geometry" x="0" y="37" width="385" height="22" />
+        </mxCell>
+        <mxCell id="u_responsable_f1" value="REF  departamento_id" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="u_responsable">
+          <mxGeometry as="geometry" x="0" y="57" width="385" height="22" />
+        </mxCell>
+        <mxCell id="u_responsable_f2" value="responsable_nombre" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="u_responsable">
+          <mxGeometry as="geometry" x="0" y="77" width="385" height="22" />
+        </mxCell>
+        <mxCell id="u_responsable_f3" value="responsable_cargo ?" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="u_responsable">
+          <mxGeometry as="geometry" x="0" y="97" width="385" height="22" />
+        </mxCell>
+        <mxCell id="u_responsable_f4" value="responsable_contacto ?" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="u_responsable">
+          <mxGeometry as="geometry" x="0" y="117" width="385" height="22" />
+        </mxCell>
+        <mxCell id="u_responsable_f5" value="responsable_estado" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="u_responsable">
+          <mxGeometry as="geometry" x="0" y="137" width="385" height="22" />
+        </mxCell>
+        <mxCell id="u_rol" value="u_rol" style="swimlane;html=0;startSize=34;rounded=1;fillColor=#2455CE;swimlaneFillColor=#F6F8FC;fontColor=#FFFFFF;strokeColor=#CAD3E2;align=left;spacingLeft=10;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="460" y="343" width="385" height="178" />
+        </mxCell>
+        <mxCell id="u_rol_f0" value="PK  rol_id" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="u_rol">
+          <mxGeometry as="geometry" x="0" y="37" width="385" height="22" />
+        </mxCell>
+        <mxCell id="u_rol_f1" value="rol_nombre" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="u_rol">
+          <mxGeometry as="geometry" x="0" y="57" width="385" height="22" />
+        </mxCell>
+        <mxCell id="u_rol_f2" value="rol_descripcion ?" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="u_rol">
+          <mxGeometry as="geometry" x="0" y="77" width="385" height="22" />
+        </mxCell>
+        <mxCell id="u_rol_f3" value="rol_estado" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="u_rol">
+          <mxGeometry as="geometry" x="0" y="97" width="385" height="22" />
+        </mxCell>
+        <mxCell id="u_rol_f4" value="rol_fecha_creacion" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="u_rol">
+          <mxGeometry as="geometry" x="0" y="117" width="385" height="22" />
+        </mxCell>
+        <mxCell id="u_rol_f5" value="rol_fecha_actualizacion" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="u_rol">
+          <mxGeometry as="geometry" x="0" y="137" width="385" height="22" />
+        </mxCell>
+        <mxCell id="u_usuario" value="u_usuario" style="swimlane;html=0;startSize=34;rounded=1;fillColor=#2455CE;swimlaneFillColor=#F6F8FC;fontColor=#FFFFFF;strokeColor=#CAD3E2;align=left;spacingLeft=10;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="890" y="343" width="385" height="218" />
+        </mxCell>
+        <mxCell id="u_usuario_f0" value="PK  usuario_id" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="u_usuario">
+          <mxGeometry as="geometry" x="0" y="37" width="385" height="22" />
+        </mxCell>
+        <mxCell id="u_usuario_f1" value="JPA  rol_id" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="u_usuario">
+          <mxGeometry as="geometry" x="0" y="57" width="385" height="22" />
+        </mxCell>
+        <mxCell id="u_usuario_f2" value="usuario_nombre" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="u_usuario">
+          <mxGeometry as="geometry" x="0" y="77" width="385" height="22" />
+        </mxCell>
+        <mxCell id="u_usuario_f3" value="usuario_email" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="u_usuario">
+          <mxGeometry as="geometry" x="0" y="97" width="385" height="22" />
+        </mxCell>
+        <mxCell id="u_usuario_f4" value="usuario_password_hash" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="u_usuario">
+          <mxGeometry as="geometry" x="0" y="117" width="385" height="22" />
+        </mxCell>
+        <mxCell id="u_usuario_f5" value="usuario_estado" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="u_usuario">
+          <mxGeometry as="geometry" x="0" y="137" width="385" height="22" />
+        </mxCell>
+        <mxCell id="u_usuario_f6" value="usuario_fecha_creacion" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="u_usuario">
+          <mxGeometry as="geometry" x="0" y="157" width="385" height="22" />
+        </mxCell>
+        <mxCell id="u_usuario_f7" value="usuario_fecha_actualizacion" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="u_usuario">
+          <mxGeometry as="geometry" x="0" y="177" width="385" height="22" />
+        </mxCell>
+        <mxCell id="e0" value="rol_id [JPA] 1:N" edge="1" parent="1" source="u_rol" target="u_usuario" style="edgeStyle=orthogonalEdgeStyle;rounded=1;endArrow=ERzeroToMany;startArrow=ERone;fontSize=10;labelBackgroundColor=#FFFFFF;strokeColor=#8B99B2;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="e1" value="departamento_id [REF] 1:N" edge="1" parent="1" source="u_departamento" target="u_responsable" style="edgeStyle=orthogonalEdgeStyle;rounded=1;endArrow=ERzeroToMany;startArrow=ERone;fontSize=10;labelBackgroundColor=#FFFFFF;strokeColor=#8B99B2;dashed=1;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="e2" value="departamento_id [REF] 1:N" edge="1" parent="1" source="u_departamento" target="u_departamento_contacto" style="edgeStyle=orthogonalEdgeStyle;rounded=1;endArrow=ERzeroToMany;startArrow=ERone;fontSize=10;labelBackgroundColor=#FFFFFF;strokeColor=#8B99B2;dashed=1;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="legend" value="PK = clave declarada; SQL = FK en script; JPA = relación mapeada; REF/JDBC = referencia, sin FK física certificada. ? = nulo JPA; ND = DDL no disponible." style="text;html=0;align=left;fontSize=13;fontColor=#53627A;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="30" y="691" width="1250" height="35" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram name="Catálogos · detalle y referencias externas">
+    <mxGraphModel page="1" pageWidth="1310" pageHeight="626">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="title" value="Catálogos · detalle y referencias externas" style="text;html=0;align=left;fontSize=28;fontStyle=1;fontColor=#101F50;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="30" y="20" width="1250" height="45" />
+        </mxCell>
+        <mxCell id="cl_frecuencia" value="cl_frecuencia" style="swimlane;html=0;startSize=34;rounded=1;fillColor=#087E8B;swimlaneFillColor=#F6F8FC;fontColor=#FFFFFF;strokeColor=#CAD3E2;align=left;spacingLeft=10;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="30" y="100" width="385" height="138" />
+        </mxCell>
+        <mxCell id="cl_frecuencia_f0" value="PK  frecuencia_id" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="cl_frecuencia">
+          <mxGeometry as="geometry" x="0" y="37" width="385" height="22" />
+        </mxCell>
+        <mxCell id="cl_frecuencia_f1" value="frecuencia_nombre" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="cl_frecuencia">
+          <mxGeometry as="geometry" x="0" y="57" width="385" height="22" />
+        </mxCell>
+        <mxCell id="cl_frecuencia_f2" value="frecuencia_orden" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="cl_frecuencia">
+          <mxGeometry as="geometry" x="0" y="77" width="385" height="22" />
+        </mxCell>
+        <mxCell id="cl_frecuencia_f3" value="frecuencia_estado" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="cl_frecuencia">
+          <mxGeometry as="geometry" x="0" y="97" width="385" height="22" />
+        </mxCell>
+        <mxCell id="cl_hardware" value="cl_hardware" style="swimlane;html=0;startSize=34;rounded=1;fillColor=#087E8B;swimlaneFillColor=#F6F8FC;fontColor=#FFFFFF;strokeColor=#CAD3E2;align=left;spacingLeft=10;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="460" y="100" width="385" height="138" />
+        </mxCell>
+        <mxCell id="cl_hardware_f0" value="PK  hardware_id" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="cl_hardware">
+          <mxGeometry as="geometry" x="0" y="37" width="385" height="22" />
+        </mxCell>
+        <mxCell id="cl_hardware_f1" value="hardware_nombre" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="cl_hardware">
+          <mxGeometry as="geometry" x="0" y="57" width="385" height="22" />
+        </mxCell>
+        <mxCell id="cl_hardware_f2" value="hardware_sistema_operativo ?" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="cl_hardware">
+          <mxGeometry as="geometry" x="0" y="77" width="385" height="22" />
+        </mxCell>
+        <mxCell id="cl_hardware_f3" value="hardware_estado" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="cl_hardware">
+          <mxGeometry as="geometry" x="0" y="97" width="385" height="22" />
+        </mxCell>
+        <mxCell id="cl_hardware_sistema" value="cl_hardware_sistema" style="swimlane;html=0;startSize=34;rounded=1;fillColor=#087E8B;swimlaneFillColor=#F6F8FC;fontColor=#FFFFFF;strokeColor=#CAD3E2;align=left;spacingLeft=10;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="890" y="100" width="385" height="98" />
+        </mxCell>
+        <mxCell id="cl_hardware_sistema_f0" value="JPA  hardware_id [ND]" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="cl_hardware_sistema">
+          <mxGeometry as="geometry" x="0" y="37" width="385" height="22" />
+        </mxCell>
+        <mxCell id="cl_hardware_sistema_f1" value="JPA  sistema_id [ND]" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="cl_hardware_sistema">
+          <mxGeometry as="geometry" x="0" y="57" width="385" height="22" />
+        </mxCell>
+        <mxCell id="cl_modulo" value="cl_modulo" style="swimlane;html=0;startSize=34;rounded=1;fillColor=#087E8B;swimlaneFillColor=#F6F8FC;fontColor=#FFFFFF;strokeColor=#CAD3E2;align=left;spacingLeft=10;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="30" y="303" width="385" height="138" />
+        </mxCell>
+        <mxCell id="cl_modulo_f0" value="PK  modulo_id" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="cl_modulo">
+          <mxGeometry as="geometry" x="0" y="37" width="385" height="22" />
+        </mxCell>
+        <mxCell id="cl_modulo_f1" value="JPA  sistema_id ?" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="cl_modulo">
+          <mxGeometry as="geometry" x="0" y="57" width="385" height="22" />
+        </mxCell>
+        <mxCell id="cl_modulo_f2" value="modulo_nombre" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="cl_modulo">
+          <mxGeometry as="geometry" x="0" y="77" width="385" height="22" />
+        </mxCell>
+        <mxCell id="cl_modulo_f3" value="modulo_estado" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="cl_modulo">
+          <mxGeometry as="geometry" x="0" y="97" width="385" height="22" />
+        </mxCell>
+        <mxCell id="cl_sistema" value="cl_sistema" style="swimlane;html=0;startSize=34;rounded=1;fillColor=#087E8B;swimlaneFillColor=#F6F8FC;fontColor=#FFFFFF;strokeColor=#CAD3E2;align=left;spacingLeft=10;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="460" y="303" width="385" height="138" />
+        </mxCell>
+        <mxCell id="cl_sistema_f0" value="PK  sistema_id" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="cl_sistema">
+          <mxGeometry as="geometry" x="0" y="37" width="385" height="22" />
+        </mxCell>
+        <mxCell id="cl_sistema_f1" value="sistema_nombre" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="cl_sistema">
+          <mxGeometry as="geometry" x="0" y="57" width="385" height="22" />
+        </mxCell>
+        <mxCell id="cl_sistema_f2" value="sistema_descripcion ?" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="cl_sistema">
+          <mxGeometry as="geometry" x="0" y="77" width="385" height="22" />
+        </mxCell>
+        <mxCell id="cl_sistema_f3" value="sistema_estado" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="cl_sistema">
+          <mxGeometry as="geometry" x="0" y="97" width="385" height="22" />
+        </mxCell>
+        <mxCell id="e0" value="hardware_id [JPA] 1:N" edge="1" parent="1" source="cl_hardware" target="cl_hardware_sistema" style="edgeStyle=orthogonalEdgeStyle;rounded=1;endArrow=ERzeroToMany;startArrow=none;fontSize=10;labelBackgroundColor=#FFFFFF;strokeColor=#8B99B2;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="e1" value="sistema_id [JPA] 1:N" edge="1" parent="1" source="cl_sistema" target="cl_hardware_sistema" style="edgeStyle=orthogonalEdgeStyle;rounded=1;endArrow=ERzeroToMany;startArrow=none;fontSize=10;labelBackgroundColor=#FFFFFF;strokeColor=#8B99B2;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="e2" value="sistema_id [JPA] 1:N" edge="1" parent="1" source="cl_sistema" target="cl_modulo" style="edgeStyle=orthogonalEdgeStyle;rounded=1;endArrow=ERzeroToMany;startArrow=ERzeroToOne;fontSize=10;labelBackgroundColor=#FFFFFF;strokeColor=#8B99B2;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="legend" value="PK = clave declarada; SQL = FK en script; JPA = relación mapeada; REF/JDBC = referencia, sin FK física certificada. ? = nulo JPA; ND = DDL no disponible." style="text;html=0;align=left;fontSize=13;fontColor=#53627A;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="30" y="571" width="1250" height="35" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram name="Conocimiento · detalle y referencias externas">
+    <mxGraphModel page="1" pageWidth="1310" pageHeight="1453">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="title" value="Conocimiento · detalle y referencias externas" style="text;html=0;align=left;fontSize=28;fontStyle=1;fontColor=#101F50;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="30" y="20" width="1250" height="45" />
+        </mxCell>
+        <mxCell id="co_causa" value="co_causa" style="swimlane;html=0;startSize=34;rounded=1;fillColor=#6C49B8;swimlaneFillColor=#F6F8FC;fontColor=#FFFFFF;strokeColor=#CAD3E2;align=left;spacingLeft=10;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="30" y="100" width="385" height="138" />
+        </mxCell>
+        <mxCell id="co_causa_f0" value="PK  causa_id" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="co_causa">
+          <mxGeometry as="geometry" x="0" y="37" width="385" height="22" />
+        </mxCell>
+        <mxCell id="co_causa_f1" value="REF  conocimiento_id" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="co_causa">
+          <mxGeometry as="geometry" x="0" y="57" width="385" height="22" />
+        </mxCell>
+        <mxCell id="co_causa_f2" value="causa_descripcion" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="co_causa">
+          <mxGeometry as="geometry" x="0" y="77" width="385" height="22" />
+        </mxCell>
+        <mxCell id="co_causa_f3" value="causa_orden" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="co_causa">
+          <mxGeometry as="geometry" x="0" y="97" width="385" height="22" />
+        </mxCell>
+        <mxCell id="co_conocimiento" value="co_conocimiento" style="swimlane;html=0;startSize=34;rounded=1;fillColor=#6C49B8;swimlaneFillColor=#F6F8FC;fontColor=#FFFFFF;strokeColor=#CAD3E2;align=left;spacingLeft=10;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="460" y="100" width="385" height="318" />
+        </mxCell>
+        <mxCell id="co_conocimiento_f0" value="PK  conocimiento_id" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="co_conocimiento">
+          <mxGeometry as="geometry" x="0" y="37" width="385" height="22" />
+        </mxCell>
+        <mxCell id="co_conocimiento_f1" value="conocimiento_titulo" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="co_conocimiento">
+          <mxGeometry as="geometry" x="0" y="57" width="385" height="22" />
+        </mxCell>
+        <mxCell id="co_conocimiento_f2" value="conocimiento_descripcion" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="co_conocimiento">
+          <mxGeometry as="geometry" x="0" y="77" width="385" height="22" />
+        </mxCell>
+        <mxCell id="co_conocimiento_f3" value="conocimiento_estado" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="co_conocimiento">
+          <mxGeometry as="geometry" x="0" y="97" width="385" height="22" />
+        </mxCell>
+        <mxCell id="co_conocimiento_f4" value="JPA  hardware_id ?" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="co_conocimiento">
+          <mxGeometry as="geometry" x="0" y="117" width="385" height="22" />
+        </mxCell>
+        <mxCell id="co_conocimiento_f5" value="JPA  sistema_id ?" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="co_conocimiento">
+          <mxGeometry as="geometry" x="0" y="137" width="385" height="22" />
+        </mxCell>
+        <mxCell id="co_conocimiento_f6" value="JPA  modulo_id ?" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="co_conocimiento">
+          <mxGeometry as="geometry" x="0" y="157" width="385" height="22" />
+        </mxCell>
+        <mxCell id="co_conocimiento_f7" value="JPA  frecuencia_id ?" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="co_conocimiento">
+          <mxGeometry as="geometry" x="0" y="177" width="385" height="22" />
+        </mxCell>
+        <mxCell id="co_conocimiento_f8" value="conocimiento_comentario ?" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="co_conocimiento">
+          <mxGeometry as="geometry" x="0" y="197" width="385" height="22" />
+        </mxCell>
+        <mxCell id="co_conocimiento_f9" value="JPA  creado_por" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="co_conocimiento">
+          <mxGeometry as="geometry" x="0" y="217" width="385" height="22" />
+        </mxCell>
+        <mxCell id="co_conocimiento_f10" value="fecha_creacion" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="co_conocimiento">
+          <mxGeometry as="geometry" x="0" y="237" width="385" height="22" />
+        </mxCell>
+        <mxCell id="co_conocimiento_f11" value="JPA  modificado_por ?" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="co_conocimiento">
+          <mxGeometry as="geometry" x="0" y="257" width="385" height="22" />
+        </mxCell>
+        <mxCell id="co_conocimiento_f12" value="fecha_modificacion ?" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="co_conocimiento">
+          <mxGeometry as="geometry" x="0" y="277" width="385" height="22" />
+        </mxCell>
+        <mxCell id="co_conocimiento_busqueda" value="co_conocimiento_busqueda" style="swimlane;html=0;startSize=34;rounded=1;fillColor=#6C49B8;swimlaneFillColor=#F6F8FC;fontColor=#FFFFFF;strokeColor=#CAD3E2;align=left;spacingLeft=10;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="890" y="100" width="385" height="98" />
+        </mxCell>
+        <mxCell id="co_conocimiento_busqueda_f0" value="JDBC  conocimiento_id [ND]" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="co_conocimiento_busqueda">
+          <mxGeometry as="geometry" x="0" y="37" width="385" height="22" />
+        </mxCell>
+        <mxCell id="co_conocimiento_busqueda_f1" value="contenido_busqueda [ND]" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="co_conocimiento_busqueda">
+          <mxGeometry as="geometry" x="0" y="57" width="385" height="22" />
+        </mxCell>
+        <mxCell id="co_conocimiento_prueba" value="co_conocimiento_prueba" style="swimlane;html=0;startSize=34;rounded=1;fillColor=#6C49B8;swimlaneFillColor=#F6F8FC;fontColor=#FFFFFF;strokeColor=#CAD3E2;align=left;spacingLeft=10;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="30" y="483" width="385" height="118" />
+        </mxCell>
+        <mxCell id="co_conocimiento_prueba_f0" value="PK/REF  conocimiento_id" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="co_conocimiento_prueba">
+          <mxGeometry as="geometry" x="0" y="37" width="385" height="22" />
+        </mxCell>
+        <mxCell id="co_conocimiento_prueba_f1" value="PK/JPA  prueba_id" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="co_conocimiento_prueba">
+          <mxGeometry as="geometry" x="0" y="57" width="385" height="22" />
+        </mxCell>
+        <mxCell id="co_conocimiento_prueba_f2" value="prueba_orden" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="co_conocimiento_prueba">
+          <mxGeometry as="geometry" x="0" y="77" width="385" height="22" />
+        </mxCell>
+        <mxCell id="co_material_apoyo" value="co_material_apoyo" style="swimlane;html=0;startSize=34;rounded=1;fillColor=#6C49B8;swimlaneFillColor=#F6F8FC;fontColor=#FFFFFF;strokeColor=#CAD3E2;align=left;spacingLeft=10;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="460" y="483" width="385" height="178" />
+        </mxCell>
+        <mxCell id="co_material_apoyo_f0" value="PK  material_id" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="co_material_apoyo">
+          <mxGeometry as="geometry" x="0" y="37" width="385" height="22" />
+        </mxCell>
+        <mxCell id="co_material_apoyo_f1" value="REF  conocimiento_id ?" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="co_material_apoyo">
+          <mxGeometry as="geometry" x="0" y="57" width="385" height="22" />
+        </mxCell>
+        <mxCell id="co_material_apoyo_f2" value="REF  paso_id ?" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="co_material_apoyo">
+          <mxGeometry as="geometry" x="0" y="77" width="385" height="22" />
+        </mxCell>
+        <mxCell id="co_material_apoyo_f3" value="material_nombre" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="co_material_apoyo">
+          <mxGeometry as="geometry" x="0" y="97" width="385" height="22" />
+        </mxCell>
+        <mxCell id="co_material_apoyo_f4" value="material_tipo" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="co_material_apoyo">
+          <mxGeometry as="geometry" x="0" y="117" width="385" height="22" />
+        </mxCell>
+        <mxCell id="co_material_apoyo_f5" value="material_url" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="co_material_apoyo">
+          <mxGeometry as="geometry" x="0" y="137" width="385" height="22" />
+        </mxCell>
+        <mxCell id="co_prueba" value="co_prueba" style="swimlane;html=0;startSize=34;rounded=1;fillColor=#6C49B8;swimlaneFillColor=#F6F8FC;fontColor=#FFFFFF;strokeColor=#CAD3E2;align=left;spacingLeft=10;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="890" y="483" width="385" height="138" />
+        </mxCell>
+        <mxCell id="co_prueba_f0" value="PK  prueba_id" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="co_prueba">
+          <mxGeometry as="geometry" x="0" y="37" width="385" height="22" />
+        </mxCell>
+        <mxCell id="co_prueba_f1" value="prueba_descripcion" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="co_prueba">
+          <mxGeometry as="geometry" x="0" y="57" width="385" height="22" />
+        </mxCell>
+        <mxCell id="co_prueba_f2" value="prueba_resultado_esperado ?" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="co_prueba">
+          <mxGeometry as="geometry" x="0" y="77" width="385" height="22" />
+        </mxCell>
+        <mxCell id="co_prueba_f3" value="prueba_estado" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="co_prueba">
+          <mxGeometry as="geometry" x="0" y="97" width="385" height="22" />
+        </mxCell>
+        <mxCell id="co_sintoma" value="co_sintoma" style="swimlane;html=0;startSize=34;rounded=1;fillColor=#6C49B8;swimlaneFillColor=#F6F8FC;fontColor=#FFFFFF;strokeColor=#CAD3E2;align=left;spacingLeft=10;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="30" y="726" width="385" height="138" />
+        </mxCell>
+        <mxCell id="co_sintoma_f0" value="PK  sintoma_id" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="co_sintoma">
+          <mxGeometry as="geometry" x="0" y="37" width="385" height="22" />
+        </mxCell>
+        <mxCell id="co_sintoma_f1" value="REF  conocimiento_id" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="co_sintoma">
+          <mxGeometry as="geometry" x="0" y="57" width="385" height="22" />
+        </mxCell>
+        <mxCell id="co_sintoma_f2" value="sintoma_descripcion" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="co_sintoma">
+          <mxGeometry as="geometry" x="0" y="77" width="385" height="22" />
+        </mxCell>
+        <mxCell id="co_sintoma_f3" value="sintoma_orden" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="co_sintoma">
+          <mxGeometry as="geometry" x="0" y="97" width="385" height="22" />
+        </mxCell>
+        <mxCell id="co_solucion" value="co_solucion" style="swimlane;html=0;startSize=34;rounded=1;fillColor=#6C49B8;swimlaneFillColor=#F6F8FC;fontColor=#FFFFFF;strokeColor=#CAD3E2;align=left;spacingLeft=10;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="460" y="726" width="385" height="218" />
+        </mxCell>
+        <mxCell id="co_solucion_f0" value="PK  solucion_id" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="co_solucion">
+          <mxGeometry as="geometry" x="0" y="37" width="385" height="22" />
+        </mxCell>
+        <mxCell id="co_solucion_f1" value="REF  conocimiento_id" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="co_solucion">
+          <mxGeometry as="geometry" x="0" y="57" width="385" height="22" />
+        </mxCell>
+        <mxCell id="co_solucion_f2" value="solucion_descripcion" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="co_solucion">
+          <mxGeometry as="geometry" x="0" y="77" width="385" height="22" />
+        </mxCell>
+        <mxCell id="co_solucion_f3" value="solucion_tipo" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="co_solucion">
+          <mxGeometry as="geometry" x="0" y="97" width="385" height="22" />
+        </mxCell>
+        <mxCell id="co_solucion_f4" value="solucion_orden" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="co_solucion">
+          <mxGeometry as="geometry" x="0" y="117" width="385" height="22" />
+        </mxCell>
+        <mxCell id="co_solucion_f5" value="solucion_titulo ?" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="co_solucion">
+          <mxGeometry as="geometry" x="0" y="137" width="385" height="22" />
+        </mxCell>
+        <mxCell id="co_solucion_f6" value="solucion_estado" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="co_solucion">
+          <mxGeometry as="geometry" x="0" y="157" width="385" height="22" />
+        </mxCell>
+        <mxCell id="co_solucion_f7" value="solucion_autoservicio" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="co_solucion">
+          <mxGeometry as="geometry" x="0" y="177" width="385" height="22" />
+        </mxCell>
+        <mxCell id="co_solucion_asignacion" value="co_solucion_asignacion" style="swimlane;html=0;startSize=34;rounded=1;fillColor=#6C49B8;swimlaneFillColor=#F6F8FC;fontColor=#FFFFFF;strokeColor=#CAD3E2;align=left;spacingLeft=10;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="890" y="726" width="385" height="158" />
+        </mxCell>
+        <mxCell id="co_solucion_asignacion_f0" value="PK  asignacion_id" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="co_solucion_asignacion">
+          <mxGeometry as="geometry" x="0" y="37" width="385" height="22" />
+        </mxCell>
+        <mxCell id="co_solucion_asignacion_f1" value="JPA  solucion_id" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="co_solucion_asignacion">
+          <mxGeometry as="geometry" x="0" y="57" width="385" height="22" />
+        </mxCell>
+        <mxCell id="co_solucion_asignacion_f2" value="JPA  responsable_id ?" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="co_solucion_asignacion">
+          <mxGeometry as="geometry" x="0" y="77" width="385" height="22" />
+        </mxCell>
+        <mxCell id="co_solucion_asignacion_f3" value="JPA  departamento_id ?" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="co_solucion_asignacion">
+          <mxGeometry as="geometry" x="0" y="97" width="385" height="22" />
+        </mxCell>
+        <mxCell id="co_solucion_asignacion_f4" value="asignacion_principal" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="co_solucion_asignacion">
+          <mxGeometry as="geometry" x="0" y="117" width="385" height="22" />
+        </mxCell>
+        <mxCell id="ext_cl_frecuencia" value="↗ cl_frecuencia" style="swimlane;html=0;startSize=34;rounded=1;fillColor=#67758D;swimlaneFillColor=#F6F8FC;fontColor=#FFFFFF;strokeColor=#CAD3E2;align=left;spacingLeft=10;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="30" y="1039" width="385" height="80" />
+        </mxCell>
+        <mxCell id="ext_cl_frecuencia_f0" value="Referencia externa: frecuencia_id" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="ext_cl_frecuencia">
+          <mxGeometry as="geometry" x="0" y="37" width="385" height="22" />
+        </mxCell>
+        <mxCell id="ext_cl_hardware" value="↗ cl_hardware" style="swimlane;html=0;startSize=34;rounded=1;fillColor=#67758D;swimlaneFillColor=#F6F8FC;fontColor=#FFFFFF;strokeColor=#CAD3E2;align=left;spacingLeft=10;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="460" y="1039" width="385" height="80" />
+        </mxCell>
+        <mxCell id="ext_cl_hardware_f0" value="Referencia externa: hardware_id" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="ext_cl_hardware">
+          <mxGeometry as="geometry" x="0" y="37" width="385" height="22" />
+        </mxCell>
+        <mxCell id="ext_cl_modulo" value="↗ cl_modulo" style="swimlane;html=0;startSize=34;rounded=1;fillColor=#67758D;swimlaneFillColor=#F6F8FC;fontColor=#FFFFFF;strokeColor=#CAD3E2;align=left;spacingLeft=10;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="890" y="1039" width="385" height="80" />
+        </mxCell>
+        <mxCell id="ext_cl_modulo_f0" value="Referencia externa: modulo_id" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="ext_cl_modulo">
+          <mxGeometry as="geometry" x="0" y="37" width="385" height="22" />
+        </mxCell>
+        <mxCell id="ext_cl_sistema" value="↗ cl_sistema" style="swimlane;html=0;startSize=34;rounded=1;fillColor=#67758D;swimlaneFillColor=#F6F8FC;fontColor=#FFFFFF;strokeColor=#CAD3E2;align=left;spacingLeft=10;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="30" y="1147" width="385" height="80" />
+        </mxCell>
+        <mxCell id="ext_cl_sistema_f0" value="Referencia externa: sistema_id" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="ext_cl_sistema">
+          <mxGeometry as="geometry" x="0" y="37" width="385" height="22" />
+        </mxCell>
+        <mxCell id="ext_pr_paso" value="↗ pr_paso" style="swimlane;html=0;startSize=34;rounded=1;fillColor=#67758D;swimlaneFillColor=#F6F8FC;fontColor=#FFFFFF;strokeColor=#CAD3E2;align=left;spacingLeft=10;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="460" y="1147" width="385" height="80" />
+        </mxCell>
+        <mxCell id="ext_pr_paso_f0" value="Referencia externa: paso_id" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="ext_pr_paso">
+          <mxGeometry as="geometry" x="0" y="37" width="385" height="22" />
+        </mxCell>
+        <mxCell id="ext_u_departamento" value="↗ u_departamento" style="swimlane;html=0;startSize=34;rounded=1;fillColor=#67758D;swimlaneFillColor=#F6F8FC;fontColor=#FFFFFF;strokeColor=#CAD3E2;align=left;spacingLeft=10;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="890" y="1147" width="385" height="80" />
+        </mxCell>
+        <mxCell id="ext_u_departamento_f0" value="Referencia externa: departamento_id" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="ext_u_departamento">
+          <mxGeometry as="geometry" x="0" y="37" width="385" height="22" />
+        </mxCell>
+        <mxCell id="ext_u_responsable" value="↗ u_responsable" style="swimlane;html=0;startSize=34;rounded=1;fillColor=#67758D;swimlaneFillColor=#F6F8FC;fontColor=#FFFFFF;strokeColor=#CAD3E2;align=left;spacingLeft=10;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="30" y="1255" width="385" height="80" />
+        </mxCell>
+        <mxCell id="ext_u_responsable_f0" value="Referencia externa: responsable_id" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="ext_u_responsable">
+          <mxGeometry as="geometry" x="0" y="37" width="385" height="22" />
+        </mxCell>
+        <mxCell id="ext_u_usuario" value="↗ u_usuario" style="swimlane;html=0;startSize=34;rounded=1;fillColor=#67758D;swimlaneFillColor=#F6F8FC;fontColor=#FFFFFF;strokeColor=#CAD3E2;align=left;spacingLeft=10;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="460" y="1255" width="385" height="80" />
+        </mxCell>
+        <mxCell id="ext_u_usuario_f0" value="Referencia externa: usuario_id" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="ext_u_usuario">
+          <mxGeometry as="geometry" x="0" y="37" width="385" height="22" />
+        </mxCell>
+        <mxCell id="e0" value="hardware_id [JPA] 1:N" edge="1" parent="1" source="ext_cl_hardware" target="co_conocimiento" style="edgeStyle=orthogonalEdgeStyle;rounded=1;endArrow=ERzeroToMany;startArrow=ERzeroToOne;fontSize=10;labelBackgroundColor=#FFFFFF;strokeColor=#8B99B2;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="e1" value="sistema_id [JPA] 1:N" edge="1" parent="1" source="ext_cl_sistema" target="co_conocimiento" style="edgeStyle=orthogonalEdgeStyle;rounded=1;endArrow=ERzeroToMany;startArrow=ERzeroToOne;fontSize=10;labelBackgroundColor=#FFFFFF;strokeColor=#8B99B2;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="e2" value="modulo_id [JPA] 1:N" edge="1" parent="1" source="ext_cl_modulo" target="co_conocimiento" style="edgeStyle=orthogonalEdgeStyle;rounded=1;endArrow=ERzeroToMany;startArrow=ERzeroToOne;fontSize=10;labelBackgroundColor=#FFFFFF;strokeColor=#8B99B2;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="e3" value="frecuencia_id [JPA] 1:N" edge="1" parent="1" source="ext_cl_frecuencia" target="co_conocimiento" style="edgeStyle=orthogonalEdgeStyle;rounded=1;endArrow=ERzeroToMany;startArrow=ERzeroToOne;fontSize=10;labelBackgroundColor=#FFFFFF;strokeColor=#8B99B2;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="e4" value="creado_por [JPA] 1:N" edge="1" parent="1" source="ext_u_usuario" target="co_conocimiento" style="edgeStyle=orthogonalEdgeStyle;rounded=1;endArrow=ERzeroToMany;startArrow=ERone;fontSize=10;labelBackgroundColor=#FFFFFF;strokeColor=#8B99B2;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="e5" value="modificado_por [JPA] 1:N" edge="1" parent="1" source="ext_u_usuario" target="co_conocimiento" style="edgeStyle=orthogonalEdgeStyle;rounded=1;endArrow=ERzeroToMany;startArrow=ERzeroToOne;fontSize=10;labelBackgroundColor=#FFFFFF;strokeColor=#8B99B2;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="e6" value="conocimiento_id [REF] 1:N" edge="1" parent="1" source="co_conocimiento" target="co_sintoma" style="edgeStyle=orthogonalEdgeStyle;rounded=1;endArrow=ERzeroToMany;startArrow=ERone;fontSize=10;labelBackgroundColor=#FFFFFF;strokeColor=#8B99B2;dashed=1;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="e7" value="conocimiento_id [REF] 1:N" edge="1" parent="1" source="co_conocimiento" target="co_causa" style="edgeStyle=orthogonalEdgeStyle;rounded=1;endArrow=ERzeroToMany;startArrow=ERone;fontSize=10;labelBackgroundColor=#FFFFFF;strokeColor=#8B99B2;dashed=1;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="e8" value="conocimiento_id [REF] 1:N" edge="1" parent="1" source="co_conocimiento" target="co_solucion" style="edgeStyle=orthogonalEdgeStyle;rounded=1;endArrow=ERzeroToMany;startArrow=ERone;fontSize=10;labelBackgroundColor=#FFFFFF;strokeColor=#8B99B2;dashed=1;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="e9" value="conocimiento_id [REF] 1:N" edge="1" parent="1" source="co_conocimiento" target="co_material_apoyo" style="edgeStyle=orthogonalEdgeStyle;rounded=1;endArrow=ERzeroToMany;startArrow=ERzeroToOne;fontSize=10;labelBackgroundColor=#FFFFFF;strokeColor=#8B99B2;dashed=1;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="e10" value="conocimiento_id [REF] 1:N" edge="1" parent="1" source="co_conocimiento" target="co_conocimiento_prueba" style="edgeStyle=orthogonalEdgeStyle;rounded=1;endArrow=ERzeroToMany;startArrow=ERone;fontSize=10;labelBackgroundColor=#FFFFFF;strokeColor=#8B99B2;dashed=1;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="e11" value="prueba_id [JPA] 1:N" edge="1" parent="1" source="co_prueba" target="co_conocimiento_prueba" style="edgeStyle=orthogonalEdgeStyle;rounded=1;endArrow=ERzeroToMany;startArrow=ERone;fontSize=10;labelBackgroundColor=#FFFFFF;strokeColor=#8B99B2;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="e12" value="solucion_id [JPA] 1:N" edge="1" parent="1" source="co_solucion" target="co_solucion_asignacion" style="edgeStyle=orthogonalEdgeStyle;rounded=1;endArrow=ERzeroToMany;startArrow=ERone;fontSize=10;labelBackgroundColor=#FFFFFF;strokeColor=#8B99B2;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="e13" value="responsable_id [JPA] 1:N" edge="1" parent="1" source="ext_u_responsable" target="co_solucion_asignacion" style="edgeStyle=orthogonalEdgeStyle;rounded=1;endArrow=ERzeroToMany;startArrow=ERzeroToOne;fontSize=10;labelBackgroundColor=#FFFFFF;strokeColor=#8B99B2;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="e14" value="departamento_id [JPA] 1:N" edge="1" parent="1" source="ext_u_departamento" target="co_solucion_asignacion" style="edgeStyle=orthogonalEdgeStyle;rounded=1;endArrow=ERzeroToMany;startArrow=ERzeroToOne;fontSize=10;labelBackgroundColor=#FFFFFF;strokeColor=#8B99B2;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="e15" value="paso_id [REF] 1:N" edge="1" parent="1" source="ext_pr_paso" target="co_material_apoyo" style="edgeStyle=orthogonalEdgeStyle;rounded=1;endArrow=ERzeroToMany;startArrow=ERzeroToOne;fontSize=10;labelBackgroundColor=#FFFFFF;strokeColor=#8B99B2;dashed=1;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="e16" value="conocimiento_id [JDBC] 0..1 esperado" edge="1" parent="1" source="co_conocimiento" target="co_conocimiento_busqueda" style="edgeStyle=orthogonalEdgeStyle;rounded=1;endArrow=none;startArrow=none;fontSize=10;labelBackgroundColor=#FFFFFF;strokeColor=#8B99B2;dashed=1;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="legend" value="PK = clave declarada; SQL = FK en script; JPA = relación mapeada; REF/JDBC = referencia, sin FK física certificada. ? = nulo JPA; ND = DDL no disponible." style="text;html=0;align=left;fontSize=13;fontColor=#53627A;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="30" y="1398" width="1250" height="35" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram name="Procedimientos y ejecución · detalle y referencias externas">
+    <mxGraphModel page="1" pageWidth="1310" pageHeight="854">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="title" value="Procedimientos y ejecución · detalle y referencias externas" style="text;html=0;align=left;fontSize=28;fontStyle=1;fontColor=#101F50;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="30" y="20" width="1250" height="45" />
+        </mxCell>
+        <mxCell id="pr_paso" value="pr_paso" style="swimlane;html=0;startSize=34;rounded=1;fillColor=#AD6818;swimlaneFillColor=#F6F8FC;fontColor=#FFFFFF;strokeColor=#CAD3E2;align=left;spacingLeft=10;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="30" y="100" width="385" height="158" />
+        </mxCell>
+        <mxCell id="pr_paso_f0" value="PK  paso_id" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="pr_paso">
+          <mxGeometry as="geometry" x="0" y="37" width="385" height="22" />
+        </mxCell>
+        <mxCell id="pr_paso_f1" value="REF  procedimiento_id" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="pr_paso">
+          <mxGeometry as="geometry" x="0" y="57" width="385" height="22" />
+        </mxCell>
+        <mxCell id="pr_paso_f2" value="paso_orden" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="pr_paso">
+          <mxGeometry as="geometry" x="0" y="77" width="385" height="22" />
+        </mxCell>
+        <mxCell id="pr_paso_f3" value="paso_instruccion" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="pr_paso">
+          <mxGeometry as="geometry" x="0" y="97" width="385" height="22" />
+        </mxCell>
+        <mxCell id="pr_paso_f4" value="paso_es_critico" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="pr_paso">
+          <mxGeometry as="geometry" x="0" y="117" width="385" height="22" />
+        </mxCell>
+        <mxCell id="pr_procedimiento" value="pr_procedimiento" style="swimlane;html=0;startSize=34;rounded=1;fillColor=#AD6818;swimlaneFillColor=#F6F8FC;fontColor=#FFFFFF;strokeColor=#CAD3E2;align=left;spacingLeft=10;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="460" y="100" width="385" height="218" />
+        </mxCell>
+        <mxCell id="pr_procedimiento_f0" value="PK  procedimiento_id" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="pr_procedimiento">
+          <mxGeometry as="geometry" x="0" y="37" width="385" height="22" />
+        </mxCell>
+        <mxCell id="pr_procedimiento_f1" value="procedimiento_nombre" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="pr_procedimiento">
+          <mxGeometry as="geometry" x="0" y="57" width="385" height="22" />
+        </mxCell>
+        <mxCell id="pr_procedimiento_f2" value="procedimiento_descripcion ?" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="pr_procedimiento">
+          <mxGeometry as="geometry" x="0" y="77" width="385" height="22" />
+        </mxCell>
+        <mxCell id="pr_procedimiento_f3" value="procedimiento_estado" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="pr_procedimiento">
+          <mxGeometry as="geometry" x="0" y="97" width="385" height="22" />
+        </mxCell>
+        <mxCell id="pr_procedimiento_f4" value="JPA  creado_por" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="pr_procedimiento">
+          <mxGeometry as="geometry" x="0" y="117" width="385" height="22" />
+        </mxCell>
+        <mxCell id="pr_procedimiento_f5" value="fecha_creacion" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="pr_procedimiento">
+          <mxGeometry as="geometry" x="0" y="137" width="385" height="22" />
+        </mxCell>
+        <mxCell id="pr_procedimiento_f6" value="JPA  modificado_por ?" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="pr_procedimiento">
+          <mxGeometry as="geometry" x="0" y="157" width="385" height="22" />
+        </mxCell>
+        <mxCell id="pr_procedimiento_f7" value="fecha_modificacion ?" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="pr_procedimiento">
+          <mxGeometry as="geometry" x="0" y="177" width="385" height="22" />
+        </mxCell>
+        <mxCell id="se_ejecucion" value="se_ejecucion" style="swimlane;html=0;startSize=34;rounded=1;fillColor=#AD6818;swimlaneFillColor=#F6F8FC;fontColor=#FFFFFF;strokeColor=#CAD3E2;align=left;spacingLeft=10;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="890" y="100" width="385" height="198" />
+        </mxCell>
+        <mxCell id="se_ejecucion_f0" value="PK  ejecucion_id" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="se_ejecucion">
+          <mxGeometry as="geometry" x="0" y="37" width="385" height="22" />
+        </mxCell>
+        <mxCell id="se_ejecucion_f1" value="REF  procedimiento_id" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="se_ejecucion">
+          <mxGeometry as="geometry" x="0" y="57" width="385" height="22" />
+        </mxCell>
+        <mxCell id="se_ejecucion_f2" value="JPA  usuario_id" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="se_ejecucion">
+          <mxGeometry as="geometry" x="0" y="77" width="385" height="22" />
+        </mxCell>
+        <mxCell id="se_ejecucion_f3" value="ejecucion_fecha_inicio" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="se_ejecucion">
+          <mxGeometry as="geometry" x="0" y="97" width="385" height="22" />
+        </mxCell>
+        <mxCell id="se_ejecucion_f4" value="ejecucion_fecha_fin ?" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="se_ejecucion">
+          <mxGeometry as="geometry" x="0" y="117" width="385" height="22" />
+        </mxCell>
+        <mxCell id="se_ejecucion_f5" value="ejecucion_estado" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="se_ejecucion">
+          <mxGeometry as="geometry" x="0" y="137" width="385" height="22" />
+        </mxCell>
+        <mxCell id="se_ejecucion_f6" value="ejecucion_observaciones ?" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="se_ejecucion">
+          <mxGeometry as="geometry" x="0" y="157" width="385" height="22" />
+        </mxCell>
+        <mxCell id="se_ejecucion_paso" value="se_ejecucion_paso" style="swimlane;html=0;startSize=34;rounded=1;fillColor=#AD6818;swimlaneFillColor=#F6F8FC;fontColor=#FFFFFF;strokeColor=#CAD3E2;align=left;spacingLeft=10;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="30" y="383" width="385" height="178" />
+        </mxCell>
+        <mxCell id="se_ejecucion_paso_f0" value="PK  ejecucion_paso_id" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="se_ejecucion_paso">
+          <mxGeometry as="geometry" x="0" y="37" width="385" height="22" />
+        </mxCell>
+        <mxCell id="se_ejecucion_paso_f1" value="REF  ejecucion_id" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="se_ejecucion_paso">
+          <mxGeometry as="geometry" x="0" y="57" width="385" height="22" />
+        </mxCell>
+        <mxCell id="se_ejecucion_paso_f2" value="REF  paso_id" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="se_ejecucion_paso">
+          <mxGeometry as="geometry" x="0" y="77" width="385" height="22" />
+        </mxCell>
+        <mxCell id="se_ejecucion_paso_f3" value="ejecucion_paso_cumplido" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="se_ejecucion_paso">
+          <mxGeometry as="geometry" x="0" y="97" width="385" height="22" />
+        </mxCell>
+        <mxCell id="se_ejecucion_paso_f4" value="ejecucion_paso_observacion ?" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="se_ejecucion_paso">
+          <mxGeometry as="geometry" x="0" y="117" width="385" height="22" />
+        </mxCell>
+        <mxCell id="se_ejecucion_paso_f5" value="ejecucion_paso_fecha ?" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="se_ejecucion_paso">
+          <mxGeometry as="geometry" x="0" y="137" width="385" height="22" />
+        </mxCell>
+        <mxCell id="se_resultado" value="se_resultado" style="swimlane;html=0;startSize=34;rounded=1;fillColor=#AD6818;swimlaneFillColor=#F6F8FC;fontColor=#FFFFFF;strokeColor=#CAD3E2;align=left;spacingLeft=10;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="460" y="383" width="385" height="178" />
+        </mxCell>
+        <mxCell id="se_resultado_f0" value="PK  resultado_id" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="se_resultado">
+          <mxGeometry as="geometry" x="0" y="37" width="385" height="22" />
+        </mxCell>
+        <mxCell id="se_resultado_f1" value="REF  solucion_id" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="se_resultado">
+          <mxGeometry as="geometry" x="0" y="57" width="385" height="22" />
+        </mxCell>
+        <mxCell id="se_resultado_f2" value="REF  usuario_id" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="se_resultado">
+          <mxGeometry as="geometry" x="0" y="77" width="385" height="22" />
+        </mxCell>
+        <mxCell id="se_resultado_f3" value="resultado_funciono" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="se_resultado">
+          <mxGeometry as="geometry" x="0" y="97" width="385" height="22" />
+        </mxCell>
+        <mxCell id="se_resultado_f4" value="resultado_comentario ?" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="se_resultado">
+          <mxGeometry as="geometry" x="0" y="117" width="385" height="22" />
+        </mxCell>
+        <mxCell id="se_resultado_f5" value="resultado_fecha" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="se_resultado">
+          <mxGeometry as="geometry" x="0" y="137" width="385" height="22" />
+        </mxCell>
+        <mxCell id="ext_co_solucion" value="↗ co_solucion" style="swimlane;html=0;startSize=34;rounded=1;fillColor=#67758D;swimlaneFillColor=#F6F8FC;fontColor=#FFFFFF;strokeColor=#CAD3E2;align=left;spacingLeft=10;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="30" y="656" width="385" height="80" />
+        </mxCell>
+        <mxCell id="ext_co_solucion_f0" value="Referencia externa: solucion_id" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="ext_co_solucion">
+          <mxGeometry as="geometry" x="0" y="37" width="385" height="22" />
+        </mxCell>
+        <mxCell id="ext_u_usuario" value="↗ u_usuario" style="swimlane;html=0;startSize=34;rounded=1;fillColor=#67758D;swimlaneFillColor=#F6F8FC;fontColor=#FFFFFF;strokeColor=#CAD3E2;align=left;spacingLeft=10;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="460" y="656" width="385" height="80" />
+        </mxCell>
+        <mxCell id="ext_u_usuario_f0" value="Referencia externa: usuario_id" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="ext_u_usuario">
+          <mxGeometry as="geometry" x="0" y="37" width="385" height="22" />
+        </mxCell>
+        <mxCell id="e0" value="creado_por [JPA] 1:N" edge="1" parent="1" source="ext_u_usuario" target="pr_procedimiento" style="edgeStyle=orthogonalEdgeStyle;rounded=1;endArrow=ERzeroToMany;startArrow=ERone;fontSize=10;labelBackgroundColor=#FFFFFF;strokeColor=#8B99B2;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="e1" value="modificado_por [JPA] 1:N" edge="1" parent="1" source="ext_u_usuario" target="pr_procedimiento" style="edgeStyle=orthogonalEdgeStyle;rounded=1;endArrow=ERzeroToMany;startArrow=ERzeroToOne;fontSize=10;labelBackgroundColor=#FFFFFF;strokeColor=#8B99B2;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="e2" value="procedimiento_id [REF] 1:N" edge="1" parent="1" source="pr_procedimiento" target="pr_paso" style="edgeStyle=orthogonalEdgeStyle;rounded=1;endArrow=ERzeroToMany;startArrow=ERone;fontSize=10;labelBackgroundColor=#FFFFFF;strokeColor=#8B99B2;dashed=1;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="e3" value="procedimiento_id [REF] 1:N" edge="1" parent="1" source="pr_procedimiento" target="se_ejecucion" style="edgeStyle=orthogonalEdgeStyle;rounded=1;endArrow=ERzeroToMany;startArrow=ERone;fontSize=10;labelBackgroundColor=#FFFFFF;strokeColor=#8B99B2;dashed=1;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="e4" value="usuario_id [JPA] 1:N" edge="1" parent="1" source="ext_u_usuario" target="se_ejecucion" style="edgeStyle=orthogonalEdgeStyle;rounded=1;endArrow=ERzeroToMany;startArrow=ERone;fontSize=10;labelBackgroundColor=#FFFFFF;strokeColor=#8B99B2;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="e5" value="ejecucion_id [REF] 1:N" edge="1" parent="1" source="se_ejecucion" target="se_ejecucion_paso" style="edgeStyle=orthogonalEdgeStyle;rounded=1;endArrow=ERzeroToMany;startArrow=ERone;fontSize=10;labelBackgroundColor=#FFFFFF;strokeColor=#8B99B2;dashed=1;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="e6" value="paso_id [REF] 1:N" edge="1" parent="1" source="pr_paso" target="se_ejecucion_paso" style="edgeStyle=orthogonalEdgeStyle;rounded=1;endArrow=ERzeroToMany;startArrow=ERone;fontSize=10;labelBackgroundColor=#FFFFFF;strokeColor=#8B99B2;dashed=1;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="e7" value="solucion_id [REF] 1:N" edge="1" parent="1" source="ext_co_solucion" target="se_resultado" style="edgeStyle=orthogonalEdgeStyle;rounded=1;endArrow=ERzeroToMany;startArrow=ERone;fontSize=10;labelBackgroundColor=#FFFFFF;strokeColor=#8B99B2;dashed=1;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="e8" value="usuario_id [REF] 1:N" edge="1" parent="1" source="ext_u_usuario" target="se_resultado" style="edgeStyle=orthogonalEdgeStyle;rounded=1;endArrow=ERzeroToMany;startArrow=ERone;fontSize=10;labelBackgroundColor=#FFFFFF;strokeColor=#8B99B2;dashed=1;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="legend" value="PK = clave declarada; SQL = FK en script; JPA = relación mapeada; REF/JDBC = referencia, sin FK física certificada. ? = nulo JPA; ND = DDL no disponible." style="text;html=0;align=left;fontSize=13;fontColor=#53627A;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="30" y="799" width="1250" height="35" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram name="Tickets · detalle y referencias externas">
+    <mxGraphModel page="1" pageWidth="1310" pageHeight="1162">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="title" value="Tickets · detalle y referencias externas" style="text;html=0;align=left;fontSize=28;fontStyle=1;fontColor=#101F50;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="30" y="20" width="1250" height="45" />
+        </mxCell>
+        <mxCell id="ticket" value="ticket" style="swimlane;html=0;startSize=34;rounded=1;fillColor=#B83D60;swimlaneFillColor=#F6F8FC;fontColor=#FFFFFF;strokeColor=#CAD3E2;align=left;spacingLeft=10;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="30" y="100" width="385" height="398" />
+        </mxCell>
+        <mxCell id="ticket_f0" value="PK  id" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="ticket">
+          <mxGeometry as="geometry" x="0" y="37" width="385" height="22" />
+        </mxCell>
+        <mxCell id="ticket_f1" value="codigo" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="ticket">
+          <mxGeometry as="geometry" x="0" y="57" width="385" height="22" />
+        </mxCell>
+        <mxCell id="ticket_f2" value="titulo" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="ticket">
+          <mxGeometry as="geometry" x="0" y="77" width="385" height="22" />
+        </mxCell>
+        <mxCell id="ticket_f3" value="descripcion" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="ticket">
+          <mxGeometry as="geometry" x="0" y="97" width="385" height="22" />
+        </mxCell>
+        <mxCell id="ticket_f4" value="estado" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="ticket">
+          <mxGeometry as="geometry" x="0" y="117" width="385" height="22" />
+        </mxCell>
+        <mxCell id="ticket_f5" value="prioridad" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="ticket">
+          <mxGeometry as="geometry" x="0" y="137" width="385" height="22" />
+        </mxCell>
+        <mxCell id="ticket_f6" value="REF  solicitante_id" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="ticket">
+          <mxGeometry as="geometry" x="0" y="157" width="385" height="22" />
+        </mxCell>
+        <mxCell id="ticket_f7" value="REF  asignado_id ?" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="ticket">
+          <mxGeometry as="geometry" x="0" y="177" width="385" height="22" />
+        </mxCell>
+        <mxCell id="ticket_f8" value="REF  hardware_id ?" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="ticket">
+          <mxGeometry as="geometry" x="0" y="197" width="385" height="22" />
+        </mxCell>
+        <mxCell id="ticket_f9" value="REF  sistema_id ?" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="ticket">
+          <mxGeometry as="geometry" x="0" y="217" width="385" height="22" />
+        </mxCell>
+        <mxCell id="ticket_f10" value="REF  modulo_id ?" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="ticket">
+          <mxGeometry as="geometry" x="0" y="237" width="385" height="22" />
+        </mxCell>
+        <mxCell id="ticket_f11" value="REF  conocimiento_id ?" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="ticket">
+          <mxGeometry as="geometry" x="0" y="257" width="385" height="22" />
+        </mxCell>
+        <mxCell id="ticket_f12" value="solucion ?" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="ticket">
+          <mxGeometry as="geometry" x="0" y="277" width="385" height="22" />
+        </mxCell>
+        <mxCell id="ticket_f13" value="fecha_creacion" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="ticket">
+          <mxGeometry as="geometry" x="0" y="297" width="385" height="22" />
+        </mxCell>
+        <mxCell id="ticket_f14" value="fecha_actualizacion" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="ticket">
+          <mxGeometry as="geometry" x="0" y="317" width="385" height="22" />
+        </mxCell>
+        <mxCell id="ticket_f15" value="fecha_resolucion ?" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="ticket">
+          <mxGeometry as="geometry" x="0" y="337" width="385" height="22" />
+        </mxCell>
+        <mxCell id="ticket_f16" value="fecha_cierre ?" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="ticket">
+          <mxGeometry as="geometry" x="0" y="357" width="385" height="22" />
+        </mxCell>
+        <mxCell id="ticket_adjunto" value="ticket_adjunto" style="swimlane;html=0;startSize=34;rounded=1;fillColor=#B83D60;swimlaneFillColor=#F6F8FC;fontColor=#FFFFFF;strokeColor=#CAD3E2;align=left;spacingLeft=10;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="460" y="100" width="385" height="238" />
+        </mxCell>
+        <mxCell id="ticket_adjunto_f0" value="PK  id" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="ticket_adjunto">
+          <mxGeometry as="geometry" x="0" y="37" width="385" height="22" />
+        </mxCell>
+        <mxCell id="ticket_adjunto_f1" value="SQL  ticket_id" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="ticket_adjunto">
+          <mxGeometry as="geometry" x="0" y="57" width="385" height="22" />
+        </mxCell>
+        <mxCell id="ticket_adjunto_f2" value="SQL  comentario_id ?" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="ticket_adjunto">
+          <mxGeometry as="geometry" x="0" y="77" width="385" height="22" />
+        </mxCell>
+        <mxCell id="ticket_adjunto_f3" value="nombre" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="ticket_adjunto">
+          <mxGeometry as="geometry" x="0" y="97" width="385" height="22" />
+        </mxCell>
+        <mxCell id="ticket_adjunto_f4" value="mime" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="ticket_adjunto">
+          <mxGeometry as="geometry" x="0" y="117" width="385" height="22" />
+        </mxCell>
+        <mxCell id="ticket_adjunto_f5" value="tamano" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="ticket_adjunto">
+          <mxGeometry as="geometry" x="0" y="137" width="385" height="22" />
+        </mxCell>
+        <mxCell id="ticket_adjunto_f6" value="referencia" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="ticket_adjunto">
+          <mxGeometry as="geometry" x="0" y="157" width="385" height="22" />
+        </mxCell>
+        <mxCell id="ticket_adjunto_f7" value="REF  autor_id" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="ticket_adjunto">
+          <mxGeometry as="geometry" x="0" y="177" width="385" height="22" />
+        </mxCell>
+        <mxCell id="ticket_adjunto_f8" value="fecha" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="ticket_adjunto">
+          <mxGeometry as="geometry" x="0" y="197" width="385" height="22" />
+        </mxCell>
+        <mxCell id="ticket_comentario" value="ticket_comentario" style="swimlane;html=0;startSize=34;rounded=1;fillColor=#B83D60;swimlaneFillColor=#F6F8FC;fontColor=#FFFFFF;strokeColor=#CAD3E2;align=left;spacingLeft=10;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="890" y="100" width="385" height="178" />
+        </mxCell>
+        <mxCell id="ticket_comentario_f0" value="PK  id" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="ticket_comentario">
+          <mxGeometry as="geometry" x="0" y="37" width="385" height="22" />
+        </mxCell>
+        <mxCell id="ticket_comentario_f1" value="SQL  ticket_id" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="ticket_comentario">
+          <mxGeometry as="geometry" x="0" y="57" width="385" height="22" />
+        </mxCell>
+        <mxCell id="ticket_comentario_f2" value="REF  autor_id" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="ticket_comentario">
+          <mxGeometry as="geometry" x="0" y="77" width="385" height="22" />
+        </mxCell>
+        <mxCell id="ticket_comentario_f3" value="texto" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="ticket_comentario">
+          <mxGeometry as="geometry" x="0" y="97" width="385" height="22" />
+        </mxCell>
+        <mxCell id="ticket_comentario_f4" value="interno" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="ticket_comentario">
+          <mxGeometry as="geometry" x="0" y="117" width="385" height="22" />
+        </mxCell>
+        <mxCell id="ticket_comentario_f5" value="fecha" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="ticket_comentario">
+          <mxGeometry as="geometry" x="0" y="137" width="385" height="22" />
+        </mxCell>
+        <mxCell id="ticket_etiqueta" value="ticket_etiqueta" style="swimlane;html=0;startSize=34;rounded=1;fillColor=#B83D60;swimlaneFillColor=#F6F8FC;fontColor=#FFFFFF;strokeColor=#CAD3E2;align=left;spacingLeft=10;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="30" y="563" width="385" height="158" />
+        </mxCell>
+        <mxCell id="ticket_etiqueta_f0" value="PK  id" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="ticket_etiqueta">
+          <mxGeometry as="geometry" x="0" y="37" width="385" height="22" />
+        </mxCell>
+        <mxCell id="ticket_etiqueta_f1" value="nombre" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="ticket_etiqueta">
+          <mxGeometry as="geometry" x="0" y="57" width="385" height="22" />
+        </mxCell>
+        <mxCell id="ticket_etiqueta_f2" value="color" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="ticket_etiqueta">
+          <mxGeometry as="geometry" x="0" y="77" width="385" height="22" />
+        </mxCell>
+        <mxCell id="ticket_etiqueta_f3" value="activa" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="ticket_etiqueta">
+          <mxGeometry as="geometry" x="0" y="97" width="385" height="22" />
+        </mxCell>
+        <mxCell id="ticket_etiqueta_f4" value="nivel" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="ticket_etiqueta">
+          <mxGeometry as="geometry" x="0" y="117" width="385" height="22" />
+        </mxCell>
+        <mxCell id="ticket_historial_estado" value="ticket_historial_estado" style="swimlane;html=0;startSize=34;rounded=1;fillColor=#B83D60;swimlaneFillColor=#F6F8FC;fontColor=#FFFFFF;strokeColor=#CAD3E2;align=left;spacingLeft=10;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="460" y="563" width="385" height="198" />
+        </mxCell>
+        <mxCell id="ticket_historial_estado_f0" value="PK  id" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="ticket_historial_estado">
+          <mxGeometry as="geometry" x="0" y="37" width="385" height="22" />
+        </mxCell>
+        <mxCell id="ticket_historial_estado_f1" value="SQL  ticket_id" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="ticket_historial_estado">
+          <mxGeometry as="geometry" x="0" y="57" width="385" height="22" />
+        </mxCell>
+        <mxCell id="ticket_historial_estado_f2" value="estado_anterior ?" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="ticket_historial_estado">
+          <mxGeometry as="geometry" x="0" y="77" width="385" height="22" />
+        </mxCell>
+        <mxCell id="ticket_historial_estado_f3" value="estado_nuevo" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="ticket_historial_estado">
+          <mxGeometry as="geometry" x="0" y="97" width="385" height="22" />
+        </mxCell>
+        <mxCell id="ticket_historial_estado_f4" value="REF  usuario_id" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="ticket_historial_estado">
+          <mxGeometry as="geometry" x="0" y="117" width="385" height="22" />
+        </mxCell>
+        <mxCell id="ticket_historial_estado_f5" value="motivo ?" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="ticket_historial_estado">
+          <mxGeometry as="geometry" x="0" y="137" width="385" height="22" />
+        </mxCell>
+        <mxCell id="ticket_historial_estado_f6" value="fecha" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="ticket_historial_estado">
+          <mxGeometry as="geometry" x="0" y="157" width="385" height="22" />
+        </mxCell>
+        <mxCell id="ticket_ticket_etiqueta" value="ticket_ticket_etiqueta" style="swimlane;html=0;startSize=34;rounded=1;fillColor=#B83D60;swimlaneFillColor=#F6F8FC;fontColor=#FFFFFF;strokeColor=#CAD3E2;align=left;spacingLeft=10;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="890" y="563" width="385" height="98" />
+        </mxCell>
+        <mxCell id="ticket_ticket_etiqueta_f0" value="PK/SQL  ticket_id" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="ticket_ticket_etiqueta">
+          <mxGeometry as="geometry" x="0" y="37" width="385" height="22" />
+        </mxCell>
+        <mxCell id="ticket_ticket_etiqueta_f1" value="PK/SQL  etiqueta_id" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="ticket_ticket_etiqueta">
+          <mxGeometry as="geometry" x="0" y="57" width="385" height="22" />
+        </mxCell>
+        <mxCell id="ext_cl_hardware" value="↗ cl_hardware" style="swimlane;html=0;startSize=34;rounded=1;fillColor=#67758D;swimlaneFillColor=#F6F8FC;fontColor=#FFFFFF;strokeColor=#CAD3E2;align=left;spacingLeft=10;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="30" y="856" width="385" height="80" />
+        </mxCell>
+        <mxCell id="ext_cl_hardware_f0" value="Referencia externa: hardware_id" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="ext_cl_hardware">
+          <mxGeometry as="geometry" x="0" y="37" width="385" height="22" />
+        </mxCell>
+        <mxCell id="ext_cl_modulo" value="↗ cl_modulo" style="swimlane;html=0;startSize=34;rounded=1;fillColor=#67758D;swimlaneFillColor=#F6F8FC;fontColor=#FFFFFF;strokeColor=#CAD3E2;align=left;spacingLeft=10;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="460" y="856" width="385" height="80" />
+        </mxCell>
+        <mxCell id="ext_cl_modulo_f0" value="Referencia externa: modulo_id" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="ext_cl_modulo">
+          <mxGeometry as="geometry" x="0" y="37" width="385" height="22" />
+        </mxCell>
+        <mxCell id="ext_cl_sistema" value="↗ cl_sistema" style="swimlane;html=0;startSize=34;rounded=1;fillColor=#67758D;swimlaneFillColor=#F6F8FC;fontColor=#FFFFFF;strokeColor=#CAD3E2;align=left;spacingLeft=10;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="890" y="856" width="385" height="80" />
+        </mxCell>
+        <mxCell id="ext_cl_sistema_f0" value="Referencia externa: sistema_id" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="ext_cl_sistema">
+          <mxGeometry as="geometry" x="0" y="37" width="385" height="22" />
+        </mxCell>
+        <mxCell id="ext_co_conocimiento" value="↗ co_conocimiento" style="swimlane;html=0;startSize=34;rounded=1;fillColor=#67758D;swimlaneFillColor=#F6F8FC;fontColor=#FFFFFF;strokeColor=#CAD3E2;align=left;spacingLeft=10;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="30" y="964" width="385" height="80" />
+        </mxCell>
+        <mxCell id="ext_co_conocimiento_f0" value="Referencia externa: conocimiento_id" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="ext_co_conocimiento">
+          <mxGeometry as="geometry" x="0" y="37" width="385" height="22" />
+        </mxCell>
+        <mxCell id="ext_u_usuario" value="↗ u_usuario" style="swimlane;html=0;startSize=34;rounded=1;fillColor=#67758D;swimlaneFillColor=#F6F8FC;fontColor=#FFFFFF;strokeColor=#CAD3E2;align=left;spacingLeft=10;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="460" y="964" width="385" height="80" />
+        </mxCell>
+        <mxCell id="ext_u_usuario_f0" value="Referencia externa: usuario_id" style="text;html=0;align=left;spacingLeft=10;fontSize=12;fontColor=#172744;" vertex="1" parent="ext_u_usuario">
+          <mxGeometry as="geometry" x="0" y="37" width="385" height="22" />
+        </mxCell>
+        <mxCell id="e0" value="solicitante_id [REF] 1:N" edge="1" parent="1" source="ext_u_usuario" target="ticket" style="edgeStyle=orthogonalEdgeStyle;rounded=1;endArrow=ERzeroToMany;startArrow=ERone;fontSize=10;labelBackgroundColor=#FFFFFF;strokeColor=#8B99B2;dashed=1;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="e1" value="asignado_id [REF] 1:N" edge="1" parent="1" source="ext_u_usuario" target="ticket" style="edgeStyle=orthogonalEdgeStyle;rounded=1;endArrow=ERzeroToMany;startArrow=ERzeroToOne;fontSize=10;labelBackgroundColor=#FFFFFF;strokeColor=#8B99B2;dashed=1;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="e2" value="hardware_id [REF] 1:N" edge="1" parent="1" source="ext_cl_hardware" target="ticket" style="edgeStyle=orthogonalEdgeStyle;rounded=1;endArrow=ERzeroToMany;startArrow=ERzeroToOne;fontSize=10;labelBackgroundColor=#FFFFFF;strokeColor=#8B99B2;dashed=1;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="e3" value="sistema_id [REF] 1:N" edge="1" parent="1" source="ext_cl_sistema" target="ticket" style="edgeStyle=orthogonalEdgeStyle;rounded=1;endArrow=ERzeroToMany;startArrow=ERzeroToOne;fontSize=10;labelBackgroundColor=#FFFFFF;strokeColor=#8B99B2;dashed=1;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="e4" value="modulo_id [REF] 1:N" edge="1" parent="1" source="ext_cl_modulo" target="ticket" style="edgeStyle=orthogonalEdgeStyle;rounded=1;endArrow=ERzeroToMany;startArrow=ERzeroToOne;fontSize=10;labelBackgroundColor=#FFFFFF;strokeColor=#8B99B2;dashed=1;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="e5" value="conocimiento_id [REF] 1:N" edge="1" parent="1" source="ext_co_conocimiento" target="ticket" style="edgeStyle=orthogonalEdgeStyle;rounded=1;endArrow=ERzeroToMany;startArrow=ERzeroToOne;fontSize=10;labelBackgroundColor=#FFFFFF;strokeColor=#8B99B2;dashed=1;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="e6" value="ticket_id [SQL] 1:N" edge="1" parent="1" source="ticket" target="ticket_comentario" style="edgeStyle=orthogonalEdgeStyle;rounded=1;endArrow=ERzeroToMany;startArrow=ERone;fontSize=10;labelBackgroundColor=#FFFFFF;strokeColor=#8B99B2;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="e7" value="ticket_id [SQL] 1:N" edge="1" parent="1" source="ticket" target="ticket_historial_estado" style="edgeStyle=orthogonalEdgeStyle;rounded=1;endArrow=ERzeroToMany;startArrow=ERone;fontSize=10;labelBackgroundColor=#FFFFFF;strokeColor=#8B99B2;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="e8" value="ticket_id [SQL] 1:N" edge="1" parent="1" source="ticket" target="ticket_adjunto" style="edgeStyle=orthogonalEdgeStyle;rounded=1;endArrow=ERzeroToMany;startArrow=ERone;fontSize=10;labelBackgroundColor=#FFFFFF;strokeColor=#8B99B2;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="e9" value="ticket_id [SQL] 1:N" edge="1" parent="1" source="ticket" target="ticket_ticket_etiqueta" style="edgeStyle=orthogonalEdgeStyle;rounded=1;endArrow=ERzeroToMany;startArrow=ERone;fontSize=10;labelBackgroundColor=#FFFFFF;strokeColor=#8B99B2;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="e10" value="autor_id [REF] 1:N" edge="1" parent="1" source="ext_u_usuario" target="ticket_comentario" style="edgeStyle=orthogonalEdgeStyle;rounded=1;endArrow=ERzeroToMany;startArrow=ERone;fontSize=10;labelBackgroundColor=#FFFFFF;strokeColor=#8B99B2;dashed=1;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="e11" value="autor_id [REF] 1:N" edge="1" parent="1" source="ext_u_usuario" target="ticket_adjunto" style="edgeStyle=orthogonalEdgeStyle;rounded=1;endArrow=ERzeroToMany;startArrow=ERone;fontSize=10;labelBackgroundColor=#FFFFFF;strokeColor=#8B99B2;dashed=1;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="e12" value="usuario_id [REF] 1:N" edge="1" parent="1" source="ext_u_usuario" target="ticket_historial_estado" style="edgeStyle=orthogonalEdgeStyle;rounded=1;endArrow=ERzeroToMany;startArrow=ERone;fontSize=10;labelBackgroundColor=#FFFFFF;strokeColor=#8B99B2;dashed=1;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="e13" value="comentario_id [SQL] 1:N" edge="1" parent="1" source="ticket_comentario" target="ticket_adjunto" style="edgeStyle=orthogonalEdgeStyle;rounded=1;endArrow=ERzeroToMany;startArrow=ERzeroToOne;fontSize=10;labelBackgroundColor=#FFFFFF;strokeColor=#8B99B2;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="e14" value="etiqueta_id [SQL] 1:N" edge="1" parent="1" source="ticket_etiqueta" target="ticket_ticket_etiqueta" style="edgeStyle=orthogonalEdgeStyle;rounded=1;endArrow=ERzeroToMany;startArrow=ERone;fontSize=10;labelBackgroundColor=#FFFFFF;strokeColor=#8B99B2;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="legend" value="PK = clave declarada; SQL = FK en script; JPA = relación mapeada; REF/JDBC = referencia, sin FK física certificada. ? = nulo JPA; ND = DDL no disponible." style="text;html=0;align=left;fontSize=13;fontColor=#53627A;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="30" y="1107" width="1250" height="35" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

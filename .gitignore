@@ -27,3 +27,30 @@ Thumbs.db
 .env.*
 !.env.example
 dima-bug-backend/src/main/resources/application.properties
+
+# Evidencias locales y archivos generados (las fuentes vigentes están en docs/)
+__pycache__/
+*.py[cod]
+*.log
+*.hprof
+*.jfr
+/entregables/
+/entrega_duoc/
+
+# Credenciales, almacenes de claves y respaldos privados
+*.pem
+*.key
+*.p12
+*.pfx
+*.jks
+*.keystore
+credentials*.json
+client_secret*.json
+tokens*.json
+*.sql.gz
+*.sql.zip
+*dump*.sql
+*.bak
+*.backup
+*.sqlite
+*.mv.db

@@ -1,0 +1,2678 @@
+{
+  "tables": {
+    "cl_frecuencia": {
+      "origin": "JPA",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/catalogo/infrastructure/persistence/entity/FrecuenciaEntity.java",
+      "fields": [
+        {
+          "name": "frecuencia_id",
+          "java": "Integer",
+          "nullable": false,
+          "length": null,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": true,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/catalogo/infrastructure/persistence/entity/FrecuenciaEntity.java"
+        },
+        {
+          "name": "frecuencia_nombre",
+          "java": "String",
+          "nullable": false,
+          "length": 50,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/catalogo/infrastructure/persistence/entity/FrecuenciaEntity.java"
+        },
+        {
+          "name": "frecuencia_orden",
+          "java": "Integer",
+          "nullable": false,
+          "length": null,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/catalogo/infrastructure/persistence/entity/FrecuenciaEntity.java"
+        },
+        {
+          "name": "frecuencia_estado",
+          "java": "boolean",
+          "nullable": false,
+          "length": null,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/catalogo/infrastructure/persistence/entity/FrecuenciaEntity.java"
+        }
+      ]
+    },
+    "cl_hardware": {
+      "origin": "JPA",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/catalogo/infrastructure/persistence/entity/HardwareEntity.java",
+      "fields": [
+        {
+          "name": "hardware_id",
+          "java": "Integer",
+          "nullable": false,
+          "length": null,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": true,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/catalogo/infrastructure/persistence/entity/HardwareEntity.java"
+        },
+        {
+          "name": "hardware_nombre",
+          "java": "String",
+          "nullable": false,
+          "length": 100,
+          "column_definition": null,
+          "unique": true,
+          "jpa_relation": false,
+          "version": false,
+          "pk": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/catalogo/infrastructure/persistence/entity/HardwareEntity.java"
+        },
+        {
+          "name": "hardware_sistema_operativo",
+          "java": "String",
+          "nullable": true,
+          "length": 150,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/catalogo/infrastructure/persistence/entity/HardwareEntity.java"
+        },
+        {
+          "name": "hardware_estado",
+          "java": "boolean",
+          "nullable": false,
+          "length": null,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/catalogo/infrastructure/persistence/entity/HardwareEntity.java"
+        }
+      ]
+    },
+    "cl_modulo": {
+      "origin": "JPA",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/catalogo/infrastructure/persistence/entity/ModuloEntity.java",
+      "fields": [
+        {
+          "name": "modulo_id",
+          "java": "Integer",
+          "nullable": false,
+          "length": null,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": true,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/catalogo/infrastructure/persistence/entity/ModuloEntity.java"
+        },
+        {
+          "name": "sistema_id",
+          "java": "SistemaEntity",
+          "nullable": true,
+          "length": null,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": true,
+          "version": false,
+          "pk": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/catalogo/infrastructure/persistence/entity/ModuloEntity.java"
+        },
+        {
+          "name": "modulo_nombre",
+          "java": "String",
+          "nullable": false,
+          "length": 120,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/catalogo/infrastructure/persistence/entity/ModuloEntity.java"
+        },
+        {
+          "name": "modulo_estado",
+          "java": "boolean",
+          "nullable": false,
+          "length": null,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/catalogo/infrastructure/persistence/entity/ModuloEntity.java"
+        }
+      ]
+    },
+    "cl_sistema": {
+      "origin": "JPA",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/catalogo/infrastructure/persistence/entity/SistemaEntity.java",
+      "fields": [
+        {
+          "name": "sistema_id",
+          "java": "Integer",
+          "nullable": false,
+          "length": null,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": true,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/catalogo/infrastructure/persistence/entity/SistemaEntity.java"
+        },
+        {
+          "name": "sistema_nombre",
+          "java": "String",
+          "nullable": false,
+          "length": 100,
+          "column_definition": null,
+          "unique": true,
+          "jpa_relation": false,
+          "version": false,
+          "pk": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/catalogo/infrastructure/persistence/entity/SistemaEntity.java"
+        },
+        {
+          "name": "sistema_descripcion",
+          "java": "String",
+          "nullable": true,
+          "length": 255,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/catalogo/infrastructure/persistence/entity/SistemaEntity.java"
+        },
+        {
+          "name": "sistema_estado",
+          "java": "boolean",
+          "nullable": false,
+          "length": null,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/catalogo/infrastructure/persistence/entity/SistemaEntity.java"
+        }
+      ]
+    },
+    "co_causa": {
+      "origin": "JPA",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/infrastructure/persistence/entity/CausaEntity.java",
+      "fields": [
+        {
+          "name": "causa_id",
+          "java": "Integer",
+          "nullable": false,
+          "length": null,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": true,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/infrastructure/persistence/entity/CausaEntity.java"
+        },
+        {
+          "name": "conocimiento_id",
+          "java": "Integer",
+          "nullable": false,
+          "length": null,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/infrastructure/persistence/entity/CausaEntity.java"
+        },
+        {
+          "name": "causa_descripcion",
+          "java": "String",
+          "nullable": false,
+          "length": 300,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/infrastructure/persistence/entity/CausaEntity.java"
+        },
+        {
+          "name": "causa_orden",
+          "java": "Integer",
+          "nullable": false,
+          "length": null,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/infrastructure/persistence/entity/CausaEntity.java"
+        }
+      ]
+    },
+    "co_conocimiento": {
+      "origin": "JPA",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/infrastructure/persistence/entity/ConocimientoEntity.java",
+      "fields": [
+        {
+          "name": "conocimiento_id",
+          "java": "Integer",
+          "nullable": false,
+          "length": null,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": true,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/infrastructure/persistence/entity/ConocimientoEntity.java"
+        },
+        {
+          "name": "conocimiento_titulo",
+          "java": "String",
+          "nullable": false,
+          "length": null,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/infrastructure/persistence/entity/ConocimientoEntity.java"
+        },
+        {
+          "name": "conocimiento_descripcion",
+          "java": "String",
+          "nullable": false,
+          "length": null,
+          "column_definition": "TEXT",
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/infrastructure/persistence/entity/ConocimientoEntity.java"
+        },
+        {
+          "name": "conocimiento_estado",
+          "java": "EstadoConocimiento",
+          "nullable": false,
+          "length": null,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/infrastructure/persistence/entity/ConocimientoEntity.java"
+        },
+        {
+          "name": "hardware_id",
+          "java": "HardwareEntity",
+          "nullable": true,
+          "length": null,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": true,
+          "version": false,
+          "pk": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/infrastructure/persistence/entity/ConocimientoEntity.java"
+        },
+        {
+          "name": "sistema_id",
+          "java": "SistemaEntity",
+          "nullable": true,
+          "length": null,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": true,
+          "version": false,
+          "pk": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/infrastructure/persistence/entity/ConocimientoEntity.java"
+        },
+        {
+          "name": "modulo_id",
+          "java": "ModuloEntity",
+          "nullable": true,
+          "length": null,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": true,
+          "version": false,
+          "pk": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/infrastructure/persistence/entity/ConocimientoEntity.java"
+        },
+        {
+          "name": "frecuencia_id",
+          "java": "FrecuenciaEntity",
+          "nullable": true,
+          "length": null,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": true,
+          "version": false,
+          "pk": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/infrastructure/persistence/entity/ConocimientoEntity.java"
+        },
+        {
+          "name": "conocimiento_comentario",
+          "java": "String",
+          "nullable": true,
+          "length": 500,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/infrastructure/persistence/entity/ConocimientoEntity.java"
+        },
+        {
+          "name": "creado_por",
+          "java": "UsuarioEntity",
+          "nullable": false,
+          "length": null,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": true,
+          "version": false,
+          "pk": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/infrastructure/persistence/entity/ConocimientoEntity.java"
+        },
+        {
+          "name": "fecha_creacion",
+          "java": "LocalDateTime",
+          "nullable": false,
+          "length": null,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/infrastructure/persistence/entity/ConocimientoEntity.java"
+        },
+        {
+          "name": "modificado_por",
+          "java": "UsuarioEntity",
+          "nullable": true,
+          "length": null,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": true,
+          "version": false,
+          "pk": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/infrastructure/persistence/entity/ConocimientoEntity.java"
+        },
+        {
+          "name": "fecha_modificacion",
+          "java": "LocalDateTime",
+          "nullable": true,
+          "length": null,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/infrastructure/persistence/entity/ConocimientoEntity.java"
+        }
+      ]
+    },
+    "co_conocimiento_prueba": {
+      "origin": "JPA",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/infrastructure/persistence/entity/ConocimientoPruebaEntity.java",
+      "fields": [
+        {
+          "name": "conocimiento_id",
+          "java": "Integer",
+          "nullable": false,
+          "pk": true,
+          "jpa_relation": false,
+          "length": null,
+          "column_definition": null,
+          "unique": false,
+          "version": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/infrastructure/persistence/entity/ConocimientoPruebaEntity.java"
+        },
+        {
+          "name": "prueba_id",
+          "java": "Integer",
+          "nullable": false,
+          "pk": true,
+          "jpa_relation": true,
+          "length": null,
+          "column_definition": null,
+          "unique": false,
+          "version": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/infrastructure/persistence/entity/ConocimientoPruebaEntity.java"
+        },
+        {
+          "name": "prueba_orden",
+          "java": "Integer",
+          "nullable": false,
+          "length": null,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/infrastructure/persistence/entity/ConocimientoPruebaEntity.java"
+        }
+      ]
+    },
+    "co_material_apoyo": {
+      "origin": "JPA",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/infrastructure/persistence/entity/MaterialApoyoEntity.java",
+      "fields": [
+        {
+          "name": "material_id",
+          "java": "Integer",
+          "nullable": false,
+          "length": null,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": true,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/infrastructure/persistence/entity/MaterialApoyoEntity.java"
+        },
+        {
+          "name": "conocimiento_id",
+          "java": "Integer",
+          "nullable": true,
+          "length": null,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/infrastructure/persistence/entity/MaterialApoyoEntity.java"
+        },
+        {
+          "name": "paso_id",
+          "java": "Integer",
+          "nullable": true,
+          "length": null,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/infrastructure/persistence/entity/MaterialApoyoEntity.java"
+        },
+        {
+          "name": "material_nombre",
+          "java": "String",
+          "nullable": false,
+          "length": 150,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/infrastructure/persistence/entity/MaterialApoyoEntity.java"
+        },
+        {
+          "name": "material_tipo",
+          "java": "TipoMaterial",
+          "nullable": false,
+          "length": null,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/infrastructure/persistence/entity/MaterialApoyoEntity.java"
+        },
+        {
+          "name": "material_url",
+          "java": "String",
+          "nullable": false,
+          "length": 500,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/infrastructure/persistence/entity/MaterialApoyoEntity.java"
+        }
+      ]
+    },
+    "co_prueba": {
+      "origin": "JPA",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/infrastructure/persistence/entity/PruebaEntity.java",
+      "fields": [
+        {
+          "name": "prueba_id",
+          "java": "Integer",
+          "nullable": false,
+          "length": null,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": true,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/infrastructure/persistence/entity/PruebaEntity.java"
+        },
+        {
+          "name": "prueba_descripcion",
+          "java": "String",
+          "nullable": false,
+          "length": 500,
+          "column_definition": null,
+          "unique": true,
+          "jpa_relation": false,
+          "version": false,
+          "pk": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/infrastructure/persistence/entity/PruebaEntity.java"
+        },
+        {
+          "name": "prueba_resultado_esperado",
+          "java": "String",
+          "nullable": true,
+          "length": 500,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/infrastructure/persistence/entity/PruebaEntity.java"
+        },
+        {
+          "name": "prueba_estado",
+          "java": "boolean",
+          "nullable": false,
+          "length": null,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/infrastructure/persistence/entity/PruebaEntity.java"
+        }
+      ]
+    },
+    "co_sintoma": {
+      "origin": "JPA",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/infrastructure/persistence/entity/SintomaEntity.java",
+      "fields": [
+        {
+          "name": "sintoma_id",
+          "java": "Integer",
+          "nullable": false,
+          "length": null,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": true,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/infrastructure/persistence/entity/SintomaEntity.java"
+        },
+        {
+          "name": "conocimiento_id",
+          "java": "Integer",
+          "nullable": false,
+          "length": null,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/infrastructure/persistence/entity/SintomaEntity.java"
+        },
+        {
+          "name": "sintoma_descripcion",
+          "java": "String",
+          "nullable": false,
+          "length": 300,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/infrastructure/persistence/entity/SintomaEntity.java"
+        },
+        {
+          "name": "sintoma_orden",
+          "java": "Integer",
+          "nullable": false,
+          "length": null,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/infrastructure/persistence/entity/SintomaEntity.java"
+        }
+      ]
+    },
+    "co_solucion_asignacion": {
+      "origin": "JPA",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/infrastructure/persistence/entity/SolucionAsignacionEntity.java",
+      "fields": [
+        {
+          "name": "asignacion_id",
+          "java": "Integer",
+          "nullable": false,
+          "length": null,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": true,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/infrastructure/persistence/entity/SolucionAsignacionEntity.java"
+        },
+        {
+          "name": "solucion_id",
+          "java": "SolucionEntity",
+          "nullable": false,
+          "length": null,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": true,
+          "version": false,
+          "pk": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/infrastructure/persistence/entity/SolucionAsignacionEntity.java"
+        },
+        {
+          "name": "responsable_id",
+          "java": "ResponsableEntity",
+          "nullable": true,
+          "length": null,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": true,
+          "version": false,
+          "pk": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/infrastructure/persistence/entity/SolucionAsignacionEntity.java"
+        },
+        {
+          "name": "departamento_id",
+          "java": "DepartamentoEntity",
+          "nullable": true,
+          "length": null,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": true,
+          "version": false,
+          "pk": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/infrastructure/persistence/entity/SolucionAsignacionEntity.java"
+        },
+        {
+          "name": "asignacion_principal",
+          "java": "boolean",
+          "nullable": false,
+          "length": null,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/infrastructure/persistence/entity/SolucionAsignacionEntity.java"
+        }
+      ]
+    },
+    "co_solucion": {
+      "origin": "JPA",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/infrastructure/persistence/entity/SolucionEntity.java",
+      "fields": [
+        {
+          "name": "solucion_id",
+          "java": "Integer",
+          "nullable": false,
+          "length": null,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": true,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/infrastructure/persistence/entity/SolucionEntity.java"
+        },
+        {
+          "name": "conocimiento_id",
+          "java": "Integer",
+          "nullable": false,
+          "length": null,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/infrastructure/persistence/entity/SolucionEntity.java"
+        },
+        {
+          "name": "solucion_descripcion",
+          "java": "String",
+          "nullable": false,
+          "length": null,
+          "column_definition": "TEXT",
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/infrastructure/persistence/entity/SolucionEntity.java"
+        },
+        {
+          "name": "solucion_tipo",
+          "java": "TipoSolucion",
+          "nullable": false,
+          "length": null,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/infrastructure/persistence/entity/SolucionEntity.java"
+        },
+        {
+          "name": "solucion_orden",
+          "java": "Integer",
+          "nullable": false,
+          "length": null,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/infrastructure/persistence/entity/SolucionEntity.java"
+        },
+        {
+          "name": "solucion_titulo",
+          "java": "String",
+          "nullable": true,
+          "length": 150,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/infrastructure/persistence/entity/SolucionEntity.java"
+        },
+        {
+          "name": "solucion_estado",
+          "java": "boolean",
+          "nullable": false,
+          "length": null,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/infrastructure/persistence/entity/SolucionEntity.java"
+        },
+        {
+          "name": "solucion_autoservicio",
+          "java": "boolean",
+          "nullable": false,
+          "length": null,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/infrastructure/persistence/entity/SolucionEntity.java"
+        }
+      ]
+    },
+    "se_ejecucion": {
+      "origin": "JPA",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/ejecucion/infrastructure/persistence/entity/EjecucionEntity.java",
+      "fields": [
+        {
+          "name": "ejecucion_id",
+          "java": "Integer",
+          "nullable": false,
+          "length": null,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": true,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/ejecucion/infrastructure/persistence/entity/EjecucionEntity.java"
+        },
+        {
+          "name": "procedimiento_id",
+          "java": "Integer",
+          "nullable": false,
+          "length": null,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/ejecucion/infrastructure/persistence/entity/EjecucionEntity.java"
+        },
+        {
+          "name": "usuario_id",
+          "java": "UsuarioEntity",
+          "nullable": false,
+          "length": null,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": true,
+          "version": false,
+          "pk": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/ejecucion/infrastructure/persistence/entity/EjecucionEntity.java"
+        },
+        {
+          "name": "ejecucion_fecha_inicio",
+          "java": "LocalDateTime",
+          "nullable": false,
+          "length": null,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/ejecucion/infrastructure/persistence/entity/EjecucionEntity.java"
+        },
+        {
+          "name": "ejecucion_fecha_fin",
+          "java": "LocalDateTime",
+          "nullable": true,
+          "length": null,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/ejecucion/infrastructure/persistence/entity/EjecucionEntity.java"
+        },
+        {
+          "name": "ejecucion_estado",
+          "java": "EstadoEjecucion",
+          "nullable": false,
+          "length": null,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/ejecucion/infrastructure/persistence/entity/EjecucionEntity.java"
+        },
+        {
+          "name": "ejecucion_observaciones",
+          "java": "String",
+          "nullable": true,
+          "length": null,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/ejecucion/infrastructure/persistence/entity/EjecucionEntity.java"
+        }
+      ]
+    },
+    "se_ejecucion_paso": {
+      "origin": "JPA",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/ejecucion/infrastructure/persistence/entity/EjecucionPasoEntity.java",
+      "fields": [
+        {
+          "name": "ejecucion_paso_id",
+          "java": "Integer",
+          "nullable": false,
+          "length": null,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": true,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/ejecucion/infrastructure/persistence/entity/EjecucionPasoEntity.java"
+        },
+        {
+          "name": "ejecucion_id",
+          "java": "Integer",
+          "nullable": false,
+          "length": null,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/ejecucion/infrastructure/persistence/entity/EjecucionPasoEntity.java"
+        },
+        {
+          "name": "paso_id",
+          "java": "Integer",
+          "nullable": false,
+          "length": null,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/ejecucion/infrastructure/persistence/entity/EjecucionPasoEntity.java"
+        },
+        {
+          "name": "ejecucion_paso_cumplido",
+          "java": "boolean",
+          "nullable": false,
+          "length": null,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/ejecucion/infrastructure/persistence/entity/EjecucionPasoEntity.java"
+        },
+        {
+          "name": "ejecucion_paso_observacion",
+          "java": "String",
+          "nullable": true,
+          "length": 300,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/ejecucion/infrastructure/persistence/entity/EjecucionPasoEntity.java"
+        },
+        {
+          "name": "ejecucion_paso_fecha",
+          "java": "LocalDateTime",
+          "nullable": true,
+          "length": null,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/ejecucion/infrastructure/persistence/entity/EjecucionPasoEntity.java"
+        }
+      ]
+    },
+    "u_departamento_contacto": {
+      "origin": "JPA",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/identidad/infrastructure/persistence/entity/DepartamentoContactoEntity.java",
+      "fields": [
+        {
+          "name": "contacto_id",
+          "java": "Integer",
+          "nullable": false,
+          "length": null,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": true,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/identidad/infrastructure/persistence/entity/DepartamentoContactoEntity.java"
+        },
+        {
+          "name": "departamento_id",
+          "java": "Integer",
+          "nullable": false,
+          "length": null,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/identidad/infrastructure/persistence/entity/DepartamentoContactoEntity.java"
+        },
+        {
+          "name": "contacto_tipo",
+          "java": "String",
+          "nullable": false,
+          "length": 50,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/identidad/infrastructure/persistence/entity/DepartamentoContactoEntity.java"
+        },
+        {
+          "name": "contacto_valor",
+          "java": "String",
+          "nullable": false,
+          "length": 100,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/identidad/infrastructure/persistence/entity/DepartamentoContactoEntity.java"
+        },
+        {
+          "name": "contacto_estado",
+          "java": "boolean",
+          "nullable": false,
+          "length": null,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/identidad/infrastructure/persistence/entity/DepartamentoContactoEntity.java"
+        },
+        {
+          "name": "contacto_version",
+          "java": "Long",
+          "nullable": false,
+          "length": null,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": false,
+          "version": true,
+          "pk": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/identidad/infrastructure/persistence/entity/DepartamentoContactoEntity.java"
+        }
+      ]
+    },
+    "u_departamento": {
+      "origin": "JPA",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/identidad/infrastructure/persistence/entity/DepartamentoEntity.java",
+      "fields": [
+        {
+          "name": "departamento_id",
+          "java": "Integer",
+          "nullable": false,
+          "length": null,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": true,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/identidad/infrastructure/persistence/entity/DepartamentoEntity.java"
+        },
+        {
+          "name": "departamento_nombre",
+          "java": "String",
+          "nullable": false,
+          "length": null,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/identidad/infrastructure/persistence/entity/DepartamentoEntity.java"
+        },
+        {
+          "name": "departamento_estado",
+          "java": "boolean",
+          "nullable": false,
+          "length": null,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/identidad/infrastructure/persistence/entity/DepartamentoEntity.java"
+        },
+        {
+          "name": "departamento_version",
+          "java": "Long",
+          "nullable": false,
+          "length": null,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": false,
+          "version": true,
+          "pk": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/identidad/infrastructure/persistence/entity/DepartamentoEntity.java"
+        }
+      ]
+    },
+    "u_organizacion_control": {
+      "origin": "JPA",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/identidad/infrastructure/persistence/entity/OrganizacionControlEntity.java",
+      "fields": [
+        {
+          "name": "control_id",
+          "java": "Integer",
+          "nullable": false,
+          "length": null,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": true,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/identidad/infrastructure/persistence/entity/OrganizacionControlEntity.java"
+        }
+      ]
+    },
+    "u_responsable": {
+      "origin": "JPA",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/identidad/infrastructure/persistence/entity/ResponsableEntity.java",
+      "fields": [
+        {
+          "name": "responsable_id",
+          "java": "Integer",
+          "nullable": false,
+          "length": null,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": true,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/identidad/infrastructure/persistence/entity/ResponsableEntity.java"
+        },
+        {
+          "name": "departamento_id",
+          "java": "Integer",
+          "nullable": false,
+          "length": null,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/identidad/infrastructure/persistence/entity/ResponsableEntity.java"
+        },
+        {
+          "name": "responsable_nombre",
+          "java": "String",
+          "nullable": false,
+          "length": null,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/identidad/infrastructure/persistence/entity/ResponsableEntity.java"
+        },
+        {
+          "name": "responsable_cargo",
+          "java": "String",
+          "nullable": true,
+          "length": null,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/identidad/infrastructure/persistence/entity/ResponsableEntity.java"
+        },
+        {
+          "name": "responsable_contacto",
+          "java": "String",
+          "nullable": true,
+          "length": null,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/identidad/infrastructure/persistence/entity/ResponsableEntity.java"
+        },
+        {
+          "name": "responsable_estado",
+          "java": "boolean",
+          "nullable": false,
+          "length": null,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/identidad/infrastructure/persistence/entity/ResponsableEntity.java"
+        }
+      ]
+    },
+    "u_rol": {
+      "origin": "JPA",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/identidad/infrastructure/persistence/entity/RolEntity.java",
+      "fields": [
+        {
+          "name": "rol_id",
+          "java": "Integer",
+          "nullable": false,
+          "length": null,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": true,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/identidad/infrastructure/persistence/entity/RolEntity.java"
+        },
+        {
+          "name": "rol_nombre",
+          "java": "String",
+          "nullable": false,
+          "length": 50,
+          "column_definition": null,
+          "unique": true,
+          "jpa_relation": false,
+          "version": false,
+          "pk": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/identidad/infrastructure/persistence/entity/RolEntity.java"
+        },
+        {
+          "name": "rol_descripcion",
+          "java": "String",
+          "nullable": true,
+          "length": 200,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/identidad/infrastructure/persistence/entity/RolEntity.java"
+        },
+        {
+          "name": "rol_estado",
+          "java": "boolean",
+          "nullable": false,
+          "length": null,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/identidad/infrastructure/persistence/entity/RolEntity.java"
+        },
+        {
+          "name": "rol_fecha_creacion",
+          "java": "LocalDateTime",
+          "nullable": false,
+          "length": null,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/identidad/infrastructure/persistence/entity/RolEntity.java"
+        },
+        {
+          "name": "rol_fecha_actualizacion",
+          "java": "LocalDateTime",
+          "nullable": false,
+          "length": null,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/identidad/infrastructure/persistence/entity/RolEntity.java"
+        }
+      ]
+    },
+    "u_usuario": {
+      "origin": "JPA",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/identidad/infrastructure/persistence/entity/UsuarioEntity.java",
+      "fields": [
+        {
+          "name": "usuario_id",
+          "java": "Integer",
+          "nullable": false,
+          "length": null,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": true,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/identidad/infrastructure/persistence/entity/UsuarioEntity.java"
+        },
+        {
+          "name": "rol_id",
+          "java": "RolEntity",
+          "nullable": false,
+          "length": null,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": true,
+          "version": false,
+          "pk": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/identidad/infrastructure/persistence/entity/UsuarioEntity.java"
+        },
+        {
+          "name": "usuario_nombre",
+          "java": "String",
+          "nullable": false,
+          "length": 100,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/identidad/infrastructure/persistence/entity/UsuarioEntity.java"
+        },
+        {
+          "name": "usuario_email",
+          "java": "String",
+          "nullable": false,
+          "length": 120,
+          "column_definition": null,
+          "unique": true,
+          "jpa_relation": false,
+          "version": false,
+          "pk": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/identidad/infrastructure/persistence/entity/UsuarioEntity.java"
+        },
+        {
+          "name": "usuario_password_hash",
+          "java": "String",
+          "nullable": false,
+          "length": 255,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/identidad/infrastructure/persistence/entity/UsuarioEntity.java"
+        },
+        {
+          "name": "usuario_estado",
+          "java": "boolean",
+          "nullable": false,
+          "length": null,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/identidad/infrastructure/persistence/entity/UsuarioEntity.java"
+        },
+        {
+          "name": "usuario_fecha_creacion",
+          "java": "LocalDateTime",
+          "nullable": false,
+          "length": null,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/identidad/infrastructure/persistence/entity/UsuarioEntity.java"
+        },
+        {
+          "name": "usuario_fecha_actualizacion",
+          "java": "LocalDateTime",
+          "nullable": false,
+          "length": null,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/identidad/infrastructure/persistence/entity/UsuarioEntity.java"
+        }
+      ]
+    },
+    "pr_paso": {
+      "origin": "JPA",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/procedimiento/infrastructure/persistence/entity/PasoEntity.java",
+      "fields": [
+        {
+          "name": "paso_id",
+          "java": "Integer",
+          "nullable": false,
+          "length": null,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": true,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/procedimiento/infrastructure/persistence/entity/PasoEntity.java"
+        },
+        {
+          "name": "procedimiento_id",
+          "java": "Integer",
+          "nullable": false,
+          "length": null,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/procedimiento/infrastructure/persistence/entity/PasoEntity.java"
+        },
+        {
+          "name": "paso_orden",
+          "java": "Integer",
+          "nullable": false,
+          "length": null,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/procedimiento/infrastructure/persistence/entity/PasoEntity.java"
+        },
+        {
+          "name": "paso_instruccion",
+          "java": "String",
+          "nullable": false,
+          "length": null,
+          "column_definition": "TEXT",
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/procedimiento/infrastructure/persistence/entity/PasoEntity.java"
+        },
+        {
+          "name": "paso_es_critico",
+          "java": "boolean",
+          "nullable": false,
+          "length": null,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/procedimiento/infrastructure/persistence/entity/PasoEntity.java"
+        }
+      ]
+    },
+    "pr_procedimiento": {
+      "origin": "JPA",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/procedimiento/infrastructure/persistence/entity/ProcedimientoEntity.java",
+      "fields": [
+        {
+          "name": "procedimiento_id",
+          "java": "Integer",
+          "nullable": false,
+          "length": null,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": true,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/procedimiento/infrastructure/persistence/entity/ProcedimientoEntity.java"
+        },
+        {
+          "name": "procedimiento_nombre",
+          "java": "String",
+          "nullable": false,
+          "length": 150,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/procedimiento/infrastructure/persistence/entity/ProcedimientoEntity.java"
+        },
+        {
+          "name": "procedimiento_descripcion",
+          "java": "String",
+          "nullable": true,
+          "length": null,
+          "column_definition": "TEXT",
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/procedimiento/infrastructure/persistence/entity/ProcedimientoEntity.java"
+        },
+        {
+          "name": "procedimiento_estado",
+          "java": "EstadoProcedimiento",
+          "nullable": false,
+          "length": null,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/procedimiento/infrastructure/persistence/entity/ProcedimientoEntity.java"
+        },
+        {
+          "name": "creado_por",
+          "java": "UsuarioEntity",
+          "nullable": false,
+          "length": null,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": true,
+          "version": false,
+          "pk": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/procedimiento/infrastructure/persistence/entity/ProcedimientoEntity.java"
+        },
+        {
+          "name": "fecha_creacion",
+          "java": "LocalDateTime",
+          "nullable": false,
+          "length": null,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/procedimiento/infrastructure/persistence/entity/ProcedimientoEntity.java"
+        },
+        {
+          "name": "modificado_por",
+          "java": "UsuarioEntity",
+          "nullable": true,
+          "length": null,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": true,
+          "version": false,
+          "pk": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/procedimiento/infrastructure/persistence/entity/ProcedimientoEntity.java"
+        },
+        {
+          "name": "fecha_modificacion",
+          "java": "LocalDateTime",
+          "nullable": true,
+          "length": null,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/procedimiento/infrastructure/persistence/entity/ProcedimientoEntity.java"
+        }
+      ]
+    },
+    "se_resultado": {
+      "origin": "JPA",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/seguimiento/infrastructure/persistence/entity/ResultadoSolucionEntity.java",
+      "fields": [
+        {
+          "name": "resultado_id",
+          "java": "Integer",
+          "nullable": false,
+          "length": null,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": true,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/seguimiento/infrastructure/persistence/entity/ResultadoSolucionEntity.java"
+        },
+        {
+          "name": "solucion_id",
+          "java": "Integer",
+          "nullable": false,
+          "length": null,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/seguimiento/infrastructure/persistence/entity/ResultadoSolucionEntity.java"
+        },
+        {
+          "name": "usuario_id",
+          "java": "Integer",
+          "nullable": false,
+          "length": null,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/seguimiento/infrastructure/persistence/entity/ResultadoSolucionEntity.java"
+        },
+        {
+          "name": "resultado_funciono",
+          "java": "boolean",
+          "nullable": false,
+          "length": null,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/seguimiento/infrastructure/persistence/entity/ResultadoSolucionEntity.java"
+        },
+        {
+          "name": "resultado_comentario",
+          "java": "String",
+          "nullable": true,
+          "length": 300,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/seguimiento/infrastructure/persistence/entity/ResultadoSolucionEntity.java"
+        },
+        {
+          "name": "resultado_fecha",
+          "java": "LocalDateTime",
+          "nullable": false,
+          "length": null,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/seguimiento/infrastructure/persistence/entity/ResultadoSolucionEntity.java"
+        }
+      ]
+    },
+    "ticket_adjunto": {
+      "origin": "JPA",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/tickets/infrastructure/persistence/entity/AdjuntoTicketEntity.java",
+      "fields": [
+        {
+          "name": "id",
+          "java": "Long",
+          "nullable": false,
+          "length": null,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": true,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/tickets/infrastructure/persistence/entity/AdjuntoTicketEntity.java"
+        },
+        {
+          "name": "ticket_id",
+          "java": "Long",
+          "nullable": false,
+          "length": null,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/tickets/infrastructure/persistence/entity/AdjuntoTicketEntity.java"
+        },
+        {
+          "name": "comentario_id",
+          "java": "Long",
+          "nullable": true,
+          "length": null,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/tickets/infrastructure/persistence/entity/AdjuntoTicketEntity.java"
+        },
+        {
+          "name": "nombre",
+          "java": "String",
+          "nullable": false,
+          "length": 150,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/tickets/infrastructure/persistence/entity/AdjuntoTicketEntity.java"
+        },
+        {
+          "name": "mime",
+          "java": "String",
+          "nullable": false,
+          "length": 60,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/tickets/infrastructure/persistence/entity/AdjuntoTicketEntity.java"
+        },
+        {
+          "name": "tamano",
+          "java": "long",
+          "nullable": false,
+          "length": null,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/tickets/infrastructure/persistence/entity/AdjuntoTicketEntity.java"
+        },
+        {
+          "name": "referencia",
+          "java": "String",
+          "nullable": false,
+          "length": 80,
+          "column_definition": null,
+          "unique": true,
+          "jpa_relation": false,
+          "version": false,
+          "pk": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/tickets/infrastructure/persistence/entity/AdjuntoTicketEntity.java"
+        },
+        {
+          "name": "autor_id",
+          "java": "Integer",
+          "nullable": false,
+          "length": null,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/tickets/infrastructure/persistence/entity/AdjuntoTicketEntity.java"
+        },
+        {
+          "name": "fecha",
+          "java": "LocalDateTime",
+          "nullable": false,
+          "length": null,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/tickets/infrastructure/persistence/entity/AdjuntoTicketEntity.java"
+        }
+      ]
+    },
+    "ticket_comentario": {
+      "origin": "JPA",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/tickets/infrastructure/persistence/entity/ComentarioTicketEntity.java",
+      "fields": [
+        {
+          "name": "id",
+          "java": "Long",
+          "nullable": false,
+          "length": null,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": true,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/tickets/infrastructure/persistence/entity/ComentarioTicketEntity.java"
+        },
+        {
+          "name": "ticket_id",
+          "java": "Long",
+          "nullable": false,
+          "length": null,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/tickets/infrastructure/persistence/entity/ComentarioTicketEntity.java"
+        },
+        {
+          "name": "autor_id",
+          "java": "Integer",
+          "nullable": false,
+          "length": null,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/tickets/infrastructure/persistence/entity/ComentarioTicketEntity.java"
+        },
+        {
+          "name": "texto",
+          "java": "String",
+          "nullable": false,
+          "length": 1000,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/tickets/infrastructure/persistence/entity/ComentarioTicketEntity.java"
+        },
+        {
+          "name": "interno",
+          "java": "boolean",
+          "nullable": false,
+          "length": null,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/tickets/infrastructure/persistence/entity/ComentarioTicketEntity.java"
+        },
+        {
+          "name": "fecha",
+          "java": "LocalDateTime",
+          "nullable": false,
+          "length": null,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/tickets/infrastructure/persistence/entity/ComentarioTicketEntity.java"
+        }
+      ]
+    },
+    "ticket_etiqueta": {
+      "origin": "JPA",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/tickets/infrastructure/persistence/entity/EtiquetaEntity.java",
+      "fields": [
+        {
+          "name": "id",
+          "java": "Long",
+          "nullable": false,
+          "length": null,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": true,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/tickets/infrastructure/persistence/entity/EtiquetaEntity.java"
+        },
+        {
+          "name": "nombre",
+          "java": "String",
+          "nullable": false,
+          "length": 40,
+          "column_definition": null,
+          "unique": true,
+          "jpa_relation": false,
+          "version": false,
+          "pk": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/tickets/infrastructure/persistence/entity/EtiquetaEntity.java"
+        },
+        {
+          "name": "color",
+          "java": "String",
+          "nullable": false,
+          "length": 7,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/tickets/infrastructure/persistence/entity/EtiquetaEntity.java"
+        },
+        {
+          "name": "activa",
+          "java": "boolean",
+          "nullable": false,
+          "length": null,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/tickets/infrastructure/persistence/entity/EtiquetaEntity.java"
+        },
+        {
+          "name": "nivel",
+          "java": "NivelEtiqueta",
+          "nullable": false,
+          "length": 15,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/tickets/infrastructure/persistence/entity/EtiquetaEntity.java"
+        }
+      ]
+    },
+    "ticket_historial_estado": {
+      "origin": "JPA",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/tickets/infrastructure/persistence/entity/HistorialEstadoTicketEntity.java",
+      "fields": [
+        {
+          "name": "id",
+          "java": "Long",
+          "nullable": false,
+          "length": null,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": true,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/tickets/infrastructure/persistence/entity/HistorialEstadoTicketEntity.java"
+        },
+        {
+          "name": "ticket_id",
+          "java": "Long",
+          "nullable": false,
+          "length": null,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/tickets/infrastructure/persistence/entity/HistorialEstadoTicketEntity.java"
+        },
+        {
+          "name": "estado_anterior",
+          "java": "EstadoTicket",
+          "nullable": true,
+          "length": 20,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/tickets/infrastructure/persistence/entity/HistorialEstadoTicketEntity.java"
+        },
+        {
+          "name": "estado_nuevo",
+          "java": "EstadoTicket",
+          "nullable": false,
+          "length": 20,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/tickets/infrastructure/persistence/entity/HistorialEstadoTicketEntity.java"
+        },
+        {
+          "name": "usuario_id",
+          "java": "Integer",
+          "nullable": false,
+          "length": null,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/tickets/infrastructure/persistence/entity/HistorialEstadoTicketEntity.java"
+        },
+        {
+          "name": "motivo",
+          "java": "String",
+          "nullable": true,
+          "length": 255,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/tickets/infrastructure/persistence/entity/HistorialEstadoTicketEntity.java"
+        },
+        {
+          "name": "fecha",
+          "java": "LocalDateTime",
+          "nullable": false,
+          "length": null,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/tickets/infrastructure/persistence/entity/HistorialEstadoTicketEntity.java"
+        }
+      ]
+    },
+    "ticket": {
+      "origin": "JPA",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/tickets/infrastructure/persistence/entity/TicketEntity.java",
+      "fields": [
+        {
+          "name": "id",
+          "java": "Long",
+          "nullable": false,
+          "length": null,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": true,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/tickets/infrastructure/persistence/entity/TicketEntity.java"
+        },
+        {
+          "name": "codigo",
+          "java": "String",
+          "nullable": false,
+          "length": 20,
+          "column_definition": null,
+          "unique": true,
+          "jpa_relation": false,
+          "version": false,
+          "pk": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/tickets/infrastructure/persistence/entity/TicketEntity.java"
+        },
+        {
+          "name": "titulo",
+          "java": "String",
+          "nullable": false,
+          "length": 150,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/tickets/infrastructure/persistence/entity/TicketEntity.java"
+        },
+        {
+          "name": "descripcion",
+          "java": "String",
+          "nullable": false,
+          "length": null,
+          "column_definition": "TEXT",
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/tickets/infrastructure/persistence/entity/TicketEntity.java"
+        },
+        {
+          "name": "estado",
+          "java": "EstadoTicket",
+          "nullable": false,
+          "length": 20,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/tickets/infrastructure/persistence/entity/TicketEntity.java"
+        },
+        {
+          "name": "prioridad",
+          "java": "PrioridadTicket",
+          "nullable": false,
+          "length": 10,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/tickets/infrastructure/persistence/entity/TicketEntity.java"
+        },
+        {
+          "name": "solicitante_id",
+          "java": "Integer",
+          "nullable": false,
+          "length": null,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/tickets/infrastructure/persistence/entity/TicketEntity.java"
+        },
+        {
+          "name": "asignado_id",
+          "java": "Integer",
+          "nullable": true,
+          "length": null,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/tickets/infrastructure/persistence/entity/TicketEntity.java"
+        },
+        {
+          "name": "hardware_id",
+          "java": "Integer",
+          "nullable": true,
+          "length": null,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/tickets/infrastructure/persistence/entity/TicketEntity.java"
+        },
+        {
+          "name": "sistema_id",
+          "java": "Integer",
+          "nullable": true,
+          "length": null,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/tickets/infrastructure/persistence/entity/TicketEntity.java"
+        },
+        {
+          "name": "modulo_id",
+          "java": "Integer",
+          "nullable": true,
+          "length": null,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/tickets/infrastructure/persistence/entity/TicketEntity.java"
+        },
+        {
+          "name": "conocimiento_id",
+          "java": "Integer",
+          "nullable": true,
+          "length": null,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/tickets/infrastructure/persistence/entity/TicketEntity.java"
+        },
+        {
+          "name": "solucion",
+          "java": "String",
+          "nullable": true,
+          "length": null,
+          "column_definition": "TEXT",
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/tickets/infrastructure/persistence/entity/TicketEntity.java"
+        },
+        {
+          "name": "fecha_creacion",
+          "java": "LocalDateTime",
+          "nullable": false,
+          "length": null,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/tickets/infrastructure/persistence/entity/TicketEntity.java"
+        },
+        {
+          "name": "fecha_actualizacion",
+          "java": "LocalDateTime",
+          "nullable": false,
+          "length": null,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/tickets/infrastructure/persistence/entity/TicketEntity.java"
+        },
+        {
+          "name": "fecha_resolucion",
+          "java": "LocalDateTime",
+          "nullable": true,
+          "length": null,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/tickets/infrastructure/persistence/entity/TicketEntity.java"
+        },
+        {
+          "name": "fecha_cierre",
+          "java": "LocalDateTime",
+          "nullable": true,
+          "length": null,
+          "column_definition": null,
+          "unique": false,
+          "jpa_relation": false,
+          "version": false,
+          "pk": false,
+          "source": "dima-bug-backend/src/main/java/cl/casol/backend/tickets/infrastructure/persistence/entity/TicketEntity.java"
+        }
+      ]
+    },
+    "cl_hardware_sistema": {
+      "origin": "Unión JPA",
+      "source": "mapeo HardwareEntity / TicketEntity",
+      "fields": [
+        {
+          "name": "hardware_id",
+          "java": "Integer",
+          "nullable": null,
+          "pk": false,
+          "jpa_relation": true,
+          "length": null,
+          "column_definition": null,
+          "unique": false,
+          "version": false
+        },
+        {
+          "name": "sistema_id",
+          "java": "Integer",
+          "nullable": null,
+          "pk": false,
+          "jpa_relation": true,
+          "length": null,
+          "column_definition": null,
+          "unique": false,
+          "version": false
+        }
+      ]
+    },
+    "ticket_ticket_etiqueta": {
+      "origin": "Unión JPA",
+      "source": "mapeo HardwareEntity / TicketEntity",
+      "fields": [
+        {
+          "name": "ticket_id",
+          "java": "Long",
+          "nullable": false,
+          "pk": true,
+          "jpa_relation": false,
+          "length": null,
+          "column_definition": null,
+          "unique": false,
+          "version": false
+        },
+        {
+          "name": "etiqueta_id",
+          "java": "Long",
+          "nullable": false,
+          "pk": true,
+          "jpa_relation": false,
+          "length": null,
+          "column_definition": null,
+          "unique": false,
+          "version": false
+        }
+      ]
+    },
+    "co_conocimiento_busqueda": {
+      "origin": "JDBC",
+      "source": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/infrastructure/persistence/adapter/BusquedaConocimientoJdbcAdapter.java",
+      "fields": [
+        {
+          "name": "conocimiento_id",
+          "java": "Integer (parámetro JDBC)",
+          "nullable": null,
+          "pk": false,
+          "jpa_relation": false,
+          "length": null,
+          "column_definition": null,
+          "unique": false,
+          "version": false
+        },
+        {
+          "name": "contenido_busqueda",
+          "java": "String (parámetro JDBC)",
+          "nullable": null,
+          "pk": false,
+          "jpa_relation": false,
+          "length": null,
+          "column_definition": null,
+          "unique": false,
+          "version": false
+        }
+      ]
+    }
+  },
+  "relations": [
+    {
+      "parent": "u_rol",
+      "child": "u_usuario",
+      "column": "rol_id",
+      "kind": "JPA",
+      "optional": false
+    },
+    {
+      "parent": "u_departamento",
+      "child": "u_responsable",
+      "column": "departamento_id",
+      "kind": "REF",
+      "optional": false
+    },
+    {
+      "parent": "u_departamento",
+      "child": "u_departamento_contacto",
+      "column": "departamento_id",
+      "kind": "REF",
+      "optional": false
+    },
+    {
+      "parent": "cl_hardware",
+      "child": "cl_hardware_sistema",
+      "column": "hardware_id",
+      "kind": "JPA",
+      "optional": null
+    },
+    {
+      "parent": "cl_sistema",
+      "child": "cl_hardware_sistema",
+      "column": "sistema_id",
+      "kind": "JPA",
+      "optional": null
+    },
+    {
+      "parent": "cl_sistema",
+      "child": "cl_modulo",
+      "column": "sistema_id",
+      "kind": "JPA",
+      "optional": true
+    },
+    {
+      "parent": "cl_hardware",
+      "child": "co_conocimiento",
+      "column": "hardware_id",
+      "kind": "JPA",
+      "optional": true
+    },
+    {
+      "parent": "cl_sistema",
+      "child": "co_conocimiento",
+      "column": "sistema_id",
+      "kind": "JPA",
+      "optional": true
+    },
+    {
+      "parent": "cl_modulo",
+      "child": "co_conocimiento",
+      "column": "modulo_id",
+      "kind": "JPA",
+      "optional": true
+    },
+    {
+      "parent": "cl_frecuencia",
+      "child": "co_conocimiento",
+      "column": "frecuencia_id",
+      "kind": "JPA",
+      "optional": true
+    },
+    {
+      "parent": "u_usuario",
+      "child": "co_conocimiento",
+      "column": "creado_por",
+      "kind": "JPA",
+      "optional": false
+    },
+    {
+      "parent": "u_usuario",
+      "child": "co_conocimiento",
+      "column": "modificado_por",
+      "kind": "JPA",
+      "optional": true
+    },
+    {
+      "parent": "u_usuario",
+      "child": "pr_procedimiento",
+      "column": "creado_por",
+      "kind": "JPA",
+      "optional": false
+    },
+    {
+      "parent": "u_usuario",
+      "child": "pr_procedimiento",
+      "column": "modificado_por",
+      "kind": "JPA",
+      "optional": true
+    },
+    {
+      "parent": "co_conocimiento",
+      "child": "co_sintoma",
+      "column": "conocimiento_id",
+      "kind": "REF",
+      "optional": false
+    },
+    {
+      "parent": "co_conocimiento",
+      "child": "co_causa",
+      "column": "conocimiento_id",
+      "kind": "REF",
+      "optional": false
+    },
+    {
+      "parent": "co_conocimiento",
+      "child": "co_solucion",
+      "column": "conocimiento_id",
+      "kind": "REF",
+      "optional": false
+    },
+    {
+      "parent": "co_conocimiento",
+      "child": "co_material_apoyo",
+      "column": "conocimiento_id",
+      "kind": "REF",
+      "optional": true
+    },
+    {
+      "parent": "co_conocimiento",
+      "child": "co_conocimiento_prueba",
+      "column": "conocimiento_id",
+      "kind": "REF",
+      "optional": false
+    },
+    {
+      "parent": "co_prueba",
+      "child": "co_conocimiento_prueba",
+      "column": "prueba_id",
+      "kind": "JPA",
+      "optional": false
+    },
+    {
+      "parent": "co_solucion",
+      "child": "co_solucion_asignacion",
+      "column": "solucion_id",
+      "kind": "JPA",
+      "optional": false
+    },
+    {
+      "parent": "u_responsable",
+      "child": "co_solucion_asignacion",
+      "column": "responsable_id",
+      "kind": "JPA",
+      "optional": true
+    },
+    {
+      "parent": "u_departamento",
+      "child": "co_solucion_asignacion",
+      "column": "departamento_id",
+      "kind": "JPA",
+      "optional": true
+    },
+    {
+      "parent": "pr_procedimiento",
+      "child": "pr_paso",
+      "column": "procedimiento_id",
+      "kind": "REF",
+      "optional": false
+    },
+    {
+      "parent": "pr_procedimiento",
+      "child": "se_ejecucion",
+      "column": "procedimiento_id",
+      "kind": "REF",
+      "optional": false
+    },
+    {
+      "parent": "u_usuario",
+      "child": "se_ejecucion",
+      "column": "usuario_id",
+      "kind": "JPA",
+      "optional": false
+    },
+    {
+      "parent": "se_ejecucion",
+      "child": "se_ejecucion_paso",
+      "column": "ejecucion_id",
+      "kind": "REF",
+      "optional": false
+    },
+    {
+      "parent": "pr_paso",
+      "child": "se_ejecucion_paso",
+      "column": "paso_id",
+      "kind": "REF",
+      "optional": false
+    },
+    {
+      "parent": "pr_paso",
+      "child": "co_material_apoyo",
+      "column": "paso_id",
+      "kind": "REF",
+      "optional": true
+    },
+    {
+      "parent": "co_solucion",
+      "child": "se_resultado",
+      "column": "solucion_id",
+      "kind": "REF",
+      "optional": false
+    },
+    {
+      "parent": "u_usuario",
+      "child": "se_resultado",
+      "column": "usuario_id",
+      "kind": "REF",
+      "optional": false
+    },
+    {
+      "parent": "u_usuario",
+      "child": "ticket",
+      "column": "solicitante_id",
+      "kind": "REF",
+      "optional": false
+    },
+    {
+      "parent": "u_usuario",
+      "child": "ticket",
+      "column": "asignado_id",
+      "kind": "REF",
+      "optional": true
+    },
+    {
+      "parent": "cl_hardware",
+      "child": "ticket",
+      "column": "hardware_id",
+      "kind": "REF",
+      "optional": true
+    },
+    {
+      "parent": "cl_sistema",
+      "child": "ticket",
+      "column": "sistema_id",
+      "kind": "REF",
+      "optional": true
+    },
+    {
+      "parent": "cl_modulo",
+      "child": "ticket",
+      "column": "modulo_id",
+      "kind": "REF",
+      "optional": true
+    },
+    {
+      "parent": "co_conocimiento",
+      "child": "ticket",
+      "column": "conocimiento_id",
+      "kind": "REF",
+      "optional": true
+    },
+    {
+      "parent": "ticket",
+      "child": "ticket_comentario",
+      "column": "ticket_id",
+      "kind": "SQL",
+      "optional": false
+    },
+    {
+      "parent": "ticket",
+      "child": "ticket_historial_estado",
+      "column": "ticket_id",
+      "kind": "SQL",
+      "optional": false
+    },
+    {
+      "parent": "ticket",
+      "child": "ticket_adjunto",
+      "column": "ticket_id",
+      "kind": "SQL",
+      "optional": false
+    },
+    {
+      "parent": "ticket",
+      "child": "ticket_ticket_etiqueta",
+      "column": "ticket_id",
+      "kind": "SQL",
+      "optional": false
+    },
+    {
+      "parent": "u_usuario",
+      "child": "ticket_comentario",
+      "column": "autor_id",
+      "kind": "REF",
+      "optional": false
+    },
+    {
+      "parent": "u_usuario",
+      "child": "ticket_adjunto",
+      "column": "autor_id",
+      "kind": "REF",
+      "optional": false
+    },
+    {
+      "parent": "u_usuario",
+      "child": "ticket_historial_estado",
+      "column": "usuario_id",
+      "kind": "REF",
+      "optional": false
+    },
+    {
+      "parent": "ticket_comentario",
+      "child": "ticket_adjunto",
+      "column": "comentario_id",
+      "kind": "SQL",
+      "optional": true
+    },
+    {
+      "parent": "ticket_etiqueta",
+      "child": "ticket_ticket_etiqueta",
+      "column": "etiqueta_id",
+      "kind": "SQL",
+      "optional": false
+    },
+    {
+      "parent": "co_conocimiento",
+      "child": "co_conocimiento_busqueda",
+      "column": "conocimiento_id",
+      "kind": "JDBC",
+      "optional": null
+    }
+  ],
+  "sql_foreign_keys": [
+    {
+      "child": "ticket_ticket_etiqueta",
+      "column": "ticket_id",
+      "constraint": "fk_tte_ticket",
+      "parent": "ticket",
+      "parent_column": "id",
+      "source": "dima-bug-backend/src/main/resources/db/migration/V20261017_01__modulo_tickets.sql"
+    },
+    {
+      "child": "ticket_ticket_etiqueta",
+      "column": "etiqueta_id",
+      "constraint": "fk_tte_etiqueta",
+      "parent": "ticket_etiqueta",
+      "parent_column": "id",
+      "source": "dima-bug-backend/src/main/resources/db/migration/V20261017_01__modulo_tickets.sql"
+    },
+    {
+      "child": "ticket_comentario",
+      "column": "ticket_id",
+      "constraint": "fk_ticket_comentario_ticket",
+      "parent": "ticket",
+      "parent_column": "id",
+      "source": "dima-bug-backend/src/main/resources/db/migration/V20261017_01__modulo_tickets.sql"
+    },
+    {
+      "child": "ticket_historial_estado",
+      "column": "ticket_id",
+      "constraint": "fk_ticket_historial_ticket",
+      "parent": "ticket",
+      "parent_column": "id",
+      "source": "dima-bug-backend/src/main/resources/db/migration/V20261017_01__modulo_tickets.sql"
+    },
+    {
+      "child": "ticket_adjunto",
+      "column": "ticket_id",
+      "constraint": "fk_ticket_adjunto_ticket",
+      "parent": "ticket",
+      "parent_column": "id",
+      "source": "dima-bug-backend/src/main/resources/db/migration/V20261017_02__tickets_adjuntos_y_nivel_etiqueta.sql"
+    },
+    {
+      "child": "ticket_adjunto",
+      "column": "comentario_id",
+      "constraint": "fk_ticket_adjunto_comentario",
+      "parent": "ticket_comentario",
+      "parent_column": "id",
+      "source": "dima-bug-backend/src/main/resources/db/migration/V20261017_02__tickets_adjuntos_y_nivel_etiqueta.sql"
+    }
+  ],
+  "physical_mysql_verified": false
+}

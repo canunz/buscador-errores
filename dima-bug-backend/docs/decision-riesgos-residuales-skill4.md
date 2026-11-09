@@ -1,0 +1,150 @@
+> Referencia histórica conservada. Describe una entrega previa y puede diferir del checkout actual. [Documentación vigente](../../docs/README.md). Los enlaces a archivos ausentes se identifican expresamente; [original íntegro y hash](../../docs/auditoria/historico/README.md).
+
+# Decisión sobre riesgos residuales de Skill 4
+
+Fecha: 2026-10-09. Revisión limitada a historial de procedimientos y recuperación/
+contención de archivos. No sustituye la auditoría general ni reabre otros módulos.
+No se ejecutaron pruebas, SQL ni conexiones; no se modificaron código, configuración
+o entorno. Los 42 PASS de integración y 472 habituales son evidencia de la ronda
+anterior, no una nueva ejecución ni cobertura de todos los casos siguientes.
+
+## Decisión ejecutiva
+
+Mantener **CIERRE CON CONDICIONES**. No se demuestra un nuevo P0 ni se necesita
+implementar snapshots o una transacción distribuida automáticamente para cerrar.
+Hay una decisión funcional pendiente que impide afirmar un cierre definitivo:
+el equipo debe aceptar que el historial usa definiciones actuales, o exigir otro
+comportamiento. La aceptación temporal de recuperación parcial también debe ser
+explícita. Los permisos, topología del almacenamiento y restauración del entorno
+deben verificarse en Skill 5 antes del despliegue; no se consideran ya implementados.
+
+Clasificaciones:
+
+- **A:** bloqueante para cierre de Skill 4; puede ser una decisión pendiente,
+  no necesariamente un cambio de código.
+- **B:** aceptable temporalmente con las condiciones indicadas y aprobación del equipo.
+- **C:** corresponde a Skill 5 — despliegue; su traslado no elimina el requisito
+  antes de poner el entorno en servicio.
+
+Las clasificaciones B son propuestas, **no aceptaciones ya otorgadas por el negocio**.
+No existe en el repositorio definición formal del proceso Skill 4/5; esta separación
+se basa en el alcance solicitado y requiere validación del equipo. No se declara GO.
+
+## Historial de procedimientos: qué se conserva realmente
+
+GestionarEjecucionService.iniciar crea un EjecucionPaso por cada paso existente y
+guarda pasoId, cumplido, observación y fecha. No copia instrucción, orden ni criticidad.
+listarPasos obtiene cada definición por PasoRepository.buscarPorId y ordena por
+el orden actual. MantenerPasoService.modificar permite cambiar orden, instrucción
+y esCritico, sin comprobar existencia de ejecuciones ni restringir el estado del
+procedimiento. El repositorio actualiza el mismo paso; no crea una versión histórica.
+
+Por ello, una ejecución antigua conserva resultados/identidades, pero presenta
+la instrucción, criticidad y orden **actuales** de sus pasos asociados. Un paso
+agregado posteriormente no se incorpora automáticamente a su checklist: la lista
+parte de se_ejecucion_paso. No se encontró caso de uso de eliminación de pasos.
+Las FK preservan referencias, no las definiciones originales.
+
+Este comportamiento se deduce del flujo y del modelo, no de una prueba específica
+de edición posterior a una ejecución histórica. Las pruebas reales verifican
+historial de filas, FK, cierre y desactivación; eso no demuestra un snapshot.
+Los nuevos bloqueos que corrigieron los P1 no implementan versionado de pasos.
+
+**Regla aprobada: sin evidencia.** La documentación registra snapshot/versionado
+como pendiente de negocio; no contiene una decisión de inmutabilidad ni aceptación
+firmada de definiciones actuales. No se debe llamar defecto a la ausencia de
+una función que todavía no fue exigida. Sí debe explicitarse el significado del historial.
+
+## Matriz de riesgos y decisiones
+
+Probabilidad cualitativa, condicionada a uso/entorno; no hay frecuencia medida.
+P0 potencial no significa explotación demostrada. Se distingue resultado probado,
+inferencia del código y control de despliegue aún no verificado.
+
+| ID / prioridad | Comportamiento actual y evidencia | Impacto / probabilidad | Mitigación existente | Decisión y acción |
+| --- | --- | --- | --- | --- |
+| H1 P2; P1 si se exige evidencia histórica inmutable | Consulta antigua usa definiciones actuales. Fuente: iniciar/listarPasos, MantenerPasoService.modificar y modelo EjecucionPaso; sin ensayo específico post-edición | Cambia interpretación de lo realizado. Alta cuando se edita un paso utilizado; relevancia depende del requisito | IDs, resultados y fechas conservados; FK evitan referencias inexistentes; estados cerrados protegidos. Nada congela la definición | **A: decisión funcional pendiente.** Negocio debe aceptar semántica actual o exigir snapshot/restricción. No pedir implementar versionado sin esa decisión |
+| F1 P2 residual | Fallo MySQL tras crear bytes: afterCompletion compensa si no hay confirmación. MaterialesArchivoIT.falloFkRealCompensaArchivoCreado demuestra 1452 real y cero fila/archivo | Huérfano si compensación no termina. Baja/indeterminada; aumenta con fallos simultáneos | Compensación real probada para fallo FK; test unitario de fallo de commit simulado | **B**, aceptar rollback ordinario cubierto; no exigir repetir la prueba existente. Mantener F3/F4 como límites, no afirmar cobertura de cualquier fallo MySQL |
+| F2 P2 residual | Escritura filesystem falla antes de persistir: falla la transacción. Adapter intenta borrar archivo parcial si lo creó. Fallo de raíz ocupada por archivo real produce 500 y cero metadatos | Subida indisponible; residuo parcial si también falla su limpieza. Baja con storage sano; indeterminada bajo disco lleno/fallos | UUID, CREATE_NEW, límite de tamaño y limpieza en catch; fallo inicial sin metadatos probado | **B** para contrato funcional actual. Pruebas de disco lleno/escritura interrumpida y limpieza parcial son postergables con aceptación; salud/capacidad del storage es C |
+| F3 P2; P1 si los archivos son críticos/confidenciales sin recuperación | Compensación falla: se registra log y se conserva el error original. Test unitario conservaErrorOriginalSiFallaCompensacion usa mocks; no demuestra limpieza física en ese doble fallo | Bytes sin referencia, consumo de disco/retención. Baja condicionada al entorno; sin medida | Log con referencia; BD fallida no se confirma en el caso de rollback ordinario | **B** con almacenamiento privado, responsable e instrucción de reconciliación. Ensayo real del doble fallo recomendable, no bloqueante universal. Alarmas/retención de logs son C |
+| F4 P1 potencial, no defecto reproducido | Crash después de escribir y antes de compensar, o resultado de commit incierto. Callback elimina para todo estado distinto de STATUS_COMMITTED, incluido UNKNOWN; no hay ensayo de caída/commit ambiguo | Huérfano; en commit ambiguo podría quedar referencia sin bytes si MySQL confirmó y el cliente no lo sabe. Probabilidad indeterminada, condicionada a fallos de proceso/red | Transacción y callback para terminación normal; no mecanismo durable de reconciliación/outbox detectado | **B** solo con aceptación explícita de la falta de recuperación garantizada y de la criticidad de adjuntos. Investigar/reconciliar estado incierto antes de decidir limpieza; no declarar ese commit como rollback seguro. Recuperación operativa y backups son C |
+| F5 P2; P1 si retención indebida tiene impacto crítico | DELETE confirma fila/reindexación en REQUIRES_NEW y luego borra bytes. Fallo I/O real probado: 500, metadatos ausentes y bytes retenidos. Crash entre ambas etapas no ensayado | Bytes huérfanos; borrar de nuevo por API no es reconciliación. Probabilidad baja/indeterminada; aumenta con caídas | Prioriza no dejar fila apuntando a bytes borrados antes del commit; error y log explícitos en fallo detectado | **B** como consistencia eventual conocida, con limpieza operativa. No exigir transacción distribuida. Crash puede no dejar log y requiere inventario; operación concreta es C |
+| F6 P2; P1 para documentos indispensables sin respaldo | Archivo desaparece externamente: descarga 404, fila permanece. pngPermitidoYArchivoFisicoAusente prueba ambas cosas; no autoreparación | Indisponibilidad y metadatos sin contenido. Baja en volumen privado estable; indeterminada sin backup | Error explícito, validación de formato y acceso por padre/rol; no se sustituye por archivo distinto | **C** para backup/restauración conjuntos y permisos que eviten borrado externo; **B** para ausencia de autoreparación funcional. No borrar automáticamente metadatos de un archivo ausente |
+| F7 P2, sin escape demostrado | Traversal en referencia rechazado por clave UUID v4 y validación de padre normalizado; pruebas filesystem/HTTP con centinela intacto | Acceso fuera del directorio por referencia malformada mitigado en casos probados | FormatoArchivo.clave, resolver, UUID generado en servidor; nombre original no define ruta física | **B**, cobertura suficiente para el MVP en rutas de cliente probadas. No confundir estas pruebas con symlinks/junctions |
+| F8 P1 condicionado; P0 si se demostrara fuga de datos sensibles | Raíz/ancestro como symlink o junction/reparse point, o reemplazo de directorio durante I/O: no hay validación de ruta real/ancestros ni pruebas. NOFOLLOW_LINKS solo está en apertura de lectura; CREATE_NEW protege destino preexistente. Comportamiento de junctions depende del proveedor/SO y no está certificado | Acceso o escritura fuera de ubicación prevista si un actor puede alterar filesystem/configuración. Baja bajo raíz privada/ancestros no modificables; indeterminada en volumen compartido | La API no permite suministrar una ruta arbitraria ni crear estos enlaces; claves estrictas y protección del componente final en operaciones específicas | **C**: verificar raíz, ancestros, reparse points, dueño y permisos en SO destino. Hardening/tests reales adicionales son postergables solo bajo esa exclusión operativa. Si el diseño requiere escritores no confiables, aceptación inválida: reconsiderar **A** y diseño antes de cierre |
+
+No hay evidencia para certificar ausencia de symlinks/junctions en producción:
+no se inspeccionó ese entorno. `toAbsolutePath().normalize()` es una comprobación
+léxica del código, no una certificación de la topología real. No se afirma que
+NOFOLLOW_LINKS bloquee cualquier junction o ancestro, ni que eliminar una ruta
+simbólica borre necesariamente su destino. Se requiere verificación por SO/proveedor.
+
+## Recuperación: responsabilidades y límites
+
+La compensación por excepción y la recuperación tras crash son mecanismos distintos.
+La primera existe; no se encontró proceso durable/automático que concilie BD/bytes.
+Ni un 500 de DELETE significa rollback de su fila, ni un 404 posterior significa
+que la limpieza física ya terminó. Un archivo huérfano no es descargable por el
+endpoint de material eliminado, pero eso no acredita que el directorio esté fuera
+de exposición HTTP directa del servidor de despliegue.
+
+Requisitos de recuperación para trasladar a Skill 5, **todavía no ejecutados**:
+
+- Inventario de referencias locales y archivos del volumen para identificar ambas
+  diferencias; revisión separada de operación en curso y commit incierto.
+- Cuarentena/revisión antes de eliminar un supuesto huérfano: una subida aún no
+  confirmada puede haber escrito bytes. Nunca limpieza ciega concurrente con uploads.
+- Restaurar bytes con referencia validada desde respaldo coherente, o acordar con
+  negocio qué hacer con una referencia irrecuperable. No usar datos de DEV como reparación.
+- Retener logs, alertar fallos, designar responsable y verificar backups/restauración
+  de BD y filesystem como conjunto. No hay SLA ni frecuencia de conciliación definidos.
+- Mantener storage privado y persistente, sin exposición estática accidental ni
+  escritores no autorizados; verificar raíz/ancestros y permisos en entorno objetivo.
+
+No se crea aquí un script de reparación ni se autoriza borrado de datos.
+
+## Pareto: máximo tres acciones antes del despliegue
+
+| Orden | Acción | Mayor riesgo reducido | Entrega verificable / fase |
+| --- | --- | --- | --- |
+| 1 | Decidir semántica histórica | H1; evita implementar una solución innecesaria o prometer historial inmutable inexistente | Decisión aprobada del responsable de producto: definiciones actuales aceptadas y explicadas, o requisito nuevo con trabajo pendiente. Skill 4 |
+| 2 | Acordar recuperación y aceptación del límite BD/filesystem | F3–F6, incluidos crash/commit incierto | Aceptación registrada con responsable, criticidad de adjuntos y límites; runbook de reconciliación/cuarentena y ensayo de backup/restauración en entorno aislado antes del despliegue. Aceptación Skill 4; ejecución Skill 5 |
+| 3 | Verificar contención del volumen en SO destino | F7/F8 y retención/exposición de huérfanos | Evidencia de permisos, raíz/ancestros sin redirecciones no autorizadas y storage no publicado directamente. Si no puede excluirse ese vector, prueba/diseño adicionales. Skill 5 |
+
+No se requiere crear nuevas pruebas funcionales en esta tarea. Si el equipo exige
+historial inmutable, adjuntos con recuperación garantizada o storage compartido
+con actores no confiables, esas condiciones dejan de ser aceptaciones pequeñas:
+definir requisito/alcance y verificarlo antes de cerrar la parte afectada.
+
+## Condiciones concretas de cierre para estos riesgos
+
+1. **Pendiente:** negocio aprueba H1. Si acepta definiciones actuales, no queda
+   bloqueante técnico por ausencia de snapshot; si exige originales, H1 pasa a
+   requisito bloqueante hasta implementarlo/probarlo o retirar ese alcance del MVP.
+2. **Pendiente:** aceptación explícita de B (F1–F5/F7 y parte funcional de F6),
+   considerando F4 por separado; debe indicar responsable, limitación comunicada
+   y momento de revisión. No basta el conteo de tests verdes.
+3. **Pendiente de traspaso:** asignar y registrar las verificaciones C como puertas
+   de Skill 5. Pueden quedar pendientes para cerrar la ronda funcional, pero no
+   darse por cumplidas ni olvidarse antes del despliegue.
+
+Con esas decisiones/traspaso documentados, **estos dos grupos de riesgos** no
+obligan por sí solos a nuevas funcionalidades para cerrar Skill 4. Esta revisión
+no declara resueltas ni evalúa las restantes condiciones de la auditoría general.
+Hoy se conserva CIERRE CON CONDICIONES porque las aceptaciones no están acreditadas.
+
+## Evidencia y localización
+
+- [MantenerPasoService](../src/main/java/cl/casol/backend/procedimiento/application/service/MantenerPasoService.java): crear/modificar, líneas 28/37.
+- [GestionarEjecucionService](../src/main/java/cl/casol/backend/ejecucion/application/service/GestionarEjecucionService.java): iniciar, líneas 34–47; listarPasos, 62–71.
+- [EjecucionPaso](../src/main/java/cl/casol/backend/ejecucion/domain/EjecucionPaso.java) y [entidad](../src/main/java/cl/casol/backend/ejecucion/infrastructure/persistence/entity/EjecucionPasoEntity.java): resultados y pasoId, sin copia de definición.
+- [ArchivoMaterialService](../src/main/java/cl/casol/backend/conocimiento/application/service/ArchivoMaterialService.java): eliminar, 33–50; crear/afterCompletion, 60–78.
+- [Filesystem](../src/main/java/cl/casol/backend/shared/infrastructure/storage/AlmacenamientoArchivoFilesystemAdapter.java): guardar/limpieza, 22–42; leer, 46–58; eliminar/compensar, 62–70; resolver, 73–78.
+- [FormatoArchivo](../src/main/java/cl/casol/backend/shared/application/archivo/FormatoArchivo.java): clave UUID y firmas; no valida topología del filesystem.
+- [MaterialesArchivoIT — referencia no disponible](../../docs/auditoria/REFERENCIAS_HISTORICAS.md#archivos-no-disponibles): falloFkRealCompensaArchivoCreado, falloFilesystemNoPersisteMetadatos, falloDeBorradoExponeLimpiezaPendienteTrasCommit, pngPermitidoYArchivoFisicoAusente, referenciasInsegurasNoEscapanDelDirectorio y C3 concurrente.
+- [ArchivoMaterialServiceTest](../src/test/java/cl/casol/backend/conocimiento/application/service/ArchivoMaterialServiceTest.java): compensación/commit y fallo de compensación, con dependencias simuladas.
+- [Pruebas filesystem](../src/test/java/cl/casol/backend/shared/infrastructure/storage/AlmacenamientoArchivoFilesystemAdapterTest.java): I/O temporal/traversal; no symlinks/junctions.
+- [Resultados de materiales](materiales-integracion.md), [procedimientos](procedimientos-ejecuciones-resultados-integracion.md), [ADR de archivos](adr/ADR-002-almacenamiento-archivos.md) y [correcciones concurrentes](concurrencia-integracion.md).
+
+Creado: este documento. Actualizada: auditoria-cobertura-riesgos-skill4.md para
+enlazar y precisar solo estas condiciones. Ningún otro archivo modificado por esta tarea.

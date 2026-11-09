@@ -1,0 +1,62 @@
+# Arquitectura
+
+## Organización comprobada
+
+Un único proyecto Maven y una aplicación Spring Boot
+([BackendApplication](../src/main/java/cl/casol/backend/BackendApplication.java))
+contienen los dominios bajo `cl.casol.backend`. La organización es de monolito
+modular con capas hexagonales por dominio; no hay proyectos Maven separados
+por módulo ni verificación automática de sus límites identificada en las pruebas.
+
+| Paquete | Responsabilidad implementada |
+| --- | --- |
+| `catalogo` | Sistemas, módulos de sistemas, hardware y frecuencias. |
+| `identidad` | Login, usuarios, roles, departamentos, responsables y contactos. |
+| `conocimiento` | Conocimientos, síntomas, causas, pruebas asociadas, soluciones, asignaciones, materiales y búsqueda. |
+| `procedimiento` | Procedimientos, publicación, pasos y sus materiales. |
+| `ejecucion` | Inicio, consulta, actualización de pasos, finalización y cancelación de ejecuciones. |
+| `seguimiento` | Registro de resultados y consulta de efectividad de soluciones. |
+| `shared` | Seguridad HTTP, errores, health y contratos/adapter de archivos compartidos. |
+
+`clasificacion` existe como directorio, pero no contiene código Java; no se presenta
+como funcionalidad implementada.
+
+## Capas y flujo
+
+- **Domain:** modelos, enums y excepciones del negocio.
+- **Application:** casos de uso y puertos de salida para persistencia, contraseñas,
+  tokens y almacenamiento. Los servicios actuales usan anotaciones Spring y
+  gestión de transacciones; no son una capa completamente ajena al framework.
+- **Infrastructure:** controllers y DTO HTTP, entidades JPA, mappers, repositorios
+  Spring Data, adapters JDBC, JWT, BCrypt y filesystem.
+
+Flujo habitual:
+
+```text
+HTTP -> Spring Security/JWT -> controller y DTO -> servicio Application
+     -> puerto de salida -> adapter JPA/JDBC/filesystem -> respuesta HTTP
+```
+
+Los controllers actuales llaman directamente a servicios; no hay una interfaz de
+puerto de entrada uniforme. El puerto
+[MaterialApoyoRepository](../src/main/java/cl/casol/backend/conocimiento/application/port/out/MaterialApoyoRepository.java)
+se implementa mediante un adapter que convierte dominio/JPA con un mapper.
+[AlmacenamientoArchivoPort](../src/main/java/cl/casol/backend/shared/application/port/out/AlmacenamientoArchivoPort.java)
+se implementa mediante filesystem. `MultipartFile` se convierte en un contrato
+propio en Infrastructure antes de invocar Application.
+
+La persistencia combina JPA con JDBC para búsqueda; ver
+[base de datos](base-de-datos.md). Las operaciones de archivos requieren un orden
+explícito entre BD y filesystem; ver [materiales](materiales-archivo.md).
+
+## Límites actuales
+
+Existen referencias entre dominios: Conocimiento utiliza modelos de Catálogo e
+Identidad; Procedimiento, Ejecución y Seguimiento utilizan Identidad. Procedimiento
+reutiliza el modelo, puerto y servicios de materiales de Conocimiento, y también
+sus DTO de Infrastructure. La reutilización existe, pero ese último acoplamiento
+impide describir los módulos como totalmente aislados.
+
+La decisión observada y las motivaciones pendientes se registran en
+[ADR-001](adr/ADR-001-arquitectura-backend.md). Los pendientes transversales están
+centralizados en el [README](../README.md#pendientes-técnicos-detectados).

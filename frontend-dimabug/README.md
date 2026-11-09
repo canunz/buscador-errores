@@ -1,48 +1,14 @@
-# Buscador de Errores (DimaBug) — Frontend Angular
+# Frontend DimaBug
 
-SPA Angular 19 (**sin Django, sin Bootstrap**) que consume el API Spring Boot.
+SPA Angular 19 standalone, TypeScript, RxJS y estilos propios. Consume Spring Boot; el acceso público no carga el shell administrativo.
 
-## Requisitos
+- [Documentación vigente](../docs/README.md) y [arquitectura](../docs/03_Arquitectura/Arquitectura_Frontend.md).
+- Instalación reproducible de dependencias: `npm ci`; desarrollo: `npm start` (4200, proxy API 9090).
+- QA: `npm test -- --watch=false --browsers=ChromeHeadless`; build: `npm run build`.
+- [Resultados y límites](../docs/07_Pruebas/Resultados_Pruebas.md).
 
-- Node.js 18+ (recomendado 20/22)
-- Spring Boot en `http://localhost:8080`
-  - En este PC el puerto `8081` suele estar ocupado por Apache (`httpd`), no por Spring.
+Rutas públicas: `/autoservicio`, `/autoservicio/soluciones/:id`, alias `/autoservicio/:id` y `/chatbot`. Las rutas privadas conservan sus guards y permisos backend.
 
-## Cómo levantar
+La base NFC/QR se configura mediante `publicPortalUrl` en los environments, o como preferencia administrativa del navegador. Sin base accesible se copia una ruta de prueba; no se exige un dominio definitivo ni se programan etiquetas físicas. No usar localhost para etiquetas físicas.
 
-```powershell
-cd C:\Capstone\buscador-errores\frontend-dimabug
-npm install
-npm start
-```
-
-Abre: **http://localhost:4200**
-
-El proxy (`proxy.conf.json`) reenvía `/api/*` → `http://localhost:8080/api/*`.
-
-Si Spring usa otro puerto, edita `proxy.conf.json`.
-
-## Rutas
-
-| Ruta | Descripción |
-|------|-------------|
-| `/login` | Inicio de sesión |
-| `/recuperar` | Recuperar contraseña |
-| `/inicio` | Home autenticado |
-| `/usuarios` | CRUD usuarios (admin) |
-
-## Endpoints esperados (Spring)
-
-Base: `http://localhost:8080`
-
-- `POST /api/auth/login`
-- `POST /api/auth/recuperar/email|codigo|password`
-- `GET/POST/PUT/DELETE /api/usuarios`
-- `PATCH /api/usuarios/{id}/estado`
-- `GET /api/roles`
-
-## Stack
-
-- Angular 19 standalone
-- CSS propio (diseño DimaBug)
-- Proxy local hacia Spring Boot
+Producción utiliza mismo origen de API por defecto y no el proxy de ng serve. No introducir credenciales o tokens OAuth en los environments. Las guías QA antiguas en `docs/` son antecedentes fechados, no el estado vigente.

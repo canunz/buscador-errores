@@ -1,0 +1,61 @@
+{
+  "fecha": "2026-11-07",
+  "alcance": "Asistente y configuración de automatizaciones dentro de los pasos existentes",
+  "backend": {
+    "suite": "mvnw.cmd test",
+    "tests": 1009,
+    "fallos": 0,
+    "errores": 0,
+    "flujo_jpa_tests": 27,
+    "preparar_pos_seis_pasos": "OK en H2 aislada",
+    "folios_envio_vs_confirmacion": "OK"
+  },
+  "frontend": {
+    "tests": 331,
+    "resultado": "SUCCESS",
+    "build": "OK",
+    "advertencias": [
+      "Presupuesto inicial 1.57 MB sobre 1.50 MB",
+      "CSS de conocimiento e inicio supera presupuesto de advertencia"
+    ]
+  },
+  "mysql_local": {
+    "schema": "dima_bug_staging",
+    "host": "127.0.0.1:3307",
+    "migracion04": "7 columnas/condiciones verificadas",
+    "hibernate": "OK",
+    "ejecucion_pasos_leidos": 60,
+    "mapeos_automatizacion": "OK",
+    "procedimiento_original": 1,
+    "cantidad_pasos_original": 6,
+    "datos_originales": "sin cambios arbitrarios"
+  },
+  "correos": {
+    "proveedor": "SIMULADO",
+    "envios_reales": false,
+    "persistencia": [
+      "Configuración del paso",
+      "Catálogo de sucursales",
+      "Contexto de ejecución"
+    ],
+    "dominio": "dimarsa.cl"
+  },
+  "limitaciones": [
+    "Gmail real pendiente de integración autorizada",
+    "Destinatarios de Control Cajas se registran desde Agregar nuevo correo y Guardar paso",
+    "QA visual interactiva no completada por bloqueo del entorno de navegador; componentes, build, HTTP/seguridad y persistencia sí probados"
+  ],
+  "errores_resueltos": [
+    "Cambio de paso legado no crítico a crítico conserva aprobación humana",
+    "Chrome de pruebas requiere ejecución fuera del sandbox",
+    "Classpath temporal de Spring Boot expirado: se regenera desde dependencias locales antes de verificar o reiniciar"
+  ],
+  "runtime": {
+    "previous_pid": 51160,
+    "pid": 15980,
+    "port": 9090,
+    "health_status": 200,
+    "perfil": "staging",
+    "correo": "SIMULADO"
+  }
+}
