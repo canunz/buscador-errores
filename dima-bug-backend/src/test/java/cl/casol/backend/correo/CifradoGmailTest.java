@@ -12,4 +12,6 @@ class CifradoGmailTest {
     @Test void rechazaManipulacionYCifradoConOtraClave(){var c=new CifradoGmailAes(config(clave()));String valor=c.cifrar("qa","gmail:refresh");assertThrows(GmailException.class,()->c.descifrar(valor.substring(0,valor.length()-5)+"AAAAA","gmail:refresh"));byte[] key=new byte[32];key[0]=1;var otro=new CifradoGmailAes(config(Base64.getEncoder().encodeToString(key)));assertThrows(GmailException.class,()->otro.descifrar(valor,"gmail:refresh"));}
     @Test void claveAusenteNoPermiteCifrar(){var c=new CifradoGmailAes(config(""));assertFalse(c.disponible());assertThrows(GmailException.class,()->c.cifrar("qa","gmail:refresh"));}
     @Test void configNoAceptaCallbackExternoSinTls(){var c=new GmailConfig(true,false,"id","secret","http://servidor-remoto/login/oauth2/code/google","qa@dimarsa.cl",clave(),"http://localhost:4200/admin/gmail");assertFalse(c.configurado());}
+    @Test void aceptaRemitenteGmailCom(){var c=new GmailConfig(true,false,"id-qa","secreto-qa","http://localhost:9090/login/oauth2/code/google","dimabug507@gmail.com",clave(),"http://localhost:4200/admin/gmail");assertTrue(c.configurado());}
+    @Test void rechazaRemitenteInvalido(){var c=new GmailConfig(true,false,"id-qa","secreto-qa","http://localhost:9090/login/oauth2/code/google","no-es-correo",clave(),"http://localhost:4200/admin/gmail");assertFalse(c.configurado());}
 }

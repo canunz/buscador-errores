@@ -9,6 +9,7 @@ import cl.casol.backend.identidad.domain.Rol;
 import cl.casol.backend.identidad.domain.Usuario;
 import cl.casol.backend.identidad.domain.exception.CodigoAccesoInvalidoException;
 import cl.casol.backend.identidad.domain.exception.CorreoNoRegistradoException;
+import cl.casol.backend.identidad.domain.exception.CredencialesInvalidasException;
 import cl.casol.backend.identidad.domain.exception.ReenvioCodigoAnticipadoException;
 import cl.casol.backend.identidad.domain.exception.UsuarioInactivoException;
 import org.junit.jupiter.api.Test;
@@ -184,12 +185,87 @@ class AutenticarUsuarioServiceTest {
         verify(codigos, never()).guardar(any());
     }
 
+    @Test
+    void administradorPideIngresoConPasswordSinEnviarCodigo() {
+        when(usuarios.buscarPorEmail("admin@example.com")).thenReturn(Optional.of(usuario(true, "ADMINISTRADOR", "admin@example.com")));
+
+        SolicitudCodigo solicitud = service.solicitarCodigo("admin@example.com");
+
+        assertEquals(SolicitudCodigo.PASSWORD, solicitud.modo());
+        verifyNoInteractions(envio, codigos);
+    }
+
+    @Test
+    void soporteIngresaConPassword() {
+        when(usuarios.buscarPorEmail("soporte@example.com")).thenReturn(Optional.of(usuario(true, "SOPORTE", "soporte@example.com")));
+        when(encoder.coincide("ClaveSegura", "hash-interno")).thenReturn(true);
+
+        Usuario resultado = service.autenticar("soporte@example.com", "ClaveSegura");
+
+        assertEquals(1, resultado.getId());
+        verify(usuarios).registrarIngreso(eq(1), any());
+    }
+
+    @Test
+    void usuarioDeCatalogoNoIngresaConPassword() {
+        when(usuarios.buscarPorEmail("user@example.com")).thenReturn(Optional.of(usuario(true)));
+
+        assertThrows(CredencialesInvalidasException.class, () -> service.autenticar("user@example.com", "hash-interno"));
+        verify(encoder, never()).coincide(anyString(), anyString());
+    }
+
+    @Test
+    void recuperarEnviaCodigoAlAdministrador() {
+        when(usuarios.buscarPorEmail("admin@example.com")).thenReturn(Optional.of(usuario(true, "ADMINISTRADOR", "admin@example.com")));
+        when(codigos.buscarUltimo(1)).thenReturn(Optional.empty());
+        when(encoder.codificar(anyString())).thenReturn("hash-codigo");
+
+        SolicitudCodigo solicitud = service.solicitarRecuperacion("admin@example.com");
+
+        assertEquals(SolicitudCodigo.CODIGO, solicitud.modo());
+        verify(envio).enviarRecuperacion(eq("admin@example.com"), anyString(), anyString(), eq(5));
+    }
+
+    @Test
+    void recuperarEnviaCodigoACualquierCuentaActiva() {
+        when(usuarios.buscarPorEmail("user@example.com")).thenReturn(Optional.of(usuario(true)));
+        when(codigos.buscarUltimo(1)).thenReturn(Optional.empty());
+        when(encoder.codificar(anyString())).thenReturn("hash-codigo");
+
+        SolicitudCodigo solicitud = service.solicitarRecuperacion("user@example.com");
+
+        assertEquals(SolicitudCodigo.CODIGO, solicitud.modo());
+        verify(envio).enviarRecuperacion(eq("user@example.com"), anyString(), anyString(), eq(5));
+    }
+
+    @Test
+    void completarRecuperacionCambiaElHashYConsumeElCodigo() {
+        when(usuarios.buscarPorEmail("admin@example.com")).thenReturn(Optional.of(usuario(true, "ADMINISTRADOR", "admin@example.com")));
+        when(codigos.buscarPendiente(1)).thenReturn(Optional.of(codigo(AHORA.minusMinutes(1), 0, false)));
+        when(encoder.coincide("123456", "hash-codigo")).thenReturn(true);
+        when(encoder.codificar("NuevaClave1")).thenReturn("hash-nuevo");
+        when(usuarios.guardar(any())).thenAnswer(i -> i.getArgument(0));
+
+        service.completarRecuperacion("admin@example.com", "123456", "NuevaClave1");
+
+        ArgumentCaptor<Usuario> guardado = ArgumentCaptor.forClass(Usuario.class);
+        verify(usuarios).guardar(guardado.capture());
+        assertEquals("hash-nuevo", guardado.getValue().getPasswordHash());
+        ArgumentCaptor<CodigoAcceso> codigoUsado = ArgumentCaptor.forClass(CodigoAcceso.class);
+        verify(codigos).guardar(codigoUsado.capture());
+        assertTrue(codigoUsado.getValue().usado());
+    }
+
     private CodigoAcceso codigo(LocalDateTime creadoEn, int intentos, boolean usado) {
         return new CodigoAcceso(10L, 1, "hash-codigo", creadoEn, creadoEn.plusMinutes(5), intentos, usado);
     }
 
     private Usuario usuario(boolean activo) {
-        Rol rol = new Rol(1, "USUARIO", null, true, null, null);
-        return new Usuario(1, rol, "Usuario", "user@example.com", "hash-interno", activo, null, null);
+        return usuario(activo, "USUARIO", "user@example.com");
+    }
+
+    private Usuario usuario(boolean activo, String rolNombre, String email) {
+        Rol rol = new Rol(1, rolNombre, null, true, null, null);
+        return new Usuario(1, rol, "Usuario", email, "hash-interno", activo, null, null);
     }
 }

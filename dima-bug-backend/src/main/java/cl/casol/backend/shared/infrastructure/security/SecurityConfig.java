@@ -94,7 +94,10 @@ public class SecurityConfig {
                                 "/api/health",
                                 "/api/auth/login",
                                 "/api/auth/codigo",
-                                "/api/auth/codigo/verificar"
+                                "/api/auth/codigo/verificar",
+                                "/api/auth/recuperar/email",
+                                "/api/auth/recuperar/codigo",
+                                "/api/auth/recuperar/password"
                         ).permitAll()
 
                         .anyRequest().authenticated()

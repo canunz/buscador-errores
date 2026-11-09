@@ -22,7 +22,7 @@
       <h1>Recuperar contraseña</h1>
       <p>
         @if (step === 'email') {
-          Ingrese su correo institucional
+          Ingrese el correo de su cuenta
         } @else if (step === 'code') {
           Ingrese el código de verificación
         } @else {
@@ -110,10 +110,10 @@
             <input
               id="code"
               type="text"
-              maxlength="5"
+              maxlength="6"
               inputmode="numeric"
               formControlName="code"
-              placeholder="Código de 5 dígitos"
+              placeholder="Código de 6 dígitos"
               autocomplete="one-time-code"
             />
           </div>

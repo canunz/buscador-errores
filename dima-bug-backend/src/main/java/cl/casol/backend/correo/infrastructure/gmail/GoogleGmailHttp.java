@@ -44,7 +44,10 @@ public class GoogleGmailHttp implements GoogleGmailPort {
     private OAuth2AuthorizationRequest solicitud(String estado,String verificador){
         var r=registro();return OAuth2AuthorizationRequest.authorizationCode().authorizationUri(AUTH).clientId(r.getClientId()).redirectUri(r.getRedirectUri()).scopes(Set.of(GmailConfig.SCOPE)).state(estado)
             .attributes(a->a.put(PkceParameterNames.CODE_VERIFIER,verificador))
-            .additionalParameters(a->{a.put("access_type","offline");a.put("prompt","consent select_account");a.put("include_granted_scopes","false");a.put("hd","dimarsa.cl");a.put("login_hint",config.remitente);a.put(PkceParameterNames.CODE_CHALLENGE,pkce(verificador));a.put(PkceParameterNames.CODE_CHALLENGE_METHOD,"S256");}).build();
+            .additionalParameters(a->{a.put("access_type","offline");a.put("prompt","consent select_account");a.put("include_granted_scopes","false");
+                String cuenta=config.remitente==null?"":config.remitente.strip().toLowerCase();
+                if(cuenta.endsWith("@dimarsa.cl"))a.put("hd","dimarsa.cl");
+                a.put("login_hint",config.remitente);a.put(PkceParameterNames.CODE_CHALLENGE,pkce(verificador));a.put(PkceParameterNames.CODE_CHALLENGE_METHOD,"S256");}).build();
     }
     private String pkce(String valor){try{return Base64.getUrlEncoder().withoutPadding().encodeToString(java.security.MessageDigest.getInstance("SHA-256").digest(valor.getBytes(java.nio.charset.StandardCharsets.US_ASCII)));}catch(Exception ex){throw new GmailException(CONFIGURACION);}}
     public String autorizacion(String estado,String verificador){return solicitud(estado,verificador).getAuthorizationRequestUri();}
