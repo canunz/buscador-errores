@@ -21,7 +21,7 @@ export class ProcedimientoListaComponent implements OnInit {
   private readonly router = inject(Router);
 
   readonly esAdministrador = this.auth.isAdmin;
-  readonly puedeGestionar = this.auth.isStaff;
+  readonly puedeGestionar = this.auth.isAdmin;
   items: Procedimiento[] = [];
   loading = false;
   error = '';

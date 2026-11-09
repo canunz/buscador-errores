@@ -1,0 +1,54 @@
+<fieldset class="configuracion" [disabled]="disabled">
+  <section>
+    <h3>Acción del paso</h3>
+    <fieldset class="acciones">
+      <legend>¿Qué debe hacer el técnico?</legend>
+      @for(accion of acciones;track accion.modo){
+        <label class="accion" [class.seleccionada]="accionSeleccionada===accion.modo">
+          <input type="radio" name="accionPaso" [value]="accion.modo" [checked]="accionSeleccionada===accion.modo" (change)="cambiarModalidad(accion.modo)" />
+          <span>{{ accion.nombre }}</span>
+        </label>
+      }
+    </fieldset>
+    @if(modalidad==='INFORMATIVO'){
+      <p class="nota">Este paso conserva su comportamiento informativo.</p>
+    }
+    @if(modalidad==='AUTOMATICO'){
+      <p class="nota">Este paso conserva su acción automática: validar el contexto de la sucursal. Selecciona otra acción solo si deseas cambiarla.</p>
+    }
+    @if(critico){<p class="nota">Paso crítico: requiere verificación antes de continuar.</p>}
+  </section>
+
+  @if(esCorreo){
+    <section>
+      <h3>Configuración del correo</h3>
+      <app-destinatarios-editor [value]="config.destinatarios" (valueChange)="config.destinatarios=$event;emitir()" [disabled]="disabled" titulo="Destinatarios" />
+      <label>Asunto<input [(ngModel)]="config.asunto" (ngModelChange)="emitir()" [ngModelOptions]="{standalone:true}" maxlength="200" /></label>
+      <label>Mensaje<textarea rows="4" [(ngModel)]="config.mensaje" (ngModelChange)="emitir()" [ngModelOptions]="{standalone:true}" maxlength="2000" placeholder="Escribe qué necesitas solicitar o comunicar."></textarea></label>
+      @if(modalidad==='SOLICITAR_EVIDENCIA'){
+        <fieldset class="evidencias"><legend>Evidencias requeridas</legend><div class="opciones">
+          @for(e of opcionesEvidencia;track e.id){<label class="opcion"><input type="checkbox" [checked]="config.evidenciasRequeridas.includes(e.id)" (change)="alternarEvidencia(e.id)" /><span>{{ e.nombre }}</span></label>}
+        </div><small>Selecciona al menos una evidencia.</small></fieldset>
+      }
+    </section>
+  }
+
+  @if(esCorreo || modalidad==='INFORMATIVO' || modalidad==='AUTOMATICO'){
+    <details class="avanzado">
+      <summary>Opciones avanzadas</summary>
+      @if(esAccion){<label class="opcion"><input type="checkbox" [(ngModel)]="config.requiereAprobacion" (ngModelChange)="emitir()" [disabled]="disabled||critico" [ngModelOptions]="{standalone:true}" /><span>Requiere aprobación humana @if(critico){<small>Obligatoria en pasos críticos</small>}</span></label>}
+      <label>¿Cuándo se completa el paso?<select [(ngModel)]="config.condicionFinalizacion" (ngModelChange)="ajustarCondicion()" [ngModelOptions]="{standalone:true}">
+        @if(modalidad==='INFORMATIVO'){<option value="CONFIRMACION_USUARIO">Al confirmar la lectura</option>@if(!critico){<option value="AL_ACTIVAR">Al mostrar la información</option>}}
+        @if(modalidad==='SOLICITAR_EVIDENCIA'){<option value="EVIDENCIAS_APROBADAS">Al aprobar las evidencias</option>@if(!critico){<option value="EVIDENCIAS_RECIBIDAS">Al recibir evidencias válidas</option>}}
+        @if(modalidad==='ENVIAR_CORREO'){<option value="ENVIO_REGISTRADO">Al registrar el envío</option><option value="RESPUESTA_VALIDADA">Al validar la respuesta</option>}
+        @if(modalidad==='AUTOMATICO'){<option value="ACCION_EXITOSA">Cuando la acción finaliza correctamente</option>}
+      </select></label>
+      @if(modalidad==='SOLICITAR_EVIDENCIA'||(modalidad==='ENVIAR_CORREO'&&config.condicionFinalizacion==='RESPUESTA_VALIDADA')){
+        <div class="campos">
+          <label>Plazo de respuesta (horas)<input type="number" min="1" max="8760" [(ngModel)]="config.plazoRespuestaHoras" (ngModelChange)="emitir()" [ngModelOptions]="{standalone:true}" /></label>
+          <label>Recordatorios (horas)<input [ngModel]="reglas" (ngModelChange)="cambiarReglas($event)" [ngModelOptions]="{standalone:true}" placeholder="24,72" /><small>Separados por coma. Vacío desactiva recordatorios.</small></label>
+        </div>
+      }
+    </details>
+  }
+</fieldset>

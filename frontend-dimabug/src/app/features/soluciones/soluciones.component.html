@@ -77,11 +77,11 @@
               <td>{{ item.conocimientoTitulo || '—' }}</td>
               <td><span [class.solucion-inactiva]="item.activo === false">{{ item.activo === false ? 'Inactiva' : 'Activa' }}</span></td>
               <td>
-                <span>{{ item.autoservicio ? 'Habilitado' : 'Deshabilitado' }}</span>
+                @if (!esAdministrador()) {<span>{{ item.autoservicio ? 'Activado' : 'Desactivado' }}</span>}
                 @if (item.activo === false && item.autoservicio) { <small>No disponible mientras esté inactiva</small> }
                 @if (esAdministrador()) {
-                  <button type="button" class="autoservicio-control" [disabled]="operando" (click)="cambiarAutoservicio(item)">
-                    {{ item.autoservicio ? 'Deshabilitar autoservicio' : 'Habilitar autoservicio' }}
+                  <button type="button" class="autoservicio-control" role="switch" [class.activado]="item.autoservicio" [attr.aria-checked]="!!item.autoservicio" [attr.aria-label]="'Autoservicio de '+item.nombre" [attr.aria-busy]="autoservicioEnCurso===item.id" [disabled]="operando || (item.activo===false && !item.autoservicio)" (click)="cambiarAutoservicio(item)">
+                    <span class="switch-pista" aria-hidden="true"><span></span></span>{{ autoservicioEnCurso===item.id?'Actualizando…':item.autoservicio?'Activado':'Desactivado' }}
                   </button>
                 }
               </td>
@@ -155,6 +155,8 @@
             </ul>
           </section>
         }
+        @if(esAdministrador() && detalle.activo!==false && detalle.autoservicio){<app-enlace-nfc [solucionId]="detalle.id" />}
+        @if(esAdministrador()){<app-materiales-solucion [solucionId]="detalle.id" [activa]="detalle.activo!==false" />}
         @if (detalle.conocimientoId) {
           <section class="detalle-bloque">
             <a class="btn-crear" [routerLink]="['/conocimiento', detalle.conocimientoId]">Abrir guía</a>

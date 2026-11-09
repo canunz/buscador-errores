@@ -1,0 +1,28 @@
+import {TestBed} from '@angular/core/testing';
+import {provideRouter,Router} from '@angular/router';import {RouterTestingHarness} from '@angular/router/testing';
+import {of,throwError} from 'rxjs';import {routes} from '../../app.routes';
+import {AuthService} from '../../core/services/auth.service';import {ChatbotService} from '../../core/services/chatbot.service';
+import {AutoservicioService} from '../../core/services/autoservicio.service';
+describe('Portal público sin sesión',()=>{
+ let api:jasmine.SpyObj<AutoservicioService>;let autenticado=false;
+ beforeEach(()=>{autenticado=false;
+  api=jasmine.createSpyObj('portal',['buscar','detalle','materiales','enlace']);
+  api.buscar.and.returnValue(of([{id:1,titulo:'Configurar equipo',instrucciones:'Instrucciones públicas',tipo:'PASOS'}]));
+  api.detalle.and.returnValue(of({id:1,titulo:'Configurar equipo',instrucciones:'Instrucciones públicas',tipo:'PASOS'}));
+  api.materiales.and.returnValue(of([{id:2,nombre:'Video autorizado',tipo:'VIDEO',url:'https://drive.google.com/file/d/qa/view',publicado:true}]));
+  api.enlace.and.callFake(url=>url.startsWith('https://')?url:null);
+  TestBed.configureTestingModule({providers:[provideRouter(routes),{provide:AuthService,useValue:{isAuthenticated:()=>autenticado,isAdmin:()=>false,isStaff:()=>false}},{provide:ChatbotService,useValue:{consultar:()=>of({mensaje:'Ayuda pública',soluciones:[]})}},{provide:AutoservicioService,useValue:api}]});
+ });
+ it('abre el chatbot anónimo sin menú administrativo',async()=>{const h=await RouterTestingHarness.create('/chatbot');expect(TestBed.inject(Router).url).toBe('/chatbot');expect(h.routeNativeElement!.textContent).toContain('Asistente DimaBug');expect(h.routeNativeElement!.textContent).not.toContain('Administración');expect(h.routeNativeElement!.querySelector('input[type=password]')).toBeNull();});
+ it('abre buscador y consulta pública sin login',async()=>{const h=await RouterTestingHarness.create('/autoservicio');expect(h.routeNativeElement!.querySelector('label')!.textContent).toContain('Buscar');expect(h.routeNativeElement!.textContent).toContain('Configurar equipo');expect(api.buscar).toHaveBeenCalledWith('');});
+ it('detalle muestra instrucciones y materiales con enlaces seguros',async()=>{const h=await RouterTestingHarness.create('/autoservicio/1');expect(api.detalle).toHaveBeenCalledWith(1);expect(api.materiales).toHaveBeenCalledWith(1);expect(h.routeNativeElement!.textContent).toContain('Video autorizado');const a=h.routeNativeElement!.querySelector('a[target=_blank]')!;expect(a.getAttribute('rel')).toContain('noreferrer');expect(h.routeNativeElement!.textContent).not.toContain('Editar');});
+ it('un ID privado no muestra detalle ni solicita sus archivos',async()=>{api.detalle.and.returnValue(throwError(()=>new Error('El recurso no está disponible.')));const h=await RouterTestingHarness.create('/autoservicio/999');expect(h.routeNativeElement!.textContent).toContain('no está disponible');expect(api.materiales).not.toHaveBeenCalled();expect(h.routeNativeElement!.textContent).not.toContain('Instrucciones públicas');});
+ it('las rutas administrativas conservan el guard',async()=>{await RouterTestingHarness.create('/soluciones');expect(TestBed.inject(Router).url).toBe('/login');});
+ for(const sesion of [false,true])it('abre enlace NFC con sesión '+sesion,async()=>{autenticado=sesion;const h=await RouterTestingHarness.create('/autoservicio/soluciones/1');expect(TestBed.inject(Router).url).toBe('/autoservicio/soluciones/1');expect(h.routeNativeElement!.textContent).toContain('Instrucciones públicas');expect(api.detalle).toHaveBeenCalledWith(1);expect(h.routeNativeElement!.textContent).not.toContain('Administración');});
+ it('los enlaces anteriores del portal siguen abriendo el mismo ID',async()=>{const h=await RouterTestingHarness.create('/autoservicio/1');expect(h.routeNativeElement!.textContent).toContain('Configurar equipo');expect(api.detalle).toHaveBeenCalledWith(1);});
+ it('un ID NFC inválido muestra recurso no disponible y no lista otras soluciones',async()=>{const h=await RouterTestingHarness.create('/autoservicio/soluciones/incorrecto');expect(h.routeNativeElement!.textContent).toContain('Recurso no disponible');expect(api.detalle).not.toHaveBeenCalled();expect(api.buscar).not.toHaveBeenCalled();});
+ for(const path of ['/autoservicio','/autoservicio/soluciones/1'])for(const ancho of [360,1280])it('se adapta al ancho '+ancho+' en '+path,async()=>{
+  const h=await RouterTestingHarness.create(path);const frame=document.createElement('iframe');frame.style.width=ancho+'px';frame.style.height='700px';const loaded=new Promise<void>(resolve=>frame.onload=()=>resolve());
+  frame.srcdoc='<!doctype html><html><head>'+Array.from(document.querySelectorAll('style')).map(s=>s.outerHTML).join('')+'<style>*{box-sizing:border-box}body{margin:0}</style></head><body>'+h.routeNativeElement!.outerHTML+'</body></html>';document.body.appendChild(frame);try{await loaded;expect(frame.contentDocument!.documentElement.scrollWidth).toBeLessThanOrEqual(ancho);}finally{frame.remove();}
+ });
+});

@@ -40,5 +40,5 @@ export const PUBLIC_API_PATHS = ['/api/auth/login', '/api/health'] as const;
 
 export function isPublicApiUrl(url: string): boolean {
   const path = backendApiPath(url);
-  return path === '/auth/login' || path === '/health';
+  return path === '/auth/login' || path === '/health' || (path !== null && (/^\/publico\/soluciones(?:\/\d+(?:\/materiales(?:\/\d+\/archivo)?)?)?$/.test(path) || path === '/publico/chatbot/consultas'));
 }

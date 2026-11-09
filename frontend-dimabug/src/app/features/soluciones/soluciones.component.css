@@ -248,3 +248,5 @@
 .sol-page .toolbar { display: flex; gap: 12px; flex-wrap: wrap; }
 .sol-page button:disabled { opacity: 0.5; cursor: default; }
 @media (max-width: 720px) { .sol-page .toolbar { flex-direction: column; align-items: stretch; } }
+
+.autoservicio-control{display:inline-flex;align-items:center;gap:8px;border:0!important;background:transparent!important;color:#657189!important;font:inherit;padding:6px 0;cursor:pointer}.switch-pista{display:inline-flex;width:38px;height:22px;background:#929bab;border-radius:15px;align-items:center;padding:3px;box-sizing:border-box}.switch-pista span{background:white;width:16px;height:16px;border-radius:50%;transition:transform .15s}.autoservicio-control.activado{color:#14734a!important}.activado .switch-pista{background:#168253}.activado .switch-pista span{transform:translateX(16px)}.autoservicio-control:disabled{opacity:.55;cursor:default}.autoservicio-control:focus-visible{outline:3px solid #6598f1;outline-offset:4px}

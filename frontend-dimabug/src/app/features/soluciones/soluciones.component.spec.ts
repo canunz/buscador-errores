@@ -1,3 +1,4 @@
+import { AutoservicioService } from '../../core/services/autoservicio.service';
 import { TestBed } from '@angular/core/testing';
 import { ActivatedRoute, convertToParamMap, provideRouter } from '@angular/router';
 import { of, throwError, Subject } from 'rxjs';
@@ -12,12 +13,12 @@ describe('QA-009 administración de soluciones', () => {
   const item: SolucionCatalogoItem = { id: 8, titulo: 'Título', descripcion: 'Instrucciones completas', nombre: 'Título', pasos: 'Instrucciones completas', anexos: '', asignaciones: [], conocimientoId: 4, conocimientoTitulo: 'Caso', orden: 1, tipo: 'PASOS', activo: true, autoservicio: false };
   const solucion: Solucion = { id: 8, titulo: 'Título', descripcion: 'Instrucciones completas', tipo: 'PASOS', orden: 1, activo: true, autoservicio: false };
   beforeEach(() => {
-    admin = true;
+    admin = true;item.autoservicio=false;item.activo=true;
     api = jasmine.createSpyObj('api', ['listarSolucionesCatalogo', 'listar', 'cambiarEstadoSolucion', 'cambiarAutoservicioSolucion', 'crearSolucion', 'modificarSolucion']);
     api.listarSolucionesCatalogo.and.returnValue(of([item])); api.listar.and.returnValue(of([]));
     TestBed.configureTestingModule({ providers: [provideRouter([]),
       { provide: ActivatedRoute, useValue: { snapshot: { queryParamMap: convertToParamMap({}) } } },
-      { provide: ConocimientoService, useValue: api }, { provide: AuthService, useValue: { isAdmin: () => admin } }] });
+      { provide: AutoservicioService,useValue:{materiales:()=>of([]),enlace:()=>null} },{ provide: ConocimientoService, useValue: api }, { provide: AuthService, useValue: { isAdmin: () => admin } }] });
   });
   it('título obligatorio, sin espacios vacíos y máximo 150', () => {
     const c = TestBed.createComponent(SolucionesComponent).componentInstance;
@@ -85,4 +86,12 @@ describe('QA-009 administración de soluciones', () => {
     c.pedirEstado(item); c.confirmarEstado(); expect(c.items[0].activo).toBeTrue(); expect(c.operando).toBeTrue();
     respuesta.error(new Error('Sin conexión')); expect(c.error).toBe('Sin conexión'); expect(c.items[0].activo).toBeTrue();
   });
+  it('el interruptor es accesible y conserva su estado al fallar',()=>{
+    api.cambiarAutoservicioSolucion.and.returnValue(throwError(()=>new Error('Rechazado')));
+    const f=TestBed.createComponent(SolucionesComponent);f.detectChanges();const toggle=f.nativeElement.querySelector('[role=switch]') as HTMLButtonElement;
+    expect(toggle.getAttribute('aria-checked')).toBe('false');expect(toggle.getAttribute('aria-label')).toContain('Título');toggle.click();f.detectChanges();
+    expect(toggle.getAttribute('aria-checked')).toBe('false');expect(f.componentInstance.error).toContain('Rechazado');expect(f.componentInstance.operando).toBeFalse();
+  });
+  it('no habilita autoservicio en una solución inactiva',()=>{const c=TestBed.createComponent(SolucionesComponent).componentInstance;c.cambiarAutoservicio({...item,activo:false,autoservicio:false});expect(api.cambiarAutoservicioSolucion).not.toHaveBeenCalled();});
+
 });

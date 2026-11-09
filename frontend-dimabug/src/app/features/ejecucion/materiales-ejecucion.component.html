@@ -1,0 +1,21 @@
+<section class="apoyo" aria-label="Material de apoyo del paso" [attr.aria-busy]="cargando">
+  <h3>Apoyo para este paso</h3>
+  @if(cargando){<p role="status">Cargando material de apoyo…</p>}
+  @else if(error){<div role="alert"><p>{{ error }}</p><button type="button" class="tk-btn tk-btn-sec" (click)="cargar()">Reintentar</button></div>}
+  @else {
+    <ul class="materials">
+      @for(material of materiales;track material.id){
+        <li>
+          <div class="material-body"><strong>{{ material.nombre }}</strong><span class="tipo-pill">{{ etiqueta(material.tipo) }}</span></div>
+          @let url=enlace(material);
+          @if(esLocal(material)){
+            <button type="button" class="tk-btn tk-btn-sec" [disabled]="descargando!==null" (click)="descargar(material)" [attr.aria-label]="'Descargar '+material.nombre">{{ descargando===material.id?'Descargando…':'Descargar' }}</button>
+          } @else if(url){
+            <a class="tk-btn tk-btn-sec" [href]="url" target="_blank" rel="noopener noreferrer" [attr.aria-label]="'Abrir '+material.nombre+' en una nueva pestaña'">Abrir enlace</a>
+          } @else {<span class="no-disponible">Recurso no disponible: enlace no válido.</span>}
+        </li>
+      } @empty {<li class="sin-material">Este paso no tiene material de apoyo.</li>}
+    </ul>
+  }
+  @if(errorDescarga){<p role="alert">{{ errorDescarga }}</p>}
+</section>

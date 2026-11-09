@@ -13,12 +13,12 @@ describe('Contrato HTTP chatbot', () => {
   afterEach(() => http.verify());
   it('envía contrato original al endpoint real', () => {
     api.consultar('impresora').subscribe(r => expect(r.soluciones).toEqual([]));
-    const req = http.expectOne('/api/chatbot/consultas');
+    const req = http.expectOne('/api/publico/chatbot/consultas');
     expect(req.request.method).toBe('POST'); expect(req.request.body).toEqual({ consulta: 'impresora' });
     req.flush({ mensaje: 'Contacta a Soporte', soluciones: [] });
   });
   it('presenta mensaje de validación en 400', () => {
     api.consultar('x').subscribe({ error: (e: Error) => expect(e.message).toContain('no es válida') });
-    http.expectOne('/api/chatbot/consultas').flush({}, { status: 400, statusText: 'Bad Request' });
+    http.expectOne('/api/publico/chatbot/consultas').flush({}, { status: 400, statusText: 'Bad Request' });
   });
 });

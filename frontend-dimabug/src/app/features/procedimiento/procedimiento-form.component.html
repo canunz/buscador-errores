@@ -1,6 +1,6 @@
-<app-loading-modal [visible]="loading || guardando" [mensaje]="guardando ? 'Guardando borrador' : 'Cargando'" />
+<app-loading-modal [visible]="loading || guardando" [mensaje]="guardando ? 'Guardando procedimiento' : 'Cargando'" />
 <section class="pf">
- <header class="franja"><div><p class="crumb"><a routerLink="/procedimientos">Procedimientos</a> / {{ editId ? 'Editar' : 'Nuevo' }}</p><h1>{{ editId ? 'Editar procedimiento' : 'Nuevo procedimiento' }}</h1><p>Guarde el BORRADOR y continúe agregando pasos desde su detalle. La publicación la hace un administrador.</p></div></header>
+ <header class="franja"><div><p class="crumb"><a routerLink="/procedimientos">Procedimientos</a> / {{ editId ? 'Editar' : 'Nuevo' }}</p><h1>{{ editId ? 'Editar procedimiento' : 'Nuevo procedimiento' }}</h1><p>Guarde el BORRADOR y continúe agregando pasos desde su detalle. Las revisiones publicadas anteriores y sus ejecuciones se conservan.</p></div></header>
  @if (error) { <p class="alerta" role="alert">{{ error }}</p> }
  @if (mensaje) { <p role="status">{{ mensaje }}</p> }
  @if (!cargaValida && !loading && !identificadorInvalido && editId) { <button type="button" class="btn-guardar" (click)="cargar()">Reintentar carga</button> }
@@ -12,6 +12,18 @@
    @if (form.controls.nombre.touched && errorNombre) { <span class="campo-error" role="alert">{{ errorNombre }}</span> }
   </div>
   <div class="campo"><label for="procedimiento-descripcion">Descripción (opcional)</label><div class="control area"><textarea id="procedimiento-descripcion" rows="4" formControlName="descripcion"></textarea></div></div>
+  <div class="campo"><label for="procedimiento-hardware">Hardware asociado (opcional)</label>
+    <select id="procedimiento-hardware" formControlName="hardwareId" aria-describedby="hardware-ayuda"><option [ngValue]="null">Sin hardware</option>
+    @if(hardwareActualNoListado){<option [ngValue]="form.controls.hardwareId.value">Hardware asociado (ID {{ form.controls.hardwareId.value }})</option>}
+    @for(h of hardwares;track h.id){<option [ngValue]="h.id">{{ h.nombre }}</option>}</select>
+    <small id="hardware-ayuda">Selecciona un registro del catálogo existente o Sin hardware para un procedimiento general.</small>
+    @if(cargandoHardware){<span role="status">Cargando hardware…</span>}
+    @if(errorCatalogo){<span class="campo-error" role="alert">{{ errorCatalogo }}</span><button type="button" class="btn-cancelar" (click)="cargarHardware()" [disabled]="cargandoHardware">Reintentar catálogo</button>}
+    @if(form.controls.hardwareId.touched && errorHardware){<span class="campo-error" role="alert">{{ errorHardware }}</span>}
+  </div>
+  <div class="campo"><label for="procedimiento-extra">Información complementaria</label><textarea id="procedimiento-extra" formControlName="informacionComplementaria" rows="3" maxlength="10000"></textarea></div>
+  <div class="campo"><label for="procedimiento-estado">Estado de la revisión {{ revision }}</label><select id="procedimiento-estado" formControlName="estado"><option value="BORRADOR">Borrador</option><option value="PUBLICADO" [disabled]="!editId">Publicado</option></select><small>Para publicar debe existir al menos un paso. Las ejecuciones anteriores conservan su revisión.</small></div>
+  @if(editId){<a class="btn-cancelar" [routerLink]="['/procedimientos',editId]">Administrar pasos y materiales</a>}
   <div class="acciones"><a class="btn-cancelar" routerLink="/procedimientos">Cancelar</a><button class="btn-guardar" type="submit" [disabled]="guardando || soloLectura || creacionIncierta">{{ guardando ? 'Guardando…' : editId ? 'Guardar cambios' : 'Guardar borrador y continuar' }}</button></div>
  </form>
  }

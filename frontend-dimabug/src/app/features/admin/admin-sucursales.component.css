@@ -1,0 +1,9 @@
+.sucursales { max-width: 1200px; margin: auto; }
+.formulario, .listado { padding: 1.5rem; margin-top: 1.25rem; }
+fieldset { border: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
+legend { padding-bottom: 1rem; }
+.acciones { display: flex; align-items: center; gap: .75rem; flex-wrap: wrap; }
+.tabla { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; }
+th, td { padding: .85rem; text-align: left; border-bottom: 1px solid #dbe4f0; overflow-wrap: anywhere; }
+@media (max-width: 700px) { fieldset { grid-template-columns: 1fr; } }
