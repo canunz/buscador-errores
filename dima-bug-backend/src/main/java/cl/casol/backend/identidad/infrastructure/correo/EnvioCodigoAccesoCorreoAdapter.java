@@ -1,7 +1,10 @@
 package cl.casol.backend.identidad.infrastructure.correo;
 
+import cl.casol.backend.correo.application.service.GmailOAuthService;
+import cl.casol.backend.correo.infrastructure.gmail.GmailConfig;
 import cl.casol.backend.identidad.application.port.out.EnvioCodigoAccesoPort;
 import cl.casol.backend.identidad.domain.exception.EnvioCodigoAccesoException;
+import jakarta.mail.Session;
 import jakarta.mail.internet.MimeMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,12 +17,15 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.HtmlUtils;
 
+import java.io.ByteArrayOutputStream;
+import java.util.Base64;
 import java.util.Date;
+import java.util.Properties;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-/** Envía el código de acceso por correo (Gmail u otro SMTP configurado en spring.mail.*). */
+/** Envía el código de acceso por Gmail API (HTTPS) o, si no está conectada, por SMTP. */
 @Component
 public class EnvioCodigoAccesoCorreoAdapter implements EnvioCodigoAccesoPort, DisposableBean {
 
@@ -30,9 +36,12 @@ public class EnvioCodigoAccesoCorreoAdapter implements EnvioCodigoAccesoPort, Di
     private static final String BANNER_CID = "bannerDimaBug";
 
     private final ObjectProvider<JavaMailSender> mailSender;
+    private final GmailOAuthService gmail;
+    private final GmailConfig gmailConfig;
     private final String remitente;
     private final String nombreRemitente;
     private final boolean mostrarEnLog;
+    private final boolean exigirGmailApi;
 
     /**
      * Gmail tarda varios segundos en aceptar un correo. El envío se hace en segundo plano para que
@@ -46,18 +55,32 @@ public class EnvioCodigoAccesoCorreoAdapter implements EnvioCodigoAccesoPort, Di
 
     public EnvioCodigoAccesoCorreoAdapter(
             ObjectProvider<JavaMailSender> mailSender,
+            GmailOAuthService gmail,
+            GmailConfig gmailConfig,
             @Value("${spring.mail.username:}") String remitente,
             @Value("${dimabug.auth.codigo.remitente-nombre:DimaBug}") String nombreRemitente,
-            @Value("${dimabug.auth.codigo.mostrar-en-log:false}") boolean mostrarEnLog
+            @Value("${dimabug.auth.codigo.mostrar-en-log:false}") boolean mostrarEnLog,
+            @Value("${dimabug.auth.codigo.usar-gmail-api:false}") boolean exigirGmailApi
     ) {
         this.mailSender = mailSender;
+        this.gmail = gmail;
+        this.gmailConfig = gmailConfig;
         this.remitente = remitente == null ? "" : remitente.trim();
         this.nombreRemitente = nombreRemitente;
         this.mostrarEnLog = mostrarEnLog;
+        this.exigirGmailApi = exigirGmailApi;
     }
 
     @Override
     public void enviar(String email, String nombre, String codigo, int minutosVigencia) {
+        if (gmail.disponible()) {
+            envios.execute(() -> enviarPorGmailApi(email, nombre, codigo, minutosVigencia));
+            return;
+        }
+        if (exigirGmailApi) {
+            throw new EnvioCodigoAccesoException(new IllegalStateException(
+                    "Gmail API no está conectada. Un administrador debe autorizar la cuenta en Administración > Gmail."));
+        }
         JavaMailSender sender = mailSender.getIfAvailable();
         if (sender == null || remitente.isEmpty()) {
             if (mostrarEnLog) {
@@ -70,33 +93,47 @@ public class EnvioCodigoAccesoCorreoAdapter implements EnvioCodigoAccesoPort, Di
         envios.execute(() -> enviarAhora(sender, email, nombre, codigo, minutosVigencia));
     }
 
+    private void enviarPorGmailApi(String email, String nombre, String codigo, int minutosVigencia) {
+        try {
+            String from = gmailConfig.remitente() == null || gmailConfig.remitente().isBlank()
+                    ? remitente
+                    : gmailConfig.remitente().strip();
+            MimeMessage mensaje = new MimeMessage(Session.getInstance(new Properties()));
+            completarMensaje(mensaje, from, email, nombre, codigo, minutosVigencia);
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            mensaje.writeTo(out);
+            gmail.enviar(Base64.getUrlEncoder().withoutPadding().encodeToString(out.toByteArray()));
+            log.info("Código de acceso enviado a {} vía Gmail API", email);
+        } catch (Exception e) {
+            log.error("No se pudo enviar el código de acceso a {}", email, e);
+        }
+    }
+
     private void enviarAhora(JavaMailSender sender, String email, String nombre, String codigo, int minutosVigencia) {
         try {
-            ClassPathResource banner = new ClassPathResource(BANNER);
-            boolean conBanner = banner.exists();
-
             MimeMessage mensaje = sender.createMimeMessage();
-            // true = multipart: lleva versión en texto plano, versión HTML y la imagen de cabecera.
-            MimeMessageHelper helper = new MimeMessageHelper(mensaje, true, "UTF-8");
-            helper.setFrom(remitente, nombreRemitente);
-            helper.setTo(email);
-            // Asunto distinto en cada correo: así Gmail no los agrupa en un mismo hilo
-            // ni oculta el contenido repetido (que es lo que hacía "desaparecer" el banner).
-            helper.setSubject("Tu código de acceso a DimaBug: " + codigo);
-            helper.setSentDate(new Date());
-            helper.setText(texto(nombre, codigo, minutosVigencia), html(nombre, codigo, minutosVigencia, conBanner));
-            if (conBanner) {
-                helper.addInline(BANNER_CID, banner, "image/jpeg");
-            }
-            // Identificador único por correo: evita que Gmail recorte partes "ya vistas" del mensaje.
-            mensaje.setHeader("X-Entity-Ref-ID", UUID.randomUUID().toString());
-            // Marca el correo como automático y transaccional (no masivo).
-            mensaje.setHeader("Auto-Submitted", "auto-generated");
+            completarMensaje(mensaje, remitente, email, nombre, codigo, minutosVigencia);
             sender.send(mensaje);
             log.info("Código de acceso enviado a {}", email);
         } catch (Exception e) {
             log.error("No se pudo enviar el código de acceso a {}", email, e);
         }
+    }
+
+    private void completarMensaje(MimeMessage mensaje, String from, String email, String nombre, String codigo, int minutosVigencia) throws Exception {
+        ClassPathResource banner = new ClassPathResource(BANNER);
+        boolean conBanner = banner.exists();
+        MimeMessageHelper helper = new MimeMessageHelper(mensaje, true, "UTF-8");
+        helper.setFrom(from, nombreRemitente);
+        helper.setTo(email);
+        helper.setSubject("Tu código de acceso a DimaBug: " + codigo);
+        helper.setSentDate(new Date());
+        helper.setText(texto(nombre, codigo, minutosVigencia), html(nombre, codigo, minutosVigencia, conBanner));
+        if (conBanner) {
+            helper.addInline(BANNER_CID, banner, "image/jpeg");
+        }
+        mensaje.setHeader("X-Entity-Ref-ID", UUID.randomUUID().toString());
+        mensaje.setHeader("Auto-Submitted", "auto-generated");
     }
 
     @Override

@@ -2,7 +2,6 @@ package cl.casol.backend.correo.infrastructure.gmail;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import cl.casol.backend.shared.domain.DestinatarioPaso;
 import java.net.URI;
 
 @Component
@@ -20,8 +19,13 @@ public class GmailConfig implements cl.casol.backend.correo.application.port.out
     }
     public boolean configurado(){
         try{return oauthHabilitado && !clientId.isBlank() && !clientSecret.isBlank() &&
-            new DestinatarioPaso(remitente,null)!=null && uriSegura(callback,"/login/oauth2/code/google") && uriSegura(frontend,"/admin/gmail");}
+            remitenteValido() && uriSegura(callback,"/login/oauth2/code/google") && uriSegura(frontend,"/admin/gmail");}
         catch(RuntimeException ex){return false;}
+    }
+    /** Remitente de la API: Gmail personal o @dimarsa.cl. No usa DestinatarioPaso (solo sucursales). */
+    boolean remitenteValido(){
+        String correo=remitente==null?"":remitente.strip();
+        return correo.length()<=120 && correo.matches("(?i)[A-Za-z0-9._%+\\-]+@[A-Za-z0-9.\\-]+\\.[A-Za-z]{2,24}");
     }
     public boolean oauthHabilitado(){return oauthHabilitado;}
     public boolean envioHabilitado(){return envioHabilitado;}
