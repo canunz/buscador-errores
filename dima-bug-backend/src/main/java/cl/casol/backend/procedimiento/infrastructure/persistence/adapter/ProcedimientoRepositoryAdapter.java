@@ -13,8 +13,9 @@ import java.util.*;
 public class ProcedimientoRepositoryAdapter implements ProcedimientoRepository {
     @jakarta.persistence.PersistenceContext
     private jakarta.persistence.EntityManager entityManager;
+    public boolean tieneEjecuciones(Integer id){return entityManager.createQuery("select count(e) from EjecucionEntity e where e.procedimientoId=:id",Long.class).setParameter("id",id).getSingleResult()>0;}
     public void bloquear(Integer id) {
-        entityManager.find(cl.casol.backend.procedimiento.infrastructure.persistence.entity.ProcedimientoEntity.class,id,jakarta.persistence.LockModeType.PESSIMISTIC_WRITE);
+        var p=entityManager.find(cl.casol.backend.procedimiento.infrastructure.persistence.entity.ProcedimientoEntity.class,id,jakarta.persistence.LockModeType.PESSIMISTIC_WRITE);if(p!=null)entityManager.refresh(p,jakarta.persistence.LockModeType.PESSIMISTIC_WRITE);
     }
     private final ProcedimientoJpaRepository repository;
     private final UsuarioJpaRepository usuarios;
@@ -30,6 +31,6 @@ public class ProcedimientoRepositoryAdapter implements ProcedimientoRepository {
     public Procedimiento guardar(Procedimiento p) {
         UsuarioEntity creador=usuarios.getReferenceById(p.creadoPor().getId());
         UsuarioEntity modificador=p.modificadoPor()==null?null:usuarios.getReferenceById(p.modificadoPor().getId());
-        return ProcedimientoMapper.toDomain(repository.save(ProcedimientoMapper.toEntity(p, creador, modificador)));
+        return ProcedimientoMapper.toDomain(repository.saveAndFlush(ProcedimientoMapper.toEntity(p, creador, modificador)));
     }
 }

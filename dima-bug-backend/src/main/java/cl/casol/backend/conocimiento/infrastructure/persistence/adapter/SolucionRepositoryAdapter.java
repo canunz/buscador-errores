@@ -14,6 +14,7 @@ public class SolucionRepositoryAdapter implements SolucionRepository {
         return repository.findByConocimientoIdAndActivoTrueAndAutoservicioTrueOrderByOrdenAsc(id)
                 .stream().map(SolucionMapper::toDomain).toList();
     }
+    public List<Solucion> buscarPublicas(String texto,int limite){return repository.publicas(texto,org.springframework.data.domain.PageRequest.of(0,limite)).stream().map(SolucionMapper::toDomain).toList();}
     private final SolucionJpaRepository repository;
     public SolucionRepositoryAdapter(SolucionJpaRepository repository) { this.repository = repository; }
     public List<Solucion> buscarPorConocimientoOrdenadas(Integer id) {

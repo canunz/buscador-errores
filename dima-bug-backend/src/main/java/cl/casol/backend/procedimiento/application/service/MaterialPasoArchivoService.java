@@ -11,6 +11,8 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class MaterialPasoArchivoService {
+    private AuditoriaProcedimientoService auditoria;
+    @org.springframework.beans.factory.annotation.Autowired public void auditoria(AuditoriaProcedimientoService auditoria){this.auditoria=auditoria;}
     private final ProcedimientoRepository procedimientos;
     private final PasoRepository pasos;
     private final MaterialApoyoRepository materiales;
@@ -29,12 +31,12 @@ public class MaterialPasoArchivoService {
     public void eliminar(Integer procedimientoId, Integer pasoId, Integer materialId) {
         archivos.eliminar(() -> {
             procedimientos.bloquear(procedimientoId);
-        EdicionProcedimiento.exigirBorrador(procedimientos.buscarPorId(procedimientoId).orElseThrow(() -> new ProcedimientoNoEncontradoException(procedimientoId)));
+        EdicionProcedimiento.exigirEditable(procedimientos.buscarPorId(procedimientoId).orElseThrow(() -> new ProcedimientoNoEncontradoException(procedimientoId)),procedimientos);
             verificar(procedimientoId, pasoId);
             return materiales.buscarPorId(materialId)
                     .filter(m -> m.conocimientoId() == null && pasoId.equals(m.pasoId()))
                     .orElseThrow(() -> new MaterialApoyoNoEncontradoException(materialId));
-        }, material -> materiales.eliminar(material.id()));
+        }, material -> {if(auditoria!=null){var actor=org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();auditoria.registrar(procedimientoId,"MATERIAL_ELIMINADO",actor.getName(),material,null);}materiales.eliminar(material.id());});
     }
     public ArchivoDescarga descargar(Integer procedimientoId, Integer pasoId, Integer materialId) {
         verificar(procedimientoId, pasoId);

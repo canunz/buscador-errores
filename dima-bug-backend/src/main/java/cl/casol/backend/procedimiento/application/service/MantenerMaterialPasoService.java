@@ -26,7 +26,7 @@ public class MantenerMaterialPasoService {
     public MaterialApoyo crear(Integer procedimientoId,Integer pasoId,String nombre,TipoMaterial tipo,String url){
         procedimientos.bloquear(procedimientoId);
         verificarPaso(procedimientoId,pasoId);
-        EdicionProcedimiento.exigirBorrador(procedimientos.buscarPorId(procedimientoId).orElseThrow(() -> new ProcedimientoNoEncontradoException(procedimientoId)));
+        EdicionProcedimiento.exigirEditable(procedimientos.buscarPorId(procedimientoId).orElseThrow(() -> new ProcedimientoNoEncontradoException(procedimientoId)),procedimientos);
         return materiales.guardar(new MaterialApoyo(null,null,pasoId,nombre,tipo,url));
     }
     @Transactional
@@ -34,7 +34,7 @@ public class MantenerMaterialPasoService {
             String nombre,TipoMaterial tipo,String url){
         procedimientos.bloquear(procedimientoId);
         verificarPaso(procedimientoId,pasoId);
-        EdicionProcedimiento.exigirBorrador(procedimientos.buscarPorId(procedimientoId).orElseThrow(() -> new ProcedimientoNoEncontradoException(procedimientoId)));
+        EdicionProcedimiento.exigirEditable(procedimientos.buscarPorId(procedimientoId).orElseThrow(() -> new ProcedimientoNoEncontradoException(procedimientoId)),procedimientos);
         MaterialApoyo actual=materiales.buscarPorId(materialId)
                 .filter(m -> m.conocimientoId()==null && pasoId.equals(m.pasoId()))
                 .orElseThrow(() -> new MaterialApoyoNoEncontradoException(materialId));

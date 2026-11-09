@@ -9,7 +9,7 @@ public final class EjecucionMapper {
     public static EjecucionEntity toEntity(Ejecucion e){return new EjecucionEntity(e.id(),e.procedimientoId(),
         UsuarioMapper.toEntity(e.usuario()),e.fechaInicio(),e.fechaFin(),e.estado(),e.observaciones());}
     public static EjecucionPaso toDomain(EjecucionPasoEntity e){return new EjecucionPaso(e.getId(),e.getEjecucionId(),
-        e.getPasoId(),e.isCumplido(),e.getObservacion(),e.getFecha());}
+        e.getPasoId(),e.isCumplido(),e.getObservacion(),e.getFecha(),e.getContrato(),e.getEstado(),e.getRevision());}
     public static EjecucionPasoEntity toEntity(EjecucionPaso e){return new EjecucionPasoEntity(e.id(),e.ejecucionId(),
-        e.pasoId(),e.cumplido(),e.observacion(),e.fecha());}
+        e.pasoId(),e.cumplido(),e.observacion(),e.fecha(),e.contrato(),e.estado(),e.version());}
 }

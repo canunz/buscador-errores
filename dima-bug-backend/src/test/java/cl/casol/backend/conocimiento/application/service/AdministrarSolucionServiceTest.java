@@ -49,9 +49,14 @@ class AdministrarSolucionServiceTest {
         assertTrue(service.cambiarEstado(4,8,true).activo()); verify(soluciones,never()).guardar(any());
     }
     @Test void autoservicioPreservaEstadoYContenido() {
-        caso(EstadoConocimiento.BORRADOR,s(8,false,false));
-        Solucion r=service.cambiarAutoservicio(4,8,true); assertFalse(r.activo()); assertTrue(r.autoservicio());
+        caso(EstadoConocimiento.BORRADOR,s(8,true,false));
+        Solucion r=service.cambiarAutoservicio(4,8,true); assertTrue(r.activo()); assertTrue(r.autoservicio());
         assertEquals("Instrucciones",r.descripcion());
+    }
+    @Test void noHabilitaAutoservicioEnSolucionInactiva() {
+        caso(EstadoConocimiento.BORRADOR,s(8,false,false));
+        assertThrows(SolucionInactivaException.class,()->service.cambiarAutoservicio(4,8,true));
+        verify(soluciones,never()).guardar(any());
     }
     @Test void solucionAjenaNoModifica() {
         caso(EstadoConocimiento.BORRADOR,s(9,true,false));

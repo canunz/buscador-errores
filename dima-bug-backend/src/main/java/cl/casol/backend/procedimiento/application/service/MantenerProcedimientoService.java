@@ -24,7 +24,7 @@ public class MantenerProcedimientoService {
     public List<Procedimiento> listar() { return procedimientos.buscarTodos(); }
 
     public List<Procedimiento> listarVisibles(boolean staff) {
-        return listar().stream().filter(p -> staff || p.estado()==EstadoProcedimiento.PUBLICADO).toList();
+        return listar().stream().filter(p -> p.datos().vigente() && (staff || p.estado()==EstadoProcedimiento.PUBLICADO)).toList();
     }
 
     public Procedimiento buscar(Integer id) {
@@ -43,10 +43,10 @@ public class MantenerProcedimientoService {
     public Procedimiento modificar(Integer id, String nombre, String descripcion, String emailAutenticado) {
         procedimientos.bloquear(id);
         Procedimiento actual = buscar(id);
-        EdicionProcedimiento.exigirBorrador(actual);
+        EdicionProcedimiento.exigirEditable(actual,procedimientos);
         Usuario usuario = obtenerUsuario(emailAutenticado);
         return procedimientos.guardar(new Procedimiento(actual.id(), nombre, descripcion, actual.estado(),
-                actual.creadoPor(), actual.fechaCreacion(), usuario, LocalDateTime.now()));
+                actual.creadoPor(), actual.fechaCreacion(), usuario, LocalDateTime.now(),actual.datos(),actual.hardwareId()));
     }
 
     @Transactional
@@ -59,7 +59,7 @@ public class MantenerProcedimientoService {
         Usuario usuario = obtenerUsuario(emailAutenticado);
         return procedimientos.guardar(new Procedimiento(actual.id(), actual.nombre(), actual.descripcion(),
                 EstadoProcedimiento.PUBLICADO, actual.creadoPor(), actual.fechaCreacion(), usuario,
-                LocalDateTime.now()));
+                LocalDateTime.now(),actual.datos(),actual.hardwareId()));
     }
 
     private Usuario obtenerUsuario(String email) {

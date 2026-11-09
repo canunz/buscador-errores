@@ -21,6 +21,13 @@ public class ProcedimientoEntity {
     @JoinColumn(name = "modificado_por") private UsuarioEntity modificadoPor;
     @Column(name = "fecha_modificacion") private LocalDateTime fechaModificacion;
 
+    @Column(name="datos_editoriales_json",columnDefinition="TEXT") private String datosEditoriales;
+    public String getDatosEditoriales(){return datosEditoriales;}public void setDatosEditoriales(String datos){this.datosEditoriales=datos;}
+    @Column(name="hardware_id") private Integer hardwareId;
+    @ManyToOne(fetch=FetchType.LAZY,optional=true)
+    @JoinColumn(name="hardware_id",insertable=false,updatable=false,foreignKey=@ForeignKey(name="fk_procedimiento_hardware"))
+    private cl.casol.backend.catalogo.infrastructure.persistence.entity.HardwareEntity hardware;
+    public Integer getHardwareId(){return hardwareId;}public void setHardwareId(Integer id){hardwareId=id;}
     protected ProcedimientoEntity() { }
     public ProcedimientoEntity(Integer id, String nombre, String descripcion, EstadoProcedimiento estado,
             UsuarioEntity creadoPor, LocalDateTime fechaCreacion, UsuarioEntity modificadoPor,

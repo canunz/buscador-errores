@@ -83,6 +83,11 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("message","El registro cambió en otra sesión. Recarga y revisa los cambios"));
     }
 
+    @ExceptionHandler(cl.casol.backend.ejecucion.domain.exception.ConflictoEjecucionException.class)
+    public ResponseEntity<Map<String,String>> handleConflictoEjecucion(RuntimeException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("message",ex.getMessage()));
+    }
+
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<Map<String, String>> handleIntegridad(DataIntegrityViolationException ex) {
         return ResponseEntity.status(HttpStatus.CONFLICT)
@@ -91,7 +96,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler({cl.casol.backend.conocimiento.domain.exception.CopiaSolucionInvalidaException.class, cl.casol.backend.conocimiento.domain.exception.PruebaInvalidaException.class, cl.casol.backend.identidad.domain.exception.OrganizacionInvalidaException.class, cl.casol.backend.catalogo.domain.exception.CatalogoInvalidoException.class, RolInactivoException.class, AutoDesactivacionException.class,
             ClasificacionInvalidaException.class, AsignacionSolucionInvalidaException.class,
-            EstadoProcedimientoInvalidoException.class, ReglaEjecucionException.class,
+            EstadoProcedimientoInvalidoException.class, cl.casol.backend.shared.domain.DestinatarioInvalidoException.class, ReglaEjecucionException.class, cl.casol.backend.correo.application.service.GmailException.class,
             EstadoConocimientoNoEvaluableException.class, cl.casol.backend.conocimiento.domain.exception.TituloSolucionInvalidoException.class})
     public ResponseEntity<Map<String, String>> handleReglaNegocio(RuntimeException ex) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", ex.getMessage()));

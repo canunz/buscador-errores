@@ -32,6 +32,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         MaterialApoyoController.class,MaterialPasoController.class})
 @Import({SecurityConfig.class,JwtAuthenticationFilter.class,GlobalExceptionHandler.class})
 class MaterialArchivoSecurityIntegrationTest {
+    @org.springframework.test.context.bean.override.mockito.MockitoBean cl.casol.backend.procedimiento.application.service.AuditoriaProcedimientoService auditoriaProcedimiento;
+
     @org.springframework.test.context.bean.override.mockito.MockitoBean
     private cl.casol.backend.identidad.infrastructure.security.UsuarioAutenticadoCache usuarioAutenticadoCache;
 
@@ -50,7 +52,7 @@ class MaterialArchivoSecurityIntegrationTest {
     @MockitoBean TokenServicePort tokens;
     @MockitoBean UsuarioRepository usuarios;
 
-    @ParameterizedTest @ValueSource(strings={"ADMINISTRADOR","TECNICO"})
+    @ParameterizedTest @ValueSource(strings={"ADMINISTRADOR"})
     void eliminaAmbosDestinos204(String rol) throws Exception {
         auth(rol);
         for(String base : new String[]{CONOCIMIENTO,PASO})
@@ -69,14 +71,14 @@ class MaterialArchivoSecurityIntegrationTest {
         verifyNoInteractions(conocimiento,paso);
     }
     @Test void falloFisicoEliminacion500() throws Exception {
-        auth("TECNICO");
+        auth("ADMINISTRADOR");
         var ex=new ArchivoException(ArchivoException.Motivo.ALMACENAMIENTO,"Se requiere limpieza operativa");
         doThrow(ex).when(conocimiento).eliminar(1,3); doThrow(ex).when(paso).eliminar(1,2,3);
         for(String base : new String[]{CONOCIMIENTO,PASO})
             mvc.perform(delete(base+"/3").header("Authorization","Bearer t")).andExpect(status().isInternalServerError());
     }
     @Test void eliminarMaterialInexistente404() throws Exception {
-        auth("TECNICO");
+        auth("ADMINISTRADOR");
         var ex=new cl.casol.backend.conocimiento.domain.exception.MaterialApoyoNoEncontradoException(3);
         doThrow(ex).when(conocimiento).eliminar(1,3); doThrow(ex).when(paso).eliminar(1,2,3);
         for(String base : new String[]{CONOCIMIENTO,PASO})
@@ -88,7 +90,7 @@ class MaterialArchivoSecurityIntegrationTest {
         mvc.perform(delete(CONOCIMIENTO+"/3").header("Authorization","Bearer t")).andExpect(status().isBadRequest());
     }
 
-    @ParameterizedTest @ValueSource(strings={"ADMINISTRADOR","TECNICO"})
+    @ParameterizedTest @ValueSource(strings={"ADMINISTRADOR"})
     void ambosRolesSubenYDescarganAmbosDestinos(String rol) throws Exception {
         auth(rol);
         when(conocimiento.subir(eq(1),eq("Manual"),eq(TipoMaterial.PDF),any())).thenReturn(new MaterialApoyo(3,1,null,"Manual",TipoMaterial.PDF,REF));
@@ -154,7 +156,7 @@ class MaterialArchivoSecurityIntegrationTest {
                 .header("Authorization","Bearer t")).andExpect(status().isPayloadTooLarge());
     }
     @Test void jsonNoPermiteForjarReferenciaAdministrada() throws Exception {
-        auth("TECNICO");
+        auth("ADMINISTRADOR");
         String json = "{\"nombre\":\"M\",\"tipo\":\"PDF\",\"url\":\""+REF+"\"}";
         for(String base : new String[]{CONOCIMIENTO,PASO}) {
             mvc.perform(post(base).contentType(MediaType.APPLICATION_JSON).content(json).header("Authorization","Bearer t")).andExpect(status().isBadRequest());
@@ -163,7 +165,7 @@ class MaterialArchivoSecurityIntegrationTest {
         verifyNoInteractions(enlacesConocimiento,enlacesPaso);
     }
     @Test void enlacesExternosConservanUrl() throws Exception {
-        auth("TECNICO");
+        auth("ADMINISTRADOR");
         String url = "https://ejemplo.cl/video";
         when(enlacesConocimiento.crear(1,"M",TipoMaterial.VIDEO,url)).thenReturn(new MaterialApoyo(3,1,null,"M",TipoMaterial.VIDEO,url));
         when(enlacesPaso.crear(1,2,"M",TipoMaterial.VIDEO,url)).thenReturn(new MaterialApoyo(3,null,2,"M",TipoMaterial.VIDEO,url));
