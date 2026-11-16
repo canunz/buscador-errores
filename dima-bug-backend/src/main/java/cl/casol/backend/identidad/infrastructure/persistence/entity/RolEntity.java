@@ -31,6 +31,16 @@ public class RolEntity {
     protected RolEntity() {
     }
 
+    public RolEntity(Integer id, String nombre, String descripcion, boolean activo,
+                     LocalDateTime fechaCreacion, LocalDateTime fechaActualizacion) {
+        this.id = id;
+        this.nombre = nombre;
+        this.descripcion = descripcion;
+        this.activo = activo;
+        this.fechaCreacion = fechaCreacion;
+        this.fechaActualizacion = fechaActualizacion;
+    }
+
     public Integer getId() {
         return id;
     }

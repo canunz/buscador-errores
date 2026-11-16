@@ -28,7 +28,7 @@ public final class UsuarioMapper {
                 entity.getPasswordHash(),
                 entity.isActivo(),
                 entity.getFechaCreacion(),
-                entity.getFechaActualizacion()
+                entity.getFechaActualizacion(), entity.getEstadoRegistro()
         );
     }
 
@@ -46,5 +46,23 @@ public final class UsuarioMapper {
                 entity.getFechaCreacion(),
                 entity.getFechaActualizacion()
         );
+    }
+
+    public static UsuarioEntity toEntity(Usuario usuario) {
+        Rol rol = usuario.getRol();
+        RolEntity rolEntity = new RolEntity(
+                rol.getId(), rol.getNombre(), rol.getDescripcion(), rol.isActivo(),
+                rol.getFechaCreacion(), rol.getFechaActualizacion()
+        );
+
+        return new UsuarioEntity(
+                usuario.getId(), rolEntity, usuario.getNombre(), usuario.getEmail(),
+                usuario.getPasswordHash(), usuario.isActivo(), usuario.getFechaCreacion(),
+                usuario.getFechaActualizacion(), usuario.getEstadoRegistro()
+        );
+    }
+
+    public static Rol rolToDomain(RolEntity entity) {
+        return toDomain(entity);
     }
 }

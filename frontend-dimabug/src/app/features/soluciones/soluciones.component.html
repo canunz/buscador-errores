@@ -1,93 +1,207 @@
-<section class="cat-page">
+<app-loading-modal [visible]="loading" mensaje="Cargando" />
+
+<section class="cat-page sol-page">
   <div class="franja">
+    <app-ayuda-franja titulo="Soluciones" detalle="Soluciones registradas dentro de un conocimiento, con tipo y asignación." />
     <div>
       <p>Catálogos</p>
       <h1>Soluciones</h1>
-      <span>{{ items.length }} resultado{{ items.length === 1 ? '' : 's' }}</span>
+      <span>{{ filtrados.length }} solución{{ filtrados.length === 1 ? '' : 'es' }} desde conocimiento</span>
     </div>
-    <button type="button" class="btn-crear" (click)="openCreate()">Añadir solución</button>
+    <button type="button" class="btn-crear" (click)="openCreate()" [disabled]="operando">Añadir solución</button>
   </div>
 
-  <app-catalogo-tabs />
-
-  <div class="buscador">
-    <input type="search" [(ngModel)]="q" placeholder="Buscar por solución, pasos, anexos o responsable" />
+  <div class="toolbar">
+    <label class="search">
+      <span class="sr">Buscar</span>
+      <input
+        type="search"
+        [(ngModel)]="q"
+        name="q"
+        placeholder="Buscar por solución, tipo, conocimiento o asignación…"
+        autocomplete="off"
+      />
+    </label>
   </div>
 
+  @if (error) {
+    <p class="alert" role="alert">{{ error }}</p>
+  }
+
+  @if (mensaje) { <p role="status">{{ mensaje }}</p> }
   <div class="tabla-wrap">
-    <table>
-      <thead>
-        <tr>
-          <th class="col-acciones">Acciones</th>
-          <th>Solución</th>
-          <th>Pasos</th>
-          <th>Asignaciones</th>
-          <th>Anexos</th>
-        </tr>
-      </thead>
-      <tbody>
-        @for (item of items; track item.id) {
+    @if (!loading) {
+      <table>
+        <thead>
           <tr>
-            <td>
-              <div class="acciones" style="justify-content:flex-start">
-                <button type="button" class="act edit" (click)="openEdit(item)">Editar</button>
-                <button type="button" class="act del" (click)="eliminar(item)">Eliminar</button>
-              </div>
-            </td>
-            <td><strong>{{ item.nombre }}</strong></td>
-            <td>{{ recortar(item.pasos) }}</td>
-            <td>
-              @for (a of item.asignaciones; track a) {
-                <span class="chip">{{ a }}</span>
-              } @empty {
-                <span class="muted">—</span>
-              }
-            </td>
-            <td>{{ recortar(item.anexos, 80) }}</td>
+            <th class="col-acciones">Acciones</th>
+            <th>Solución</th>
+            <th>Tipo</th>
+            <th>Conocimiento</th>
+            <th>Estado</th>
+            <th>Autoservicio</th>
           </tr>
-        } @empty {
-          <tr>
-            <td colspan="5" class="vacio">
-              {{ q ? 'No se encontraron soluciones con ese criterio.' : 'No hay soluciones registradas.' }}
-            </td>
-          </tr>
-        }
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          @for (item of filtrados; track trackKey(item)) {
+            <tr>
+              <td>
+                <div class="acciones">
+                  <button type="button" class="act ver" (click)="ver(item)">Ver</button>
+                  <button type="button" class="act edit" (click)="openEdit(item)" [disabled]="item.activo === false || operando">Editar</button>
+                  @if (esAdministrador()) {
+                    <button type="button" class="act del estado-solucion" (click)="pedirEstado(item)" [disabled]="operando">
+                      {{ item.activo === false ? 'Reactivar' : 'Desactivar' }}
+                    </button>
+                  }
+                </div>
+              </td>
+              <td>
+                <strong class="nombre">{{ item.nombre }}</strong>
+                @if (!item.titulo) { <small>Sin título registrado</small> }
+                <p class="solucion-resumen">{{ recortar(item.descripcion || item.pasos) }}</p>
+              </td>
+              <td>
+                <span class="tipo-pill">{{ item.tipo === 'DERIVACION' ? 'Derivación' : 'Pasos a seguir' }}</span>
+              </td>
+              <td>{{ item.conocimientoTitulo || '—' }}</td>
+              <td><span [class.solucion-inactiva]="item.activo === false">{{ item.activo === false ? 'Inactiva' : 'Activa' }}</span></td>
+              <td>
+                @if (!esAdministrador()) {<span>{{ item.autoservicio ? 'Activado' : 'Desactivado' }}</span>}
+                @if (item.activo === false && item.autoservicio) { <small>No disponible mientras esté inactiva</small> }
+                @if (esAdministrador()) {
+                  <button type="button" class="autoservicio-control" role="switch" [class.activado]="item.autoservicio" [attr.aria-checked]="!!item.autoservicio" [attr.aria-label]="'Autoservicio de '+item.nombre" [attr.aria-busy]="autoservicioEnCurso===item.id" [disabled]="operando || (item.activo===false && !item.autoservicio)" (click)="cambiarAutoservicio(item)">
+                    <span class="switch-pista" aria-hidden="true"><span></span></span>{{ autoservicioEnCurso===item.id?'Actualizando…':item.autoservicio?'Activado':'Desactivado' }}
+                  </button>
+                }
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="6" class="vacio">No hay soluciones registradas en la base de datos.</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    }
   </div>
 </section>
 
+@if (pendienteEstado) {
+  <div class="confirm-capa">
+    <div class="confirm-fondo"></div>
+    <div class="confirm-dialog" role="alertdialog" aria-modal="true" aria-labelledby="sol-estado-titulo">
+      <h2 id="sol-estado-titulo">{{ pendienteEstado.activo === false ? 'Reactivar' : 'Desactivar' }} solución</h2>
+      <p>{{ pendienteEstado.nombre }}</p>
+      <p>Se conservan las asignaciones y los resultados históricos.</p>
+      @if (pendienteEstado.activo === false && pendienteEstado.autoservicio) {
+        <p class="alert" role="status">Esta solución conserva el autoservicio habilitado. Al reactivarla volverá a ser elegible para autoservicio si el conocimiento está publicado.</p>
+      }
+      @if (error) { <p class="alert" role="alert">{{ error }}</p> }
+      <div class="confirm-acciones">
+        <button type="button" class="btn-cancelar" (click)="cancelarEstado()" [disabled]="operando">Cancelar</button>
+        <button type="button" class="btn-peligro" (click)="confirmarEstado()" [disabled]="operando">
+          {{ operando ? 'Guardando…' : pendienteEstado.activo === false ? 'Reactivar' : 'Desactivar' }}
+        </button>
+      </div>
+    </div>
+  </div>
+}
+
+@if (detalle) {
+  <div class="detalle-modal" role="dialog" aria-modal="true" aria-labelledby="solucion-detalle-titulo">
+    <div class="detalle-modal-fondo" (click)="cerrarDetalle()"></div>
+    <article class="detalle-modal-card">
+      <header class="detalle-modal-franja">
+        <div>
+          <p>Solución</p>
+          <h2 id="solucion-detalle-titulo">{{ detalle.nombre }}</h2>
+        </div>
+        <button type="button" class="detalle-modal-cerrar" (click)="cerrarDetalle()" aria-label="Cerrar">✕</button>
+      </header>
+      <div class="detalle-modal-cuerpo">
+        <section class="detalle-bloque"><h3>Estado</h3><p>{{ detalle.activo === false ? 'Inactiva' : 'Activa' }}</p></section>
+        <section class="detalle-bloque">
+          <h3>Tipo</h3>
+          <p class="detalle-texto">{{ detalle.tipo === 'DERIVACION' ? 'Derivación' : 'Pasos a seguir' }}</p>
+        </section>
+        <section class="detalle-bloque">
+          <h3>Conocimiento</h3>
+          <p class="detalle-texto">{{ detalle.conocimientoTitulo || 'Sin guía asociada' }}</p>
+        </section>
+        @if (detalle.pasos) {
+          <section class="detalle-bloque">
+            <h3>Instrucciones</h3>
+            <p class="detalle-texto">{{ detalle.pasos }}</p>
+          </section>
+        }
+        @if (detalle.asignaciones.length) {
+          <section class="detalle-bloque">
+            <h3>Asignaciones</h3>
+            <ul class="detalle-lista">
+              @for (asig of detalle.asignaciones; track asig) {
+                <li>{{ asig }}</li>
+              }
+            </ul>
+          </section>
+        }
+        @if(esAdministrador() && detalle.activo!==false && detalle.autoservicio){<app-enlace-nfc [solucionId]="detalle.id" />}
+        @if(esAdministrador()){<app-materiales-solucion [solucionId]="detalle.id" [activa]="detalle.activo!==false" />}
+        @if (detalle.conocimientoId) {
+          <section class="detalle-bloque">
+            <a class="btn-crear" [routerLink]="['/conocimiento', detalle.conocimientoId]">Abrir guía</a>
+          </section>
+        }
+      </div>
+    </article>
+  </div>
+}
+
 @if (modalOpen) {
-  <div class="modal" role="dialog" aria-modal="true">
-    <div class="modal-backdrop" (click)="modalOpen = false"></div>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="solucion-titulo">
+    <div class="modal-backdrop" (click)="closeModal()"></div>
     <div class="modal-dialog modal-pro">
       <header class="modal-head">
         <span class="modal-icon">+</span>
         <div>
-          <p>Catálogo</p>
-          <h2>{{ editId ? 'Editar solución' : 'Nueva solución' }}</h2>
+          <p>Conocimiento</p>
+          <h2 id="solucion-titulo">{{ editItem ? 'Modificar solución' : 'Añadir solución' }}</h2>
         </div>
       </header>
+      @if (formError) {
+        <p class="alert modal-alert">{{ formError }}</p>
+      }
       <form [formGroup]="form" (ngSubmit)="save()" class="form-grid">
         <label class="full">
-          Título
-          <input type="text" formControlName="nombre" />
+          Conocimiento
+          <select formControlName="conocimientoId">
+            <option [ngValue]="0" disabled>Selecciona una guía</option>
+            @for (guia of guias; track guia.id) {
+              <option [ngValue]="guia.id">{{ guia.titulo }}</option>
+            }
+          </select>
         </label>
         <label class="full">
-          Pasos
-          <textarea rows="5" formControlName="pasos"></textarea>
+          Título *
+          <input formControlName="titulo" maxlength="150" required placeholder="Título descriptivo de la solución" />
+          @if (form.controls.titulo.touched && form.controls.titulo.invalid) { <small role="alert">El título es obligatorio y admite máximo 150 caracteres.</small> }
         </label>
         <label class="full">
-          Encargados / departamentos
-          <input type="text" formControlName="asignaciones" placeholder="Separados por coma" />
+          Instrucciones *
+          <textarea formControlName="descripcion" rows="4" placeholder="Describe los pasos o la derivación"></textarea>
         </label>
         <label class="full">
-          Anexos
-          <textarea rows="3" formControlName="anexos"></textarea>
+          Tipo
+          <select formControlName="tipo">
+            <option value="PASOS">Pasos a seguir</option>
+            <option value="DERIVACION">Derivación</option>
+          </select>
         </label>
         <div class="form-actions full">
-          <button type="button" class="btn-sec" (click)="modalOpen = false">Cancelar</button>
-          <button type="submit" class="btn-crear">Guardar</button>
+          <button type="button" class="btn-sec" (click)="closeModal()" [disabled]="saving">Cancelar</button>
+          <button type="submit" class="btn-crear" [disabled]="saving">
+            {{ saving ? 'Guardando…' : 'Guardar' }}
+          </button>
         </div>
       </form>
     </div>

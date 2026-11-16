@@ -1,0 +1,283 @@
+.efectividad {
+  margin-top: 16px;
+  padding: 18px 18px 14px;
+  border: 1px solid #e6ebf4;
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.04);
+}
+
+.voto-head h3 {
+  margin: 0;
+  color: #0f172a;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.voto-head p {
+  margin: 4px 0 0;
+  color: #64748b;
+  font-size: 13.5px;
+  font-weight: 500;
+  line-height: 1.45;
+}
+
+.votos {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.voto {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 44px;
+  padding: 0 14px;
+  border-radius: 12px;
+  font: inherit;
+  font-size: 14.5px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.voto svg {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 auto;
+}
+
+.voto.si {
+  border: 0;
+  background: #16a34a;
+  color: #fff;
+  box-shadow: 0 8px 16px rgba(22, 163, 74, 0.22);
+}
+
+.voto.si.activo,
+.voto.si:hover {
+  background: #15803d;
+}
+
+.voto.no {
+  border: 1.5px solid #f43f5e;
+  background: #fff;
+  color: #e11d48;
+}
+
+.voto.no.activo,
+.voto.no:hover {
+  background: #fff1f2;
+}
+
+.registro {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid #eef2f7;
+}
+
+.comentario {
+  display: grid;
+  gap: 6px;
+  color: #334155;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.comentario textarea {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid #d7dfeb;
+  border-radius: 12px;
+  padding: 10px 12px;
+  color: #0f172a;
+  font: inherit;
+  font-weight: 500;
+  resize: vertical;
+}
+
+.comentario textarea:focus {
+  outline: 2px solid rgba(30, 79, 214, 0.25);
+  border-color: #1e4fd6;
+}
+
+.cuenta {
+  justify-self: end;
+  color: #94a3b8;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.cuenta.limite {
+  color: #b42318;
+}
+
+.registro-acciones {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.registro-acciones button {
+  height: 36px;
+  padding: 0 14px;
+  border-radius: 10px;
+  font: inherit;
+  font-size: 13.5px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.secundario {
+  border: 1px solid #d7dfeb;
+  background: #fff;
+  color: #334155;
+}
+
+.registro-acciones button[type='submit'] {
+  border: 0;
+  background: #1e4fd6;
+  color: #fff;
+}
+
+.registro-acciones button:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+
+.cifras {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  margin: 14px 0 0;
+}
+
+.cifras div {
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: #f8fafc;
+}
+
+.cifras dt {
+  color: #64748b;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.cifras dd {
+  margin: 2px 0 0;
+  color: #0f172a;
+  font-size: 16px;
+  font-weight: 800;
+}
+
+.link {
+  margin-top: 10px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #1e4fd6;
+  font: inherit;
+  font-size: 13.5px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.ok,
+.alerta,
+.sin {
+  margin: 10px 0 0;
+  font-size: 13px;
+}
+
+.ok {
+  color: #047857;
+  font-weight: 700;
+}
+
+.alerta {
+  color: #b42318;
+}
+
+.sin {
+  color: #64748b;
+}
+
+.historial {
+  margin-top: 10px;
+}
+
+.historial ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 8px;
+}
+
+.historial li {
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: #f8fafc;
+}
+
+.historial-top {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.historial-top strong {
+  color: #15803d;
+  font-size: 13px;
+}
+
+.historial-top strong.mal {
+  color: #e11d48;
+}
+
+.historial-top span,
+.historial time {
+  color: #64748b;
+  font-size: 12px;
+}
+
+.historial p {
+  margin: 6px 0 0;
+  color: #334155;
+  font-size: 13.5px;
+}
+
+@media (max-width: 700px) {
+  .votos,
+  .cifras {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+:host-context(.tema-oscuro) .efectividad {
+  background: #111827;
+  border-color: #1f2937;
+  box-shadow: none;
+}
+
+:host-context(.tema-oscuro) .voto-head h3,
+:host-context(.tema-oscuro) .cifras dd {
+  color: #f8fafc;
+}
+
+:host-context(.tema-oscuro) .voto.no,
+:host-context(.tema-oscuro) .secundario,
+:host-context(.tema-oscuro) .comentario textarea {
+  background: #0f172a;
+}
+
+:host-context(.tema-oscuro) .cifras div,
+:host-context(.tema-oscuro) .historial li {
+  background: #0f172a;
+}

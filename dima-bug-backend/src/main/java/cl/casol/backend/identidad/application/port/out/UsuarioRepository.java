@@ -1,13 +1,35 @@
 package cl.casol.backend.identidad.application.port.out;
 
-//Paso 2: “Necesito buscar un usuario”, pero no le importa cómo se busca.
+//Paso 2: Necesito buscar un usuario, pero no le importa cómo se busca.
 //Podría ser MySQL, PostgreSQL, una API externa,
 
 import cl.casol.backend.identidad.domain.Usuario;
+import java.util.Collection;
 import java.util.Optional;
+import java.util.List;
 
 public interface UsuarioRepository {
+    default java.util.Optional<Usuario> buscarFresco(String email) { return buscarPorEmail(email); }
+    default java.util.Optional<Usuario> buscarPorIdBloqueado(Integer id) { return buscarPorId(id); }
+
 
     Optional<Usuario> buscarPorEmail(String email);
+
+    Optional<Usuario> buscarPorId(Integer id);
+
+    List<Usuario> buscarPorIds(Collection<Integer> ids);
+
+    List<Usuario> buscarTodos();
+
+    boolean existePorEmail(String email);
+
+    boolean existePorEmailYIdDistinto(String email, Integer id);
+
+    List<Usuario> bloquearAdministradoresActivos();
+
+    Usuario guardar(Usuario usuario);
+
+    /** Guarda la fecha y hora del último inicio de sesión. */
+    void registrarIngreso(Integer id, java.time.LocalDateTime cuando);
 
 }

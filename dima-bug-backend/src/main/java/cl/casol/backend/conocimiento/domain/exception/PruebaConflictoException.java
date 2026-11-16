@@ -1,0 +1,1 @@
+package cl.casol.backend.conocimiento.domain.exception; public class PruebaConflictoException extends RuntimeException { public PruebaConflictoException(String mensaje){super(mensaje);} }

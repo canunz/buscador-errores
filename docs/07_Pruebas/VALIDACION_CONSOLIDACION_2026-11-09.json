@@ -1,0 +1,807 @@
+{
+  "date": "2026-11-09",
+  "timezone": "America/Santiago",
+  "branch": "codex/integracion-mvp",
+  "base_commit": "e0d63d961b87c33d77937821c53802e6387a783e",
+  "backend": {
+    "command": "mvnw.cmd -q package",
+    "exit_code": 0,
+    "totals": {
+      "tests": 1118,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "suites": [
+      {
+        "suite": "cl.casol.backend.AdminCatalogoSecurityIntegrationTest",
+        "tests": 7,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "cl.casol.backend.AdminOrganizacionSecurityIntegrationTest",
+        "tests": 12,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "cl.casol.backend.AdminPruebasSecurityIntegrationTest",
+        "tests": 8,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "cl.casol.backend.AdminSolucionCopiaSecurityTest",
+        "tests": 9,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "cl.casol.backend.AutomatizacionHttpPersistenciaTest",
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "cl.casol.backend.AutomatizacionSecurityIntegrationTest",
+        "tests": 9,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "cl.casol.backend.AutoservicioPublicoHttpTest",
+        "tests": 9,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "cl.casol.backend.catalogo.application.service.AdministrarCatalogosServiceTest",
+        "tests": 14,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "cl.casol.backend.catalogo.application.service.ConsultarSistemasServiceTest",
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "cl.casol.backend.catalogo.application.service.ModulosQa011ServiceTest",
+        "tests": 12,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "cl.casol.backend.catalogo.infrastructure.persistence.adapter.ModuloReferenciasQa011Test",
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "cl.casol.backend.CatalogoSecurityIntegrationTest",
+        "tests": 5,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "cl.casol.backend.CatalogosOrganizacionSecurityIntegrationTest",
+        "tests": 13,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "cl.casol.backend.CausaSecurityIntegrationTest",
+        "tests": 14,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "cl.casol.backend.ChatbotSecurityIntegrationTest",
+        "tests": 8,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "cl.casol.backend.conocimiento.application.service.AdministrarPruebasServiceTest",
+        "tests": 14,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "cl.casol.backend.conocimiento.application.service.AdministrarSolucionServiceTest",
+        "tests": 11,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "cl.casol.backend.conocimiento.application.service.ArchivoMaterialServiceTest",
+        "tests": 25,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "cl.casol.backend.conocimiento.application.service.BuscarConocimientoServiceTest",
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "cl.casol.backend.conocimiento.application.service.ConsultarChatbotServiceTest",
+        "tests": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "cl.casol.backend.conocimiento.application.service.CopiarSolucionServiceTest",
+        "tests": 16,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "cl.casol.backend.conocimiento.application.service.GestionarAsignacionSolucionServiceTest",
+        "tests": 16,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "cl.casol.backend.conocimiento.application.service.GestionarPruebasConocimientoServiceTest",
+        "tests": 14,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "cl.casol.backend.conocimiento.application.service.IndexarConocimientoServiceTest",
+        "tests": 12,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "cl.casol.backend.conocimiento.application.service.MantenerCausaServiceTest",
+        "tests": 10,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "cl.casol.backend.conocimiento.application.service.MantenerConocimientoServiceTest",
+        "tests": 15,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "cl.casol.backend.conocimiento.application.service.MantenerMaterialApoyoServiceTest",
+        "tests": 9,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "cl.casol.backend.conocimiento.application.service.MantenerSintomaServiceTest",
+        "tests": 9,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "cl.casol.backend.conocimiento.application.service.MantenerSolucionServiceTest",
+        "tests": 16,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "cl.casol.backend.conocimiento.application.service.ReutilizarMaterialServiceTest",
+        "tests": 16,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "cl.casol.backend.conocimiento.application.service.SolucionConcurrenciaQa009Test",
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "cl.casol.backend.conocimiento.infrastructure.persistence.adapter.BusquedaAutoservicioTest",
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "cl.casol.backend.conocimiento.infrastructure.persistence.adapter.BusquedaConocimientoJdbcAdapterTest",
+        "tests": 4,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "cl.casol.backend.conocimiento.infrastructure.persistence.adapter.BusquedaSolucionQa009Test",
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "cl.casol.backend.conocimiento.infrastructure.persistence.adapter.MaterialApoyoRepositoryAdapterTest",
+        "tests": 5,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "cl.casol.backend.conocimiento.infrastructure.persistence.adapter.PruebaRepositoryAdapterTest",
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "cl.casol.backend.conocimiento.infrastructure.persistence.adapter.PruebasPersistenciaQa013Test",
+        "tests": 6,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "cl.casol.backend.conocimiento.infrastructure.persistence.adapter.SolucionPersistenciaQa009Test",
+        "tests": 5,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "cl.casol.backend.conocimiento.infrastructure.persistence.CopiarSolucionJpaConcurrencyTest",
+        "tests": 9,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "cl.casol.backend.conocimiento.infrastructure.persistence.MaterialesSinOsivJpaTest",
+        "tests": 5,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "cl.casol.backend.ContenidoRestringidoSecurityIntegrationTest",
+        "tests": 12,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "cl.casol.backend.correo.CifradoGmailTest",
+        "tests": 5,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "cl.casol.backend.correo.GoogleGmailHttpTest",
+        "tests": 9,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "cl.casol.backend.CorreoSinSucursalHttpTest",
+        "tests": 13,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "cl.casol.backend.EdicionProcedimientoAdminHttpTest",
+        "tests": 7,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "cl.casol.backend.ejecucion.application.service.ContratoEjecucionTest",
+        "tests": 11,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "cl.casol.backend.ejecucion.application.service.GestionarEjecucionServiceTest",
+        "tests": 22,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "cl.casol.backend.ejecucion.infrastructure.persistence.AutomatizacionFlujoJpaTest",
+        "tests": 44,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "cl.casol.backend.ejecucion.infrastructure.persistence.CorreoSmtpAdapterTest",
+        "tests": 4,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "cl.casol.backend.ejecucion.infrastructure.persistence.EjecucionContratoJpaTest",
+        "tests": 7,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "cl.casol.backend.ejecucion.infrastructure.persistence.FotosYCorreoSimuladoTest",
+        "tests": 4,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "cl.casol.backend.EliminarMaterialApoyoTest",
+        "tests": 26,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "cl.casol.backend.GmailOAuthHttpTest",
+        "tests": 29,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "cl.casol.backend.HardwareProcedimientoHttpTest",
+        "tests": 12,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "cl.casol.backend.Hu01SecurityIntegrationTest",
+        "tests": 8,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "cl.casol.backend.Hu02SecurityIntegrationTest",
+        "tests": 14,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "cl.casol.backend.Hu03SecurityIntegrationTest",
+        "tests": 14,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "cl.casol.backend.Hu04SecurityIntegrationTest",
+        "tests": 5,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "cl.casol.backend.Hu05SecurityIntegrationTest",
+        "tests": 10,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "cl.casol.backend.Hu06SecurityIntegrationTest",
+        "tests": 7,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "cl.casol.backend.Hu07SecurityIntegrationTest",
+        "tests": 14,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "cl.casol.backend.identidad.application.service.AdministrarOrganizacionServiceTest",
+        "tests": 24,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "cl.casol.backend.identidad.application.service.AdministrarResponsablesServiceTest",
+        "tests": 18,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "cl.casol.backend.identidad.application.service.AdministrarSucursalesServiceTest",
+        "tests": 18,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "cl.casol.backend.identidad.application.service.AdministrarUsuariosServiceTest",
+        "tests": 13,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "cl.casol.backend.identidad.application.service.AutenticarUsuarioServiceTest",
+        "tests": 4,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "cl.casol.backend.identidad.application.service.ConsultarOrganizacionServiceTest",
+        "tests": 5,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "cl.casol.backend.identidad.application.service.OrganizacionConcurrenciaTest",
+        "tests": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "cl.casol.backend.identidad.application.service.OrganizacionOperacionalQa012Test",
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "cl.casol.backend.identidad.application.service.ReindexarOrganizacionTest",
+        "tests": 4,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "cl.casol.backend.identidad.infrastructure.persistence.adapter.AdministracionOrganizacionRepositoryAdapterTest",
+        "tests": 6,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "cl.casol.backend.identidad.infrastructure.persistence.adapter.AdministracionResponsableRepositoryAdapterTest",
+        "tests": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "cl.casol.backend.identidad.infrastructure.persistence.adapter.DepartamentoContactoRepositoryAdapterTest",
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "cl.casol.backend.identidad.infrastructure.security.BCryptPasswordEncoderAdapterTest",
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "cl.casol.backend.identidad.infrastructure.security.JwtTokenServiceAdapterTest",
+        "tests": 4,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "cl.casol.backend.LimiteAutoservicioFilterTest",
+        "tests": 4,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "cl.casol.backend.LimitesCompatibilidadStagingTest",
+        "tests": 10,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "cl.casol.backend.LimitesMvpP0Test",
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "cl.casol.backend.MaterialApoyoSecurityIntegrationTest",
+        "tests": 20,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "cl.casol.backend.MaterialArchivoDestinoTest",
+        "tests": 13,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "cl.casol.backend.MaterialArchivoSecurityIntegrationTest",
+        "tests": 16,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "cl.casol.backend.procedimiento.application.service.MantenerMaterialPasoServiceTest",
+        "tests": 7,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "cl.casol.backend.procedimiento.application.service.MantenerPasoServiceTest",
+        "tests": 12,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "cl.casol.backend.procedimiento.application.service.MantenerProcedimientoServiceTest",
+        "tests": 8,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "cl.casol.backend.procedimiento.application.service.PrepararVersionEvidenciaServiceTest",
+        "tests": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "cl.casol.backend.PruebaSecurityIntegrationTest",
+        "tests": 19,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "cl.casol.backend.ReutilizarMaterialSecurityTest",
+        "tests": 8,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "cl.casol.backend.seguimiento.application.service.RegistrarEfectividadSolucionServiceTest",
+        "tests": 19,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "cl.casol.backend.seguimiento.infrastructure.persistence.adapter.ResultadoSolucionRepositoryAdapterTest",
+        "tests": 8,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "cl.casol.backend.shared.application.service.VisibilidadContenidoServiceTest",
+        "tests": 4,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "cl.casol.backend.shared.infrastructure.config.DataSourceEnvironmentTest",
+        "tests": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "cl.casol.backend.shared.infrastructure.storage.AlmacenamientoArchivoFilesystemAdapterTest",
+        "tests": 11,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "cl.casol.backend.SintomaSecurityIntegrationTest",
+        "tests": 13,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "cl.casol.backend.SolucionSecurityIntegrationTest",
+        "tests": 41,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "cl.casol.backend.SucursalSecurityIntegrationTest",
+        "tests": 10,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "cl.casol.backend.tickets.application.service.AdjuntarArchivoTicketServiceTest",
+        "tests": 7,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "cl.casol.backend.tickets.application.service.AsignarTicketServiceTest",
+        "tests": 8,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "cl.casol.backend.tickets.application.service.CambiarEstadoTicketServiceTest",
+        "tests": 15,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "cl.casol.backend.tickets.application.service.CambiarPrioridadTicketServiceTest",
+        "tests": 6,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "cl.casol.backend.tickets.application.service.ComentarTicketServiceTest",
+        "tests": 6,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "cl.casol.backend.tickets.application.service.ConsultarTicketsServiceTest",
+        "tests": 7,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "cl.casol.backend.tickets.application.service.CrearTicketServiceTest",
+        "tests": 5,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "cl.casol.backend.tickets.application.service.EtiquetarTicketServiceTest",
+        "tests": 4,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "cl.casol.backend.tickets.application.service.GestionarEtiquetasServiceTest",
+        "tests": 6,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "cl.casol.backend.tickets.application.service.ResolverTicketServiceTest",
+        "tests": 6,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "cl.casol.backend.tickets.arquitectura.TicketsArquitecturaTest",
+        "tests": 6,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "cl.casol.backend.tickets.domain.AdjuntoTicketTest",
+        "tests": 4,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "cl.casol.backend.tickets.domain.EtiquetaTest",
+        "tests": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "cl.casol.backend.tickets.domain.TicketTest",
+        "tests": 56,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "suite": "cl.casol.backend.TicketSecurityIntegrationTest",
+        "tests": 12,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      }
+    ],
+    "jar_generated": true,
+    "jar_sha256": "c6bc2a8cded43363f769d343e6a541336fd6343b1eb989cde7ec61944470709a"
+  },
+  "frontend": {
+    "tests": 464,
+    "test_exit_code": 0,
+    "build_exit_code": 0,
+    "css_budget_warnings": true
+  },
+  "safety": {
+    "real_mail_sent": false,
+    "staging_written": false,
+    "migrations_executed": false,
+    "real_credentials_inherited_by_backend_tests": false
+  },
+  "limits": [
+    "Validación local, no CI remoto",
+    "H2/mocks no certifican MySQL o producción",
+    "No UAT/pentest/restauración ni escaneo NFC físico"
+  ]
+}

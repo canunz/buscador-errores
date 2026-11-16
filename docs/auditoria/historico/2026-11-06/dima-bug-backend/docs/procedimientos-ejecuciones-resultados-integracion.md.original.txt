@@ -1,0 +1,154 @@
+# Integración de Procedimientos, Ejecuciones y Resultados
+
+## Inspección del modelo implementado
+
+La revisión de servicios, adaptadores, entidades y esquema precede a esta cobertura.
+No se agregan comportamientos ni relaciones que no estén implementados.
+
+| Área | Application y operaciones reales | Puertos/adaptadores/persistencia |
+| --- | --- | --- |
+| Procedimientos | MantenerProcedimientoService: listar, buscar, crear, modificar, publicar | ProcedimientoRepository, UsuarioRepository; ProcedimientoRepositoryAdapter, UsuarioRepositoryAdapter; ProcedimientoEntity y ProcedimientoJpaRepository |
+| Pasos | MantenerPasoService: listar ordenados, crear, modificar | PasoRepository, ProcedimientoRepository; PasoRepositoryAdapter; PasoEntity y PasoJpaRepository |
+| Ejecuciones | GestionarEjecucionService: iniciar, buscar, listar, listarPasos, actualizarPaso, completar, cancelar | EjecucionRepository y EjecucionPasoRepository; adaptadores homónimos; EjecucionEntity, EjecucionPasoEntity y repositorios JPA |
+| Efectividad | RegistrarEfectividadSolucionService: registrar, listar, obtenerEfectividad | ConocimientoRepository, SolucionRepository, UsuarioRepository, ResultadoSolucionRepository; ResultadoSolucionRepositoryAdapter; ResultadoSolucionEntity y ResultadoSolucionJpaRepository |
+
+Los mappers funcionales se ejecutan realmente. La agregación de efectividad es una
+consulta SQL nativa de ResultadoSolucionJpaRepository. No existe vínculo directo
+procedimiento-conocimiento; los resultados de efectividad se vinculan a soluciones
+de conocimiento, no a ejecuciones ni a pasos. No se inventa esa relación.
+
+### Estados y reglas
+
+- Procedimiento nace BORRADOR; publicar admite solo BORRADOR y cambia a PUBLICADO.
+  Modificar conserva estado y autor original, actualiza modificador/fecha.
+- Pasos pertenecen a procedimiento, ordenados por paso_orden. Application impide
+  orden duplicado y modificación de paso de otro padre. SQL protege UNIQUE
+  (procedimiento_id,paso_orden). No se encontró borrado ni versionado de pasos.
+- Inicio de ejecución exige procedimiento PUBLICADO con al menos un paso y usuario
+  existente. Se crea EN_CURSO y un checklist desde los pasos actuales.
+- Propietario o ADMINISTRADOR pueden consultar/modificar ejecución; otro TECNICO
+  no accede. ADMINISTRADOR lista todas, TECNICO solo propias.
+- actualizarPaso exige EN_CURSO y pertenencia del registro a la ejecución. Registra
+  cumplido, observación y fecha; al desmarcar, la fecha queda null.
+- completar exige todos los pasos cumplidos; cancelar no requiere cumplimiento.
+  Ambas cierran con fechaFin, COMPLETADA/CANCELADA. Una cerrada no se edita ni reabre.
+- Efectividad registra boolean Funcionó/No funcionó, comentario, fecha y usuario.
+  Exige conocimiento PUBLICADO y solución perteneciente al conocimiento. Historial
+  y agregación pueden consultarse también tras eliminación lógica del conocimiento.
+  Porcentaje es null sin aplicaciones; con resultados calcula funcionó/total * 100.
+- Los módulos no implementan eliminación física de estos historiales.
+
+### Relaciones y atomicidad
+
+pr_procedimiento referencia creado_por/modificado_por hacia u_usuario; pr_paso
+referencia procedimiento. se_ejecucion referencia procedimiento y usuario;
+se_ejecucion_paso referencia ejecución y paso y tiene UNIQUE (ejecucion_id,paso_id).
+se_resultado referencia solución y usuario. La infraestructura existente aplica
+las cinco FK auditadas solo al MySQL temporal. No se cambia el esquema funcional.
+
+Los servicios usan @Transactional(readOnly=true) y sobrescriben escritura con
+@Transactional. Inicio y checklist deben confirmar/revertir juntos. Los closures
+y actualizaciones de pasos/resultados también son transaccionales. En esta clase
+se arranca Boot de persistencia sin web ni OSIV: llamadas por proxy Application,
+repositorios y adaptadores reales, DataSource exclusivo de MySqlIntegrationSupport.
+
+Fuentes: src/main/java/cl/casol/backend/procedimiento/application/service/
+MantenerProcedimientoService.java y MantenerPasoService.java; ejecucion/application/
+service/GestionarEjecucionService.java; seguimiento/application/service/
+RegistrarEfectividadSolucionService.java; sus infrastructure/persistence y
+src/test/resources/db/dimabug-esquema.sql.
+
+## Matriz breve de riesgos
+
+| Prioridad | Riesgo | Cobertura nueva |
+| --- | --- | --- |
+| P0 potencial | Acceso a ejecución ajena | Propietario/otro técnico/admin por servicio real; no bypass confirmado |
+| P1 | Inicio deja cabecera sin checklist tras fallo SQL | Timeout MySQL 1205 durante guardarTodos y rollback sin filas parciales |
+| P1 | Referencias inexistentes o borrados destruyen historial | FK 1452 y RESTRICT 1451 reales; desactivación conserva relaciones |
+| P1 | Completar ejecución incompleta o editar cerrada | Reglas y estado persistido comprobados |
+| P2 | Resultado atribuido a solución/conocimiento incorrecto | Rechazo de pertenencia y conocimiento no publicado |
+| P2 | Agregados/historial inconsistentes | Funcionó/No funcionó, porcentaje y conservación tras borrado lógico |
+| P2 | Cambios de definición alteran el pasado | No existe snapshot/versionado: pendiente de negocio |
+
+## Escenarios implementados
+
+ProcedimientosEjecucionesResultadosIT añade ocho métodos sin mocks:
+
+1. Creación, recuperación, autor/modificador, modificación, orden y edición de
+   pasos, rechazo de duplicidad y transición/republicación.
+2. Inicio, relaciones, checklist, observaciones/fecha, rechazo de cierre incompleto,
+   cumplimiento completo y cierre irreversible.
+3. Propiedad/admin, listado, cancelación y conservación tras desactivar usuario.
+4. Rechazo de BORRADOR/sin pasos y actualización de registro de otra ejecución.
+5. Inicio atómico: conexión independiente bloquea el rango vacío de checklist
+   mediante FOR UPDATE. Timeout de sesión 1 s produce 1205 durante INSERT real
+   en EjecucionPasoRepositoryAdapter.guardarTodos. Se exige causa y traza, rollback
+   de ejecución/checklist y nuevo inicio exitoso después de liberar bloqueo.
+6. Registrar Funcionó/No funcionó, historial y 50 %; desactivar autor y eliminar
+   lógicamente conocimiento conserva historia, pero impide nuevas evaluaciones.
+7. No publicado, solución ajena y usuario inexistente no crean resultados.
+8. FK de procedimiento/usuario en ejecución y solución/usuario en resultado,
+   y RESTRICT de usuario/solución/procedimiento/ejecución preservan registros válidos.
+
+El fallo de checklist usa transacción envolvente solo para ajustar la sesión real;
+Application participa con REQUIRED, no se sustituye ningún componente ni se altera
+DDL. Timeout previo se restaura en finally y la conexión bloqueante hace rollback
+en finally. No se certifican todas las carreras concurrentes con este escenario.
+
+Cada test limpia tablas en orden de FK y usa usuarios/roles, conocimientos y
+soluciones sintéticos. Procedimientos, pasos, ejecuciones y resultados se crean
+mediante sus servicios reales. No se reutiliza estado entre métodos.
+
+## Ejecución, evidencias y límites
+
+```powershell
+.\mvnw.cmd -B -Pintegration-mysql verify
+.\mvnw.cmd -B test
+```
+
+Cambios de esta tarea: nuevo test y documento; POM añade inclusión Failsafe y
+docs/integracion-mysql.md añade referencia. Sin modificaciones de producción,
+permisos, esquema, application.properties ni MySqlIntegrationSupport.
+
+Pendientes: HTTP/JWT específico de estos endpoints, carreras inicio/edición/cierre,
+snapshots históricos, desmarcado/repetición de fechas, UNIQUE de checklist bajo
+concurrencia y fallo SQL interno del registro de efectividad. Los checks de FK
+individuales no garantizan que un paso pertenezca al mismo procedimiento que la
+ejecución si se escribe directamente fuera de Application.
+
+La primera ejecución tuvo 29 PASS, 0 FAIL, 2 ERROR, 0 SKIPPED; 2:41 min.
+Los dos errores fueron de consultas auxiliares del test: usaban paso_cumplido
+en lugar de la columna real ejecucion_paso_cumplido. Se corrigieron solo esas
+consultas y se repite la suite completa. No hubo cambio funcional para resolverlos.
+La verificación de rollback por MySQL 1205 pasó en esa ejecución.
+
+## Resultados finales de integración
+
+2026-10-08: `mvnw.cmd -B -Pintegration-mysql verify`, BUILD SUCCESS.
+
+| Clase | PASS | FAIL | ERROR | SKIPPED | Tiempo |
+| --- | --- | --- | --- | --- | --- |
+| ProcedimientosEjecucionesResultadosIT | 8 | 0 | 0 | 0 | 29,03 s |
+| AutenticacionHttpIT | 7 | 0 | 0 | 0 | 40,29 s |
+| ConocimientoJpaIT | 5 | 0 | 0 | 0 | 24,62 s |
+| MaterialesArchivoIT | 10 | 0 | 0 | 0 | 30,88 s |
+| MySqlReferentialIntegrityIT | 1 | 0 | 0 | 0 | 14,87 s |
+| Total | 31 | 0 | 0 | 0 | Maven completo: 2:36 min |
+
+El error MySQL 1205 del checklist es deliberado y asertado; no constituye un ERROR
+de test. Los registros padre/hijo quedaron ausentes después del rollback y un
+nuevo inicio confirmó recuperación. FK y conservación de historial también pasaron.
+No se detectaron defectos funcionales nuevos en los escenarios ejecutados.
+
+Evidencia: target/failsafe-reports/cl.casol.backend.integration.
+ProcedimientosEjecucionesResultadosIT.txt y XML. Se comprobó mediante Docker ps
+filtrado por los IDs de los reportes que los cinco MySQL temporales ya no existen.
+No se utilizó DEV ni ninguna base existente.
+
+Regresión habitual `mvnw.cmd -B test`: BUILD SUCCESS, 472 PASS, 0 FAIL,
+0 ERROR y 0 SKIPPED; tiempo Maven 1:07 min. No ejecutó las clases IT.
+Persisten advertencias existentes de API deprecada, operaciones unchecked y
+auto-attachment de Mockito, sin cambios adicionales para resolverlas.
+
+No hubo modificaciones funcionales ni correcciones de defectos de producción.
+Los cambios previos del working tree pertenecientes a otras tareas se conservaron.

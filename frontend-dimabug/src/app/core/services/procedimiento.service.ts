@@ -1,0 +1,523 @@
+import { ModalidadPaso, ConfiguracionPaso } from '../models/configuracion-paso.model';
+import { Injectable, inject } from '@angular/core';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { Observable, catchError, concat, finalize, forkJoin, map, of, shareReplay, switchMap, tap, throwError } from 'rxjs';
+import { apiUrl } from '../config/api';
+import { mensajeApiError } from '../http/api-error';
+import { crearFormDataMaterial, descargarMaterialAutenticado } from '../material/material-archivo';
+import {
+  EstadoProcedimiento,
+  GuardarMaterialPasoRequest,
+  GuardarPasoRequest,
+  GuardarProcedimientoRequest,
+  MaterialPaso,
+  PasoProcedimiento,
+  Procedimiento,
+  TipoMaterialProcedimiento,
+  UsuarioProcedimiento,
+} from '../models/procedimiento.model';
+
+@Injectable({ providedIn: 'root' })
+export class ProcedimientoService {
+  private readonly http = inject(HttpClient);
+  private readonly base = apiUrl('/procedimientos');
+  private readonly listaStorageKey = 'dimabug.procedimientos.lista.v1';
+  private listaCache$: Observable<Procedimiento[]> | null = null;
+  private readonly cacheProcedimientos = new Map<number, Procedimiento>();
+  private readonly cachePasos = new Map<number, PasoProcedimiento[]>();
+  private readonly cacheMateriales = new Map<number, MaterialPaso[]>();
+  private readonly materialesMarca = new Map<number, number>();
+  private readonly enVuelo = new Map<string, Observable<unknown>>();
+  private readonly colaGuia: number[] = [];
+  private guiaEnCurso = false;
+
+  /** Deja pasos y material listos. `ya` los pide al abrir; si no, espera turno. */
+  prepararGuia(procedimientoId: number, ya = false): void {
+    if (ya) {
+      this.precargar(procedimientoId);
+      return;
+    }
+    if (!this.colaGuia.includes(procedimientoId)) {
+      this.colaGuia.push(procedimientoId);
+    }
+    this.seguirColaGuia();
+  }
+
+  precargar(procedimientoId: number): void {
+    const cargarMateriales = (pasos: PasoProcedimiento[]) => {
+      for (const paso of pasos) {
+        if (this.materialesEnCache(paso.id) == null) {
+          this.listarMateriales(procedimientoId, paso.id).subscribe({ error: () => undefined });
+        }
+      }
+    };
+    const pasos = this.pasosEnCache(procedimientoId);
+    if (pasos) {
+      cargarMateriales(pasos);
+      return;
+    }
+    this.listarPasos(procedimientoId).subscribe({ next: cargarMateriales, error: () => undefined });
+  }
+
+  private guiaLista(procedimientoId: number): boolean {
+    const pasos = this.pasosEnCache(procedimientoId);
+    return !!pasos && pasos.every((paso) => this.materialesEnCache(paso.id) != null);
+  }
+
+  procedimientoEnCache(id: number): Procedimiento | null {
+    return this.cacheProcedimientos.get(id) ?? null;
+  }
+
+  pasosEnCache(procedimientoId: number): PasoProcedimiento[] | null {
+    const enMemoria = this.cachePasos.get(procedimientoId);
+    if (enMemoria) {
+      return enMemoria;
+    }
+    const guardados = this.leerPasos(procedimientoId);
+    if (guardados) {
+      this.cachePasos.set(procedimientoId, guardados);
+    }
+    return guardados;
+  }
+
+  materialesEnCache(pasoId: number): MaterialPaso[] | null {
+    const enMemoria = this.cacheMateriales.get(pasoId);
+    if (enMemoria) {
+      return enMemoria;
+    }
+    const guardados = this.leerMateriales(pasoId);
+    if (guardados) {
+      this.cacheMateriales.set(pasoId, guardados);
+    }
+    return guardados;
+  }
+
+  /** Deja la lista de material escrita ya, para que un GET atrasado no la pise. */
+  fijarMateriales(pasoId: number, items: MaterialPaso[]): void {
+    this.materialesMarca.set(pasoId, (this.materialesMarca.get(pasoId) ?? 0) + 1);
+    this.cacheMateriales.set(pasoId, items);
+    this.guardarMateriales(pasoId, items);
+  }
+
+  marcaMateriales(pasoId: number): number {
+    return this.materialesMarca.get(pasoId) ?? 0;
+  }
+
+  listaEnSesion(): Procedimiento[] {
+    const items = this.leerLista() ?? [];
+    items.forEach((item) => this.cacheProcedimientos.set(item.id, item));
+    return items;
+  }
+
+  listar(force = false): Observable<Procedimiento[]> {
+    if (!force && this.listaCache$) {
+      return this.listaCache$;
+    }
+
+    const stale = !force ? this.leerLista() : null;
+    if (stale?.length) {
+      stale.forEach((item) => this.cacheProcedimientos.set(item.id, item));
+      this.encolarGuias(stale);
+    }
+
+    const network$ = this.http.get<unknown>(this.base).pipe(
+      map((res) => this.asArray(res).map((item) => this.normalizeProcedimiento(item))),
+      tap((items) => {
+        this.guardarLista(items);
+        items.forEach((item) => this.cacheProcedimientos.set(item.id, item));
+        this.encolarGuias(items);
+      }),
+      catchError((err: HttpErrorResponse) => {
+        if (stale?.length) {
+          return of(stale);
+        }
+        this.listaCache$ = null;
+        return throwError(() => Object.assign(new Error(this.mensaje(err)), { status: err.status }));
+      }),
+    );
+
+    this.listaCache$ = (stale?.length ? concat(of(stale), network$) : network$).pipe(shareReplay(1));
+    return this.listaCache$;
+  }
+
+  obtenerPorId(id: number): Observable<Procedimiento> {
+    return this.http.get<unknown>(`${this.base}/${id}`).pipe(
+      map((res) => this.normalizeProcedimiento(res)),
+      tap((item) => this.cacheProcedimientos.set(item.id, item)),
+      catchError((err: HttpErrorResponse) => throwError(() => Object.assign(new Error(this.mensaje(err)), { status: err.status }))),
+    );
+  }
+
+  crear(request: GuardarProcedimientoRequest): Observable<Procedimiento> {
+    return this.http.post<unknown>(this.base, this.cuerpoProcedimiento(request)).pipe(
+      map((res) => this.normalizeProcedimiento(res)),
+      tap((item) => this.recordar(item)),
+      catchError((err: HttpErrorResponse) => throwError(() => Object.assign(new Error(this.mensaje(err)), { status: err.status }))),
+    );
+  }
+
+  actualizar(id: number, request: GuardarProcedimientoRequest): Observable<Procedimiento> {
+    return this.http.put<unknown>(`${this.base}/${id}`, this.cuerpoProcedimiento(request)).pipe(
+      map((res) => this.normalizeProcedimiento(res)),
+      tap((item) => this.recordar(item)),
+      catchError((err: HttpErrorResponse) => throwError(() => Object.assign(new Error(this.mensaje(err)), { status: err.status }))),
+    );
+  }
+
+  cambiarEstado(id: number, estado: EstadoProcedimiento): Observable<Procedimiento> {
+    return this.http.patch<unknown>(`${this.base}/${id}/estado`, { estado }).pipe(
+      map((res) => this.normalizeProcedimiento(res)),
+      tap((item) => this.recordar(item)),
+      catchError((err: HttpErrorResponse) => throwError(() => Object.assign(new Error(this.mensaje(err)), { status: err.status }))),
+    );
+  }
+  configurarPaso(procedimiento: number, paso: number, modoEjecucion: ModalidadPaso, configuracion: ConfiguracionPaso, revisionConfiguracion: string): Observable<PasoProcedimiento> {
+    return this.http.put<unknown>(`${this.base}/${procedimiento}/pasos/${paso}/configuracion`, { modoEjecucion, configuracion, revisionConfiguracion }).pipe(
+      map(res => this.normalizePaso(res)), catchError((e: HttpErrorResponse) => throwError(() => new Error(this.mensaje(e)))));
+  }
+  prepararEdicion(id:number):Observable<Procedimiento>{return this.http.post<unknown>(`${this.base}/${id}/edicion`,{}).pipe(map(r=>this.normalizeProcedimiento(r)),tap(p=>this.recordar(p)),catchError((e:HttpErrorResponse)=>throwError(()=>new Error(this.mensaje(e)))));}
+  eliminarPaso(id:number,paso:number):Observable<void>{return this.http.delete<void>(`${this.base}/${id}/pasos/${paso}`).pipe(tap(()=>{this.cachePasos.delete(id);this.cacheMateriales.delete(paso);}),catchError((e:HttpErrorResponse)=>throwError(()=>new Error(this.mensaje(e)))));}
+  moverPaso(id:number,paso:number,direccion:'ARRIBA'|'ABAJO',ordenEsperado:number[]):Observable<PasoProcedimiento[]>{return this.http.patch<unknown>(`${this.base}/${id}/pasos/${paso}/orden`,{direccion,ordenEsperado}).pipe(map(r=>this.asArray(r).map(p=>this.normalizePaso(p))),tap(p=>{this.cachePasos.set(id,p);this.guardarPasos(id,p);}),catchError((e:HttpErrorResponse)=>throwError(()=>new Error(this.mensaje(e)))));}
+  historial(id:number):Observable<{id:number;actorId:number;fecha:string;accion:string;antes:string|null;despues:string|null}[]>{return this.http.get<{id:number;actorId:number;fecha:string;accion:string;antes:string|null;despues:string|null}[]>(`${this.base}/${id}/historial`);}
+  crearVersionEvidencia(id: number): Observable<Procedimiento> {
+    return this.http.post<unknown>(`${this.base}/${id}/version-evidencia`, {}).pipe(
+      map((res) => this.normalizeProcedimiento(res)),
+      catchError((err: HttpErrorResponse) => throwError(() => new Error(this.mensaje(err)))),
+    );
+  }
+
+  listarPasos(procedimientoId: number, force = false): Observable<PasoProcedimiento[]> {
+    const fuente = this.http.get<unknown>(`${this.base}/${procedimientoId}/pasos`).pipe(
+      map(res => this.asArray(res).map(item => this.normalizePaso(item))),
+      tap(pasos => { this.cachePasos.set(procedimientoId, pasos); this.guardarPasos(procedimientoId, pasos); }),
+      catchError((err: HttpErrorResponse) => throwError(() => Object.assign(new Error(this.mensaje(err)), { status: err.status }))),
+    );
+    return force ? fuente : this.compartir(`pasos:${procedimientoId}`, fuente);
+  }
+  crearPaso(procedimientoId: number, request: GuardarPasoRequest): Observable<PasoProcedimiento> {
+    return this.http.post<unknown>(`${this.base}/${procedimientoId}/pasos`, request).pipe(
+      map((res) => this.normalizePaso(res)),
+      catchError((err: HttpErrorResponse) => throwError(() => Object.assign(new Error(this.mensaje(err)), { status: err.status }))),
+    );
+  }
+
+  actualizarPaso(
+    procedimientoId: number,
+    pasoId: number,
+    request: GuardarPasoRequest,
+  ): Observable<PasoProcedimiento> {
+    return this.http.put<unknown>(`${this.base}/${procedimientoId}/pasos/${pasoId}`, request).pipe(
+      map((res) => this.normalizePaso(res)),
+      catchError((err: HttpErrorResponse) => throwError(() => Object.assign(new Error(this.mensaje(err)), { status: err.status }))),
+    );
+  }
+
+  listarMateriales(procedimientoId: number, pasoId: number): Observable<MaterialPaso[]> {
+    const marca = this.marcaMateriales(pasoId);
+    return this.compartir(
+      `materiales:${pasoId}`,
+      this.http.get<unknown>(`${this.base}/${procedimientoId}/pasos/${pasoId}/materiales`).pipe(
+        map((res) => this.asArray(res).map((item) => this.normalizeMaterial(item))),
+        tap((items) => {
+          if (this.marcaMateriales(pasoId) !== marca) {
+            return;
+          }
+          this.cacheMateriales.set(pasoId, items);
+          this.guardarMateriales(pasoId, items);
+        }),
+        catchError((err: HttpErrorResponse) => throwError(() => Object.assign(new Error(this.mensaje(err)), { status: err.status }))),
+      ),
+    );
+  }
+
+  /** Reutiliza una petición GET que ya está en curso (p. ej. la precarga al pasar el mouse). */
+  private compartir<T>(clave: string, fuente: Observable<T>): Observable<T> {
+    const actual = this.enVuelo.get(clave) as Observable<T> | undefined;
+    if (actual) {
+      return actual;
+    }
+    const compartida = fuente.pipe(
+      finalize(() => this.enVuelo.delete(clave)),
+      shareReplay({ bufferSize: 1, refCount: false }),
+    );
+    this.enVuelo.set(clave, compartida);
+    return compartida;
+  }
+
+  crearMaterial(
+    procedimientoId: number,
+    pasoId: number,
+    request: GuardarMaterialPasoRequest,
+  ): Observable<MaterialPaso> {
+    return this.http
+      .post<unknown>(`${this.base}/${procedimientoId}/pasos/${pasoId}/materiales`, request)
+      .pipe(
+        map((res) => this.normalizeMaterial(res)),
+        catchError((err: HttpErrorResponse) => throwError(() => Object.assign(new Error(this.mensaje(err)), { status: err.status }))),
+      );
+  }
+
+  crearMaterialArchivo(
+    procedimientoId: number,
+    pasoId: number,
+    nombre: string,
+    tipo: TipoMaterialProcedimiento,
+    archivo: File,
+  ): Observable<MaterialPaso> {
+    return this.http
+      .post<unknown>(
+        `${this.base}/${procedimientoId}/pasos/${pasoId}/materiales/archivo`,
+        crearFormDataMaterial(nombre, tipo, archivo),
+      )
+      .pipe(
+        map((res) => this.normalizeMaterial(res)),
+        catchError((err: HttpErrorResponse) => throwError(() => Object.assign(new Error(this.mensaje(err)), { status: err.status }))),
+      );
+  }
+
+  descargarMaterial(material: MaterialPaso): Observable<void> {
+    return descargarMaterialAutenticado(this.http, material.url, material.nombre, material.tipo).pipe(
+      catchError((err: HttpErrorResponse | Error) =>
+        throwError(() => (err instanceof HttpErrorResponse ? new Error(this.mensaje(err)) : err)),
+      ),
+    );
+  }
+
+  eliminarMaterial(procedimientoId: number, pasoId: number, materialId: number): Observable<void> {
+    return this.http
+      .delete(`${this.base}/${procedimientoId}/pasos/${pasoId}/materiales/${materialId}`, { responseType: 'text' })
+      .pipe(
+        map(() => undefined),
+        tap(() => {
+          const actuales = this.cacheMateriales.get(pasoId);
+          if (actuales) this.cacheMateriales.set(pasoId, actuales.filter((m) => m.id !== materialId));
+        }),
+        catchError((err: HttpErrorResponse) => throwError(() => Object.assign(new Error(this.mensaje(err)), { status: err.status }))),
+      );
+  }
+
+  actualizarMaterial(
+    procedimientoId: number,
+    pasoId: number,
+    materialId: number,
+    request: GuardarMaterialPasoRequest,
+  ): Observable<MaterialPaso> {
+    return this.http
+      .put<unknown>(`${this.base}/${procedimientoId}/pasos/${pasoId}/materiales/${materialId}`, request)
+      .pipe(
+        map((res) => this.normalizeMaterial(res)),
+        catchError((err: HttpErrorResponse) => throwError(() => Object.assign(new Error(this.mensaje(err)), { status: err.status }))),
+      );
+  }
+
+  private cuerpoProcedimiento(request: GuardarProcedimientoRequest): GuardarProcedimientoRequest {
+    return {
+      ...(request.estado!==undefined?{estado:request.estado}:{}),
+      ...(request.hardwareId!==undefined?{hardwareId:request.hardwareId}:{}),
+      ...(request.sistemaId!==undefined?{sistemaId:request.sistemaId}:{}),
+      ...(request.moduloId!==undefined?{moduloId:request.moduloId}:{}),
+      ...(request.informacionComplementaria!==undefined?{informacionComplementaria:request.informacionComplementaria?.trim()||null}:{}),
+      nombre: request.nombre.trim(),
+      descripcion: request.descripcion?.trim() ? request.descripcion.trim() : null,
+    };
+  }
+
+  private recordar(item: Procedimiento): void {
+    this.cacheProcedimientos.set(item.id, item);
+    this.listaCache$ = null;
+    const lista = this.leerLista() ?? [];
+    const idx = lista.findIndex((actual) => actual.id === item.id);
+    if (idx >= 0) {
+      lista[idx] = item;
+    } else {
+      lista.unshift(item);
+    }
+    this.guardarLista(lista);
+  }
+
+  private leerLista(): Procedimiento[] | null {
+    try {
+      const raw = localStorage.getItem(this.listaStorageKey) ?? sessionStorage.getItem(this.listaStorageKey);
+      if (!raw) {
+        return null;
+      }
+      const parsed = JSON.parse(raw) as unknown;
+      if (!Array.isArray(parsed)) {
+        return null;
+      }
+      return parsed.map((item) => this.normalizeProcedimiento(item));
+    } catch {
+      return null;
+    }
+  }
+
+  private guardarLista(items: Procedimiento[]): void {
+    try {
+      localStorage.setItem(this.listaStorageKey, JSON.stringify(items));
+    } catch {
+      // cuota o modo privado
+    }
+  }
+
+  private leerPasos(procedimientoId: number): PasoProcedimiento[] | null {
+    try {
+      const raw = localStorage.getItem(`${this.listaStorageKey}.pasos.${procedimientoId}`);
+      if (!raw) {
+        return null;
+      }
+      const parsed = JSON.parse(raw) as unknown;
+      if (!Array.isArray(parsed)) {
+        return null;
+      }
+      return parsed.map((item) => this.normalizePaso(item));
+    } catch {
+      return null;
+    }
+  }
+
+  private encolarGuias(items: Procedimiento[]): void {
+    items.slice(0, 12).forEach((item) => this.prepararGuia(item.id));
+  }
+
+  private seguirColaGuia(): void {
+    if (this.guiaEnCurso || !this.colaGuia.length) {
+      return;
+    }
+    const id = this.colaGuia.shift();
+    if (id == null) {
+      return;
+    }
+    if (this.guiaLista(id)) {
+      this.seguirColaGuia();
+      return;
+    }
+    this.guiaEnCurso = true;
+    this.listarPasos(id)
+      .pipe(
+        switchMap((pasos) => {
+          if (!pasos.length) {
+            return of(undefined);
+          }
+          return forkJoin(
+            pasos.map((paso) => this.listarMateriales(id, paso.id).pipe(catchError(() => of([] as MaterialPaso[])))),
+          );
+        }),
+        catchError(() => of(undefined)),
+        finalize(() => {
+          this.guiaEnCurso = false;
+          this.seguirColaGuia();
+        }),
+      )
+      .subscribe();
+  }
+
+  private guardarPasos(procedimientoId: number, pasos: PasoProcedimiento[]): void {
+    try {
+      localStorage.setItem(`${this.listaStorageKey}.pasos.${procedimientoId}`, JSON.stringify(pasos));
+    } catch {
+      // cuota o modo privado
+    }
+  }
+
+  private leerMateriales(pasoId: number): MaterialPaso[] | null {
+    try {
+      const raw = localStorage.getItem(`${this.listaStorageKey}.materiales.${pasoId}`);
+      if (!raw) {
+        return null;
+      }
+      const parsed = JSON.parse(raw) as unknown;
+      if (!Array.isArray(parsed)) {
+        return null;
+      }
+      return parsed.map((item) => this.normalizeMaterial(item));
+    } catch {
+      return null;
+    }
+  }
+
+  private guardarMateriales(pasoId: number, items: MaterialPaso[]): void {
+    try {
+      localStorage.setItem(`${this.listaStorageKey}.materiales.${pasoId}`, JSON.stringify(items));
+    } catch {
+      // cuota o modo privado
+    }
+  }
+
+  private mensaje(err: HttpErrorResponse): string {
+    if (err.status === 403) {
+      return 'No tienes permisos para realizar esta acción.';
+    }
+    if (err.status === 404) {
+      return 'El procedimiento o recurso solicitado no está disponible.';
+    }
+    if (err.status === 409) {
+      return mensajeApiError(err, 'La operación entra en conflicto con los datos actuales.');
+    }
+    if (err.status === 401) {
+      return mensajeApiError(err, 'Su sesión no es válida. Inicie sesión nuevamente.');
+    }
+    if (err.status === 0 || err.status >= 500) {
+      return 'Ocurrió un error inesperado. Intente más tarde.';
+    }
+    return mensajeApiError(err, 'No fue posible completar la operación.');
+  }
+
+  private asArray(res: unknown): unknown[] {
+    return Array.isArray(res) ? res : (res as { content?: unknown[] })?.content ?? [];
+  }
+
+  private normalizeProcedimiento(raw: unknown): Procedimiento {
+    const r = (raw ?? {}) as Record<string, unknown>;
+    const estado = String(r['estado'] ?? 'BORRADOR').toUpperCase();
+    return {
+      id: Number(r['id'] ?? 0),
+      nombre: String(r['nombre'] ?? ''),
+      descripcion: r['descripcion'] != null ? String(r['descripcion']) : null,
+      estado: estado === 'PUBLICADO' ? 'PUBLICADO' : 'BORRADOR',
+      hardwareId:r['hardwareId']==null?null:Number(r['hardwareId']),
+      sistemaId:r['sistemaId']==null?null:Number(r['sistemaId']),moduloId:r['moduloId']==null?null:Number(r['moduloId']),informacionComplementaria:r['informacionComplementaria']==null?null:String(r['informacionComplementaria']),origenId:r['origenId']==null?null:Number(r['origenId']),revision:Number(r['revision']??1),vigente:r['vigente']!==false,
+      creadoPor: this.usuario(r['creadoPor']),
+      fechaCreacion: r['fechaCreacion'] != null ? String(r['fechaCreacion']) : null,
+      modificadoPor: this.usuario(r['modificadoPor']),
+      fechaModificacion: r['fechaModificacion'] != null ? String(r['fechaModificacion']) : null,
+    };
+  }
+
+  private usuario(raw: unknown): UsuarioProcedimiento | null {
+    if (!raw || typeof raw !== 'object') {
+      return null;
+    }
+    const r = raw as Record<string, unknown>;
+    return {
+      id: Number(r['id'] ?? 0),
+      nombre: String(r['nombre'] ?? ''),
+    };
+  }
+
+  private normalizePaso(raw: unknown): PasoProcedimiento {
+    const r = (raw ?? {}) as Record<string, unknown>;
+    return {
+      id: Number(r['id'] ?? 0),
+      procedimientoId: Number(r['procedimientoId'] ?? 0),
+      orden: Number(r['orden'] ?? 0),
+      instruccion: String(r['instruccion'] ?? ''),
+      esCritico: r['esCritico'] === true,
+      modoEjecucion: (r['modoEjecucion'] ?? 'MANUAL') as ModalidadPaso,
+      configuracion: r['configuracion'] as ConfiguracionPaso | null,
+      revisionConfiguracion: r['revisionConfiguracion'] != null ? String(r['revisionConfiguracion']) : undefined,
+      mensajeEvidencia: r['mensajeEvidencia'] != null ? String(r['mensajeEvidencia']) : null,
+    };
+  }
+
+  private normalizeMaterial(raw: unknown): MaterialPaso {
+    const r = (raw ?? {}) as Record<string, unknown>;
+    const tipo = String(r['tipo'] ?? 'ENLACE').toUpperCase();
+    const permitido: TipoMaterialProcedimiento[] = ['IMAGEN', 'PDF', 'VIDEO', 'ENLACE'];
+    return {
+      id: Number(r['id'] ?? 0),
+      nombre: String(r['nombre'] ?? ''),
+      tipo: (permitido.includes(tipo as TipoMaterialProcedimiento) ? tipo : 'ENLACE') as TipoMaterialProcedimiento,
+      url: String(r['url'] ?? ''),
+    };
+  }
+}

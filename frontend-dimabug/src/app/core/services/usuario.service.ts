@@ -1,17 +1,69 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable, map } from 'rxjs';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { Observable, catchError, concat, map, of, shareReplay, switchMap, tap, throwError } from 'rxjs';
 import { apiUrl } from '../config/api';
+import { mensajeApiError } from '../http/api-error';
 import { Rol, Usuario, UsuarioPayload } from '../models/usuario.model';
+
+function fechaApi(value: unknown): string | undefined {
+  if (value == null || value === '') {
+    return undefined;
+  }
+  if (Array.isArray(value)) {
+    const [year, month, day, hour = 0, minute = 0, second = 0] = value.map((part) => Number(part));
+    const pad = (part: number) => String(part).padStart(2, '0');
+    if (!year || !month || !day) {
+      return undefined;
+    }
+    return `${year}-${pad(month)}-${pad(day)}T${pad(hour)}:${pad(minute)}:${pad(second)}`;
+  }
+  return String(value);
+}
 
 @Injectable({ providedIn: 'root' })
 export class UsuarioService {
   private readonly http = inject(HttpClient);
   private readonly base = apiUrl('/usuarios');
   private readonly rolesUrl = apiUrl('/roles');
+  private readonly listaKey = 'dimabug.usuarios.lista.v1';
+  private readonly rolesKey = 'dimabug.roles.lista.v1';
 
-  listar(): Observable<Usuario[]> {
-    return this.http.get<unknown>(this.base).pipe(map((res) => this.asUsuarioList(res)));
+  private listaCache$: Observable<Usuario[]> | null = null;
+  private rolesCache$: Observable<Rol[]> | null = null;
+
+  listaEnSesion(): Usuario[] {
+    return this.readUsuariosSession() ?? [];
+  }
+
+  rolesEnSesion(): Rol[] {
+    return this.readRolesSession() ?? [];
+  }
+
+  /** Caché de sesión al instante + refresco en red. */
+  listar(force = false): Observable<Usuario[]> {
+    if (!force && this.listaCache$) {
+      return this.listaCache$;
+    }
+
+    const stale = !force ? this.readUsuariosSession() : null;
+
+    const network$ = this.http.get<unknown>(this.base).pipe(
+      map((res) => this.asUsuarioList(res)),
+      tap((list) => this.writeUsuariosSession(list)),
+      catchError((err: HttpErrorResponse) => {
+        if (stale?.length) {
+          return of(stale);
+        }
+        this.listaCache$ = null;
+        return throwError(() => new Error(mensajeApiError(err, 'No se pudieron cargar los usuarios.')));
+      }),
+    );
+
+    this.listaCache$ = (stale?.length ? concat(of(stale), network$) : network$).pipe(
+      tap((list) => this.writeUsuariosSession(list)),
+      shareReplay(1),
+    );
+    return this.listaCache$;
   }
 
   obtener(id: number): Observable<Usuario> {
@@ -21,38 +73,89 @@ export class UsuarioService {
   crear(payload: UsuarioPayload): Observable<Usuario> {
     return this.http.post<unknown>(this.base, this.toApiBody(payload)).pipe(
       map((res) => this.normalizeUsuario(res)),
+      tap((item) => this.upsertLocal(item)),
     );
   }
 
   actualizar(id: number, payload: UsuarioPayload): Observable<Usuario> {
     return this.http.put<unknown>(`${this.base}/${id}`, this.toApiBody(payload)).pipe(
       map((res) => this.normalizeUsuario(res)),
+      tap((item) => this.upsertLocal(item)),
+      switchMap((item) => {
+        if (!payload.usuarioPassword) {
+          return of(item);
+        }
+        return this.cambiarPassword(id, payload.usuarioPassword).pipe(catchError(() => of(item)));
+      }),
     );
   }
 
-  eliminar(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.base}/${id}`);
+  cambiarPassword(id: number, password: string): Observable<Usuario> {
+    return this.http
+      .patch<unknown>(`${this.base}/${id}/password`, {
+        password,
+        usuarioPassword: password,
+        newPassword: password,
+      })
+      .pipe(
+        map((res) => this.normalizeUsuario(res)),
+        tap((item) => this.upsertLocal(item)),
+      );
   }
 
   cambiarEstado(id: number, activo: boolean): Observable<Usuario> {
-    return this.http.patch<unknown>(`${this.base}/${id}/estado`, { usuarioEstado: activo }).pipe(
+    return this.http.patch<unknown>(`${this.base}/${id}/estado`, { activo }).pipe(
       map((res) => this.normalizeUsuario(res)),
+      tap((item) => this.upsertLocal(item)),
     );
   }
 
-  listarRoles(): Observable<Rol[]> {
-    return this.http.get<unknown>(this.rolesUrl).pipe(map((res) => this.asRolList(res)));
+  listarRoles(force = false): Observable<Rol[]> {
+    if (!force && this.rolesCache$) {
+      return this.rolesCache$;
+    }
+
+    const stale = !force ? this.readRolesSession() : null;
+
+    const network$ = this.http.get<unknown>(this.rolesUrl).pipe(
+      map((res) => this.asRolList(res)),
+      tap((list) => this.writeRolesSession(list)),
+      catchError((err: HttpErrorResponse) => {
+        if (stale?.length) {
+          return of(stale);
+        }
+        this.rolesCache$ = null;
+        return throwError(() => new Error(mensajeApiError(err, 'No se pudieron cargar los roles.')));
+      }),
+    );
+
+    this.rolesCache$ = (stale?.length ? concat(of(stale), network$) : network$).pipe(shareReplay(1));
+    return this.rolesCache$;
+  }
+
+  private invalidateLista(): void {
+    this.listaCache$ = null;
+  }
+
+  private upsertLocal(item: Usuario): void {
+    this.invalidateLista();
+    const list = this.readUsuariosSession() ?? [];
+    const idx = list.findIndex((u) => u.usuarioId === item.usuarioId);
+    if (idx >= 0) {
+      list[idx] = item;
+    } else {
+      list.unshift(item);
+    }
+    this.writeUsuariosSession(list);
   }
 
   private toApiBody(payload: UsuarioPayload): Record<string, unknown> {
     const body: Record<string, unknown> = {
-      usuarioNombre: payload.usuarioNombre,
-      usuarioEmail: payload.usuarioEmail,
+      nombre: payload.usuarioNombre,
+      email: payload.usuarioEmail,
       rolId: payload.rolId,
-      usuarioEstado: payload.usuarioEstado,
     };
     if (payload.usuarioPassword) {
-      body['usuarioPassword'] = payload.usuarioPassword;
       body['password'] = payload.usuarioPassword;
     }
     return body;
@@ -93,12 +196,56 @@ export class UsuarioService {
       usuarioNombre: String(u['usuarioNombre'] ?? u['nombre'] ?? ''),
       usuarioEmail: String(u['usuarioEmail'] ?? u['email'] ?? ''),
       usuarioEstado: Boolean(u['usuarioEstado'] ?? u['activo'] ?? true),
-      usuarioFechaCreacion: u['usuarioFechaCreacion']
-        ? String(u['usuarioFechaCreacion'])
-        : undefined,
+      usuarioFechaCreacion: fechaApi(u['usuarioFechaCreacion'] ?? u['fechaCreacion']),
       rolId: rol?.rolId ?? (u['rolId'] != null ? Number(u['rolId']) : undefined),
       rol,
       rolNombre: rol?.rolNombre ?? (u['rolNombre'] ? String(u['rolNombre']) : undefined),
     };
+  }
+
+  private readUsuariosSession(): Usuario[] | null {
+    try {
+      const raw = sessionStorage.getItem(this.listaKey) ?? localStorage.getItem(this.listaKey);
+      if (!raw) {
+        return null;
+      }
+      const parsed = JSON.parse(raw) as unknown[];
+      return Array.isArray(parsed) ? parsed.map((item) => this.normalizeUsuario(item)) : null;
+    } catch {
+      return null;
+    }
+  }
+
+  private writeUsuariosSession(items: Usuario[]): void {
+    try {
+      const raw = JSON.stringify(items);
+      sessionStorage.setItem(this.listaKey, raw);
+      localStorage.setItem(this.listaKey, raw);
+    } catch {
+      // ignore
+    }
+  }
+
+  private readRolesSession(): Rol[] | null {
+    try {
+      const raw = sessionStorage.getItem(this.rolesKey) ?? localStorage.getItem(this.rolesKey);
+      if (!raw) {
+        return null;
+      }
+      const parsed = JSON.parse(raw) as unknown[];
+      return Array.isArray(parsed) ? parsed.map((item) => this.normalizeRol(item)) : null;
+    } catch {
+      return null;
+    }
+  }
+
+  private writeRolesSession(items: Rol[]): void {
+    try {
+      const raw = JSON.stringify(items);
+      sessionStorage.setItem(this.rolesKey, raw);
+      localStorage.setItem(this.rolesKey, raw);
+    } catch {
+      // ignore
+    }
   }
 }

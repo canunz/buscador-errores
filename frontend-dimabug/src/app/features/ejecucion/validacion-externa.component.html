@@ -1,0 +1,101 @@
+<section class="externa" aria-label="Acción de este paso" [attr.data-estado]="estadoSolicitud">
+  @if (error) { <p class="error" role="alert">{{ error }}</p> }
+  @if(errorConsulta){<div class="error" role="alert"><p>{{ errorConsulta }}</p><button class="tk-btn tk-btn-sec" type="button" (click)="cargar()" [disabled]="cargando || ocupado">Reintentar</button></div>}
+  @if (aviso) { <p role="status" aria-live="polite">{{ aviso }}</p> }
+  @if (cargando && !consultaRealizada) { <p role="status">Consultando solicitud…</p> }
+  @if(!solicitud && consultaRealizada && !errorConsulta){
+    <div class="pendiente-correo"><span class="estado-chip">Pendiente de solicitud</span>
+      @if(esCorreo){<h3>{{ esEvidencia?'Solicitar evidencias':'Preparar comunicación del paso' }}</h3><p>Ingresa los destinatarios y revisa el mensaje antes de enviarlo.</p>
+      <button class="tk-btn tk-btn-primario" type="button" [disabled]="!enCurso || ocupado || !puedeEnviar" (click)="abrirCorreo()">Enviar correo</button>}
+      @else{<p>La acción automática requiere un contexto de sucursal registrado en la ejecución.</p>}
+    </div>
+  }
+  @if(resultadoEnvio?.mensajeEnviadoId){<div class="confirmacion" role="status"><strong>{{ resultadoEnvio!.mensajeEnviadoId!.startsWith('SIMULADO-')?'Correo simulado correctamente. No se envió un mensaje real':'Mensaje aceptado por el servicio de correo; entrega en bandeja de entrada no confirmada' }}</strong>
+    <p>{{ fechaLocal(resultadoEnvio!.fechaEnvio) }} · @if(resultadoEnvio!.contexto.sucursalId){ {{ resultadoEnvio!.contexto.sucursalNombre }} · }{{ resultadoEnvio!.contexto.destinatarios?.length || 1 }} destinatarios</p><p>{{ etiqueta(resultadoEnvio!.estado) }}</p></div>}
+  @if (solicitud; as s) {
+    @if (s.simulado) { <p class="simulacion"><strong>SIMULACIÓN DE DESARROLLO.</strong> No se envían correos ni se acredita una instalación real.</p> }
+    <dl class="datos">@if(s.detalle.contexto.sucursalId){<div><dt>Sucursal</dt><dd>{{ s.detalle.contexto.sucursalNombre }} · {{ s.detalle.contexto.sucursalCodigo }}</dd></div>
+      <div><dt>Responsable</dt><dd>{{ s.detalle.contexto.responsableNombre }}</dd></div>}
+      <div><dt>Destinatarios</dt><dd>@for(d of s.detalle.contexto.destinatarios || [];track d.correo){<div>{{ d.correo }} · {{ d.tipo==='COPIA'?'En copia':'Principal' }}</div>}@if(!s.detalle.contexto.destinatarios?.length){ {{ s.detalle.contexto.responsableEmail }} }</dd></div>
+      <div><dt>Estado</dt><dd><strong>{{ etiqueta(s.detalle.estado) }}</strong></dd></div>
+      <div><dt>Solicitud</dt><dd>{{ s.detalle.id }} · ronda {{ s.detalle.ronda }}</dd></div>
+      <div><dt>Correo</dt><dd>{{ s.detalle.mensajeEnviadoId ? (s.simulado ? 'Envío simulado registrado' : 'Envío registrado') : 'Pendiente' }}</dd></div>
+      <div><dt>Fecha de solicitud</dt><dd>{{ s.detalle.fechaEnvio ? fechaLocal(s.detalle.fechaEnvio) : 'Todavía no enviada' }}</dd></div>
+      <div><dt>Próximo seguimiento</dt><dd>{{ s.detalle.proximoSeguimiento ? fechaLocal(s.detalle.proximoSeguimiento) : 'Sin recordatorios pendientes' }}</dd></div>
+    </dl>
+    <p>{{ s.detalle.politica.mensaje }}</p>
+    @if (s.detalle.estado === 'ESPERANDO_EVIDENCIA') {
+      <p>Actividad pendiente: recibir las evidencias configuradas para este paso.</p>
+      @if (enCurso) {
+        <fieldset [disabled]="ocupado"><legend>Evidencias recibidas</legend>
+          <p>Adjunta las fotografías recibidas. JPEG/PNG: máximo 2 MB y 4 megapíxeles por imagen.</p>
+          @for(categoria of categorias;track categoria){
+            <label class="tk-campo">{{ nombreCategoria(categoria) }}<input type="file" accept="image/jpeg,image/png" (change)="seleccionar(categoria.toLowerCase(), $event)" /></label>
+            @if(archivos[categoria.toLowerCase()];as archivo){<p>{{ archivo.name }} <button type="button" class="tk-btn tk-btn-sec" (click)="quitarArchivo(categoria.toLowerCase())">Quitar archivo</button></p>
+              @if(previsualizaciones[categoria.toLowerCase()]){<img class="vista-previa" [src]="previsualizaciones[categoria.toLowerCase()]" [alt]="'Fotografía seleccionada: '+nombreCategoria(categoria)" />}}
+          }
+          <button type="button" class="tk-btn tk-btn-primario" [disabled]="!tresArchivos" (click)="recibir(false)">Registrar recepción</button>
+          @if(s.simulado){<details><summary>Opciones de simulación</summary><button type="button" class="tk-btn tk-btn-sec" (click)="recibir(true)">Simular recepción de las evidencias requeridas</button></details>}
+        </fieldset>
+      }
+    }
+    @if(s.detalle.estado==='ESPERANDO_CONFIRMACION' && s.simulado && enCurso){
+      <p>Actividad pendiente: respuesta de los destinatarios. El envío no acredita la carga de folios.</p>
+      <fieldset [disabled]="ocupado"><legend>Simular respuesta de Control Cajas o del responsable</legend>
+        <label class="tk-campo">Remitente<input type="email" [(ngModel)]="remitente" name="remitenteConfirmacion" /></label>
+        <label class="tk-campo">Confirmación recibida<textarea [(ngModel)]="confirmacionTexto" name="confirmacionTexto" maxlength="1000"></textarea></label>
+        <button type="button" class="tk-btn tk-btn-primario" [disabled]="!confirmacionTexto.trim()" (click)="confirmarRespuesta()">Simular recepción de confirmación</button>
+      </fieldset>
+    }
+    @if((s.detalle.estado==='ESPERANDO_CONFIRMACION'||s.detalle.estado==='ESPERANDO_EVIDENCIA')&&s.simulado&&enCurso){
+      <details><summary>Probar seguimiento sin esperar</summary>@for(h of configuracion.recordatoriosHoras;track h){<button type="button" class="tk-btn tk-btn-sec" [disabled]="ocupado" (click)="simularTiempo(h)">Probar {{ h }} horas</button>}
+      <button type="button" class="tk-btn tk-btn-sec" [disabled]="ocupado" (click)="simularTiempo(configuracion.plazoRespuestaHoras)">Probar escalamiento {{ configuracion.plazoRespuestaHoras }} horas</button></details>
+    }
+    @if (s.fotos.length) {
+      <div class="galeria">@for (foto of s.fotos; track foto.id) { <figure><figcaption>{{ foto.categoria }}</figcaption>
+        @if (fotos[foto.id]) { <a [href]="fotos[foto.id]" target="_blank" rel="noopener"><img [src]="fotos[foto.id]" [alt]="'Evidencia de ' + foto.categoria" (load)="fotoCargada(foto.id)" /></a> } @else { <p>Cargando fotografía…</p> }
+      </figure> }</div>
+    }
+    @if (revisable && enCurso) {
+      <fieldset [disabled]="ocupado"><legend>Revisión obligatoria del técnico</legend><p>Comprueba el resultado y la condición de finalización configurada.</p>
+        @if (esEvidencia && !fotosListas) { <p role="status">Espera a que carguen las fotografías requeridas antes de aprobar.</p> }
+        <button type="button" class="tk-btn tk-btn-exito" [disabled]="esEvidencia && !fotosListas" (click)="decidir(true)">{{ esEvidencia?'Aprobar fotografías':'Validar resultado' }} y continuar</button>
+        <label class="tk-campo">Motivo del rechazo<textarea name="motivoRechazo" [(ngModel)]="motivo" maxlength="1000"></textarea></label>
+        <label><input type="checkbox" name="rechazoDefinitivo" [(ngModel)]="definitiva" /> Rechazo definitivo, sin solicitar otra ronda</label>
+        <button type="button" class="tk-btn tk-btn-peligro" [disabled]="!motivo.trim()" (click)="decidir(false)">{{ definitiva ? 'Registrar rechazo definitivo' : 'Rechazar fotografías' }}</button>
+      </fieldset>
+    }
+    @if(s.detalle.estado==='RECHAZADA' && enCurso && esEvidencia){<p>Fotografías rechazadas. Se conserva el historial y no se ha enviado otra solicitud.</p><button type="button" class="tk-btn tk-btn-primario" [disabled]="ocupado" (click)="solicitarNuevamente()">Solicitar nuevamente</button>}
+    @if (s.detalle.estado === 'RECHAZADA_DEFINITIVA') { <p>La solicitud quedó cerrada. Cancela esta ejecución si no se puede continuar.</p> }
+    <section class="historial" aria-label="Historial de comunicaciones"><h3>Historial de comunicaciones</h3><p>Registros de este paso y esta ejecución · hora de Chile</p>
+      <ol class="timeline">@for(evento of actividad;track evento.id){@let datos=detalleEvento(evento);<li>
+        <time>{{ fechaLocal(evento.fecha) }}</time><strong>{{ tipoEvento(evento.tipo) }}</strong><p>{{ datos.descripcion }}</p>
+        <div class="historial-meta"><span>Responsable: {{ datos.responsable }}</span><span>Estado: {{ etiqueta(datos.estado) }}</span></div>
+        @if(datos.destinatarios.length){<p>Destinatarios: @for(d of datos.destinatarios;track d.correo){<span class="correo-chip">{{ d.correo }} · {{ d.tipo==='COPIA'?'CC':'Para' }}</span>}</p>}
+        @if(datos.evidencias.length){<details><summary>{{ datos.evidencias.length }} evidencias asociadas</summary><div class="galeria">@for(fotoId of datos.evidencias;track fotoId){<figure>@if(fotos[fotoId]){<a [href]="fotos[fotoId]" target="_blank" rel="noopener"><img [src]="fotos[fotoId]" [alt]="'Evidencia histórica '+fotoId" /></a>}@else{<button type="button" class="tk-btn tk-btn-sec" (click)="cargarFotoHistorial(evento.solicitudId,fotoId)">Ver evidencia {{ fotoId }}</button>}</figure>}</div></details>}
+      </li>}@empty{<li>No hay comunicaciones registradas.</li>}</ol>
+    </section>
+    @if (ocupado) { <p role="status">Confirmando operación…</p> }
+  }
+</section>
+
+@if(modalAbierto){
+  <div class="correo-modal"><div class="correo-fondo" (click)="cerrarCorreo()"></div>
+    <section class="correo-dialog" role="dialog" aria-modal="true" aria-labelledby="correo-titulo" cdkTrapFocus [cdkTrapFocusAutoCapture]="true">
+      <header class="correo-cabecera"><div><span class="eyebrow">COMUNICACIÓN DEL PASO {{ paso.orden }}</span><h2 id="correo-titulo">{{ esEvidencia?'Solicitar evidencias':'Enviar correo del paso' }}</h2><p>Revisa los datos. El seguimiento se registrará automáticamente.</p></div><button type="button" class="cerrar-modal" (click)="cerrarCorreo()" [disabled]="ocupado" aria-label="Cerrar modal">×</button></header>
+      <form (ngSubmit)="enviarCorreo()"><div class="correo-contenido">
+        @if(errorModal){<p class="error" role="alert">{{ errorModal }}</p>}
+        @if(modoSimulado){<p class="simulacion">Modo simulado: no se enviará un mensaje real.</p>}
+        @if(!disponible){<p class="error" role="alert">El servicio de correo no está configurado o disponible. Solicita al administrador revisar la integración de correo.</p>}
+          <fieldset [disabled]="ocupado"><legend>Destinatarios</legend><app-destinatarios-editor [value]="destinatarios" (valueChange)="destinatarios=$event" [disabled]="ocupado" titulo="Para y CC" />
+          @if(!tienePrincipal){<p class="error" role="alert">Añade al menos un destinatario de tipo Para.</p>}</fieldset>
+          <fieldset [disabled]="ocupado"><legend>Mensaje</legend>
+            <label class="tk-campo">Asunto<input name="asuntoCorreo" [(ngModel)]="asunto" maxlength="200" required /></label>
+            <label class="tk-campo">Mensaje<textarea name="mensajeCorreo" [(ngModel)]="mensaje" rows="6" maxlength="2000" required></textarea></label>
+            @if(esEvidencia){<p>Evidencias solicitadas:</p><ul class="categorias">@for(c of categorias;track c){<li>{{ nombreCategoria(c) }}</li>}</ul>}
+          </fieldset>
+      </div><footer class="correo-acciones"><button class="tk-btn tk-btn-sec" type="button" (click)="cerrarCorreo()" [disabled]="ocupado">Cancelar</button><button class="tk-btn tk-btn-primario" type="submit" [disabled]="ocupado || !disponible || !puedeEnviar || !tienePrincipal || !asunto.trim() || !mensaje.trim()">{{ ocupado?'Confirmando envío…':'Enviar correo' }}</button></footer>
+      </form>
+    </section>
+  </div>
+}

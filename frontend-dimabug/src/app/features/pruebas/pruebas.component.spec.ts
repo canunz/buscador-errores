@@ -1,0 +1,22 @@
+import { TestBed } from '@angular/core/testing';
+import { of, Subject, throwError } from 'rxjs';
+import { PruebasComponent } from './pruebas.component';
+import { AdminPruebasApiService } from '../../core/services/admin-pruebas-api.service';
+import { OrganizacionService } from '../../core/services/organizacion.service';
+import { AuthService } from '../../core/services/auth.service';
+import { RespaldoPruebasLocalService } from '../../core/services/respaldo-pruebas-local.service';
+import { PruebaItem } from '../../core/models/catalogo.model';
+describe('QA013 catálogo persistente de Pruebas', () => {
+ let api: any; let org: any; let admin: boolean; let c: PruebasComponent; let fixture: any;
+ const p: PruebaItem = { id: 1, descripcion: 'Ping', resultadoEsperado: 'OK', activo: true };
+ beforeEach(() => { admin = true; api = jasmine.createSpyObj('api', ['listar', 'guardar', 'estado']); api.listar.and.returnValue(of([p])); api.guardar.and.returnValue(of(p)); api.estado.and.returnValue(of(p)); org = jasmine.createSpyObj('org', ['listarPruebasDetalle']); org.listarPruebasDetalle.and.returnValue(of([p]));
+   TestBed.configureTestingModule({ imports: [PruebasComponent], providers: [{ provide: AdminPruebasApiService, useValue: api }, { provide: OrganizacionService, useValue: org }, { provide: AuthService, useValue: { isAdmin: () => admin } }, { provide: RespaldoPruebasLocalService, useValue: { inspeccionar: () => [], descargar: jasmine.createSpy() } }] }); fixture = TestBed.createComponent(PruebasComponent); c = fixture.componentInstance; fixture.detectChanges(); });
+ it('admin ve formularios y estados sin Eliminar', () => { expect(fixture.nativeElement.textContent).toContain('Añadir Prueba'); expect(fixture.nativeElement.textContent).not.toContain('Eliminar'); });
+ it('técnico consulta activas y no administra', () => { admin = false; c.cargar(); c.abrirFormulario(); c.pedirCambioEstado(p); c.guardar(); fixture.detectChanges(); expect(org.listarPruebasDetalle).toHaveBeenCalledWith(true); expect(api.guardar).not.toHaveBeenCalled(); expect(c.pendienteEstado).toBeNull(); expect(fixture.nativeElement.textContent).not.toContain('Añadir Prueba'); });
+ it('valida descripción obligatoria', () => { c.abrirFormulario(); c.form.setValue({ descripcion: ' ', resultadoEsperado: '' }); c.guardar(); expect(api.guardar).not.toHaveBeenCalled(); expect(c.formError).toContain('obligatoria'); });
+ it('confirmación ocurre después de respuesta', () => { const respuesta = new Subject<PruebaItem>(); api.guardar.and.returnValue(respuesta); c.abrirFormulario(); c.form.patchValue({ descripcion: 'Ping' }); c.guardar(); expect(c.saving).toBeTrue(); expect(c.mensaje).toBe(''); expect(c.formulario).toBeTrue(); respuesta.next(p); expect(c.saving).toBeFalse(); expect(c.mensaje).toContain('guardada'); expect(api.listar.calls.count()).toBe(2); });
+ it('error mantiene formulario sin éxito', () => { api.guardar.and.returnValue(throwError(() => new Error('Duplicado'))); c.abrirFormulario(p); c.guardar(); expect(c.formulario).toBeTrue(); expect(c.formError).toContain('Duplicado'); expect(c.mensaje).toBe(''); });
+ it('desactiva con HTTP y mantiene fila e historial', () => { api.listar.and.returnValue(of([{ ...p, activo: false }])); c.ver(p); c.pedirCambioEstado(p); c.confirmarEstado(); expect(api.estado).toHaveBeenCalledWith(1, false); expect(c.items.length).toBe(1); expect(c.detalle?.activo).toBeFalse(); });
+ it('reactiva con HTTP', () => { c.pedirCambioEstado({ ...p, activo: false }); c.confirmarEstado(); expect(api.estado).toHaveBeenCalledWith(1, true); });
+ it('error no simula estado ni oculta', () => { api.estado.and.returnValue(throwError(() => new Error('Fallo servidor'))); c.pedirCambioEstado(p); c.confirmarEstado(); expect(c.items[0].activo).toBeTrue(); expect(c.pendienteEstado).not.toBeNull(); expect(c.formError).toContain('servidor'); });
+});

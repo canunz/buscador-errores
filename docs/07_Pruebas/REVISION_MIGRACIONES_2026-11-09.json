@@ -1,0 +1,236 @@
+[
+  {
+    "path": "dima-bug-backend/src/main/resources/db/migration/V20260925_01__agregar_estado_eliminado_conocimiento.sql",
+    "sha256": "085e1633c93bdf49f364dd2945d5b8b7bf546beee64178d5ae317ad1c5b4bbe5",
+    "statement_start_counts": {
+      "CREATE": 0,
+      "ALTER": 1,
+      "DROP": 0,
+      "INSERT": 0,
+      "UPDATE": 0,
+      "DELETE": 0
+    },
+    "executed_during_consolidation": false
+  },
+  {
+    "path": "dima-bug-backend/src/main/resources/db/migration/V20261013_01__ampliar_solucion.sql",
+    "sha256": "d44b06e9bc5a67e33b3a7812d93d834c67170ea4581796d062829d57fae12a8c",
+    "statement_start_counts": {
+      "CREATE": 0,
+      "ALTER": 1,
+      "DROP": 0,
+      "INSERT": 0,
+      "UPDATE": 0,
+      "DELETE": 0
+    },
+    "executed_during_consolidation": false
+  },
+  {
+    "path": "dima-bug-backend/src/main/resources/db/migration/V20261014_01__organizacion_persistente.sql",
+    "sha256": "71acd27a58e2de8bbd2d7723cc0eadf6a996e940e860a622541e19bef7665f48",
+    "statement_start_counts": {
+      "CREATE": 1,
+      "ALTER": 2,
+      "DROP": 0,
+      "INSERT": 1,
+      "UPDATE": 0,
+      "DELETE": 0
+    },
+    "executed_during_consolidation": false
+  },
+  {
+    "path": "dima-bug-backend/src/main/resources/db/migration/V20261017_01__modulo_tickets.sql",
+    "sha256": "65d06c7db3a56be10410a402413a9ad946f6c6b2237a897281bdb44c1a5240da",
+    "statement_start_counts": {
+      "CREATE": 5,
+      "ALTER": 0,
+      "DROP": 0,
+      "INSERT": 0,
+      "UPDATE": 0,
+      "DELETE": 0
+    },
+    "executed_during_consolidation": false
+  },
+  {
+    "path": "dima-bug-backend/src/main/resources/db/migration/V20261017_02__tickets_adjuntos_y_nivel_etiqueta.sql",
+    "sha256": "9aa9f9e55fa42126a63f07f78146bb9da1d23844eabe67e95260f1e42b5733a8",
+    "statement_start_counts": {
+      "CREATE": 1,
+      "ALTER": 1,
+      "DROP": 1,
+      "INSERT": 0,
+      "UPDATE": 0,
+      "DELETE": 0
+    },
+    "executed_during_consolidation": false
+  },
+  {
+    "path": "docs/implementacion/automatizacion/00_verificar_esquema_mysql.sql",
+    "sha256": "3ad149af94a5d794bb1f0a538bbf4007c7d920b27b8cb587a5fd2bf50e1b6946",
+    "statement_start_counts": {
+      "CREATE": 0,
+      "ALTER": 0,
+      "DROP": 0,
+      "INSERT": 0,
+      "UPDATE": 0,
+      "DELETE": 0
+    },
+    "executed_during_consolidation": false
+  },
+  {
+    "path": "docs/implementacion/automatizacion/01_contrato_paso_mysql.sql",
+    "sha256": "7fe50d6b54f9b4cac76aa1ec45e3c0446887e1be5b7533e927a69ac0d14a8adb",
+    "statement_start_counts": {
+      "CREATE": 0,
+      "ALTER": 1,
+      "DROP": 0,
+      "INSERT": 0,
+      "UPDATE": 0,
+      "DELETE": 0
+    },
+    "executed_during_consolidation": false
+  },
+  {
+    "path": "docs/implementacion/automatizacion/02_sucursales_mysql.sql",
+    "sha256": "b4a9b1a6a7f8e259cbd30051e502edbf3fb716676b7419d97e0756a4fa043816",
+    "statement_start_counts": {
+      "CREATE": 1,
+      "ALTER": 0,
+      "DROP": 0,
+      "INSERT": 0,
+      "UPDATE": 0,
+      "DELETE": 0
+    },
+    "executed_during_consolidation": false
+  },
+  {
+    "path": "docs/implementacion/automatizacion/03_flujo_evidencias_desarrollo.sql",
+    "sha256": "fbd0587732be4bc87f02d84a05212287cb181676603f4c4a04f2607b4f4f9709",
+    "statement_start_counts": {
+      "CREATE": 4,
+      "ALTER": 1,
+      "DROP": 0,
+      "INSERT": 0,
+      "UPDATE": 0,
+      "DELETE": 0
+    },
+    "executed_during_consolidation": false
+  },
+  {
+    "path": "docs/implementacion/automatizacion/04_modalidades_por_paso_desarrollo.sql",
+    "sha256": "f752a724e1961a661af5ef6f6d16c7d9db777e697b9213673650d79ddc0aa49c",
+    "statement_start_counts": {
+      "CREATE": 0,
+      "ALTER": 5,
+      "DROP": 0,
+      "INSERT": 0,
+      "UPDATE": 0,
+      "DELETE": 0
+    },
+    "executed_during_consolidation": false
+  },
+  {
+    "path": "docs/implementacion/automatizacion/05_directorio_ciudad_cargo_desarrollo.sql",
+    "sha256": "897311871b478fb8d2e0d2cfc076975b2365659e65e7cf754484520b5281cd02",
+    "statement_start_counts": {
+      "CREATE": 0,
+      "ALTER": 1,
+      "DROP": 0,
+      "INSERT": 0,
+      "UPDATE": 0,
+      "DELETE": 0
+    },
+    "executed_during_consolidation": false
+  },
+  {
+    "path": "docs/implementacion/automatizacion/06_edicion_administrativa_procedimientos.sql",
+    "sha256": "ddd46dc7fe2926631d3f4e19458dc574b68dd8780268d4f10cffd5b982e8f54a",
+    "statement_start_counts": {
+      "CREATE": 1,
+      "ALTER": 1,
+      "DROP": 0,
+      "INSERT": 0,
+      "UPDATE": 0,
+      "DELETE": 0
+    },
+    "executed_during_consolidation": false
+  },
+  {
+    "path": "docs/implementacion/automatizacion/07_hardware_procedimientos.sql",
+    "sha256": "757b70c34167e2c12fa3eb90db8bf2b4090ba373e094030d1ac57478bb2aaab5",
+    "statement_start_counts": {
+      "CREATE": 0,
+      "ALTER": 1,
+      "DROP": 0,
+      "INSERT": 0,
+      "UPDATE": 0,
+      "DELETE": 0
+    },
+    "executed_during_consolidation": false
+  },
+  {
+    "path": "docs/implementacion/automatizacion/08_correo_sin_sucursal.sql",
+    "sha256": "0a550b97e619ed32e9d0bd715c5c58224686d39df40e5b0218a6a7e0119a5e34",
+    "statement_start_counts": {
+      "CREATE": 0,
+      "ALTER": 1,
+      "DROP": 0,
+      "INSERT": 0,
+      "UPDATE": 0,
+      "DELETE": 0
+    },
+    "executed_during_consolidation": false
+  },
+  {
+    "path": "docs/implementacion/automatizacion/09_gmail_oauth_cifrado.sql",
+    "sha256": "85a2568b880d0b740eb2d4c7b440564244b1e978fc3a58b424d68a2a3174dcf8",
+    "statement_start_counts": {
+      "CREATE": 3,
+      "ALTER": 0,
+      "DROP": 0,
+      "INSERT": 1,
+      "UPDATE": 0,
+      "DELETE": 0
+    },
+    "executed_during_consolidation": false
+  },
+  {
+    "path": "docs/implementacion/automatizacion/10_prueba_gmail_administrativa.sql",
+    "sha256": "70f0955fadadd2200858f384b679594d6477a28059e87ef0854e887edc8dd3f1",
+    "statement_start_counts": {
+      "CREATE": 2,
+      "ALTER": 0,
+      "DROP": 0,
+      "INSERT": 0,
+      "UPDATE": 0,
+      "DELETE": 0
+    },
+    "executed_during_consolidation": false
+  },
+  {
+    "path": "docs/implementacion/automatizacion/11_materiales_soluciones_autoservicio.sql",
+    "sha256": "46686d0f3e623673c4d76f1af153b55c0dcf5ea015c26c5f94ca46f1f10996b3",
+    "statement_start_counts": {
+      "CREATE": 1,
+      "ALTER": 0,
+      "DROP": 0,
+      "INSERT": 0,
+      "UPDATE": 0,
+      "DELETE": 0
+    },
+    "executed_during_consolidation": false
+  },
+  {
+    "path": "docs/implementacion/automatizacion/APLICAR_REPARACION_STAGING.sql",
+    "sha256": "57fb9f2d80049e5dd7a35204a7ad1d56ea18df378314d7f362a4fde4bbe4c2a7",
+    "statement_start_counts": {
+      "CREATE": 0,
+      "ALTER": 1,
+      "DROP": 0,
+      "INSERT": 0,
+      "UPDATE": 0,
+      "DELETE": 0
+    },
+    "executed_during_consolidation": false
+  }
+]

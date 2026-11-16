@@ -14,7 +14,7 @@
   padding: 48px clamp(48px, 10vw, 140px) 48px 5vw;
   background: #eef7ff;
   overflow: hidden;
-  font-family: 'Segoe UI', system-ui, sans-serif;
+  font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
 }
 
 .login-bg {
@@ -35,7 +35,7 @@
   position: relative;
   z-index: 1;
   width: 100%;
-  max-width: 420px;
+  max-width: 520px;
   margin-right: clamp(24px, 6vw, 96px);
   background: #ffffff;
   border: 1px solid #e2e8f0;
@@ -255,4 +255,146 @@
   .login-card {
     padding: 28px 20px;
   }
+}
+
+/* ===== Ingreso con código de acceso ===== */
+.login-info {
+  margin: 0 0 16px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: #eaf0fe;
+  border: 1px solid #c9d7fb;
+  color: #1e3a8a;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.login-info p {
+  margin: 0;
+}
+
+.login-input.is-locked {
+  background: #f8fafc;
+}
+
+.login-input.is-locked input {
+  color: #334155;
+  font-weight: 600;
+  cursor: default;
+}
+
+.login-cambiar {
+  margin-left: 8px;
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.login-codigo input {
+  text-align: center;
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: 10px;
+  font-variant-numeric: tabular-nums;
+}
+
+.login-timer {
+  margin: -4px 0 16px;
+  font-size: 13px;
+  color: #475569;
+  text-align: center;
+}
+
+.login-timer strong {
+  color: #1e4fd6;
+  font-variant-numeric: tabular-nums;
+}
+
+.login-timer.vencido {
+  color: #b91c1c;
+  font-weight: 600;
+}
+
+.login-reenviar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 16px;
+  font-size: 13px;
+  color: #64748b;
+}
+
+.login-link-btn {
+  border: 0;
+  background: none;
+  padding: 0;
+  font: inherit;
+  font-weight: 600;
+  color: #1e4fd6;
+  cursor: pointer;
+}
+
+.login-link-btn:hover:not(:disabled) {
+  text-decoration: underline;
+}
+
+.login-link-btn:disabled {
+  color: #94a3b8;
+  cursor: default;
+}
+
+.login-autoservicio {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: calc(100% + 16px);
+  margin: 24px -8px 0;
+  padding: 16px 18px;
+  border: 1px solid #dbe4f5;
+  border-radius: 12px;
+  background: #f6f8ff;
+  text-decoration: none;
+  color: inherit;
+}
+
+.login-autoservicio:hover {
+  border-color: #1e4fd6;
+  background: #eef3ff;
+}
+
+.login-autoservicio-icono {
+  flex: 0 0 40px;
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border-radius: 10px;
+  background: #1e4fd6;
+  color: #fff;
+}
+
+.login-autoservicio-icono svg {
+  width: 20px;
+  height: 20px;
+}
+
+.login-autoservicio span:last-child {
+  min-width: 0;
+  flex: 1;
+}
+
+.login-autoservicio strong {
+  display: block;
+  font-size: 14px;
+  font-weight: 750;
+  color: #0f172a;
+  line-height: 1.35;
+}
+
+.login-autoservicio small {
+  display: block;
+  margin-top: 2px;
+  font-size: 12px;
+  color: #64748b;
+  line-height: 1.35;
 }

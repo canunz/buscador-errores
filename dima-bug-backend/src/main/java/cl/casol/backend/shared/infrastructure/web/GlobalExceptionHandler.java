@@ -1,16 +1,175 @@
 package cl.casol.backend.shared.infrastructure.web;
 
+import cl.casol.backend.catalogo.domain.exception.CatalogoNoEncontradoException;
+import cl.casol.backend.conocimiento.domain.exception.ClasificacionInvalidaException;
+import cl.casol.backend.conocimiento.domain.exception.CausaNoEncontradaException;
+import cl.casol.backend.conocimiento.domain.exception.AsociacionPruebaNoEncontradaException;
+import cl.casol.backend.conocimiento.domain.exception.PruebaNoEncontradaException;
+import cl.casol.backend.conocimiento.domain.exception.PruebaYaAsociadaException;
+import cl.casol.backend.conocimiento.domain.exception.SolucionNoEncontradaException;
+import cl.casol.backend.conocimiento.domain.exception.AsignacionSolucionNoEncontradaException;
+import cl.casol.backend.conocimiento.domain.exception.AsignacionSolucionInvalidaException;
+import cl.casol.backend.conocimiento.domain.exception.MaterialApoyoNoEncontradoException;
+import cl.casol.backend.conocimiento.domain.exception.ConocimientoNoEncontradoException;
+import cl.casol.backend.conocimiento.domain.exception.SintomaNoEncontradoException;
 import cl.casol.backend.identidad.domain.exception.CredencialesInvalidasException;
 import cl.casol.backend.identidad.domain.exception.UsuarioInactivoException;
+import cl.casol.backend.identidad.domain.exception.AutoDesactivacionException;
+import cl.casol.backend.identidad.domain.exception.EmailDuplicadoException;
+import cl.casol.backend.identidad.domain.exception.RolInactivoException;
+import cl.casol.backend.identidad.domain.exception.RolNoEncontradoException;
+import cl.casol.backend.identidad.domain.exception.UsuarioNoEncontradoException;
+import cl.casol.backend.identidad.domain.exception.DepartamentoNoEncontradoException;
+import cl.casol.backend.identidad.domain.exception.ResponsableNoEncontradoException;
+import cl.casol.backend.procedimiento.domain.exception.ProcedimientoNoEncontradoException;
+import cl.casol.backend.procedimiento.domain.exception.PasoNoEncontradoException;
+import cl.casol.backend.procedimiento.domain.exception.OrdenPasoDuplicadoException;
+import cl.casol.backend.procedimiento.domain.exception.EstadoProcedimientoInvalidoException;
+import cl.casol.backend.ejecucion.domain.exception.EjecucionNoEncontradaException;
+import cl.casol.backend.ejecucion.domain.exception.EjecucionPasoNoEncontradoException;
+import cl.casol.backend.ejecucion.domain.exception.ReglaEjecucionException;
+import cl.casol.backend.seguimiento.domain.exception.EstadoConocimientoNoEvaluableException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.Map;
-
+//Paso VIII: Manejo de errores
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    @ExceptionHandler(cl.casol.backend.shared.application.archivo.ArchivoException.class)
+    public ResponseEntity<Map<String, String>> handleArchivo(cl.casol.backend.shared.application.archivo.ArchivoException ex) {
+        HttpStatus status = switch (ex.motivo()) {
+            case INVALIDO -> HttpStatus.BAD_REQUEST;
+            case DEMASIADO_GRANDE -> HttpStatus.PAYLOAD_TOO_LARGE;
+            case NO_ENCONTRADO -> HttpStatus.NOT_FOUND;
+            case ALMACENAMIENTO -> HttpStatus.INTERNAL_SERVER_ERROR;
+        };
+        return ResponseEntity.status(status).body(Map.of("message", ex.getMessage()));
+    }
+
+    @ExceptionHandler(org.springframework.web.multipart.MaxUploadSizeExceededException.class)
+    public ResponseEntity<Map<String, String>> handleTamanoArchivo(Exception ex) {
+        return ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE)
+                .body(Map.of("message", "El archivo o request supera el límite permitido"));
+    }
+
+    @ExceptionHandler({UsuarioNoEncontradoException.class, RolNoEncontradoException.class,
+            CatalogoNoEncontradoException.class, ConocimientoNoEncontradoException.class,
+            DepartamentoNoEncontradoException.class, SintomaNoEncontradoException.class,
+            CausaNoEncontradaException.class, PruebaNoEncontradaException.class,
+            AsociacionPruebaNoEncontradaException.class, SolucionNoEncontradaException.class,
+            AsignacionSolucionNoEncontradaException.class, ResponsableNoEncontradoException.class,
+            MaterialApoyoNoEncontradoException.class, ProcedimientoNoEncontradoException.class,
+            cl.casol.backend.identidad.domain.exception.ContactoDepartamentoNoEncontradoException.class, PasoNoEncontradoException.class, EjecucionNoEncontradaException.class,
+            EjecucionPasoNoEncontradoException.class})
+    public ResponseEntity<Map<String, String>> handleNoEncontrado(RuntimeException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", ex.getMessage()));
+    }
+
+    @ExceptionHandler({cl.casol.backend.conocimiento.domain.exception.MaterialDuplicadoException.class, cl.casol.backend.conocimiento.domain.exception.SolucionDuplicadaException.class, cl.casol.backend.conocimiento.domain.exception.PruebaConflictoException.class, cl.casol.backend.identidad.domain.exception.OrganizacionConflictoException.class, cl.casol.backend.identidad.domain.exception.UltimoAdministradorException.class, cl.casol.backend.catalogo.domain.exception.CatalogoConflictoException.class, EmailDuplicadoException.class, PruebaYaAsociadaException.class,
+            OrdenPasoDuplicadoException.class, cl.casol.backend.conocimiento.domain.exception.UltimaSolucionActivaException.class, cl.casol.backend.conocimiento.domain.exception.SolucionInactivaException.class})
+    public ResponseEntity<Map<String, String>> handleConflicto(RuntimeException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("message", ex.getMessage()));
+    }
+
+    @ExceptionHandler(org.springframework.orm.ObjectOptimisticLockingFailureException.class)
+    public ResponseEntity<Map<String,String>> handleVersion(Exception ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("message","El registro cambió en otra sesión. Recarga y revisa los cambios"));
+    }
+
+    @ExceptionHandler(cl.casol.backend.ejecucion.domain.exception.ConflictoEjecucionException.class)
+    public ResponseEntity<Map<String,String>> handleConflictoEjecucion(RuntimeException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("message",ex.getMessage()));
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<Map<String, String>> handleIntegridad(DataIntegrityViolationException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(Map.of("message", "El registro entra en conflicto con datos existentes"));
+    }
+
+    @ExceptionHandler({cl.casol.backend.conocimiento.domain.exception.CopiaSolucionInvalidaException.class, cl.casol.backend.conocimiento.domain.exception.PruebaInvalidaException.class, cl.casol.backend.identidad.domain.exception.OrganizacionInvalidaException.class, cl.casol.backend.catalogo.domain.exception.CatalogoInvalidoException.class, RolInactivoException.class, AutoDesactivacionException.class,
+            ClasificacionInvalidaException.class, AsignacionSolucionInvalidaException.class,
+            EstadoProcedimientoInvalidoException.class, cl.casol.backend.shared.domain.DestinatarioInvalidoException.class, ReglaEjecucionException.class, cl.casol.backend.correo.application.service.GmailException.class,
+            EstadoConocimientoNoEvaluableException.class, cl.casol.backend.conocimiento.domain.exception.TituloSolucionInvalidoException.class})
+    public ResponseEntity<Map<String, String>> handleReglaNegocio(RuntimeException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", ex.getMessage()));
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<Map<String, String>> handleValidation(
+            MethodArgumentNotValidException ex
+    ) {
+        String message = ex.getBindingResult().getFieldErrors().stream()
+                .findFirst()
+                .map(error -> error.getDefaultMessage())
+                .orElse("Request inválido");
+
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(Map.of("message", message));
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<Map<String, String>> handleUnreadableRequest(
+            HttpMessageNotReadableException ex
+    ) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(Map.of("message", "Request inválido"));
+    }
+
+    @ExceptionHandler(cl.casol.backend.identidad.domain.exception.CorreoNoRegistradoException.class)
+    public ResponseEntity<Map<String, String>> handleCorreoNoRegistrado(
+            cl.casol.backend.identidad.domain.exception.CorreoNoRegistradoException ex
+    ) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", ex.getMessage()));
+    }
+
+    @ExceptionHandler(cl.casol.backend.identidad.domain.exception.CodigoAccesoInvalidoException.class)
+    public ResponseEntity<Map<String, String>> handleCodigoInvalido(
+            cl.casol.backend.identidad.domain.exception.CodigoAccesoInvalidoException ex
+    ) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", ex.getMessage()));
+    }
+
+    @ExceptionHandler(cl.casol.backend.identidad.domain.exception.ReenvioCodigoAnticipadoException.class)
+    public ResponseEntity<Map<String, Object>> handleReenvioAnticipado(
+            cl.casol.backend.identidad.domain.exception.ReenvioCodigoAnticipadoException ex
+    ) {
+        return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS)
+                .body(Map.of("message", ex.getMessage(), "segundosRestantes", ex.getSegundosRestantes()));
+    }
+
+    @ExceptionHandler(cl.casol.backend.identidad.domain.exception.EnvioCodigoAccesoException.class)
+    public ResponseEntity<Map<String, String>> handleEnvioCodigo(
+            cl.casol.backend.identidad.domain.exception.EnvioCodigoAccesoException ex
+    ) {
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(Map.of("message", ex.getMessage()));
+    }
+
+    @ExceptionHandler(cl.casol.backend.identidad.domain.exception.UsuarioConRegistrosException.class)
+    public ResponseEntity<Map<String, String>> handleUsuarioConRegistros(RuntimeException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("message", ex.getMessage()));
+    }
+
+    @ExceptionHandler(cl.casol.backend.identidad.domain.exception.AutoEliminacionException.class)
+    public ResponseEntity<Map<String, String>> handleAutoEliminacion(RuntimeException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", ex.getMessage()));
+    }
+
+    @ExceptionHandler(cl.casol.backend.identidad.domain.exception.RecuperacionNoDisponibleException.class)
+    public ResponseEntity<Map<String, String>> handleRecuperacionNoDisponible(
+            cl.casol.backend.identidad.domain.exception.RecuperacionNoDisponibleException ex
+    ) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", ex.getMessage()));
+    }
 
     @ExceptionHandler(CredencialesInvalidasException.class)
     public ResponseEntity<Map<String, String>> handleCredencialesInvalidas(
@@ -19,6 +178,15 @@ public class GlobalExceptionHandler {
         return ResponseEntity
                 .status(HttpStatus.UNAUTHORIZED)
                 .body(Map.of("message", ex.getMessage()));
+    }
+
+    @ExceptionHandler({
+            org.springframework.dao.DataAccessException.class,
+            org.springframework.jdbc.CannotGetJdbcConnectionException.class
+    })
+    public ResponseEntity<Map<String, String>> handleBaseDeDatos(Exception ex) {
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
+                .body(Map.of("message", "No se pudo conectar con la base de datos. Intente de nuevo."));
     }
 
     @ExceptionHandler(UsuarioInactivoException.class)

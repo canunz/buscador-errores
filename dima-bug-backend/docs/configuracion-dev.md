@@ -1,0 +1,88 @@
+> Referencia histórica conservada. Describe una entrega previa y puede diferir del checkout actual. [Documentación vigente](../../docs/README.md). Los enlaces a archivos ausentes se identifican expresamente; [original íntegro y hash](../../docs/auditoria/historico/README.md).
+
+# Configuración de desarrollo
+
+## Requisitos previos
+
+JDK 21, `JAVA_HOME`, acceso a dependencias Maven, MySQL compatible y un directorio
+escribible de materiales. Ejecutar los comandos desde la carpeta con `pom.xml`.
+La versión de servidor MySQL, el esquema inicial y la creación del primer usuario
+**requieren validación del equipo**; ver [base de datos](base-de-datos.md).
+
+## Variables implementadas
+
+La fuente es [application.properties — referencia no disponible](../../docs/auditoria/REFERENCIAS_HISTORICAS.md#archivos-no-disponibles).
+
+| Variable | Uso | Valor por defecto |
+| --- | --- | --- |
+| `DB_URL` | URL JDBC de MySQL. | Sin valor por defecto. |
+| `DB_USERNAME` | Usuario de BD. | Sin valor por defecto. |
+| `DB_PASSWORD` | Contraseña de BD. | Sin valor por defecto. |
+| `JWT_SECRET` | Clave de firma; mínimo 32 bytes UTF-8, no vacía. | Sin valor por defecto. |
+| `JWT_EXPIRATION` | Duración del JWT en milisegundos; mayor que cero. | `3600000` |
+| `DIMABUG_STORAGE_MATERIALES_DIR` | Directorio del adapter filesystem. | `./uploads/materiales` |
+
+No se identificó carga automática de archivos `.env`. Configurar variables en el
+proceso de shell o en la configuración de ejecución del IDE, sin versionar secretos.
+Las rutas relativas de almacenamiento se resuelven desde el directorio de trabajo.
+
+Ejemplo PowerShell 7: sustituir los placeholders localmente. Las entradas de secretos
+se solicitan ocultas y no se guardan en este documento.
+
+```powershell
+$env:DB_URL = 'jdbc:mysql://localhost:<PUERTO_LOCAL>/<BASE_DE_DATOS>'
+$env:DB_USERNAME = '<USUARIO_MYSQL>'
+$env:DB_PASSWORD = Read-Host 'Contraseña MySQL' -MaskInput
+$env:JWT_SECRET = Read-Host 'Clave JWT local de al menos 32 bytes UTF-8' -MaskInput
+$env:JWT_EXPIRATION = '3600000'
+$env:DIMABUG_STORAGE_MATERIALES_DIR = '<DIRECTORIO_LOCAL_ESCRIBIBLE>'
+.\mvnw.cmd spring-boot:run
+```
+
+Los placeholders no son valores ejecutables. No copiar credenciales ni claves del
+entorno real a archivos del repositorio. En otras shells o IDE, definir las mismas
+variables. El proyecto no especifica un puerto HTTP propio en sus properties.
+
+## MySQL remoto mediante túnel SSH
+
+Procedimiento opcional solicitado para desarrollo: **no es una función ni una
+automatización del backend**, y el repositorio no contiene configuración de un
+servidor SSH. Host, permisos, puertos y topología requieren validación del equipo.
+Se necesita un cliente SSH instalado y un acceso autorizado al servidor de salto.
+
+Sustituir únicamente en el entorno local los placeholders del comando:
+
+```text
+ssh -N -o ExitOnForwardFailure=yes -L localhost:<PUERTO_LOCAL>:<HOST_MYSQL_DESDE_SSH>:<PUERTO_MYSQL> <USUARIO_SSH>@<HOST_SSH>
+```
+
+- Mantener abierta esa sesión y verificar la identidad del servidor SSH por el
+  mecanismo acordado con el equipo; no desactivar la comprobación de host.
+- El puerto local queda ligado a `localhost`; no publicarlo para otros equipos.
+- `<HOST_MYSQL_DESDE_SSH>` se resuelve desde el servidor SSH, no desde el PC.
+- Usar `DB_URL=jdbc:mysql://localhost:<PUERTO_LOCAL>/<BASE_DE_DATOS>`.
+- Las credenciales MySQL son independientes de la autenticación SSH. Utilizar el
+  método SSH autorizado, sin incorporar nombres ni contenido de claves privadas
+  a la documentación.
+
+SSH cifra el tramo entre el PC y el servidor SSH. Si MySQL está en otro servidor,
+la protección del tramo siguiente y la necesidad de TLS MySQL deben validarse;
+no se afirma que el túnel proteja toda la topología. No se requiere modificar el
+código o properties del proyecto para que JDBC use el puerto reenviado.
+
+## Arranque y pruebas
+
+Con las variables definidas y el túnel disponible, si corresponde:
+
+```powershell
+.\mvnw.cmd spring-boot:run
+.\mvnw.cmd test
+```
+
+En POSIX, usar `./mvnw`. Las pruebas existentes no son pruebas contra MySQL real;
+consultar el [README — referencia no disponible](../../docs/auditoria/REFERENCIAS_HISTORICAS.md#archivos-no-disponibles) para su alcance. Un arranque exitoso
+no demuestra que exista cada tabla o índice requerido por todos los casos de uso.
+
+No ejecutar automáticamente la migración aislada en una BD remota. La preparación
+del esquema y sus cambios deben coordinarse con el equipo. Para los pendientes de
+logging y reproducibilidad, consultar [pendientes técnicos — referencia no disponible](../../docs/auditoria/REFERENCIAS_HISTORICAS.md#archivos-no-disponibles).

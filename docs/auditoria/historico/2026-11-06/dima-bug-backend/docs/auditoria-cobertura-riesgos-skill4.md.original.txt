@@ -1,0 +1,322 @@
+# Auditoría de cobertura y riesgos residuales — Skill 4
+
+Auditoría inicial: 2026-10-08. Actualización verificada: 2026-10-09.
+Alcance: backend implementado y evidencias locales del repositorio.
+
+## Resumen ejecutivo
+
+**Recomendación actual: CIERRE CON CONDICIONES.** Los dos P1 de concurrencia
+detectados el 2026-10-08 se corrigieron con autorización: bloqueo por agregado y
+recarga de datos actuales en los adaptadores. Las aserciones originales se conservan
+y pasan, junto con dos pruebas necesarias del checklist inverso y recursos independientes.
+La posterior RN-PROC-01 fue aprobada e implementada: snapshot al iniciar y legacy
+explícito sin datos actuales presentados como historia. Integración actual: 45 PASS;
+habitual: 474 PASS; ambas BUILD SUCCESS. La migración snapshot solo se aplicó en
+MySQL temporal; Angular requiere nuevos indicadores y nulabilidad para heredados.
+No se cambiaron permisos. Las brechas
+restantes de cobertura/operación y definición formal de Skill 4 siguen pendientes.
+Esto no es una autorización de producción ni una evaluación de su entorno.
+
+Se preparó la [propuesta de aceptación temporal del riesgo de recuperación de
+archivos](aceptacion-riesgo-archivos-skill4.md) para revisión. **No está aprobada y
+no registra aceptación del riesgo**; esta preparación no cambia la recomendación
+de cierre ni los resultados de pruebas existentes.
+
+CI al 2026-10-09: [workflow de pruebas implementado](ci-pruebas-backend.md), con
+Java 21, jobs independientes para ambas suites, MySQL temporal y reportes incluso
+ante fallos. Validación YAML/estructura local exitosa; **ejecución real en GitHub
+Actions pendiente**. No se publicaron cambios ni se atribuyen los 45/474 PASS a CI.
+
+Transferencia al 2026-10-09: [handoff de Skill 4 a Skill 5 preparado](handoff-skill4-a-skill5.md)
+con evidencias, requisitos y pendientes. Recepción formal pendiente; no acredita
+aceptación de riesgos, verificación del servidor ni autorización de despliegue.
+Se conserva **CIERRE CON CONDICIONES**.
+
+La auditoría inicial no ejecutó pruebas, SQL, migraciones ni conexiones a DEV/producción.
+Se actualiza después con los resultados de ensayos autorizados sobre MySQL temporal;
+ver [concurrencia](concurrencia-integracion.md). Se revisaron servicios, controladores, persistencia,
+seguridad, almacenamiento, pruebas, POM, configuración y documentación existentes.
+No se encontró una definición formal de Skill 4/Skill 5 en el repositorio: los
+criterios siguientes se basan en la solicitud; la equivalencia con el proceso
+del equipo **requiere validación del equipo**.
+
+### Evidencia de resultados disponible
+
+Lectura de XML actuales en `target/failsafe-reports` y `target/surefire-reports`,
+y resultados históricos documentados de autorización (sus XML fueron sustituidos):
+
+| Suite | Clases con reporte | PASS | FAIL | ERROR | SKIPPED | Tiempo Maven documentado |
+| --- | ---: | ---: | ---: | ---: | ---: | --- |
+| Integración MySQL (última ampliación HTTP) | 5 | 37 | 0 | 0 | 0 | 1:26 min |
+| Integración MySQL (concurrencia original, histórica) | 5 | 38 | 2 | 0 | 0 | 1:31 min, BUILD FAILURE |
+| Integración MySQL (corrección P1, histórica) | 5 | 42 | 0 | 0 | 0 | 1:27 min, BUILD SUCCESS |
+| Integración MySQL (RN-PROC-01 actual) | 5 | 45 | 0 | 0 | 0 | 1:38 min, BUILD SUCCESS |
+| Habitual (unitarias, adaptadores y slices MVC; actual) | 45 | 474 | 0 | 0 | 0 | 28,145 s |
+
+Los tiempos y BUILD SUCCESS de la ronda original constan en
+[procedimientos, ejecuciones y resultados](procedimientos-ejecuciones-resultados-integracion.md).
+La ampliación de autorización y su resultado constan en
+[autorización HTTP](autorizacion-http-integracion.md): añade seis pruebas a las 31 originales.
+Los XML corroboran cantidades y estados; no se presenta esta lectura como nueva ejecución.
+Las 474 ejecuciones incluyen invocaciones parametrizadas: no son 474 funcionalidades.
+No hay medición de cobertura de líneas/ramas que permita asignar un porcentaje.
+
+| Clase MySQL | Tests | Alcance efectivamente ejecutado |
+| --- | ---: | --- |
+| MySqlReferentialIntegrityIT | 1 | JDBC, FK del creador de procedimiento y rechazo de borrado |
+| ConocimientoJpaIT | 5 | Application/JPA/JDBC, creación, modificación, búsqueda, eliminación y rollback |
+| AutenticacionHttpIT | 7 | HTTP de servidor real, Security, JWT, BCrypt y usuarios MySQL |
+| MaterialesArchivoIT | 24 | HTTP real, MySQL, filesystem, autorización, concurrencia y tres escenarios RN-PROC-01; 24 PASS |
+| ProcedimientosEjecucionesResultadosIT | 8 | Application/JPA/MySQL, estados, pertenencia, efectividad, FK y rollback |
+
+## Inventario funcional y límites
+
+Los dominios implementados son identidad, catálogo, conocimiento, procedimiento,
+ejecución y seguimiento; shared contiene seguridad, HTTP y almacenamiento.
+Application coordina puertos; Infrastructure implementa JPA, JDBC y filesystem.
+Los tests de servicios habitualmente sustituyen puertos por mocks. Los slices
+`*SecurityIntegrationTest` usan MockMvc, servicios/token/usuarios mockeados:
+no son integración completa ni evidencia de MySQL o JWT criptográfico real.
+
+Los grupos de endpoints comprobados en `src/main/java/cl/casol/backend` son:
+
+| Área | Operaciones implementadas y rutas |
+| --- | --- |
+| Identidad | POST `/api/auth/login`, GET `/api/auth/me`; GET/POST `/api/usuarios`, GET/PUT `/{id}`, PATCH `/{id}/estado`; GET `/api/roles` |
+| Catálogo/organización | GET `/api/sistemas`, `/{id}`, `/{id}/modulos`, `/{id}/hardware`; GET `/api/hardware`, `/{id}`, `/{id}/sistemas`; GET `/api/frecuencias`, `/api/departamentos`, `/api/departamentos/{id}/responsables` y `/contactos` |
+| Conocimiento | GET/POST `/api/conocimientos`, GET/PUT/DELETE `/{id}`, PATCH `/{id}/estado`, GET `/buscar`; DELETE es lógico |
+| Diagnóstico | GET/POST `/api/conocimientos/{conocimientoId}/sintomas`, `/causas`, `/soluciones`; PUT de sus elementos; GET `/api/pruebas`; GET/POST/PUT de pruebas asociadas al conocimiento; GET/POST/PUT de asignaciones de solución |
+| Materiales | GET/POST/PUT de metadatos; POST `/archivo`, GET `/{materialId}/archivo`, DELETE `/{materialId}` bajo conocimiento o paso |
+| Procedimiento | GET/POST `/api/procedimientos`, GET/PUT `/{id}`, PATCH `/{id}/estado`; GET/POST `/api/procedimientos/{procedimientoId}/pasos`, PUT `/{pasoId}` |
+| Ejecución | POST `/api/procedimientos/{procedimientoId}/ejecuciones`; GET `/api/ejecuciones`, `/{id}`, `/{id}/pasos`; PATCH `/{id}/pasos/{ejecucionPasoId}`, `/{id}/completar`, `/{id}/cancelar` |
+| Seguimiento | POST/GET `/api/conocimientos/{conocimientoId}/soluciones/{solucionId}/resultados`; GET `/efectividad` bajo la misma solución |
+| Salud | GET `/api/health`, público |
+
+Fuentes: controladores de `identidad`, `catalogo`, `conocimiento`, `procedimiento`,
+`ejecucion`, `seguimiento` en `infrastructure/web`; `HealthController` en shared.
+No existe una cadena relacional directa Síntoma → Prueba → Causa → Solución:
+estos elementos se vinculan al conocimiento; las pruebas tienen asociación propia.
+Tampoco existe relación directa procedimiento–conocimiento, reapertura/eliminación
+de ejecución ni eliminación de procedimiento en los casos revisados. Estos últimos
+son **funcionalidades no implementadas**, no tests omitidos de un CRUD supuesto.
+Sí existe ahora snapshot de instrucción/orden/criticidad por ejecución, sin versionado completo.
+
+## Matriz de cobertura
+
+D = cobertura demostrada del escenario indicado; P = parcial; SE = sin evidencia;
+NI = funcionalidad no implementada. D nunca significa todas las variantes posibles.
+HTTP diferencia slice MVC de servidor real. Fixtures JDBC no acreditan ejecución
+del servicio que crea esa entidad.
+
+| Módulo / funcionalidad crítica | Prueba unitaria | Prueba HTTP | Prueba MySQL real | Riesgo pendiente |
+| --- | --- | --- | --- | --- |
+| Login/JWT/BCrypt/usuario inactivo | D: AutenticarUsuarioServiceTest, JwtTokenServiceAdapterTest, BCryptPasswordEncoderAdapterTest | D: AutenticacionHttpIT, Hu01 slice | D: autenticación con usuarios sintéticos | Timing, límites de intentos, rol inactivo |
+| Roles 401/403 y usuarios | D: AdministrarUsuariosServiceTest | D: lectura, alta, cambio de rol y desactivación A/T reales; P para variantes restantes | D: alta/cambio de rol/desactivación y ausencia de mutaciones denegadas | Email duplicado y concurrencia de administración |
+| Catálogos/organización y clasificación | P: ConsultarSistemasServiceTest, ConsultarOrganizacionServiceTest, validaciones de conocimiento | D de contratos slice: CatalogoSecurityIntegrationTest, CatalogosOrganizacionSecurityIntegrationTest | P: entidades/catálogos utilizados por ConocimientoJpaIT | Navegación/filtrado íntegro por HTTP real |
+| Crear/modificar/publicar conocimiento | D: MantenerConocimientoServiceTest | D: crear/editar T y publicar A, rechazar publicación T/ausencia de token; P para variantes restantes | D: ConocimientoJpaIT y estado tras rechazo HTTP | Ediciones simultáneas y variantes restantes de permisos |
+| Eliminación lógica y retirada de búsqueda | D: MantenerConocimientoServiceTest | D: DELETE A=204, T=403, sin token=401 con estado verificado | D: fila conservada, proyección retirada, búsqueda excluida | Rollback interno del borrado de proyección |
+| FULLTEXT y filtros | D de lógica mockeada: BuscarConocimientoServiceTest y BusquedaConocimientoJdbcAdapterTest | P: Hu04 slice | D para cambio de tokens y exclusión de eliminado; P en conjunto | Ranking, acentos, filtros combinados, paginación/límites según contrato |
+| Síntomas/causas/pruebas/soluciones/asignaciones | D de reglas aisladas: MantenerSintoma/Causa/SolucionServiceTest, GestionarPruebasConocimiento/GestionarAsignacionSolucionServiceTest | D de contratos slice: Sintoma/Causa/Prueba/SolucionSecurityIntegrationTest | SE del flujo de mantenimiento completo; soluciones fixture no cubren su creación | Pertenencia, FK, asociación y reindexación reales |
+| Materiales: enlaces y metadatos | D: MantenerMaterialApoyoServiceTest, MantenerMaterialPasoServiceTest | D de slice; P real | P: materiales locales persistidos | PUT de referencia local concurrente con DELETE |
+| Archivos: subir/descargar/eliminar | D: ArchivoMaterialServiceTest, tests filesystem real temporal | D: MaterialesArchivoIT en ambos destinos | D: bytes/metadatos/contenido; FK fallida y compensación | Fallo de compensación, crash, symlink de ancestros, carreras |
+| Procedimiento/pasos e historial RN-PROC-01 | D: servicios y EjecucionPasoSnapshotTest | D: edición/publicación y consulta de snapshots/legacy reales | D: snapshot, edición posterior, resultados, migración preservadora y captura concurrente | Angular no ensayado, migración real pendiente; legacy original irrecuperable |
+| Ejecución/checklist/estados/propietario | D: GestionarEjecucionServiceTest | D: inicio T, consulta/edición/cierre propietario, cancelación A; otro T/sin token rechazados | D: inicio, cierre, cancelación, acceso por propietario/admin | Carrera cerrar/editar y combinaciones restantes |
+| Funcionó/No funcionó y efectividad | D: RegistrarEfectividadSolucionServiceTest; adapter con dependencias simuladas | P: Hu07 slice | D: registros, agregación, pertenencia e historial | Escritura/agregación concurrente y fallo interno al registrar |
+| Integridad MySQL / transacciones | P: mocks verifican llamadas, no atomicidad real | P: errores específicos reales en seguridad/materiales | D de FK seleccionadas, rollback JPA/JDBC y checklist con 1205 | No certifica todas las FK/transacciones, versión destino |
+| Versionado completo/reapertura/eliminación de procedimiento | NI | NI | NI | Fuera del alcance RN-PROC-01, que usa snapshot |
+
+## Riesgos priorizados
+
+Probabilidad cualitativa condicionada al uso y entorno, sin métricas de incidentes.
+P0 = exposición/pérdida grave; P1 = integridad, autorización o flujo esencial;
+P2 = comportamiento acotado/deuda; P3 = mejora menor. Una prioridad potencial
+no afirma un exploit o defecto reproducido.
+
+| ID / prioridad | Escenario e impacto | Probabilidad | Evidencia y mitigación existente | Recomendación |
+| --- | --- | --- | --- | --- |
+| R1 P1 corregido en escenarios verificados | Edición pendiente desmarca checklist después del commit de COMPLETADA | Frecuencia original no medida | Bloqueo/recarga de cabecera para actualizar/completar/cancelar; checklist actual al completar. C1 y caso inverso pasan; recursos distintos no se serializan en ensayo | Mantener regresión; ampliar HTTP/carga y tratamiento de timeouts/deadlocks si el uso lo requiere |
+| R2 P1, parcialmente reducido | Crash o compensación fallida entre BD y bytes; otras carreras | Media no medida | C3 de PUT retenido frente a DELETE: OptimisticLockException, 0 filas/archivos y descarga 404. Solo este caso protegido. Subida FK fallida y borrado físico fallido ya probados | Mantener test de carrera cubierta; compensación fallida/crash y reconciliación permanecen pendientes |
+| R3 P1, brecha prioritaria cubierta en los escenarios ejecutados | Denegación de propietario en Application o publicación exclusiva de ADMIN llega con código incorrecto por HTTP | Menor en los escenarios probados; variantes no medidas | Seis tests nuevos con JWT real: publicación A/T, DELETE conocimiento, ejecución ajena/propietario/admin y ausencia de token; 37 PASS | Conservar regresión. No repetir como pendiente esos escenarios; variantes específicas no ejecutadas siguen parciales |
+| R4 P1 | Alta de síntomas/pruebas/causas/soluciones/asignaciones falla o no reindexa correctamente | Media | Servicios transaccionales indexan; tests de reglas y slices con mocks, sin recorrido real completo | Flujo sintético por servicios reales + MySQL, pertenencia inválida, asociación duplicada y un fallo de indexación |
+| R5 P1 | Esquema desplegado distinto del export+migración: FK/índices ausentes o migración sobre huérfanos | Media hasta validar despliegue | MySqlIntegrationSupport importa 24 tablas, verifica cinco FK, diagnóstico y FOREIGN_KEY_CHECKS; ddl-auto=none; sin Flyway/Liquibase en POM | Ensayo de provisión/migración aislada, versionar artefacto y comprobar versión MySQL objetivo; no ejecutar en DEV |
+| R6 P1 condicionado | Raíz/ancestro storage como enlace simbólico o reemplazado permite I/O fuera de raíz autorizada | Baja si solo usuario del proceso escribe; mayor en volumen compartido | resolver normaliza léxicamente; UUID/CREATE_NEW y NOFOLLOW_LINKS en lectura protegen componente final. Sin prueba de symlink; no garantiza ancestros | Prueba final y ancestros en filesystem temporal del SO destino; restringir propietario/permisos y validar raíz operativamente. Sería P0 ante exposición sensible confirmada |
+| R7 requisito RN-PROC-01 resuelto en backend | Nuevas ejecuciones conservan instrucción/orden/criticidad; legacy expresa ausencia de original | Riesgo de definición actual presentada como histórica mitigado en escenarios probados | Copia atómica, campos JPA insert-only, consultas sin fallback, indicadores legacy; 3 IT y 2 unitarias nuevas PASS | Adaptar Angular y aplicar migración controlada en entorno autorizado antes de desplegar. No reconstruir legacy |
+| R8 P2, parcialmente reducido | Otro error no manejado termina en despacho /error o respuesta inconsistente | Indeterminada fuera de escenarios cubiertos | Denegación de propietario y publicación devuelve 403 real en la ampliación; no nuevo defecto. GlobalExceptionHandler y handlers de Security cubren ramas específicas | Conflicto FK y otros errores por HTTP aún pendientes; no generalizar resultado 403 a todos los errores |
+| R9 P2 | Cuenta inexistente evita BCrypt; diferencias de tiempo ayudan a enumeración/abuso | Media en exposición pública | AutenticarUsuarioService compara password antes de activo; cuerpos inválidos iguales probados. Sin evidencia de rate limiting | Política operativa de intentos y evaluación de timing. Mensaje/estado inactivo con password inválida ya corregido |
+| R10 P2 / P1 si configuración insegura | DEBUG JWT, show-sql, secretos/TLS/CORS/storage no certificados en despliegue | Indeterminada | application.properties mantiene DEBUG JWT y show-sql; pruebas revisan logs JWT sintéticos. No certifican logs/infraestructura completa | Checklist y ensayo de configuración de producción; no publicar secretos ni inventar controles existentes |
+| R11 P2 | Cambio MySQL/tokenización, caída SQL no ensayada o acumulación de bytes afecta búsqueda/disponibilidad | Media | mysql:8.0.36 fijo, FULLTEXT real, lectura limitada, multipart limitado; solo ciertos fallos 1205/1451/1452 probados | Ensayar versión objetivo, capacidad y recuperación en entorno aislado; ranking y carga después del núcleo MVP |
+| R12 P2 | Otra máquina no reproduce suite o integración se omite en CI | Media | Wrapper/JDK21, perfil separado, sin fallback ni skip por Docker. Workflow GitHub Actions implementado para ambas suites y artefactos; ejecución remota pendiente | Verificar primer run remoto, resultados y artefactos; configurar checks requeridos mediante el equipo |
+| R13 P1 corregido en escenario verificado | Edición obsoleta restaura ELIMINADO a PUBLICADO y recrea búsqueda | Frecuencia original no medida | Modificar/cambiarEstado/eliminar usan la misma lectura actual y exclusiva. C2 original pasa: ELIMINADO, cero proyecciones y rechazo de edición obsoleta | Mantener aserciones/regresión; intercalaciones HTTP y otras modificaciones del agregado siguen parcialmente evaluadas |
+
+P0 confirmado: ninguno en evidencia revisada. P1 R1/R13: corregidos y verificados
+el 2026-10-09, con aserciones originales intactas. No hay P1 abierto confirmado
+en estos escenarios; no se afirma ausencia de defectos en todo el backend.
+El ensayo conserva su límite de transacciones envolventes/lecturas previas: no se
+certifica la frecuencia ni intercalación exacta de dos requests HTTP ordinarios.
+Los demás riesgos/brechas no se convierten en defectos solo por falta de cobertura.
+Los antiguos hallazgos 401 en vez de 403 y exposición de cuenta inactiva con
+password incorrecta están corregidos y probados; ver
+[seguridad-integracion](seguridad-integracion.md#corrección-mínima-p1p2-y-regresión).
+
+## Pareto de acciones
+
+Orden cualitativo por seguridad/integridad/valor MVP y costo; no se afirma un 80/20 medido.
+
+| Orden | Acción | Riesgos reducidos | Esfuerzo estimado | Criterio de aceptación |
+| --- | --- | --- | --- | --- |
+| 1, completada en escenarios definidos | Añadir pocas pruebas HTTP reales de ejecución ajena y estados/admin de conocimiento/procedimiento | R3, R8 | Se reutilizó el contexto HTTP existente | 37 PASS; 401 sin token, 403 sin permiso, autorizado exitoso; sin mutaciones en rechazos |
+| 2 | Flujo real de diagnóstico y administración básica de usuario | R4, integridad/duplicación de usuarios | Medio | Persistencia, pertenencia, asociación única, FK y proyección correctas; duplicado no deja filas parciales |
+| 3, corregida en escenarios priorizados | Proteger estados frente a lectura obsoleta: cierre/checklist y DELETE/edición; PUT/DELETE material ensayado | R1, R13, R2 | Corrección autorizada completada | C1/C2/C3 pasan; checklist inverso y recursos independientes también. Mantener pruebas y evaluar variantes pendientes |
+| 4 | Probar symlinks y compensación fallida en directorio temporal | R2, R6 | Bajo/medio, dependiente del SO | Centinela exterior intacto; fallo visible y limpieza pendiente identificable |
+| 5, historial resuelto; archivos pendiente | RN-PROC-01 aprobada/implementada y actuación ante huérfanos por acordar | R2, R7 | Backend completado; cliente/operación pendientes | Snapshot/legacy PASS; aceptación y recuperación de archivos aún no acreditadas |
+| 6 | Ensayo reproducible de esquema y job de ambas suites | R5, R12 | Medio | Inicialización vacía aislada, restricciones activas, XML publicados y suites obligatorias |
+
+No se recomienda multiplicar pruebas idénticas de DTO ni repetir todos los FK
+si no protegen otro comportamiento crítico. Priorizar las fronteras no atravesadas.
+
+### A. Pruebas indispensables antes de producción
+
+- Autorización HTTP real mencionada en acción 1: **completada en los escenarios priorizados**, incluida denegación desde Application; mantener regresión.
+- Flujo real de mantenimiento del diagnóstico y email duplicado. Alta/cambio de rol/desactivación de usuario por HTTP real ya probados.
+- Concurrencia dirigida: C1 cierre/checklist y C2 DELETE/edición **corregidos y PASS**; se conserva C3 PASS, y pasan checklist inverso/recursos independientes. Variantes y límites del ensayo siguen documentados.
+- Archivos: aceptación explícita de los límites de compensación/recuperación y traspaso
+  de contención del volumen, symlinks/junctions y restauración a Skill 5. Ensayos
+  adicionales dependen de criticidad/topología; no son bloqueantes universales.
+- Historial: RN-PROC-01 aprobada, implementada y PASS en backend. Pendientes adaptación
+  Angular y aplicación controlada de migración; legacy se conserva sin inventar historia.
+- Ensayo del esquema/migración y compatibilidad de la versión MySQL destino en entorno aislado.
+
+Si alguno revela defecto P0/P1, conservar aserción/evidencia y solicitar decisión
+antes de modificar funcionalidad. Estas pruebas no se crearon ni ejecutaron aquí.
+
+### B. Recomendables pero postergables
+
+Ranking/acentos/casos amplios FULLTEXT, carga sostenida y memoria de uploads,
+deadlocks variados, todas las combinaciones de catálogos, repetición/desmarcado de
+pasos, agregación concurrente de efectividad y fallos SQL adicionales por operación.
+Postergables si el MVP restringe volumen y ya se verificaron los flujos críticos;
+establecer responsable y fecha, no una aceptación indefinida.
+
+### C. Riesgos aceptables temporalmente, con condiciones
+
+- Legacy sin definición original: transición aprobada en RN-PROC-01, identificada
+  explícitamente y sin instrucciones actuales presentadas como originales. La UI debe comunicarlo.
+- Huérfanos tras borrado físico fallido: no afectan FK ni entregan material borrado
+  por API; aceptar con storage privado, alerta/log revisado y limpieza controlada.
+- Ranking/casos FULLTEXT poco frecuentes y snapshots de cabecera/materiales fuera de alcance:
+  aceptar con volumen acotado y limitación informada.
+- Ejecución real de CI pendiente (workflow implementado): puede permitir cierre local condicionado con resultados reproducibles
+  y revisión manual de ambas suites por cambio; no acredita automatización ni despliegue.
+
+No aceptar bypass, fuga fuera de storage, estados incoherentes o metadatos inválidos
+como simples deudas sin conocer resultado, alcance y mitigación.
+
+### D. Preparación operativa atribuible a Skill 5, a validar con el equipo
+
+Sin definición formal del proceso, se propone separar de pruebas funcionales:
+provisión de entorno, pipeline/artifactos, secretos y rotación, TLS/reverse proxy,
+CORS según cliente, política de intentos, logging/monitorización, permisos y capacidad
+de storage, backups conjuntos BD/archivos, restauración, migración y recuperación,
+smoke del artefacto desplegado, hardening y revisión de dependencias/imágenes.
+La ausencia de Flyway/Liquibase no prueba por sí misma imposibilidad de migrar:
+los scripts requieren ejecución controlada, trazabilidad y aprobación operativa.
+No se propone ejecutar nada de ello en DEV ni se certifica que ya exista.
+
+## Criterios de salida
+
+| Condición | Estado | Fundamento / condición pendiente |
+| --- | --- | --- |
+| Pruebas críticas exitosas | CUMPLE en escenarios ejecutados | 45 integración y 474 habituales, cero FAIL/ERROR/SKIPPED; P1 originales y RN-PROC-01 PASS |
+| Cobertura de todas las fronteras críticas MVP | PARCIAL | Brecha HTTP R3 cubierta en los escenarios priorizados; R1/R2/R4/R6 y variantes de matriz pendientes |
+| Defectos P0/P1 detectados resueltos | CUMPLE para hallazgos registrados | P1 401/403 y P1-01/P1-02 resueltos y probados; no certifica backlog externo ni ausencia de otros defectos |
+| Registro exhaustivo externo de defectos/aceptaciones | SIN EVIDENCIA | No acceso a backlog ni aprobaciones de riesgo del equipo |
+| Riesgos residuales identificados y aceptados | PARCIAL | Identificados aquí; aceptación del negocio/equipo pendiente |
+| Regresión tras RN-PROC-01 | CUMPLE | 474 PASS; integración ejecutada aparte con 45 PASS; ambos BUILD SUCCESS |
+| Reproducibilidad aislada | PARCIAL | MySqlIntegrationSupport fija imagen, datasource, esquema y fixtures; no ensayo independiente en segundo entorno ni versión destino |
+| Automatización CI comprobable | PARCIAL | Workflow implementado y validación YAML local; ambas suites y reportes configurados. Ejecución real en GitHub Actions pendiente, sin run acreditado |
+| Evidencias documentadas y coherentes | PARCIAL | Reportes y documentos detallados; algunos documentos generales describen estado anterior |
+| Criterios formales Skill 4 y traspaso Skill 5 | SIN EVIDENCIA | Definición y aprobación del equipo pendientes |
+
+### Coherencia documental
+
+`base-de-datos.md` y `configuracion-dev.md` aún afirman ausencia de MySQL real/DDL
+reproducible. Esa descripción histórica ya no representa las pruebas: hoy existen
+dump saneado y soporte de integración. No prueban provisión productiva completa.
+`integracion-mysql.md` conserva secciones históricas con pendientes después cubiertos;
+`seguridad-integracion.md` conserva hallazgos originales seguidos de su corrección.
+Leer la última evidencia por área, no tratar todo pendiente histórico como abierto.
+No se modificaron esos documentos por la restricción de esta auditoría.
+
+## Recomendación fundamentada
+
+**CIERRE CON CONDICIONES**, sin declarar GO de producción. Las dos invariantes
+que impedían el cierre ahora pasan tras la corrección autorizada, con regresión
+completa y pruebas adicionales de recarga/alcance del bloqueo. Mantener evidencias
+y aserciones, acordar aceptación de los riesgos restantes, completar las brechas
+indispensables y confirmar los criterios formales del equipo. No se declara cierre
+incondicional ni preparación productiva completa; operación/CI se evalúan aparte.
+
+## Fuentes verificables
+
+### Precisión limitada sobre riesgos residuales (histórica, previa a aprobar RN-PROC-01)
+
+La [decisión de historial y recuperación de archivos](decision-riesgos-residuales-skill4.md)
+precisa únicamente R2/R6/R7 y sus condiciones, sin reauditar otros módulos.
+Historial de resultados/IDs conservado no equivale a definiciones originales:
+listarPasos obtiene instrucción/orden/criticidad actuales. Sin regla aprobada de
+inmutabilidad, el bloqueante es la decisión de negocio (A), no implementar snapshots
+automáticamente. La aceptación de esa semántica convertiría el riesgo en B;
+si se exige historial original, debe definirse y verificarse el nuevo alcance.
+
+Compensación ante FK fallida y escritura inicial fallida tienen evidencia real.
+Doble fallo de compensación, crash y commit incierto no están probados; no se
+confunden mocks con recuperación real. El callback compensa también STATUS_UNKNOWN:
+un commit ambiguo requiere reconciliar antes de asumir rollback. Es un riesgo
+potencial condicionado, no un nuevo P1 reproducido. Aceptación temporal (B)
+requiere criticidad de adjuntos, responsable y límites explícitos.
+
+Raíz/ancestros, permisos, symlinks/junctions, backups y restauración conjunta
+son verificaciones C de Skill 5 en el SO/entorno destino, no controles ya comprobados.
+Traversal rechazado y NOFOLLOW_LINKS no certifican toda esa topología. Si storage
+requiere escritores no confiables o no puede excluirse la redirección, reconsiderar
+el diseño y la clasificación A; no aceptar esa exposición por defecto.
+
+Mantener CIERRE CON CONDICIONES: decisiones/aceptaciones no acreditadas. Ninguna
+prueba nueva ni configuración se ejecutó o cambió en esta revisión limitada.
+No se declara cierre general ni GO de producción.
+
+### Actualización RN-PROC-01 aprobada e implementada (2026-10-09)
+
+La [decisión de historial](decision-historial-procedimientos.md) sustituye la
+condición histórica de decisión pendiente de R7. Snapshot de instrucción, orden
+y criticidad al iniciar; las consultas ya no leen definiciones actuales como
+historia. Registros previos: heredada/heredado=true y campos originales desconocidos
+en null, sin backfill. Resultados/IDs existentes se preservan.
+
+Tres IT nuevas y dos unitarias nuevas pasan; el soporte verifica además la
+migración sobre filas anteriores sintéticas y conservación de resultados.
+Rollback 1205, P1 originales y captura con lectura previa concurrente pasan.
+Resultados actuales verificados: 45 integración, 474 habituales, cero
+FAIL/ERROR/SKIPPED, ambas BUILD SUCCESS (1:38 min y 28,145 s).
+
+La migración versionada solo se aplicó en MySQL temporal. Pendientes: ejecución
+controlada en entorno autorizado y Angular, cuyo código no está en el repositorio.
+Sus modelos requieren los indicadores nuevos y nulabilidad de orden/instruccion/
+esCritico para legacy; no se certifica compatibilidad visual ni compilación del cliente.
+R2/R6/recuperación de archivos y demás condiciones no se dan por resueltos aquí.
+Mantener CIERRE CON CONDICIONES, sin GO de producción.
+
+### Referencias de la auditoría original
+
+Rutas relativas a la raíz del repositorio; los métodos identifican la ubicación lógica.
+
+- [Tests MySQL](../src/test/java/cl/casol/backend/integration/): métodos y aserciones de las cinco clases enumeradas; MySqlIntegrationSupport.start/connection e inicialización.
+- [Tests habituales](../src/test/java/cl/casol/backend/): servicios, Hu01–Hu07, slices de diagnóstico/catálogos/materiales y adapter filesystem.
+- [GestionarEjecucionService](../src/main/java/cl/casol/backend/ejecucion/application/service/GestionarEjecucionService.java): iniciar, listarPasos, actualizarPaso, completar, cancelar, autorizar.
+- [MantenerPasoService](../src/main/java/cl/casol/backend/procedimiento/application/service/MantenerPasoService.java): crear/modificar, sin versionado.
+- [Servicios Conocimiento](../src/main/java/cl/casol/backend/conocimiento/application/service/): mantenimiento, asociaciones, indexación y ArchivoMaterialService.crear/eliminar.
+- [Filesystem](../src/main/java/cl/casol/backend/shared/infrastructure/storage/AlmacenamientoArchivoFilesystemAdapter.java): guardar, leer, resolver, compensar.
+- [Seguridad](../src/main/java/cl/casol/backend/shared/infrastructure/security/SecurityConfig.java): matchers y handlers; [errores HTTP](../src/main/java/cl/casol/backend/shared/infrastructure/web/GlobalExceptionHandler.java).
+- [POM](../pom.xml), [configuración funcional](../src/main/resources/application.properties), [configuración aislada](../src/test/resources/integration-mysql.properties), [esquema de tests](../src/test/resources/db/dimabug-esquema.sql).
+- [Integración MySQL](integracion-mysql.md), [seguridad](seguridad-integracion.md), [materiales](materiales-integracion.md), [procedimientos/ejecuciones/resultados](procedimientos-ejecuciones-resultados-integracion.md), [plan FK](migracion-fk-usuarios.md).
+- Reportes locales no versionados: `target/failsafe-reports/TEST-*.xml` y `target/surefire-reports/TEST-*.xml`. Deben preservarse en el proceso de entrega; un build futuro puede sustituirlos.

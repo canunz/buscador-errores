@@ -1,83 +1,117 @@
-<section class="cat-page">
+<app-loading-modal [visible]="loading" mensaje="Cargando" />
+
+<section class="cat-page hw-page">
   <div class="franja">
+    <app-ayuda-franja titulo="Hardware" detalle="Catálogo de equipos: nombre, sistema operativo y sistemas asociados." />
     <div>
       <p>Catálogos</p>
       <h1>Hardware</h1>
-      <span>{{ items.length }} equipo{{ items.length === 1 ? '' : 's' }} registrado{{ items.length === 1 ? '' : 's' }}</span>
+      <span>{{ items.length }} equipo{{ items.length === 1 ? '' : 's' }} desde la base de datos</span>
     </div>
-    <button type="button" class="btn-crear" (click)="openCreate()">Añadir hardware</button>
+    @if (esAdministrador()) {
+      <div class="hw-admin-actions">
+        <a routerLink="/admin/catalogo/hardware" class="btn-crear hw-admin-link">Administrar Hardware</a>
+        <a routerLink="/admin/catalogo/sistemas">Todos los Sistemas</a>
+        <span>Crear, editar y asociar Sistemas</span>
+      </div>
+    }
   </div>
 
-  <app-catalogo-tabs />
+  @if (error) {
+    <p class="alert">{{ error }}</p>
+  }
 
   <div class="tabla-wrap">
-    <table>
-      <thead>
-        <tr>
-          <th class="col-acciones">Acciones</th>
-          <th>Hardware</th>
-          <th>Sistema operativo</th>
-          <th>Sistemas asociados</th>
-        </tr>
-      </thead>
-      <tbody>
-        @for (item of items; track item.id) {
+    @if (items.length || !loading) {
+      <table>
+        <thead>
           <tr>
-            <td>
-              <div class="acciones" style="justify-content:flex-start">
-                <button type="button" class="act edit" (click)="openEdit(item)">Editar</button>
-                <button type="button" class="act del" (click)="eliminar(item)">Eliminar</button>
-              </div>
-            </td>
-            <td><strong>{{ item.nombre }}</strong></td>
-            <td>{{ item.so || '—' }}</td>
-            <td>
-              @for (sistema of item.sistemas; track sistema) {
-                <span class="chip">{{ sistema }}</span>
-              } @empty {
-                <span class="muted">Sin sistemas</span>
-              }
-            </td>
+            <th class="col-acciones">Acciones</th>
+            <th>Hardware</th>
+            <th>Sistema operativo</th>
+            <th>Sistemas</th>
           </tr>
-        } @empty {
-          <tr>
-            <td colspan="4" class="vacio">No hay hardware registrado.</td>
-          </tr>
-        }
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          @for (item of items; track item.id) {
+            <tr>
+              <td>
+                <div class="acciones">
+                  <button type="button" class="btn-accion ver" title="Ver sistemas" aria-label="Ver sistemas" (click)="ver(item)">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                      <circle cx="12" cy="12" r="3" />
+                    </svg>
+                  </button>
+                </div>
+              </td>
+              <td>
+                <strong class="nombre">{{ item.nombre }}</strong>
+              </td>
+              <td>
+                @if (item.so) {
+                  <span class="so">{{ item.so }}</span>
+                } @else {
+                  <span class="muted">—</span>
+                }
+              </td>
+              <td>{{ item.sistemas.length }} sistema{{ item.sistemas.length === 1 ? '' : 's' }}</td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="4" class="vacio">No hay hardware en la base de datos.</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    }
   </div>
 </section>
 
-@if (modalOpen) {
-  <div class="modal" role="dialog" aria-modal="true">
-    <div class="modal-backdrop" (click)="modalOpen = false"></div>
-    <div class="modal-dialog modal-pro">
-      <header class="modal-head">
-        <span class="modal-icon">+</span>
+@if (detalle) {
+  <div class="hw-modal" role="dialog" aria-modal="true" aria-labelledby="hw-detalle-titulo">
+    <div class="hw-modal-fondo" (click)="cerrarDetalle()"></div>
+    <article class="hw-modal-card">
+      <header class="hw-modal-franja">
         <div>
-          <p>Catálogo</p>
-          <h2>{{ editId ? 'Editar hardware' : 'Nuevo hardware' }}</h2>
+          <p>Hardware</p>
+          <h2 id="hw-detalle-titulo">{{ detalle.nombre }}</h2>
         </div>
+        <button type="button" class="hw-modal-cerrar" (click)="cerrarDetalle()" aria-label="Cerrar"><span aria-hidden="true">✕</span></button>
       </header>
-      <form [formGroup]="form" (ngSubmit)="save()" class="form-grid">
-        <label class="full">
-          Hardware
-          <input type="text" formControlName="nombre" placeholder="Ej. Impresora, POS, PDA" />
-        </label>
-        <label class="full">
-          Sistema operativo
-          <input type="text" formControlName="so" placeholder="Windows, Debian..." />
-        </label>
-        <label class="full">
-          Sistemas asociados
-          <input type="text" formControlName="sistemas" placeholder="Separados por coma" />
-        </label>
-        <div class="form-actions full">
-          <button type="button" class="btn-sec" (click)="modalOpen = false">Cancelar</button>
-          <button type="submit" class="btn-crear">Guardar</button>
-        </div>
-      </form>
-    </div>
+      <div class="hw-modal-cuerpo">
+        <section class="hw-bloque">
+          <h3>Sistema operativo</h3>
+          <p class="hw-so">{{ detalle.so || 'Sin sistema operativo registrado' }}</p>
+        </section>
+        <section class="hw-bloque">
+          <h3>Sistemas asociados</h3>
+          @if (cargandoSistemas) { <p role="status">Cargando sistemas…</p> }
+          @if (errorSistemas) { <p class="alert" role="alert">{{ errorSistemas }} <button type="button" (click)="ver(detalle)">Reintentar consulta</button></p> }
+          @if (!cargandoSistemas && !errorSistemas) {
+          <p class="hw-cuenta">{{ sistemasDetalle.length }} sistemas en este equipo</p>
+          @if (sistemasDetalle.length) {
+            <ul class="hw-sistemas">
+              @for (sistema of sistemasDetalle; track sistema.id) {
+                <li>
+                  @if (esAdministrador()) {
+                    <a class="sistema-accion" routerLink="/admin/catalogo/sistemas" [queryParams]="{ editarId: sistema.id, hardwareId: detalle.id }">{{ sistema.nombre }}{{ sistema.activo === false ? ' (inactivo)' : '' }}</a>
+                  } @else { <span>{{ sistema.nombre }}</span> }
+                </li>
+              }
+            </ul>
+          } @else {
+            <p class="hw-vacio">Este hardware no tiene sistemas asociados.</p>
+          }
+          }
+          @if (esAdministrador()) {
+            <nav class="hw-contexto" aria-label="Administración de sistemas del Hardware">
+              <a routerLink="/admin/catalogo/hardware" [queryParams]="{ editarId: detalle.id, hardwareId: detalle.id }">Asociar o desasociar Sistemas</a>
+              <a routerLink="/admin/catalogo/sistemas" [queryParams]="{ crear: '1', hardwareId: detalle.id }">Crear sistema y asociar</a>
+            </nav>
+          }
+        </section>
+      </div>
+    </article>
   </div>
 }

@@ -54,20 +54,45 @@
                 "glob": "**/*",
                 "input": "src/assets",
                 "output": "assets"
+              },
+              {
+                "glob": "worker.min.js",
+                "input": "node_modules/tesseract.js/dist",
+                "output": "ocr/v7"
+              },
+              {
+                "glob": "tesseract-core*-lstm.wasm*",
+                "input": "node_modules/tesseract.js-core",
+                "output": "ocr/v7/core"
+              },
+              {
+                "glob": "eng.traineddata.gz",
+                "input": "node_modules/@tesseract.js-data/eng/4.0.0_best_int",
+                "output": "ocr/v7/idiomas"
+              },
+              {
+                "glob": "spa.traineddata.gz",
+                "input": "node_modules/@tesseract.js-data/spa/4.0.0_best_int",
+                "output": "ocr/v7/idiomas"
               }
             ],
             "styles": [
+              "@fontsource/inter/400.css",
+              "@fontsource/inter/500.css",
+              "@fontsource/inter/600.css",
+              "@fontsource/inter/700.css",
               "src/styles.css"
             ],
-            "scripts": []
+            "scripts": [],
+            "webWorkerTsConfig": "tsconfig.worker.json"
           },
           "configurations": {
             "production": {
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "500kB",
-                  "maximumError": "1MB"
+                  "maximumWarning": "1.5mb",
+                  "maximumError": "2mb"
                 },
                 {
                   "type": "anyComponentStyle",
@@ -87,6 +112,18 @@
               "optimization": false,
               "extractLicenses": false,
               "sourceMap": true
+            },
+            "qa-local": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "outputPath": "dist/qa-local",
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.qa-local.ts"
+                }
+              ]
             }
           },
           "defaultConfiguration": "production"
@@ -102,6 +139,12 @@
             },
             "development": {
               "buildTarget": "buscador-errores:build:development"
+            },
+            "qa-local": {
+              "buildTarget": "buscador-errores:build:qa-local",
+              "proxyConfig": "proxy.qa-local.json",
+              "host": "127.0.0.1",
+              "port": 14200
             }
           },
           "defaultConfiguration": "development"
@@ -121,12 +164,42 @@
               {
                 "glob": "**/*",
                 "input": "public"
+              },
+              {
+                "glob": "worker.min.js",
+                "input": "node_modules/tesseract.js/dist",
+                "output": "ocr/v7"
+              },
+              {
+                "glob": "tesseract-core*-lstm.wasm*",
+                "input": "node_modules/tesseract.js-core",
+                "output": "ocr/v7/core"
+              },
+              {
+                "glob": "eng.traineddata.gz",
+                "input": "node_modules/@tesseract.js-data/eng/4.0.0_best_int",
+                "output": "ocr/v7/idiomas"
+              },
+              {
+                "glob": "spa.traineddata.gz",
+                "input": "node_modules/@tesseract.js-data/spa/4.0.0_best_int",
+                "output": "ocr/v7/idiomas"
+              },
+              {
+                "glob": "*.png",
+                "input": "src/test-assets/ocr",
+                "output": "test-ocr"
               }
             ],
             "styles": [
+              "@fontsource/inter/400.css",
+              "@fontsource/inter/500.css",
+              "@fontsource/inter/600.css",
+              "@fontsource/inter/700.css",
               "src/styles.css"
             ],
-            "scripts": []
+            "scripts": [],
+            "webWorkerTsConfig": "tsconfig.worker.json"
           }
         }
       }

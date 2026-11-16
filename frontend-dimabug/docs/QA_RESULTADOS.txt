@@ -1,0 +1,19 @@
+DimaBug — resultados locales, 2026-10-12 America/Santiago
+Backend: Maven Wrapper con Java 21, mvnw verify
+Tests run: 497, Failures: 0, Errors: 0, Skipped: 0
+BUILD SUCCESS
+Angular: npm test -- --watch=false --browsers=ChromeHeadless
+TOTAL: 40 SUCCESS
+Angular: npm run build -- --configuration production
+Build exitoso. Initial total: 1.33 MB; transferencia estimada: 253.70 kB.
+Advertencias CSS: conocimiento-detalle 22.53 kB; inicio 18.62 kB; warning 16 kB.
+No se ejecutaron pruebas contra MySQL/STAGING ni UAT en servidor.
+Layout: tests DOM en ChromeHeadless con contenedores 360 y 1024 px; no sustituyen prueba humana de dispositivos/zoom.
+No hay migraciones nuevas, variables nuevas ni cambios de dependencias.
+Sin commits, push o despliegues.
+
+C:\Users\carol\OneDrive\Desktop\cata-front\buscador-errores\dima-bug-backend\target\backend-0.0.1-SNAPSHOT.jar
+SHA256: 726ce73b632a64c2b034e64418599a732b0969e69651d4ab5285966b28e50d78
+
+C:\Users\carol\OneDrive\Desktop\cata-front\buscador-errores\frontend-dimabug\dist\buscador-errores\browser\index.html
+SHA256: 28970527a963abc1364e75d913e4c62e5216fd16fab607887d4fa6766e9fd88e

@@ -4,7 +4,7 @@ import cl.casol.backend.identidad.application.port.out.PasswordEncoderPort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
-//Paso 9
+//CASO DE USO: C) Almacenar y validar contraseñas de forma segura.
 
 @Component
 public class BCryptPasswordEncoderAdapter implements PasswordEncoderPort {
@@ -22,9 +22,23 @@ public class BCryptPasswordEncoderAdapter implements PasswordEncoderPort {
             String passwordPlano,
             String passwordHash
     ) {
-        return passwordEncoder.matches(
-                passwordPlano,
-                passwordHash
-        );
+        if (passwordPlano == null || passwordHash == null || passwordHash.isBlank()) {
+            return false;
+        }
+        String plano = passwordPlano.trim();
+        String hash = passwordHash.trim();
+        if (hash.startsWith("$2a$") || hash.startsWith("$2b$") || hash.startsWith("$2y$")) {
+            try {
+                return passwordEncoder.matches(plano, hash);
+            } catch (IllegalArgumentException ex) {
+                return false;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public String codificar(String passwordPlano) {
+        return passwordEncoder.encode(passwordPlano);
     }
 }

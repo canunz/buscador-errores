@@ -1,0 +1,424 @@
+/* Ejecución de un procedimiento: mismo lenguaje visual que tickets (tickets-comun.css). */
+.ej {
+  padding-bottom: 8px;
+}
+
+.ej-crumb {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0 0 14px;
+  color: var(--tk-suave);
+  font-size: 13.5px;
+}
+
+.ej-crumb a { color: var(--tk-suave); text-decoration: none; }
+.ej-crumb a:hover { color: var(--tk-azul); }
+.ej-crumb span:last-child { color: var(--tk-texto); font-weight: 600; }
+
+/* ---------- Cabecera ---------- */
+.ej-franja { padding-right: 30px; align-items: center; }
+.ej-franja-texto { flex: 1 1 380px; min-width: 0; }
+.ej-franja-texto p { margin-bottom: 12px; }
+
+.ej-estado i {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #fbbf24;
+  box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.25);
+}
+
+.ej-estado[data-estado='COMPLETADA'] i { background: #4ade80; box-shadow: 0 0 0 3px rgba(74, 222, 128, 0.25); }
+.ej-estado[data-estado='CANCELADA'] i { background: #f87171; box-shadow: 0 0 0 3px rgba(248, 113, 113, 0.25); }
+
+.ej-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 18px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  color: #d6e0ff;
+  font-size: 13.5px;
+  font-weight: 500;
+}
+
+.ej-meta li { display: inline-flex; align-items: center; gap: 6px; }
+.ej-meta svg { width: 15px; height: 15px; opacity: 0.85; }
+
+.ej-anillo {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 18px 12px 12px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.ej-anillo svg { width: 76px; height: 76px; transform: rotate(-90deg); }
+.ej-anillo circle { fill: none; stroke-width: 9; }
+.ej-anillo-fondo { stroke: rgba(255, 255, 255, 0.18); }
+.ej-anillo-valor { stroke: #4ade80; stroke-linecap: round; transition: stroke-dashoffset 0.45s ease; }
+.ej-anillo div { display: flex; flex-direction: column; }
+.ej-anillo strong { font-size: 26px; line-height: 1.1; }
+.ej-anillo small { color: #d6e0ff; font-size: 13px; }
+
+/* ---------- Cuerpo en dos columnas ---------- */
+.ej-cuerpo {
+  display: grid;
+  grid-template-columns: minmax(240px, 320px) minmax(0, 1fr);
+  gap: 18px;
+  align-items: start;
+}
+
+.ej-pasos {
+  /* Solo la barra de progreso se ancla: la lista no compite por el mismo espacio. */
+  position: static;
+  padding: 16px 12px;
+}
+
+.ej-pasos-titulo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 0 6px 10px;
+  color: var(--tk-suave);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.ej-pasos-titulo span {
+  padding: 2px 9px;
+  border-radius: 999px;
+  background: var(--tk-azul-claro);
+  color: var(--tk-azul);
+  letter-spacing: 0;
+}
+
+.ej-pasos ol,
+.ej-resumen ol {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ej-pasos .tk-esqueleto { margin: 0 4px 8px; }
+
+.ej-paso-btn {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  width: 100%;
+  padding: 10px;
+  border: 1px solid transparent;
+  border-radius: 13px;
+  background: transparent;
+  color: var(--tk-texto);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.ej-paso-btn:hover { background: var(--tk-fondo-campo); }
+.ej-paso-btn.actual { background: var(--tk-azul-claro); border-color: rgba(30, 79, 214, 0.35); }
+
+.ej-num {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 2px solid var(--tk-borde);
+  background: var(--tk-tarjeta);
+  color: var(--tk-suave);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.ej-num svg { width: 15px; height: 15px; }
+.ej-paso-btn.actual .ej-num { border-color: var(--tk-azul); color: var(--tk-azul); }
+.ej-paso-btn.critico .ej-num { border-color: #f87171; color: #b91c1c; }
+.ej-paso-btn.hecho .ej-num,
+.ej-resumen li.hecho .ej-num { border-color: #16a34a; background: #16a34a; color: #fff; }
+
+.ej-paso-texto { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+
+.ej-paso-texto strong {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  font-size: 13.5px;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.ej-paso-btn.hecho .ej-paso-texto strong { color: var(--tk-suave); }
+.ej-paso-texto small { color: var(--tk-suave); font-size: 12px; font-weight: 600; }
+.ej-paso-btn.critico .ej-paso-texto small { color: #b91c1c; }
+.ej-paso-btn.hecho .ej-paso-texto small { color: #15803d; }
+
+/* ---------- Paso actual ---------- */
+.ej-panel { padding: 26px 28px; animation: tk-subir 0.25s ease both; }
+.ej-panel.critico { border-top: 4px solid #ef4444; }
+
+.ej-panel-cabeza { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-bottom: 10px; }
+
+.ej-kicker {
+  color: var(--tk-azul);
+  font-size: 12.5px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.ej-instruccion {
+  margin: 0 0 18px;
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1.35;
+  letter-spacing: -0.01em;
+  overflow-wrap: anywhere;
+}
+
+.ej-aviso-critico {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 16px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #991b1b;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.ej-aviso-critico svg { width: 20px; height: 20px; flex-shrink: 0; }
+
+.ej-marcar {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  margin-bottom: 20px;
+  padding: 16px 18px;
+  border: 2px dashed #c7d2fe;
+  border-radius: 16px;
+  background: var(--tk-fondo-campo);
+  color: var(--tk-texto);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease, transform 0.12s ease;
+}
+
+.ej-marcar:not(:disabled):hover { border-color: var(--tk-azul); transform: translateY(-1px); }
+.ej-marcar:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.ej-marcar-caja {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 34px;
+  height: 34px;
+  border: 2px solid #a5b4fc;
+  border-radius: 10px;
+  background: var(--tk-tarjeta);
+  color: transparent;
+  transition: all 0.15s ease;
+}
+
+.ej-marcar-caja svg { width: 20px; height: 20px; }
+.ej-marcar-texto { display: flex; flex-direction: column; gap: 2px; }
+.ej-marcar-texto strong { font-size: 16px; }
+.ej-marcar-texto small { color: var(--tk-suave); font-size: 13px; }
+
+.ej-marcar.on { border-style: solid; border-color: #86efac; background: #f0fdf4; }
+.ej-marcar.on .ej-marcar-caja { border-color: #16a34a; background: #16a34a; color: #fff; }
+.ej-marcar.on strong { color: #15803d; }
+
+.ej-nota textarea { min-height: 84px; }
+
+.ej-nota-pie {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.ej-cuenta { color: var(--tk-suave); font-size: 12.5px; }
+.ej-cuenta.lleno { color: #b91c1c; font-weight: 700; }
+.tk-btn.ej-guardada { border-color: #86efac; color: #15803d; }
+
+.ej-nav {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 22px;
+  padding-top: 18px;
+  border-top: 1px solid var(--tk-borde);
+}
+
+/* ---------- Barra de cierre ---------- */
+.ej-cierre {
+  position: sticky;
+  top: 12px;
+  z-index: 10;
+  /* Fondo opaco y sin transformación de entrada sobre el contenido desplazable. */
+  background: var(--tk-tarjeta);
+  animation: none;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin: 0 0 18px;
+  padding: 14px 18px;
+}
+
+.ej-cierre.listo { border-color: #86efac; }
+.ej-cierre-texto { display: flex; flex-direction: column; gap: 2px; flex: 1 1 260px; }
+.ej-cierre-texto strong { font-size: 15px; }
+.ej-cierre.listo .ej-cierre-texto strong { color: #15803d; }
+.ej-cierre-texto span { color: var(--tk-suave); font-size: 13px; }
+
+.ej-cierre-barra {
+  height: 6px;
+  margin-top: 8px;
+  max-width: 360px;
+  border-radius: 999px;
+  background: var(--tk-borde);
+  overflow: hidden;
+}
+
+.ej-cierre-barra span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #1e4fd6, #16a34a);
+  transition: width 0.4s ease;
+}
+
+.ej-cierre-acciones { display: flex; flex-wrap: wrap; gap: 10px; }
+
+/* ---------- Ejecución terminada ---------- */
+.ej-resultado {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 18px;
+  padding: 20px 22px;
+  border-left: 5px solid #16a34a;
+}
+
+.ej-resultado[data-estado='CANCELADA'] { border-left-color: #ef4444; }
+.ej-resultado > div { display: flex; flex-direction: column; gap: 3px; flex: 1 1 260px; }
+.ej-resultado strong { font-size: 17px; }
+.ej-resultado span { color: var(--tk-suave); font-size: 13.5px; }
+.ej-resultado p { margin: 6px 0 0; font-size: 14px; }
+
+.ej-resultado-icono {
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  border-radius: 14px;
+  background: #dcfce7;
+  color: #15803d !important;
+}
+
+.ej-resultado-icono svg { width: 24px; height: 24px; }
+.ej-resultado[data-estado='CANCELADA'] .ej-resultado-icono { background: #fee2e2; color: #b91c1c !important; }
+
+.ej-resumen { padding: 18px 20px; }
+.ej-resumen .ej-pasos-titulo { margin: 0 0 12px; }
+
+.ej-resumen li {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid var(--tk-borde);
+}
+
+.ej-resumen li div { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.ej-resumen li strong { font-size: 14.5px; overflow-wrap: anywhere; }
+.ej-resumen li small { color: var(--tk-suave); font-size: 12.5px; font-weight: 600; }
+.ej-resumen li.hecho small { color: #15803d; }
+
+.ej-obs {
+  margin: 4px 0 0;
+  padding: 8px 10px;
+  border-radius: 9px;
+  background: var(--tk-fondo-campo);
+  color: var(--tk-texto);
+  font-size: 13.5px;
+}
+
+/* ---------- Diálogo cancelar ---------- */
+.ej-capa { position: fixed; inset: 0; z-index: 1000; display: grid; place-items: center; padding: 16px; }
+.ej-capa-fondo { position: absolute; inset: 0; background: rgba(11, 27, 77, 0.45); backdrop-filter: blur(3px); }
+
+.ej-dialogo {
+  position: relative;
+  width: min(460px, 100%);
+  padding: 24px;
+  animation: tk-subir 0.2s ease both;
+}
+
+.ej-dialogo h2 { margin: 0 0 6px; font-size: 19px; }
+.ej-dialogo p { margin: 0 0 16px; color: var(--tk-suave); font-size: 14px; }
+.ej-dialogo-acciones { display: flex; justify-content: flex-end; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
+.ej-btn-rojo { background: #dc2626; color: #fff; }
+
+/* ---------- Esqueletos ---------- */
+.ej-esq-franja { height: 150px; margin-bottom: 20px; border-radius: 22px; }
+.ej-esq-alto { height: 260px; }
+.ej-panel .tk-esqueleto { margin: 0; }
+
+/* ---------- Tema oscuro ---------- */
+:host-context(.tema-oscuro) .ej-aviso-critico { background: rgba(127, 29, 29, 0.25); border-color: #7f1d1d; color: #fecaca; }
+:host-context(.tema-oscuro) .ej-marcar { border-color: #334155; }
+:host-context(.tema-oscuro) .ej-marcar.on { background: rgba(22, 163, 74, 0.14); border-color: #166534; }
+:host-context(.tema-oscuro) .ej-marcar.on strong { color: #86efac; }
+:host-context(.tema-oscuro) .ej-paso-btn.critico .ej-paso-texto small { color: #fca5a5; }
+:host-context(.tema-oscuro) .ej-paso-btn.hecho .ej-paso-texto small,
+:host-context(.tema-oscuro) .ej-resumen li.hecho small { color: #86efac; }
+:host-context(.tema-oscuro) .ej-resultado-icono { background: rgba(22, 163, 74, 0.2); color: #86efac !important; }
+:host-context(.tema-oscuro) .ej-resultado[data-estado='CANCELADA'] .ej-resultado-icono { background: rgba(239, 68, 68, 0.2); color: #fca5a5 !important; }
+:host-context(.tema-oscuro) .ej-pasos-titulo span { color: #93c5fd; }
+
+/* ---------- Pantallas chicas ---------- */
+@media (max-width: 900px) {
+  .ej-cuerpo { grid-template-columns: 1fr; }
+  .ej-pasos { position: static; }
+  .ej-pasos ol { flex-direction: row; overflow-x: auto; padding-bottom: 4px; }
+  .ej-pasos li { flex: 0 0 210px; }
+}
+
+@media (max-width: 560px) {
+  .ej-panel { padding: 20px 18px; }
+  .ej-instruccion { font-size: 19px; }
+  .ej-anillo { width: 100%; }
+  .ej-cierre-acciones { width: 100%; }
+  .ej-cierre-acciones .tk-btn { flex: 1; }
+  .ej-cierre { top: 8px; gap: 10px; padding: 12px; }
+  .ej-cierre-texto { flex-basis: 100%; min-width: 0; }
+  .ej-cierre-acciones { flex-wrap: wrap; }
+  .ej-cierre-acciones .tk-btn { white-space: normal; min-width: 0; }
+}
