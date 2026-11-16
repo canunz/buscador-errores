@@ -1,0 +1,72 @@
+<section class="tk-pagina gmail-pagina" aria-labelledby="gmail-titulo">
+  <header class="tk-franja">
+    <div><h1 id="gmail-titulo">Conexión de Gmail</h1><p>Administra la cuenta corporativa y su autorización para enviar comunicaciones.</p></div>
+  </header>
+  @if(error){<div class="tk-alerta" role="alert">{{ error }}</div>}
+  @if(cargando){<p class="gmail-carga" role="status">Consultando conexión…</p>}
+  @if(estado;as e){
+    <div class="gmail-resumen" [attr.aria-busy]="cargando">
+      <section class="tk-card gmail-card" aria-labelledby="gmail-cuenta-titulo">
+        <div class="gmail-card-cabeza"><h2 id="gmail-cuenta-titulo">Cuenta Gmail</h2><span class="tk-badge" [class.est-resuelto]="e.conectado" [class.gmail-neutro]="!e.conectado">{{ e.conectado?'Conectada':'Sin conexión' }}</span></div>
+        <p class="gmail-estado">{{ e.conectado?'Cuenta autorizada':e.estado==='REAUTORIZAR'?'Es necesario volver a autorizar la cuenta':e.configurado?'Cuenta sin autorización activa':'Integración pendiente de configuración local' }}</p>
+        <dl>
+          @if(e.remitente){<div><dt>Remitente configurado</dt><dd>{{ e.remitente }}</dd></div>}
+          @if(e.expira){<div><dt>Vencimiento del token actual</dt><dd>{{ e.expira | date:'dd/MM/yyyy HH:mm' }}</dd></div>}
+        </dl>
+        <p class="gmail-ayuda">La renovación se realiza de forma segura en el backend cuando corresponde.</p>
+      </section>
+      <section class="tk-card gmail-card" aria-labelledby="gmail-modo-titulo">
+        <div class="gmail-card-cabeza"><h2 id="gmail-modo-titulo">Envío real por Gmail</h2><span class="tk-badge" [class.est-resuelto]="e.envioRealHabilitado" [class.gmail-neutro]="!e.envioRealHabilitado">{{ e.envioRealHabilitado?'Habilitado':'Deshabilitado' }}</span></div>
+        @if(!e.envioRealHabilitado){<p>Los envíos reales mediante Gmail API están deshabilitados.</p>}
+        @else{<p>La habilitación está configurada. El transporte utilizado depende del modo seleccionado en el backend.</p>}
+        <p class="gmail-ayuda">Conectar la cuenta no activa los envíos reales. Su habilitación requiere una confirmación y configuración separadas.</p>
+      </section>
+    </div>
+    <section class="tk-card gmail-card gmail-gestion" aria-labelledby="gmail-gestion-titulo">
+      <h2 id="gmail-gestion-titulo">Administrar autorización</h2>
+      <p>Permiso solicitado: enviar correos con Gmail. No se solicita acceso para leer ni eliminar mensajes.</p>
+      @if(e.revocacionRemotaPendiente){<p class="tk-alerta" role="alert">La autorización local está deshabilitada. Falta confirmar la revocación en Google; puedes reintentar.</p>}
+      <div class="gmail-acciones">
+        <button type="button" class="tk-btn tk-btn-primario" data-action="autorizar" (click)="conectar()" [attr.aria-busy]="operacion==='autorizar'" [disabled]="ocupado || cargando || !e.configurado || e.revocacionRemotaPendiente || e.conectado">{{ operacion==='autorizar'?'Preparando autorización…':'Autorizar cuenta Gmail' }}</button>
+        <button type="button" class="tk-btn tk-btn-peligro" data-action="revocar" (click)="pedirRevocacion=true" aria-haspopup="dialog" [disabled]="ocupado || cargando || !e.configurado || (!e.conectado && !e.revocacionRemotaPendiente && e.estado!=='REAUTORIZAR')">Revocar autorización</button>
+      </div>
+      @if(e.conectado){<p class="gmail-ayuda">Para cambiar la cuenta, revoca primero la autorización actual.</p>}
+    </section>
+  }
+  <section class="tk-card gmail-card gmail-gestion" aria-labelledby="gmail-prueba-titulo">
+    <h2 id="gmail-prueba-titulo">Prueba de correo</h2>
+    @if(errorPrueba){<p class="tk-alerta" role="alert">{{ errorPrueba }}</p>}
+    @if(prueba;as p){
+      <dl class="gmail-resumen"><div><dt>Cuenta remitente</dt><dd>{{ p.remitente || 'Sin configurar' }}</dd></div><div><dt>Destinatario de prueba · Para único</dt><dd>{{ p.destinatario || 'Sin configurar' }}</dd></div><div><dt>Conexión Gmail</dt><dd>{{ p.conectado?'Conectada':'Sin conexión' }}</dd></div><div><dt>Transporte</dt><dd>{{ p.transporte }} · {{ p.habilitado?'Envío de prueba habilitado':'Envío de prueba deshabilitado' }}</dd></div></dl>
+      <p class="gmail-ayuda">Se enviará un único correo a la cuenta corporativa configurada, sin CC y sin modificar procedimientos.</p>
+      <button type="button" class="tk-btn tk-btn-primario" data-action="prueba" [disabled]="!puedeProbar" (click)="abrirPrueba()">{{ operacion==='prueba'?'Enviando prueba…':'Enviar correo de prueba' }}</button>
+      @if(p.ultima;as u){<div class="gmail-prueba-resultado" role="status"><h3>Resultado de la última prueba</h3><strong>{{ etiquetaPrueba(u) }}</strong><p>{{ (u.finalizada || u.intento || u.creada) | date:'dd/MM/yyyy HH:mm:ss' }} · {{ u.destinatario }}</p>@if(u.mensajeId){<p>Identificador: {{ u.mensajeId }}</p>}@if(u.estado==='FALLIDO'){<p class="gmail-ayuda">Revisa la configuración antes de confirmar una nueva prueba.</p>}</div>}
+    }
+  </section>
+  <footer class="gmail-pie">
+    <button type="button" class="tk-btn tk-btn-sec" data-action="actualizar" (click)="cargar()" [attr.aria-busy]="cargando" [disabled]="ocupado || cargando">{{ cargando?'Actualizando estado…':'Actualizar estado' }}</button>
+    <a routerLink="/admin" class="gmail-volver">Volver a administración</a>
+  </footer>
+</section>
+@if(pedirRevocacion){
+  <div class="gmail-modal">
+    <div class="gmail-modal-fondo" (click)="cerrarConfirmacion()"></div>
+    <section class="tk-card gmail-dialogo" role="alertdialog" aria-modal="true" aria-labelledby="gmail-revocar-titulo" aria-describedby="gmail-revocar-descripcion" cdkTrapFocus [cdkTrapFocusAutoCapture]="true">
+      <h2 id="gmail-revocar-titulo">¿Revocar la autorización de Gmail?</h2>
+      <p id="gmail-revocar-descripcion">Se deshabilitará el uso de esta autorización en DimaBug y se solicitará su revocación en Google.</p>
+      <div class="gmail-acciones">
+        <button type="button" class="tk-btn tk-btn-sec" cdkFocusInitial (click)="cerrarConfirmacion()" [disabled]="ocupado">Cancelar</button>
+        <button type="button" class="tk-btn tk-btn-peligro" data-action="confirmar-revocacion" (click)="revocar()" [attr.aria-busy]="operacion==='revocar'" [disabled]="ocupado">{{ operacion==='revocar'?'Revocando…':'Confirmar revocación' }}</button>
+      </div>
+    </section>
+  </div>
+}
+@if(confirmarPrueba && prueba){
+  <div class="gmail-modal"><div class="gmail-modal-fondo" (click)="cerrarPrueba()"></div>
+    <section class="tk-card gmail-dialogo" role="alertdialog" aria-modal="true" aria-labelledby="gmail-prueba-confirmar-titulo" aria-describedby="gmail-prueba-confirmar-descripcion" cdkTrapFocus [cdkTrapFocusAutoCapture]="true">
+      <h2 id="gmail-prueba-confirmar-titulo">¿Enviar un correo real de prueba?</h2><p id="gmail-prueba-confirmar-descripcion">Gmail API enviará un único mensaje a {{ prueba.destinatario }}, sin CC. No se reenviarán simulaciones ni se modificarán procedimientos.</p>
+      <p>Asunto: [DimaBug] Prueba controlada Gmail API</p>
+      <div class="gmail-acciones"><button type="button" class="tk-btn tk-btn-sec" cdkFocusInitial (click)="cerrarPrueba()" [disabled]="ocupado">Cancelar</button><button type="button" class="tk-btn tk-btn-primario" data-action="confirmar-prueba" (click)="enviarPrueba()" [disabled]="ocupado" [attr.aria-busy]="operacion==='prueba'">{{ operacion==='prueba'?'Enviando…':'Confirmar envío real' }}</button></div>
+    </section>
+  </div>
+}

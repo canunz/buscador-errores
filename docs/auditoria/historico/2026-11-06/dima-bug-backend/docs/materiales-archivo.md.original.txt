@@ -1,0 +1,110 @@
+# Material de Apoyo: enlaces y archivos
+
+MaterialApoyo se comparte entre Conocimiento y Pasos de Procedimiento. Un material
+directo tiene conocimiento informado y paso nulo; uno de paso tiene conocimiento
+nulo. Los casos de uso comprueban pertenencia, incluida la relación paso/procedimiento.
+
+## API
+
+Bases implementadas:
+
+- `/api/conocimientos/{conocimientoId}/materiales`
+- `/api/procedimientos/{procedimientoId}/pasos/{pasoId}/materiales`
+
+| Método y sufijo sobre cualquiera de las bases | Comportamiento |
+| --- | --- |
+| `GET` base | Lista materiales; 200. |
+| `POST` base | Crea enlace con JSON; 201. |
+| `PUT /{materialId}` | Modifica con JSON; 200. |
+| `POST /archivo` | Sube archivo multipart; 201. |
+| `GET /{materialId}/archivo` | Descarga archivo administrado; 200. |
+| `DELETE /{materialId}` | Elimina material; 204 sin cuerpo. |
+
+Se requiere JWT con ADMINISTRADOR o TECNICO; sin JWT: 401, rol ajeno: 403.
+No se expone un ResourceHandler público. Ver [seguridad](seguridad.md).
+
+## Enlaces y subida
+
+El JSON contiene `nombre`, `tipo`, `url`. Nombre obligatorio hasta 150 caracteres;
+tipo obligatorio: IMAGEN, PDF, VIDEO o ENLACE; URL/ruta no vacía hasta 500.
+No se valida formato o protocolo de enlaces, existencia remota ni extensión.
+Los controllers rechazan referencias `file:materiales/` aportadas por JSON.
+
+El multipart contiene `nombre`, `tipo`, `archivo`. Solo admite:
+
+| Tipo | MIME |
+| --- | --- |
+| PDF | `application/pdf` |
+| IMAGEN | `image/png`, `image/jpeg`, `image/webp` |
+
+Se rechazan archivo vacío, tamaño superior a 10 MiB, firma no reconocida y
+incompatibilidad entre MIME declarado, firma y tipo. VIDEO y ENLACE no admiten
+upload local. La inspección de firmas no equivale a decodificación completa o antivirus.
+Los límites multipart son 10 MB por archivo y 11 MB por request; el código limita
+los bytes a `10 * 1024 * 1024`.
+
+El controller convierte `MultipartFile` en `ArchivoSubido`. Application usa
+`AlmacenamientoArchivoPort`; el adapter genera una clave UUID-v4 y almacena bytes
+en el directorio configurado. MySQL conserva `file:materiales/{UUID}`, nunca la
+ruta del PC ni la ruta absoluta del servidor. No se conserva el nombre original
+del archivo. Consultar [configuración](configuracion-dev.md) para el directorio.
+
+La subida registra compensación en la transacción: si esta no termina confirmada,
+intenta eliminar el archivo almacenado. Un fallo de compensación se registra en logs.
+La creación de material de conocimiento también reindexa; la de paso no agrega
+indexación. No hay un endpoint multipart de reemplazo.
+
+## Descarga
+
+Se obtiene el material por ID, se valida su destino y se lee mediante el puerto.
+Un enlace externo no es descargado ni redirigido por este endpoint: devuelve 404.
+El adapter acepta solo claves internas válidas, limita la lectura y evita seguir
+un enlace simbólico en el archivo abierto. MIME se determina desde el contenido
+y debe ser compatible con el tipo persistido.
+
+La respuesta contiene bytes, Content-Type, Content-Length,
+`Content-Disposition: attachment`, `X-Content-Type-Options: nosniff` y
+`Cache-Control: no-store`. El nombre de descarga se deriva del nombre lógico
+saneado y una extensión del formato. El campo `url` de las respuestas de materiales
+locales contiene el endpoint de descarga, no la clave de almacenamiento.
+El cliente debe adjuntar el header Bearer: abrir un enlace no lo incorpora por sí solo.
+
+## Eliminación y consistencia
+
+1. Una transacción `REQUIRES_NEW` valida conocimiento o procedimiento/paso,
+   material y pertenencia exacta. La referencia se obtiene del registro persistido;
+   el DELETE solo recibe IDs.
+2. Una referencia `file:` debe coincidir exactamente con `file:materiales/{UUID-v4}`.
+   Se valida antes de borrar el registro y de nuevo en el adapter, que comprueba
+   el confinamiento de la ruta. Se rechazan traversal y referencias inválidas.
+3. Se elimina el registro y se hace flush. Para conocimiento, se reindexa dentro
+   de la transacción; para pasos, no hay reindexación nueva.
+4. Se confirma BD y después se invoca `AlmacenamientoArchivoPort.eliminar` si es
+   local. Enlaces externos solo eliminan el registro.
+
+Un fallo de BD/reindexación/commit impide borrar el archivo. Si el archivo ya está
+ausente, `deleteIfExists` permite completar la eliminación del registro.
+Si falla filesystem tras el commit, la API devuelve 500 indicando que el registro
+se eliminó pero requiere limpieza operativa, y registra ID/referencia en logs.
+No recrea el registro ni devuelve rutas físicas. Repetir DELETE por ese ID devuelve
+404; no reintenta la limpieza física.
+
+Esta estrategia prioriza no borrar bytes antes de confirmar BD. Una caída entre
+ambos pasos o un error físico puede dejar un archivo huérfano. No hay outbox,
+reintentos persistidos ni tarea automática de reconciliación.
+
+## Pruebas y límites
+
+`ArchivoMaterialServiceTest`, `MaterialArchivoDestinoTest`,
+`MaterialArchivoSecurityIntegrationTest`, `EliminarMaterialApoyoTest` y
+`AlmacenamientoArchivoFilesystemAdapterTest` cubren formatos, límites, destinos,
+autorización, traversal, orden transaccional y fallos. El adapter se prueba con
+directorios temporales reales; los casos de BD/commit usan mocks o un manager de
+pruebas. No equivalen a MySQL real, tráfico multipart de un servidor real ni
+pruebas de caída/concurrencia.
+
+Pendientes: archivos huérfanos y reemplazados mediante PUT, coordinación PUT/DELETE
+concurrente, operación de respaldo/restauración y pruebas de integración.
+No hay versionado/bloqueo específico del material para esa concurrencia.
+Ver [ADR-002](adr/ADR-002-almacenamiento-archivos.md) y
+[pendientes generales](../README.md#pendientes-técnicos-detectados).

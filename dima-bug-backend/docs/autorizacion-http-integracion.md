@@ -1,0 +1,147 @@
+> Referencia histórica conservada. Describe una entrega previa y puede diferir del checkout actual. [Documentación vigente](../../docs/README.md). Los enlaces a archivos ausentes se identifican expresamente; [original íntegro y hash](../../docs/auditoria/historico/README.md).
+
+# Autorización HTTP real del MVP
+
+Fecha: 2026-10-08. Complementa [seguridad](seguridad-integracion.md),
+[materiales](materiales-integracion.md) y [auditoría Skill 4](auditoria-cobertura-riesgos-skill4.md).
+
+## Reglas inspeccionadas
+
+SecurityConfig.securityFilterChain exige ADMINISTRADOR para `/api/usuarios/**`
+y `/api/roles/**`; permite ADMINISTRADOR/TECNICO en conocimiento, procedimientos,
+ejecuciones y materiales. Su matcher DELETE `/api/conocimientos/*` exige ADMINISTRADOR;
+no incluye el DELETE anidado de un material.
+
+ConocimientoController.cambiarEstado restringe PUBLICADO a ADMINISTRADOR.
+ProcedimientoController.publicar restringe su PATCH de estado a ADMINISTRADOR.
+POST/PUT no permiten publicar indirectamente: los servicios crean BORRADOR y
+mantienen el estado existente al modificar. No se inventa una restricción por autor
+para esos recursos. GestionarEjecucionService.autorizar permite propietario o
+ADMINISTRADOR; listar limita técnicos a sus ejecuciones. Ambos roles pueden iniciar.
+Las reglas de pertenencia material/padre rechazan con 404; no son una regla de autor.
+El login es público; el JWT de usuario desactivado se rechaza en el filtro.
+
+## Matriz de autorización
+
+A = ADMINISTRADOR; T = TECNICO; otro T = técnico que no es propietario;
+otro rol = rol sintético AUDITOR, existente solo en el fixture, sin ampliar permisos.
+Sin token se espera 401 en todas las rutas protegidas.
+HTTP real = servidor Servlet + JWT/BCrypt/servicios/repositorios funcionales + MySQL.
+Slice = MockMvc con servicios/token/usuarios mockeados, evidencia del contrato aislado.
+
+| Endpoint | Operación | Permitido | Denegado / esperado | Prueba previa | Ampliación / brecha |
+| --- | --- | --- | --- | --- | --- |
+| `/api/conocimientos` | POST 201 | A/T | Sin token 401; otro rol 403 | Hu03 slice; ConocimientoJpaIT sin HTTP | POST T real, evita publicación por body, 401 real; A/otro rol siguen principalmente slice |
+| `/api/conocimientos/{id}` | PUT 200 | A/T | Sin token 401; otro rol 403 | Hu03 slice; JPA por servicio | PUT T real, conserva BORRADOR aunque body indique PUBLICADO |
+| `/api/conocimientos/{id}/estado` | PATCH PUBLICADO 200 | A | T 403; sin token 401 | Hu03 slice | A/T/sin token reales; estado MySQL verificado tras rechazo |
+| `/api/conocimientos/{id}` | DELETE 204 lógico | A | T 403; sin token 401 | Hu03 slice; eliminación JPA real | A/T/sin token reales; fila conservada y proyección retirada |
+| `/api/conocimientos`, `/{id}`, `/buscar` | GET 200 | A/T | Sin token 401; otro rol 403 | Hu03/Hu04 slices; HTTP de padres en materiales | No ampliar todas las consultas: menor prioridad que mutaciones |
+| `/api/procedimientos` | POST 201 | A/T | Sin token 401; otro rol 403 | Hu05 slice; servicio real | T y sin token reales |
+| `/api/procedimientos/{id}` | PUT 200 | A/T | Sin token 401; otro rol 403 | Hu05 slice | T real; variantes restantes no completas en esta ampliación |
+| `/api/procedimientos/{id}/estado` | PATCH 200 | A | T 403; sin token 401 | Hu05 slice | Tres variantes reales; estado conservado tras denegación |
+| `/api/procedimientos/{id}/pasos`, `/{pasoId}` | POST 201 / PUT 200 | A/T | Sin token 401; otro rol 403 | Hu05 slice; servicio real | T real; no repetir todas las combinaciones del matcher |
+| `/api/procedimientos/{id}/ejecuciones` | POST 201 | A/T | Sin token 401; otro rol 403 | Hu06 slice; servicio real | Inicio T real y 401 sin token |
+| `/api/ejecuciones` | GET 200 | A/T; T solo propias | Sin token 401; otro rol 403 | Hu06 slice; servicio real | Otro T recibe lista vacía ante ejecución ajena; no se espera 403 en listado |
+| `/api/ejecuciones/{id}`, `/{id}/pasos` | GET 200 | Propietario/A | Otro T 403; sin token 401 | Servicio real; Hu06 slice parcial | Denegaciones reales y consultas autorizadas |
+| `/api/ejecuciones/{id}/pasos/{epId}` | PATCH 200 | Propietario/A | Otro T 403; sin token 401 | Hu06 slice; servicio real | Otro T/sin token rechazados; propietario actualiza; checklist sin cambios tras denegaciones |
+| `/api/ejecuciones/{id}/completar` | PATCH 200, si cumple reglas | Propietario/A | Otro T 403; sin token 401 | Servicio real; slice parcial | Propietario completa tras checklist; ajeno/sin token rechazados |
+| `/api/ejecuciones/{id}/cancelar` | PATCH 200, EN_CURSO | Propietario/A | Otro T 403; sin token 401 | Hu06 slice; servicio real | A cancela ejecución T; ajeno/sin token rechazados |
+| `/api/conocimientos/{id}/materiales/archivo` y `/api/procedimientos/{id}/pasos/{pasoId}/materiales/archivo` | POST 201 | A/T, sin regla de autor | Sin token 401; otro rol 403 | T HTTP real | A sube, T sube, otro rol/sin token rechazados; sin filas/bytes nuevos |
+| Mismos padres + `/{materialId}/archivo` | GET 200 | A/T | Sin token 401; otro rol 403; padre incorrecto 404 | MaterialesArchivoIT HTTP real, principalmente conocimiento | Ambos destinos; T descarga material subido por A; contenido exacto |
+| Mismos padres + `/{materialId}` | DELETE 204 físico/metadatos | A/T | Sin token 401; otro rol 403 | DELETE T HTTP real | A/T cruzados, otro rol/sin token rechazados; fila y bytes conservados tras rechazo |
+| Materiales en ambos padres | GET/POST/PUT metadatos | A/T | Sin token 401; otro rol 403 | Slices y servicios con mocks | Sin nueva batería completa: misma regla, priorizar bytes y eliminación; carrera PUT/DELETE pendiente |
+| `/api/usuarios` | GET 200 | A | T 403; sin token 401 | AutenticacionHttpIT real | Ya suficiente; no duplicado |
+| `/api/usuarios/{id}` | GET 200 | A | T 403; sin token 401 | Hu02 slice | A/T reales; sin token por matcher ya demostrado en colección |
+| `/api/usuarios` | POST 201 | A | T 403; sin token 401 | Hu02 slice | A/T reales, no alta con T, sin exponer credenciales |
+| `/api/usuarios/{id}` | PUT 200, incluido rol | A | T 403; sin token 401 | Hu02 slice | A/T reales; rol intacto tras rechazo, cambio persistido por A |
+| `/api/usuarios/{id}/estado` | PATCH 200 | A, regla adicional contra autodesactivarse | T 403; sin token 401 | Hu02 slice; JWT de desactivado real | A/T/sin token reales sobre otro usuario; autodesactivación no repetida |
+| `/api/roles` | GET 200 | A | T 403; sin token 401 | Hu02 slice | Permanece slice, misma familia administrativa; no nueva consulta de catálogo |
+
+## Implementación de pruebas
+
+Se amplía `MaterialesArchivoIT` porque su contexto ya carga todos los componentes
+funcionales del backend y filesystem temporal. No se duplica MySqlIntegrationSupport
+ni se introduce otra clase/contexto/contenedor. El nombre histórico de la clase no
+define su alcance: los seis métodos nuevos ejecutan autorización de varios módulos.
+
+Métodos añadidos:
+
+1. conocimientoHttpRespetaPublicacionYEliminacionExclusivasDeAdministrador.
+2. procedimientoHttpPermiteEdicionPeroReservaPublicacionAlAdministrador.
+3. ejecucionHttpDeniegaOtroTecnicoSinMutacionesYPermitePropietarioYAdministrador.
+4. usuariosHttpReservaConsultaAltaRolYDesactivacionAlAdministrador.
+5. endpointsCriticosSinTokenNoModificanDatosNiArchivos.
+6. materialesHttpNoRestringePorAutorYDeniegaRolAjenoEnAmbosDestinos.
+
+Los JWT se obtienen por POST /api/auth/login; no WithMockUser, mocks ni tokens
+fingidos. Los servicios/repositories son reales. Se comprueban estados y filas
+mediante JdbcTemplate contra el datasource validado del contenedor. Se extiende
+la limpieza FK para checklist/ejecuciones antes de borrar procedimientos/usuarios.
+Cada test recrea fixtures y limpia filas/bytes; no depende de orden.
+Passwords son UUID sintéticos; no se imprimen tokens, hashes ni passwords en
+aserciones/documentación. Los cuerpos JSON de respuestas se revisan para evitar
+password/hash. La comprobación amplia de logs/secretos continúa en AutenticacionHttpIT.
+
+La clase mantiene datasource validado antes de Boot, configuración exclusiva de
+integración, ddl-auto=none, puerto HTTP aleatorio ligado a loopback, secreto sintético
+y directorio @TempDir. No se carga application.properties ni credenciales DEV.
+Se mantiene OSIV del contexto HTTP existente; no certifica servicios de archivos
+invocados sin una sesión adecuada. No cambia producción ni esquema funcional.
+
+## Resultados
+
+Comando: `.\mvnw.cmd -B -Pintegration-mysql verify`, JDK 21 configurado solo
+en la sesión. BUILD SUCCESS; tiempo Maven 1:26 min; finalización
+2026-10-08 18:04:48 -03:00.
+
+| Clase | PASS | FAIL | ERROR | SKIPPED | Tiempo de clase |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| AutenticacionHttpIT | 7 | 0 | 0 | 0 | 24,891 s |
+| ConocimientoJpaIT | 5 | 0 | 0 | 0 | 12,191 s |
+| MaterialesArchivoIT | 16 | 0 | 0 | 0 | 20,091 s |
+| MySqlReferentialIntegrityIT | 1 | 0 | 0 | 0 | 6,995 s |
+| ProcedimientosEjecucionesResultadosIT | 8 | 0 | 0 | 0 | 13,808 s |
+| Total | 37 | 0 | 0 | 0 | Maven: 1:26 min |
+
+Los seis métodos nuevos pasaron; la clase ampliada conserva sus diez métodos
+previos. Los errores SQL esperados de otras clases siguen asertados; no son ERROR
+de ejecución. No se detectó un defecto funcional ni se cambió una aserción para
+aceptar un código incorrecto. Publicación y acceso ajeno devolvieron 403;
+las verificaciones posteriores confirmaron ausencia de mutaciones denegadas.
+
+Los cinco contenedores de esta ejecución se identificaron desde el log y se
+consultaron individualmente con Docker `ps -a` por ID: ninguno quedó presente.
+No se utilizó DEV, almacenamiento funcional ni bases existentes.
+
+Se ejecuta también `.\mvnw.cmd -B test` como regresión. El primer intento dentro
+del sandbox quedó bloqueado al conectar el agente Mockito: Surefire registró
+`could not open (5) pipe` en su dumpstream. No es una aserción fallida ni resultado
+PASS; se detuvieron exclusivamente los dos procesos Java identificados de esa
+ejecución y se repitió fuera del sandbox, sin cambiar configuración o dependencias.
+La repetición final terminó con BUILD SUCCESS: **472 PASS, 0 FAIL, 0 ERROR,
+0 SKIPPED**, tiempo Maven **20,575 s**, finalización 2026-10-08 18:08:26 -03:00.
+Los XML de Surefire corroboran esos totales. El intento interrumpido terminó
+con error de proceso/build y no se contabiliza como suite de tests completa.
+
+Evidencia: `target/failsafe-reports/TEST-*.xml`, TXT de las cinco clases y reportes
+Surefire de la regresión. Estos artefactos locales pueden ser sustituidos por
+builds futuros; el proceso CI/equipo debe conservarlos sin publicar secretos.
+
+Archivos de esta ampliación: este documento nuevo; modificaciones de
+`src/test/java/cl/casol/backend/integration/MaterialesArchivoIT.java` y
+`docs/auditoria-cobertura-riesgos-skill4.md`. Sin cambios en POM, soporte
+Testcontainers, producción, permisos, entidades, esquema o application.properties.
+
+## Riesgos pendientes
+
+No certifica todas las combinaciones de endpoints/roles, concurrencia, versionado
+de pasos, symlinks de ancestros, crash/compensación fallida, CI ni configuración
+productiva. Las filas con cobertura parcial en la matriz permanecen parciales.
+Un rechazo por rol sin token no prueba la restricción de propietario: esta última
+se ejecuta con un segundo TECNICO autenticado y recurso existente.
+No debe confundirse 404 de pertenencia con 403 de permisos.
+
+Fuentes: SecurityConfig.securityFilterChain; ConocimientoController.cambiarEstado;
+ProcedimientoController.publicar; GestionarEjecucionService.autorizar/listar;
+UsuarioController; MaterialConocimientoArchivoController/MaterialPasoArchivoController;
+test actualizado en `src/test/java/cl/casol/backend/integration/MaterialesArchivoIT.java`.

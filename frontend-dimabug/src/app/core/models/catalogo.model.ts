@@ -6,6 +6,7 @@ export interface HardwareItem {
 }
 
 export interface DepartamentoContacto {
+  id?: number;
   tipo: string;
   numero: string;
   activo: boolean;
@@ -27,11 +28,20 @@ export interface PruebaItem {
 }
 
 export interface SolucionItem {
+  titulo?: string | null;
+  descripcion?: string;
+  activo?: boolean;
+  autoservicio?: boolean;
   id: number;
   nombre: string;
   pasos: string;
   anexos: string;
   asignaciones: string[];
+  /** Presente cuando viene agregada desde un conocimiento de la API. */
+  conocimientoId?: number;
+  conocimientoTitulo?: string;
+  orden?: number;
+  tipo?: 'PASOS' | 'DERIVACION';
 }
 
 export interface ErrorItem {

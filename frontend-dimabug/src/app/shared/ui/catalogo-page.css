@@ -44,49 +44,50 @@
 }
 
 .franja {
+  position: relative;
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 16px;
   margin: 0 0 20px;
-  padding: 20px 22px;
-  border-radius: 22px;
-  background:
-    radial-gradient(circle at 92% 18%, rgba(255, 255, 255, 0.16), transparent 30%),
-    linear-gradient(135deg, #08143d 0%, #0b1b4d 48%, #1e4fd6 160%);
+  padding: 22px 64px 22px 24px;
+  border-radius: 18px;
+  background: linear-gradient(105deg, #071336 0%, #0b1b4d 42%, #1638a8 78%, #1e4fd6 100%);
   color: #fff;
-  box-shadow: 0 16px 36px rgba(11, 27, 77, 0.16);
+  box-shadow: 0 16px 36px rgba(7, 19, 54, 0.2);
 }
 
 .franja p {
   margin: 0 0 6px;
-  color: #b7c4ea;
+  color: #9eb6f5;
   font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.05em;
+  font-weight: 800;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
 }
 
 .franja h1 {
   margin: 0 0 6px;
-  font-size: 28px;
+  font-size: 32px;
   letter-spacing: -0.03em;
+  line-height: 1.15;
 }
 
 .franja span,
 .franja .lead {
-  color: #d5def5;
-  font-size: 14px;
+  color: #e4ecff;
+  font-size: 15.5px;
+  line-height: 1.45;
 }
 
 .franja .btn-sec,
 .franja .btn-crear {
-  height: 34px;
-  padding: 0 14px;
+  height: 36px;
+  padding: 0 16px;
   border: 0;
-  border-radius: 9px;
+  border-radius: 999px;
   font-size: 13px;
-  font-weight: 700;
+  font-weight: 800;
   line-height: 1;
   display: inline-flex;
   align-items: center;
@@ -94,7 +95,7 @@
   flex-shrink: 0;
   white-space: nowrap;
   text-decoration: none;
-  box-shadow: none;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
 }
 
 .franja .btn-sec {
@@ -104,28 +105,32 @@
 
 .franja .btn-crear {
   background: #fff;
-  color: #1e4fd6;
+  color: #0b1b4d;
 }
 
 .col-acciones {
-  width: 210px;
+  width: 1%;
+  white-space: nowrap;
 }
 
 .act {
   border: 0;
-  border-radius: 8px;
-  padding: 7px 11px;
+  border-radius: 999px;
+  padding: 7px 10px;
   font: inherit;
-  font-size: 12.5px;
-  font-weight: 750;
+  font-size: 12px;
+  font-weight: 800;
   cursor: pointer;
   text-decoration: none;
   display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 
 .act.edit {
-  background: #eef2ff;
-  color: #1e3a8a;
+  background: #eaf0fe;
+  color: #0e2266;
 }
 
 .act.del {
@@ -250,9 +255,9 @@
 table {
   display: table;
   width: 100%;
-  min-width: 780px;
+  min-width: 720px;
   border-collapse: collapse;
-  table-layout: fixed;
+  table-layout: auto;
 }
 
 thead {
@@ -266,25 +271,43 @@ tr {
 th,
 td {
   display: table-cell;
-  padding: 13px 14px;
+  padding: 16px;
   border-bottom: 1px solid #e7e9f0;
   text-align: left;
-  font-size: 14px;
+  font-size: 15.5px;
+  line-height: 1.45;
   vertical-align: middle;
 }
 
 th {
-  font-size: 12px;
+  font-size: 12.5px;
   text-transform: uppercase;
-  letter-spacing: 0.04em;
-  color: #667085;
-  background: #f8fafc;
+  letter-spacing: 0.05em;
+  color: #475569;
+  background: #eef3fb;
+  font-weight: 800;
+}
+
+td strong {
+  color: #0b1b4d;
+}
+
+.desc {
+  display: block;
+  margin-top: 4px;
+  color: #475569;
+  font-size: 14.5px;
+  line-height: 1.45;
+  white-space: normal;
 }
 
 .acciones {
   display: flex;
-  gap: 8px;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 6px;
   justify-content: flex-start;
+  white-space: nowrap;
 }
 
 .btn-icon {
@@ -298,15 +321,58 @@ th {
   color: #b91c1c;
 }
 
+.btn-accion {
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  display: inline-grid;
+  place-items: center;
+  text-decoration: none;
+}
+
+.btn-accion svg {
+  width: 16px;
+  height: 16px;
+}
+
+.btn-accion.ver {
+  background: #1e4fd6;
+  border-color: #1638a8;
+  color: #fff;
+}
+
+.btn-accion.editar {
+  background: #eaf0fe;
+  border-color: #c9d6f8;
+  color: #0e2266;
+}
+
+.btn-accion.estado {
+  background: #fef2f2;
+  border-color: #f3b4b4;
+  color: #b42318;
+}
+
+.btn-accion.estado.off {
+  background: #ecfdf5;
+  border-color: #86efac;
+  color: #166534;
+}
+
 .chip {
   display: inline-flex;
   margin: 0 6px 6px 0;
-  padding: 4px 8px;
+  padding: 5px 10px;
   border-radius: 999px;
   background: #f1f5f9;
   border: 1px solid #e2e8f0;
   font-size: 12px;
-  font-weight: 650;
+  font-weight: 700;
+  color: #0f172a;
+  white-space: nowrap;
 }
 
 .estado {
@@ -374,10 +440,18 @@ th {
 
 .form-grid label {
   display: grid;
-  gap: 6px;
-  font-size: 13px;
+  gap: 8px;
+  font-size: 15px;
   font-weight: 700;
-  color: #334155;
+  color: #1e293b;
+}
+
+.form-grid input,
+.form-grid select,
+.form-grid textarea {
+  font-size: 16px;
+  line-height: 1.45;
+  color: #0f172a;
 }
 
 .form-grid small {
@@ -588,4 +662,213 @@ th {
   background: #1f2937;
   border-color: #334155;
   color: #e5e7eb;
+}
+
+.confirm-capa {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+}
+
+.confirm-fondo {
+  position: absolute;
+  inset: 0;
+  background: rgba(22, 48, 112, 0.45);
+}
+
+.confirm-dialog {
+  position: relative;
+  z-index: 1;
+  width: min(440px, 100%);
+  padding: 28px 28px 22px;
+  border-radius: 20px;
+  background: #fff;
+  text-align: center;
+  box-shadow: 0 24px 60px rgba(22, 48, 112, 0.28);
+}
+
+.confirm-dialog h2 {
+  margin: 0 0 8px;
+  font-size: 20px;
+  color: #163070;
+}
+
+.confirm-dialog p {
+  margin: 0;
+  color: #334155;
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.confirm-acciones {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 22px;
+}
+
+.btn-cancelar,
+.btn-peligro {
+  border-radius: 12px;
+  padding: 12px 18px;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.btn-cancelar {
+  border: 1px solid #e7e9f0;
+  background: #fff;
+  color: #334155;
+}
+
+.btn-peligro {
+  border: 0;
+  background: #dc2626;
+  color: #fff;
+}
+
+.btn-accion.eliminar {
+  background: #fef2f2;
+  border-color: #fecaca;
+  color: #dc2626;
+}
+
+.acciones {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 6px;
+  align-items: center;
+  white-space: nowrap;
+}
+
+.detalle-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: grid;
+  place-items: center;
+  padding: 28px;
+}
+
+.detalle-modal-fondo {
+  position: absolute;
+  inset: 0;
+  background: rgba(22, 48, 112, 0.5);
+  backdrop-filter: blur(3px);
+}
+
+.detalle-modal-card {
+  position: relative;
+  z-index: 1;
+  width: min(760px, 100%);
+  max-height: calc(100vh - 56px);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: 22px;
+  background: #fff;
+  box-shadow: 0 28px 70px rgba(22, 48, 112, 0.32);
+}
+
+.detalle-modal-franja {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 22px 24px 20px;
+  background: linear-gradient(105deg, #163070 0%, #1a3a8c 48%, #1e4fd6 100%);
+  color: #fff;
+}
+
+.detalle-modal-franja p {
+  margin: 0 0 6px;
+  color: #c5d4f5;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.detalle-modal-franja h2 {
+  margin: 0;
+  font-size: 26px;
+  letter-spacing: -0.03em;
+  line-height: 1.2;
+}
+
+.detalle-modal-cerrar {
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  border: 0;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.16);
+  color: #fff;
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.detalle-modal-cerrar:hover {
+  background: rgba(255, 255, 255, 0.26);
+}
+
+.detalle-modal-cuerpo {
+  padding: 26px 28px 28px;
+  overflow: auto;
+}
+
+.detalle-bloque + .detalle-bloque {
+  margin-top: 22px;
+}
+
+.detalle-bloque h3 {
+  margin: 0 0 10px;
+  color: #163070;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.detalle-texto {
+  margin: 0;
+  color: #1d2433;
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+.detalle-lista {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.detalle-lista li {
+  padding: 14px 16px;
+  border-radius: 14px;
+  border: 1px solid #dce3f0;
+  background: #f6f8fd;
+  color: #163070;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.detalle-vacio {
+  margin: 0;
+  color: #64748b;
+  font-size: 15px;
+}
+
+@media (max-width: 640px) {
+  .detalle-lista {
+    grid-template-columns: 1fr;
+  }
 }

@@ -1,0 +1,2 @@
+ALTER TABLE co_conocimiento
+    MODIFY COLUMN conocimiento_estado ENUM('BORRADOR', 'PUBLICADO', 'ELIMINADO') NOT NULL DEFAULT 'BORRADOR';

@@ -1,0 +1,223 @@
+> Referencia histórica conservada. Describe una entrega previa y puede diferir del checkout actual. [Documentación vigente](../../docs/README.md). Los enlaces a archivos ausentes se identifican expresamente; [original íntegro y hash](../../docs/auditoria/historico/README.md).
+
+# Integración HTTP de autenticación y autorización
+
+La reproducción y hallazgos originales se conservan como historial. La corrección
+actual y su regresión se documentan en la sección final; no se amplían permisos.
+
+AutenticacionHttpIT utiliza servidor Tomcat real en loopback/puerto aleatorio,
+HttpClient de Java y una instancia nueva de MySqlIntegrationSupport. Sin MockMvc,
+WithMockUser ni mocks. No carga application.properties ni credenciales DEV.
+
+El contexto Boot importa SecurityConfig, JwtAuthenticationFilter,
+JwtTokenServiceAdapter, BCryptPasswordEncoderAdapter, AutenticarUsuarioService,
+AdministrarUsuariosService, sus adaptadores/repositorios JPA, AuthController,
+UsuarioController y GlobalExceptionHandler reales. El DataSource validado se
+registra antes de arrancar. Hibernate mantiene ddl-auto=none.
+
+Se excluye solo la autoconfiguración del usuario/password de emergencia de Boot,
+que no pertenece a la autenticación JWT de DimaBug. Se mantienen la cadena y el
+filtro funcionales. Los errores del servidor no incluyen stacktrace ni mensajes
+internos en esta configuración de pruebas; no certifica ajustes del despliegue.
+
+El secreto JWT y passwords de fixtures se generan aleatoriamente en memoria;
+el secreto tiene prioridad sobre propiedades externas. MySQL conserva hashes
+producidos por el BCrypt real. Usuarios: ADMINISTRADOR, TECNICO y TECNICO inactivo,
+todos sintéticos. Se limpian antes/después de cada escenario.
+
+## Endpoints y cobertura
+
+| Endpoint | Escenario |
+| --- | --- |
+| POST /api/auth/login | Login válido, JWT firmado/expirable, password incorrecta, usuario inexistente e inactivo |
+| GET /api/auth/me | Bearer real, sin sesión, firma incorrecta, malformado, expirado y usuario desactivado tras login |
+| GET /api/usuarios | Sin token 401, ADMINISTRADOR 200, TECNICO 403 |
+
+Siete métodos de test; algunos cubren varias variantes. Se comprueba JWT con el
+adaptador real y también firma/claims mediante JJWT. Tokens de firma incorrecta
+y expiración se construyen con JJWT y claves sintéticas, sin esperar ni modificar
+el reloj del sistema. Un expirado válido usa la clave sintética del contexto.
+
+Todas las respuestas se revisan para detectar passwords, hashes BCrypt, secreto,
+campos sensibles y detalles internos de errores. Un login válido entrega el JWT
+por contrato; los rechazos no deben entregarlo ni reflejar el token recibido.
+Los headers también se revisan. No se imprimen bodies, tokens o passwords en las
+aserciones. Se captura logging DEBUG del paquete JWT y se exige que no contenga
+tokens completos, passwords, hashes o clave sintética; se restaura el logger al terminar.
+
+Ejecución junto con las seis pruebas existentes:
+
+```powershell
+$env:JAVA_HOME = '<RUTA_JDK_21>'
+$env:PATH = "$env:JAVA_HOME\bin;$env:PATH"
+.\mvnw.cmd -B -Pintegration-mysql verify
+```
+
+## Hallazgo de seguridad: diferenciación de cuentas inactivas (P2)
+
+Esperado como endurecimiento: una contraseña incorrecta debería recibir una
+respuesta de credenciales inválidas que no revele existencia/estado de la cuenta.
+
+Observado en código y comprobado por el escenario de usuario inactivo: el servicio
+consulta usuario, comprueba activo y solo después valida BCrypt. Una cuenta inactiva
+recibe 403 y mensaje `Usuario inactivo`, incluso con contraseña incorrecta; una
+cuenta inexistente recibe 401 y `Credenciales inválidas`.
+
+Evidencia funcional:
+
+- AutenticarUsuarioService.autenticar: comprobación de activo antes de coincide.
+- GlobalExceptionHandler.handleUsuarioInactivo: respuesta 403 con mensaje.
+- AutenticacionHttpIT.usuarioInactivoNoRecibeJwt: verifica ambas contraseñas.
+
+Impacto: facilita enumeración de cuentas inactivas y su estado. No entrega JWT,
+contraseña ni hash. Prioridad P2; revisar con el equipo antes de producción.
+Recomendación futura: acordar un contrato uniforme de rechazo y comprobar
+credenciales antes de revelar estado, considerando también diferencias de tiempo.
+No se modifica el servicio ni se presenta esta conducta como protección contra enumeración.
+
+## Límites y pendientes
+
+No certifica toda la API, CORS, TLS, limitación de intentos, temporización de login,
+rotación de claves, roles inactivos, claims issuer/audience ni todos los errores HTTP.
+La verificación de logs cubre el paquete JWT durante estos escenarios, no todos los
+loggers, access logs o infraestructura externa. La configuración DEBUG funcional
+permanece intacta. Las pruebas no cambian lógica ni corrigen el hallazgo P2.
+
+## Hallazgo: rechazo por rol entrega 401 en vez de 403 (P1)
+
+Esperado: un TECNICO autenticado por login real, con token válido, recibe 403
+al consultar GET /api/usuarios, exclusivo de ADMINISTRADOR.
+
+Observado en la primera ejecución: ADMINISTRADOR recibe 200; el TECNICO recibe
+401. La prueba mantiene assertEquals(403, ...) y no se cambia a aceptar 401.
+La versión final verifica además GET /api/auth/me=200 con el mismo token antes
+de acceder al recurso exclusivo para descartar un fallo de login o expiración.
+
+Causa probable, pendiente de confirmación de dispatcher: SecurityConfig utiliza
+sendError(403); el contenedor Servlet puede redespachar hacia /error, sujeto a
+anyRequest().authenticated(). El JWT OncePerRequestFilter no vuelve a autenticar
+normalmente el dispatcher ERROR y el contexto stateless puede no estar disponible.
+Los tests con MockMvc no necesariamente recorren ese despacho de servidor real.
+
+Impacto: el cliente recibe una indicación incorrecta de sesión inválida, puede
+forzar relogin/reintentos y ocultar un rechazo legítimo por permisos. No se observó
+acceso indebido: el recurso continúa rechazado. Prioridad P1 de contrato REST y
+experiencia de autorización, no un bypass de permisos demostrado.
+
+Recomendación: revisar tratamiento seguro de ERROR dispatch y generación de
+respuestas 401/403, preservando la protección de endpoints. Reproducir con este
+test antes de decidir la corrección. No se modifica SecurityFilterChain ni filtro.
+
+## Resultados reales finales
+
+2026-10-08: `mvnw.cmd -B -Pintegration-mysql verify`, BUILD FAILURE por la
+aserción de autorización conservada (esperado 403, observado 401).
+
+| Clase | PASS | FAIL | ERROR | SKIPPED | Tiempo |
+| --- | --- | --- | --- | --- | --- |
+| AutenticacionHttpIT | 6 | 1 | 0 | 0 | 38,91 s |
+| ConocimientoJpaIT | 5 | 0 | 0 | 0 | 24,53 s |
+| MySqlReferentialIntegrityIT | 1 | 0 | 0 | 0 | 15,83 s |
+| Total | 12 | 1 | 0 | 0 | Maven completo: 1:35 min |
+
+La primera ejecución también reprodujo 401 en lugar de 403: 12 PASS, 1 FAIL,
+0 ERROR, 0 SKIPPED; tiempo Maven 1:45 min. La segunda añade controles de logs DEBUG,
+secreto sintético prioritario y autenticación 200 del TECNICO antes del rechazo.
+Todos esos controles pasaron. Los errores de login no entregaron JWT; no se
+detectaron passwords, hashes, claves ni tokens completos en los logs JWT capturados.
+
+Evidencia: `target/failsafe-reports/cl.casol.backend.integration.AutenticacionHttpIT.txt`
+y su XML, además de los reportes de las otras dos clases. Las aserciones muestran
+solo estados HTTP y mensajes seguros, nunca tokens/passwords. El FAIL no se omite,
+deshabilita ni cambia a aceptar el comportamiento observado.
+
+Fuentes para revisar los hallazgos: SecurityConfig.java líneas 42 y 60;
+AutenticarUsuarioService.java líneas 36 y 41; GlobalExceptionHandler.java líneas
+127-132. Estos archivos funcionales permanecen intactos.
+
+Creado: AutenticacionHttpIT.java y este documento. Actualizado: pom.xml (inclusión
+Failsafe) y docs/integracion-mysql.md (enlace/cobertura). Se reutiliza el soporte
+sin cambios, no se modifica application.properties ni entidades/servicios/filtros.
+DEV no fue utilizado; los usuarios son sintéticos y los contenedores se cierran
+al finalizar cada clase, aunque haya FAIL.
+
+## Corrección mínima P1/P2 y regresión
+
+### Causa raíz P1 confirmada
+
+Antes de modificar SecurityConfig se añadió un filtro observador exclusivo de
+test, registrado para DispatcherType.ERROR y sin cambiar requests/respuestas.
+La reproducción HTTP comprobó por aserción estos tres valores: URI /error,
+RequestDispatcher.ERROR_STATUS_CODE=403 y status de salida=401. La aserción
+diagnóstica pasó y volvió a fallar únicamente la aserción original de 403.
+El comando de reproducción fue `mvnw.cmd -B -Pintegration-mysql
+-Dit.test=AutenticacionHttpIT verify`: 6 PASS, 1 FAIL, sin ERROR/SKIPPED; 1:12 min.
+
+La denegación original pertenece a la regla hasRole(ADMINISTRADOR) de /api/usuarios.
+AccessDeniedHandler envía sendError(403), que provoca el despacho ERROR al endpoint
+/error. Ese endpoint cae en anyRequest().authenticated(). El contexto stateless
+no conserva la autenticación para ese nuevo despacho y OncePerRequestFilter omite
+normalmente ERROR; el AuthenticationEntryPoint responde sendError(401).
+No es un JWT inválido: antes de la denegación, /api/auth/me acepta el mismo token.
+GlobalExceptionHandler no es quien transforma este rechazo de la cadena de filtros.
+
+SecurityConfig sustituye sendError por setStatus en ambos handlers: el rechazo
+se responde directamente y no genera ERROR dispatch. No se añade permitAll para
+/error ni DispatcherType.ERROR, ni se modifica ningún matcher/rol o filtro JWT.
+El test conserva assertEquals(403) y ahora exige ausencia de ERROR dispatch.
+También comprueba que acceder directamente a /error sin token sigue dando 401.
+Las respuestas de los handlers de seguridad ya no dependen del body de error
+generado por el servidor: mantienen 401/403 y un body vacío, sin detalles sensibles.
+
+### Corrección P2
+
+AutenticarUsuarioService compara BCrypt antes de comprobar activo. Una contraseña
+incorrecta, tanto de usuario activo como inactivo, genera CredencialesInvalidasException:
+401 con el mismo mensaje/cuerpo que usuario inexistente. No se entregan tokens.
+Usuario inactivo con contraseña correcta mantiene UsuarioInactivoException y 403;
+no cambia la regla de rechazo ni el contrato de credenciales ya verificadas.
+El handler y las implementaciones JWT/BCrypt permanecen intactos.
+
+La integración exige igualdad de cuerpos entre las tres variantes inválidas.
+El test unitario existente de usuario inactivo se ajusta para verificar BCrypt y
+se añade passwordIncorrectaNoRevelaEstadoInactivo. No se reemplaza cobertura HTTP
+real por tests mockeados; los mocks permanecen solo en la suite unitaria existente.
+
+Archivos modificados por esta corrección: SecurityConfig.java,
+AutenticarUsuarioService.java, AutenticarUsuarioServiceTest.java,
+AutenticacionHttpIT.java y este documento. No cambian JPA, SQL, application.properties,
+POM, infraestructura Testcontainers ni permisos. No se crean archivos nuevos.
+
+Pendientes: diferencias temporales entre usuario inexistente y BCrypt ejecutado,
+rate limiting, CORS/TLS, políticas de roles inactivos y otras ramas de errores.
+La corrección P2 elimina la revelación por estado/mensaje cuando la contraseña
+es incorrecta; no certifica protección completa frente a enumeración por timing.
+
+### Evidencia de integración después de la corrección
+
+2026-10-08: `mvnw.cmd -B -Pintegration-mysql verify`, BUILD SUCCESS.
+
+| Clase | PASS | FAIL | ERROR | SKIPPED | Tiempo |
+| --- | --- | --- | --- | --- | --- |
+| AutenticacionHttpIT | 7 | 0 | 0 | 0 | 40,28 s |
+| ConocimientoJpaIT | 5 | 0 | 0 | 0 | 25,30 s |
+| MySqlReferentialIntegrityIT | 1 | 0 | 0 | 0 | 15,35 s |
+| Total | 13 | 0 | 0 | 0 | Maven completo: 1:44 min |
+
+La aserción original del P1 pasa sin ampliación de permisos. Se comprueban
+401 para falta de token/JWT inválido, 403 para rol insuficiente y 200 autorizado.
+Password incorrecta de usuario inactivo, activo e inexistente produce el mismo
+401 genérico; password correcta de usuario inactivo conserva 403 y ningún JWT.
+No hay ERROR dispatch en el rechazo por rol tras la corrección.
+
+Suite habitual: `mvnw.cmd -B test`, BUILD SUCCESS, 472 PASS, 0 FAIL, 0 ERROR,
+0 SKIPPED; 41,517 s. Incluye unitarias y slices/web existentes; no las clases IT
+con MySQL, que se ejecutaron por separado. AutenticarUsuarioServiceTest: cinco
+escenarios, incluidos inactivo con password correcta e incorrecta.
+
+Los reportes reales finales están en target/failsafe-reports y target/surefire-reports.
+Los tres contenedores MySQL de la regresión final fueron eliminados, comprobado
+por consultas Docker de solo lectura filtradas por sus IDs. No hubo conexión DEV.
+La revisión git diff --check no encontró errores de whitespace; persistieron avisos
+existentes de API deprecada, operaciones unchecked y auto-attachment de Mockito.
+Ningún hallazgo adicional se corrigió como parte de esta tarea.

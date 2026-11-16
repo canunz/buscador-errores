@@ -1,0 +1,1491 @@
+{
+  "base_commit": "e0d63d961b87c33d77937821c53802e6387a783e",
+  "files_count": 371,
+  "files": [
+    {
+      "path": ".gitignore",
+      "status": "M"
+    },
+    {
+      "path": "README.md",
+      "status": "M"
+    },
+    {
+      "path": "dima-bug-backend/README.md",
+      "status": "A"
+    },
+    {
+      "path": "dima-bug-backend/docs/aceptacion-riesgo-archivos-skill4.md",
+      "status": "A"
+    },
+    {
+      "path": "dima-bug-backend/docs/adr/ADR-001-arquitectura-backend.md",
+      "status": "A"
+    },
+    {
+      "path": "dima-bug-backend/docs/adr/ADR-002-almacenamiento-archivos.md",
+      "status": "A"
+    },
+    {
+      "path": "dima-bug-backend/docs/arquitectura.md",
+      "status": "A"
+    },
+    {
+      "path": "dima-bug-backend/docs/auditoria-cobertura-riesgos-skill4.md",
+      "status": "A"
+    },
+    {
+      "path": "dima-bug-backend/docs/autorizacion-http-integracion.md",
+      "status": "A"
+    },
+    {
+      "path": "dima-bug-backend/docs/base-de-datos.md",
+      "status": "A"
+    },
+    {
+      "path": "dima-bug-backend/docs/ci-pruebas-backend.md",
+      "status": "A"
+    },
+    {
+      "path": "dima-bug-backend/docs/concurrencia-integracion.md",
+      "status": "A"
+    },
+    {
+      "path": "dima-bug-backend/docs/configuracion-dev.md",
+      "status": "A"
+    },
+    {
+      "path": "dima-bug-backend/docs/decision-historial-procedimientos.md",
+      "status": "A"
+    },
+    {
+      "path": "dima-bug-backend/docs/decision-riesgos-residuales-skill4.md",
+      "status": "A"
+    },
+    {
+      "path": "dima-bug-backend/docs/handoff-skill4-a-skill5.md",
+      "status": "A"
+    },
+    {
+      "path": "dima-bug-backend/docs/integracion-mysql.md",
+      "status": "A"
+    },
+    {
+      "path": "dima-bug-backend/docs/materiales-archivo.md",
+      "status": "A"
+    },
+    {
+      "path": "dima-bug-backend/docs/materiales-integracion.md",
+      "status": "A"
+    },
+    {
+      "path": "dima-bug-backend/docs/migracion-fk-usuarios.md",
+      "status": "A"
+    },
+    {
+      "path": "dima-bug-backend/docs/procedimientos-ejecuciones-resultados-integracion.md",
+      "status": "A"
+    },
+    {
+      "path": "dima-bug-backend/docs/seguridad-integracion.md",
+      "status": "A"
+    },
+    {
+      "path": "dima-bug-backend/docs/seguridad.md",
+      "status": "A"
+    },
+    {
+      "path": "dima-bug-backend/pom.xml",
+      "status": "M"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/catalogo/application/port/out/HardwareRepository.java",
+      "status": "M"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/catalogo/infrastructure/persistence/adapter/HardwareRepositoryAdapter.java",
+      "status": "M"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/application/port/out/MaterialSolucionRepository.java",
+      "status": "A"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/application/port/out/SolucionRepository.java",
+      "status": "M"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/application/service/AdministrarSolucionService.java",
+      "status": "M"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/application/service/AutoservicioPublicoService.java",
+      "status": "A"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/domain/MaterialSolucion.java",
+      "status": "A"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/infrastructure/persistence/adapter/MaterialSolucionRepositoryAdapter.java",
+      "status": "A"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/infrastructure/persistence/adapter/SolucionRepositoryAdapter.java",
+      "status": "M"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/infrastructure/persistence/entity/MaterialSolucionEntity.java",
+      "status": "A"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/infrastructure/persistence/repository/MaterialSolucionJpaRepository.java",
+      "status": "A"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/infrastructure/persistence/repository/SolucionJpaRepository.java",
+      "status": "M"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/infrastructure/web/AdminMaterialSolucionController.java",
+      "status": "A"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/infrastructure/web/AutoservicioPublicoController.java",
+      "status": "A"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/infrastructure/web/dto/MaterialSolucionResponse.java",
+      "status": "A"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/correo/application/port/out/CifradoGmailPort.java",
+      "status": "A"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/correo/application/port/out/GmailSettings.java",
+      "status": "A"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/correo/application/port/out/GmailTokenStore.java",
+      "status": "A"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/correo/application/port/out/GoogleGmailPort.java",
+      "status": "A"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/correo/application/port/out/PruebaGmailStore.java",
+      "status": "A"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/correo/application/port/out/PruebaGmailTransport.java",
+      "status": "A"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/correo/application/service/GmailException.java",
+      "status": "A"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/correo/application/service/GmailOAuthService.java",
+      "status": "A"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/correo/application/service/PruebaGmailService.java",
+      "status": "A"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/correo/infrastructure/gmail/CifradoGmailAes.java",
+      "status": "A"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/correo/infrastructure/gmail/GmailConfig.java",
+      "status": "A"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/correo/infrastructure/gmail/GoogleGmailHttp.java",
+      "status": "A"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/correo/infrastructure/gmail/PruebaGmailApiTransport.java",
+      "status": "A"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/correo/infrastructure/persistence/GmailAuditoriaEntity.java",
+      "status": "A"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/correo/infrastructure/persistence/GmailCuentaEntity.java",
+      "status": "A"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/correo/infrastructure/persistence/GmailIntentoEntity.java",
+      "status": "A"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/correo/infrastructure/persistence/GmailTokenStoreJpa.java",
+      "status": "A"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/correo/infrastructure/persistence/PruebaGmailEntity.java",
+      "status": "A"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/correo/infrastructure/persistence/PruebaGmailEventoEntity.java",
+      "status": "A"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/correo/infrastructure/persistence/PruebaGmailStoreJpa.java",
+      "status": "A"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/correo/infrastructure/web/GmailOAuthController.java",
+      "status": "A"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/correo/infrastructure/web/PruebaGmailController.java",
+      "status": "A"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/ejecucion/application/port/out/AutomatizacionEjecucionPort.java",
+      "status": "A"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/ejecucion/application/port/out/CorreoEvidenciaPort.java",
+      "status": "A"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/ejecucion/application/port/out/EjecucionRepository.java",
+      "status": "M"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/ejecucion/application/port/out/FotosEvidenciaPort.java",
+      "status": "A"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/ejecucion/application/port/out/SolicitudEvidenciaRepository.java",
+      "status": "A"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/ejecucion/application/service/AutomatizarEvidenciaService.java",
+      "status": "A"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/ejecucion/application/service/CorreoPendiente.java",
+      "status": "A"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/ejecucion/application/service/GestionarEjecucionService.java",
+      "status": "M"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/ejecucion/domain/ContratoPaso.java",
+      "status": "A"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/ejecucion/domain/EjecucionPaso.java",
+      "status": "M"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/ejecucion/domain/EstadoEjecucionPaso.java",
+      "status": "A"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/ejecucion/domain/EventoAutomatizacion.java",
+      "status": "A"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/ejecucion/domain/EvidenciaFotografica.java",
+      "status": "A"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/ejecucion/domain/FotoEvidenciaResumen.java",
+      "status": "A"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/ejecucion/domain/SolicitudEvidencia.java",
+      "status": "A"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/ejecucion/domain/exception/ConflictoEjecucionException.java",
+      "status": "A"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/ejecucion/infrastructure/automatizacion/AutomatizacionConfiguration.java",
+      "status": "A"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/ejecucion/infrastructure/automatizacion/CorreoGmailApiAdapter.java",
+      "status": "A"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/ejecucion/infrastructure/automatizacion/CorreoSimuladoAdapter.java",
+      "status": "A"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/ejecucion/infrastructure/automatizacion/CorreoSmtpAdapter.java",
+      "status": "A"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/ejecucion/infrastructure/automatizacion/DespacharCorreoConfirmado.java",
+      "status": "A"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/ejecucion/infrastructure/automatizacion/FotosEvidenciaAdapter.java",
+      "status": "A"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/ejecucion/infrastructure/automatizacion/MensajeCorreoMime.java",
+      "status": "A"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/ejecucion/infrastructure/automatizacion/SeguimientoEvidenciaWorker.java",
+      "status": "A"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/ejecucion/infrastructure/persistence/adapter/EjecucionRepositoryAdapter.java",
+      "status": "M"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/ejecucion/infrastructure/persistence/adapter/SolicitudEvidenciaRepositoryAdapter.java",
+      "status": "A"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/ejecucion/infrastructure/persistence/entity/ContratoPasoEmbebido.java",
+      "status": "A"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/ejecucion/infrastructure/persistence/entity/EjecucionPasoEntity.java",
+      "status": "M"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/ejecucion/infrastructure/persistence/entity/EventoAutomatizacionEntity.java",
+      "status": "A"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/ejecucion/infrastructure/persistence/entity/EvidenciaFotograficaEntity.java",
+      "status": "A"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/ejecucion/infrastructure/persistence/entity/SolicitudEvidenciaEntity.java",
+      "status": "A"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/ejecucion/infrastructure/persistence/mapper/EjecucionMapper.java",
+      "status": "M"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/ejecucion/infrastructure/web/AutomatizacionEjecucionController.java",
+      "status": "A"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/ejecucion/infrastructure/web/EjecucionController.java",
+      "status": "M"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/ejecucion/infrastructure/web/dto/ActualizarEjecucionPasoRequest.java",
+      "status": "M"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/ejecucion/infrastructure/web/dto/EjecucionPasoResponse.java",
+      "status": "M"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/identidad/application/port/out/SucursalRepository.java",
+      "status": "A"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/identidad/application/service/AdministrarSucursalesService.java",
+      "status": "A"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/identidad/domain/Sucursal.java",
+      "status": "A"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/identidad/infrastructure/persistence/adapter/SucursalRepositoryAdapter.java",
+      "status": "A"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/identidad/infrastructure/persistence/entity/SucursalEntity.java",
+      "status": "A"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/identidad/infrastructure/persistence/repository/SucursalJpaRepository.java",
+      "status": "A"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/identidad/infrastructure/web/AdminSucursalController.java",
+      "status": "A"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/identidad/infrastructure/web/SucursalController.java",
+      "status": "A"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/procedimiento/application/port/out/PasoRepository.java",
+      "status": "M"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/procedimiento/application/port/out/ProcedimientoRepository.java",
+      "status": "M"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/procedimiento/application/service/AuditoriaProcedimientoService.java",
+      "status": "A"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/procedimiento/application/service/ConfigurarPasoService.java",
+      "status": "A"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/procedimiento/application/service/EdicionProcedimiento.java",
+      "status": "M"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/procedimiento/application/service/EditarProcedimientoAdminService.java",
+      "status": "A"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/procedimiento/application/service/MantenerMaterialPasoService.java",
+      "status": "M"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/procedimiento/application/service/MantenerPasoService.java",
+      "status": "M"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/procedimiento/application/service/MantenerProcedimientoService.java",
+      "status": "M"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/procedimiento/application/service/MaterialPasoArchivoService.java",
+      "status": "M"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/procedimiento/application/service/PrepararVersionEvidenciaService.java",
+      "status": "A"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/procedimiento/domain/ConfiguracionPaso.java",
+      "status": "A"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/procedimiento/domain/DatosEditorialesProcedimiento.java",
+      "status": "A"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/procedimiento/domain/ModoEjecucionPaso.java",
+      "status": "A"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/procedimiento/domain/Paso.java",
+      "status": "M"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/procedimiento/domain/Procedimiento.java",
+      "status": "M"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/procedimiento/infrastructure/persistence/adapter/PasoRepositoryAdapter.java",
+      "status": "M"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/procedimiento/infrastructure/persistence/adapter/ProcedimientoRepositoryAdapter.java",
+      "status": "M"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/procedimiento/infrastructure/persistence/entity/AuditoriaProcedimientoEntity.java",
+      "status": "A"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/procedimiento/infrastructure/persistence/entity/PasoEntity.java",
+      "status": "M"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/procedimiento/infrastructure/persistence/entity/ProcedimientoEntity.java",
+      "status": "M"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/procedimiento/infrastructure/persistence/mapper/ConfiguracionPasoJson.java",
+      "status": "A"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/procedimiento/infrastructure/persistence/mapper/PasoMapper.java",
+      "status": "M"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/procedimiento/infrastructure/persistence/mapper/ProcedimientoMapper.java",
+      "status": "M"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/procedimiento/infrastructure/web/ConfigurarPasoController.java",
+      "status": "A"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/procedimiento/infrastructure/web/MaterialPasoArchivoController.java",
+      "status": "M"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/procedimiento/infrastructure/web/MaterialPasoController.java",
+      "status": "M"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/procedimiento/infrastructure/web/PasoController.java",
+      "status": "M"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/procedimiento/infrastructure/web/ProcedimientoController.java",
+      "status": "M"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/procedimiento/infrastructure/web/VersionEvidenciaController.java",
+      "status": "A"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/procedimiento/infrastructure/web/dto/GuardarPasoRequest.java",
+      "status": "M"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/procedimiento/infrastructure/web/dto/GuardarProcedimientoRequest.java",
+      "status": "M"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/procedimiento/infrastructure/web/dto/PasoResponse.java",
+      "status": "M"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/procedimiento/infrastructure/web/dto/ProcedimientoResponse.java",
+      "status": "M"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/shared/domain/DestinatarioInvalidoException.java",
+      "status": "A"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/shared/domain/DestinatarioPaso.java",
+      "status": "A"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/shared/infrastructure/security/LimiteAutoservicioFilter.java",
+      "status": "A"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/shared/infrastructure/security/SecurityConfig.java",
+      "status": "M"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/shared/infrastructure/web/GlobalExceptionHandler.java",
+      "status": "M"
+    },
+    {
+      "path": "dima-bug-backend/src/main/resources/application-gmail.properties",
+      "status": "A"
+    },
+    {
+      "path": "dima-bug-backend/src/main/resources/application-smtp.properties",
+      "status": "A"
+    },
+    {
+      "path": "dima-bug-backend/src/main/resources/application-staging.properties",
+      "status": "M"
+    },
+    {
+      "path": "dima-bug-backend/src/test/java/cl/casol/backend/AutomatizacionHttpPersistenciaTest.java",
+      "status": "A"
+    },
+    {
+      "path": "dima-bug-backend/src/test/java/cl/casol/backend/AutomatizacionSecurityIntegrationTest.java",
+      "status": "A"
+    },
+    {
+      "path": "dima-bug-backend/src/test/java/cl/casol/backend/AutoservicioPublicoHttpTest.java",
+      "status": "A"
+    },
+    {
+      "path": "dima-bug-backend/src/test/java/cl/casol/backend/ContenidoRestringidoSecurityIntegrationTest.java",
+      "status": "M"
+    },
+    {
+      "path": "dima-bug-backend/src/test/java/cl/casol/backend/CorreoSinSucursalHttpTest.java",
+      "status": "A"
+    },
+    {
+      "path": "dima-bug-backend/src/test/java/cl/casol/backend/EdicionProcedimientoAdminHttpTest.java",
+      "status": "A"
+    },
+    {
+      "path": "dima-bug-backend/src/test/java/cl/casol/backend/GmailOAuthHttpTest.java",
+      "status": "A"
+    },
+    {
+      "path": "dima-bug-backend/src/test/java/cl/casol/backend/HardwareProcedimientoHttpTest.java",
+      "status": "A"
+    },
+    {
+      "path": "dima-bug-backend/src/test/java/cl/casol/backend/Hu05SecurityIntegrationTest.java",
+      "status": "M"
+    },
+    {
+      "path": "dima-bug-backend/src/test/java/cl/casol/backend/LimiteAutoservicioFilterTest.java",
+      "status": "A"
+    },
+    {
+      "path": "dima-bug-backend/src/test/java/cl/casol/backend/MaterialArchivoSecurityIntegrationTest.java",
+      "status": "M"
+    },
+    {
+      "path": "dima-bug-backend/src/test/java/cl/casol/backend/SucursalSecurityIntegrationTest.java",
+      "status": "A"
+    },
+    {
+      "path": "dima-bug-backend/src/test/java/cl/casol/backend/conocimiento/application/service/AdministrarSolucionServiceTest.java",
+      "status": "M"
+    },
+    {
+      "path": "dima-bug-backend/src/test/java/cl/casol/backend/correo/CifradoGmailTest.java",
+      "status": "A"
+    },
+    {
+      "path": "dima-bug-backend/src/test/java/cl/casol/backend/correo/GoogleGmailHttpTest.java",
+      "status": "A"
+    },
+    {
+      "path": "dima-bug-backend/src/test/java/cl/casol/backend/ejecucion/application/service/ContratoEjecucionTest.java",
+      "status": "A"
+    },
+    {
+      "path": "dima-bug-backend/src/test/java/cl/casol/backend/ejecucion/infrastructure/persistence/AutomatizacionFlujoJpaTest.java",
+      "status": "A"
+    },
+    {
+      "path": "dima-bug-backend/src/test/java/cl/casol/backend/ejecucion/infrastructure/persistence/CorreoSmtpAdapterTest.java",
+      "status": "A"
+    },
+    {
+      "path": "dima-bug-backend/src/test/java/cl/casol/backend/ejecucion/infrastructure/persistence/EjecucionContratoJpaTest.java",
+      "status": "A"
+    },
+    {
+      "path": "dima-bug-backend/src/test/java/cl/casol/backend/ejecucion/infrastructure/persistence/FotosYCorreoSimuladoTest.java",
+      "status": "A"
+    },
+    {
+      "path": "dima-bug-backend/src/test/java/cl/casol/backend/identidad/application/service/AdministrarSucursalesServiceTest.java",
+      "status": "A"
+    },
+    {
+      "path": "dima-bug-backend/src/test/java/cl/casol/backend/procedimiento/application/service/PrepararVersionEvidenciaServiceTest.java",
+      "status": "A"
+    },
+    {
+      "path": "docs/01_Proyecto/Descripcion_Proyecto.md",
+      "status": "A"
+    },
+    {
+      "path": "docs/01_Proyecto/Metodologia.md",
+      "status": "A"
+    },
+    {
+      "path": "docs/01_Proyecto/Objetivos_Alcance.md",
+      "status": "A"
+    },
+    {
+      "path": "docs/02_Requisitos/Casos_Uso.md",
+      "status": "A"
+    },
+    {
+      "path": "docs/02_Requisitos/Historias_Usuario.md",
+      "status": "A"
+    },
+    {
+      "path": "docs/02_Requisitos/Requisitos_Funcionales.md",
+      "status": "A"
+    },
+    {
+      "path": "docs/02_Requisitos/Requisitos_No_Funcionales.md",
+      "status": "A"
+    },
+    {
+      "path": "docs/03_Arquitectura/Arquitectura_Backend.md",
+      "status": "A"
+    },
+    {
+      "path": "docs/03_Arquitectura/Arquitectura_Frontend.md",
+      "status": "A"
+    },
+    {
+      "path": "docs/03_Arquitectura/Arquitectura_General.md",
+      "status": "A"
+    },
+    {
+      "path": "docs/03_Arquitectura/Diagramas/DimaBug_Modelo_Relacional_v2.drawio",
+      "status": "A"
+    },
+    {
+      "path": "docs/03_Arquitectura/Diagramas/DimaBug_Modelo_Relacional_v2.png",
+      "status": "A"
+    },
+    {
+      "path": "docs/03_Arquitectura/Diagramas/DimaBug_Modelo_Relacional_v2.svg",
+      "status": "A"
+    },
+    {
+      "path": "docs/03_Arquitectura/Diagramas/README.md",
+      "status": "A"
+    },
+    {
+      "path": "docs/04_Base_Datos/Diccionario_Datos.md",
+      "status": "A"
+    },
+    {
+      "path": "docs/04_Base_Datos/Migraciones.md",
+      "status": "A"
+    },
+    {
+      "path": "docs/04_Base_Datos/Modelo_Relacional.md",
+      "status": "A"
+    },
+    {
+      "path": "docs/05_API/Autenticacion.md",
+      "status": "A"
+    },
+    {
+      "path": "docs/05_API/Contratos_DTO.md",
+      "status": "A"
+    },
+    {
+      "path": "docs/05_API/Endpoints.md",
+      "status": "A"
+    },
+    {
+      "path": "docs/05_API/Errores_HTTP.md",
+      "status": "A"
+    },
+    {
+      "path": "docs/06_Seguridad/Arquitectura_Seguridad.md",
+      "status": "A"
+    },
+    {
+      "path": "docs/06_Seguridad/Controles_Seguridad.md",
+      "status": "A"
+    },
+    {
+      "path": "docs/07_Pruebas/Estrategia_Pruebas.md",
+      "status": "A"
+    },
+    {
+      "path": "docs/07_Pruebas/Matriz_Trazabilidad.md",
+      "status": "A"
+    },
+    {
+      "path": "docs/07_Pruebas/REVISION_MIGRACIONES_2026-11-09.json",
+      "status": "A"
+    },
+    {
+      "path": "docs/07_Pruebas/REVISION_PUBLICACION_2026-11-09.json",
+      "status": "A"
+    },
+    {
+      "path": "docs/07_Pruebas/Resultados_Pruebas.md",
+      "status": "A"
+    },
+    {
+      "path": "docs/07_Pruebas/VALIDACION_CONSOLIDACION_2026-11-09.json",
+      "status": "A"
+    },
+    {
+      "path": "docs/08_Despliegue/Despliegue_STAGING.md",
+      "status": "A"
+    },
+    {
+      "path": "docs/08_Despliegue/Instalacion_Local.md",
+      "status": "A"
+    },
+    {
+      "path": "docs/08_Despliegue/Variables_Entorno.md",
+      "status": "A"
+    },
+    {
+      "path": "docs/09_Manuales/Manual_Tecnico.md",
+      "status": "A"
+    },
+    {
+      "path": "docs/09_Manuales/Manual_Usuario.md",
+      "status": "A"
+    },
+    {
+      "path": "docs/CONSOLIDACION_GITHUB_2026-11-09.md",
+      "status": "A"
+    },
+    {
+      "path": "docs/PUBLICACION_ARCHIVOS_2026-11-09.json",
+      "status": "A"
+    },
+    {
+      "path": "docs/README.md",
+      "status": "A"
+    },
+    {
+      "path": "docs/auditoria/AUDITORIA_DOCUMENTAL.md",
+      "status": "A"
+    },
+    {
+      "path": "docs/auditoria/MATRIZ_TRAZABILIDAD.md",
+      "status": "A"
+    },
+    {
+      "path": "docs/auditoria/REFERENCIAS_HISTORICAS.md",
+      "status": "A"
+    },
+    {
+      "path": "docs/auditoria/REPORTE_FINAL_DOCUMENTACION.md",
+      "status": "A"
+    },
+    {
+      "path": "docs/auditoria/evidencias/COMPROBACIONES.json",
+      "status": "A"
+    },
+    {
+      "path": "docs/auditoria/evidencias/CONTRATOS_API.json",
+      "status": "A"
+    },
+    {
+      "path": "docs/auditoria/evidencias/DEPENDENCIAS_NPM.json",
+      "status": "A"
+    },
+    {
+      "path": "docs/auditoria/evidencias/MODELO_LOGICO.json",
+      "status": "A"
+    },
+    {
+      "path": "docs/auditoria/evidencias/REGISTRO_CAMBIOS_DOCUMENTALES.json",
+      "status": "A"
+    },
+    {
+      "path": "docs/auditoria/evidencias/VALIDACION_DOCUMENTAL.json",
+      "status": "A"
+    },
+    {
+      "path": "docs/auditoria/herramientas/preparar_documentacion.py",
+      "status": "A"
+    },
+    {
+      "path": "docs/auditoria/historico/2026-11-06/README.md.original.txt",
+      "status": "A"
+    },
+    {
+      "path": "docs/auditoria/historico/2026-11-06/dima-bug-backend/docs/aceptacion-riesgo-archivos-skill4.md.original.txt",
+      "status": "A"
+    },
+    {
+      "path": "docs/auditoria/historico/2026-11-06/dima-bug-backend/docs/adr/ADR-001-arquitectura-backend.md.original.txt",
+      "status": "A"
+    },
+    {
+      "path": "docs/auditoria/historico/2026-11-06/dima-bug-backend/docs/adr/ADR-002-almacenamiento-archivos.md.original.txt",
+      "status": "A"
+    },
+    {
+      "path": "docs/auditoria/historico/2026-11-06/dima-bug-backend/docs/arquitectura.md.original.txt",
+      "status": "A"
+    },
+    {
+      "path": "docs/auditoria/historico/2026-11-06/dima-bug-backend/docs/auditoria-cobertura-riesgos-skill4.md.original.txt",
+      "status": "A"
+    },
+    {
+      "path": "docs/auditoria/historico/2026-11-06/dima-bug-backend/docs/autorizacion-http-integracion.md.original.txt",
+      "status": "A"
+    },
+    {
+      "path": "docs/auditoria/historico/2026-11-06/dima-bug-backend/docs/base-de-datos.md.original.txt",
+      "status": "A"
+    },
+    {
+      "path": "docs/auditoria/historico/2026-11-06/dima-bug-backend/docs/ci-pruebas-backend.md.original.txt",
+      "status": "A"
+    },
+    {
+      "path": "docs/auditoria/historico/2026-11-06/dima-bug-backend/docs/concurrencia-integracion.md.original.txt",
+      "status": "A"
+    },
+    {
+      "path": "docs/auditoria/historico/2026-11-06/dima-bug-backend/docs/configuracion-dev.md.original.txt",
+      "status": "A"
+    },
+    {
+      "path": "docs/auditoria/historico/2026-11-06/dima-bug-backend/docs/decision-historial-procedimientos.md.original.txt",
+      "status": "A"
+    },
+    {
+      "path": "docs/auditoria/historico/2026-11-06/dima-bug-backend/docs/decision-riesgos-residuales-skill4.md.original.txt",
+      "status": "A"
+    },
+    {
+      "path": "docs/auditoria/historico/2026-11-06/dima-bug-backend/docs/handoff-skill4-a-skill5.md.original.txt",
+      "status": "A"
+    },
+    {
+      "path": "docs/auditoria/historico/2026-11-06/dima-bug-backend/docs/integracion-mysql.md.original.txt",
+      "status": "A"
+    },
+    {
+      "path": "docs/auditoria/historico/2026-11-06/dima-bug-backend/docs/materiales-archivo.md.original.txt",
+      "status": "A"
+    },
+    {
+      "path": "docs/auditoria/historico/2026-11-06/dima-bug-backend/docs/materiales-integracion.md.original.txt",
+      "status": "A"
+    },
+    {
+      "path": "docs/auditoria/historico/2026-11-06/dima-bug-backend/docs/migracion-fk-usuarios.md.original.txt",
+      "status": "A"
+    },
+    {
+      "path": "docs/auditoria/historico/2026-11-06/dima-bug-backend/docs/procedimientos-ejecuciones-resultados-integracion.md.original.txt",
+      "status": "A"
+    },
+    {
+      "path": "docs/auditoria/historico/2026-11-06/dima-bug-backend/docs/seguridad-integracion.md.original.txt",
+      "status": "A"
+    },
+    {
+      "path": "docs/auditoria/historico/2026-11-06/dima-bug-backend/docs/seguridad.md.original.txt",
+      "status": "A"
+    },
+    {
+      "path": "docs/auditoria/historico/2026-11-06/frontend-dimabug/README.md.original.txt",
+      "status": "A"
+    },
+    {
+      "path": "docs/auditoria/historico/README.md",
+      "status": "A"
+    },
+    {
+      "path": "docs/herramientas/revisar_publicacion.py",
+      "status": "A"
+    },
+    {
+      "path": "docs/implementacion/automatizacion/00_verificar_esquema_mysql.sql",
+      "status": "A"
+    },
+    {
+      "path": "docs/implementacion/automatizacion/01_contrato_paso_mysql.sql",
+      "status": "A"
+    },
+    {
+      "path": "docs/implementacion/automatizacion/02_sucursales_mysql.sql",
+      "status": "A"
+    },
+    {
+      "path": "docs/implementacion/automatizacion/03_flujo_evidencias_desarrollo.sql",
+      "status": "A"
+    },
+    {
+      "path": "docs/implementacion/automatizacion/04_modalidades_por_paso_desarrollo.sql",
+      "status": "A"
+    },
+    {
+      "path": "docs/implementacion/automatizacion/05_directorio_ciudad_cargo_desarrollo.sql",
+      "status": "A"
+    },
+    {
+      "path": "docs/implementacion/automatizacion/06_edicion_administrativa_procedimientos.sql",
+      "status": "A"
+    },
+    {
+      "path": "docs/implementacion/automatizacion/07_hardware_procedimientos.sql",
+      "status": "A"
+    },
+    {
+      "path": "docs/implementacion/automatizacion/08_correo_sin_sucursal.sql",
+      "status": "A"
+    },
+    {
+      "path": "docs/implementacion/automatizacion/09_gmail_oauth_cifrado.sql",
+      "status": "A"
+    },
+    {
+      "path": "docs/implementacion/automatizacion/10_prueba_gmail_administrativa.sql",
+      "status": "A"
+    },
+    {
+      "path": "docs/implementacion/automatizacion/11_materiales_soluciones_autoservicio.sql",
+      "status": "A"
+    },
+    {
+      "path": "docs/implementacion/automatizacion/APLICAR_REPARACION_STAGING.sql",
+      "status": "A"
+    },
+    {
+      "path": "docs/implementacion/automatizacion/CORRECCION_404_RECEPCION.md",
+      "status": "A"
+    },
+    {
+      "path": "docs/implementacion/automatizacion/DIAGNOSTICO_CONSULTA21.md",
+      "status": "A"
+    },
+    {
+      "path": "docs/implementacion/automatizacion/ESTADO_IMPLEMENTACION.md",
+      "status": "A"
+    },
+    {
+      "path": "docs/implementacion/automatizacion/EVIDENCIA_VALIDACION.json",
+      "status": "A"
+    },
+    {
+      "path": "docs/implementacion/automatizacion/GUIA_ASISTENTE_POR_PASO.md",
+      "status": "A"
+    },
+    {
+      "path": "docs/implementacion/automatizacion/GUIA_BARRA_PROGRESO_EJECUCION.md",
+      "status": "A"
+    },
+    {
+      "path": "docs/implementacion/automatizacion/GUIA_CORREO_SIN_SUCURSAL_SMTP.md",
+      "status": "A"
+    },
+    {
+      "path": "docs/implementacion/automatizacion/GUIA_EDICION_ADMINISTRATIVA.md",
+      "status": "A"
+    },
+    {
+      "path": "docs/implementacion/automatizacion/GUIA_FLUJO_EVIDENCIAS.md",
+      "status": "A"
+    },
+    {
+      "path": "docs/implementacion/automatizacion/GUIA_GMAIL_API_OAUTH.md",
+      "status": "A"
+    },
+    {
+      "path": "docs/implementacion/automatizacion/GUIA_HARDWARE_PROCEDIMIENTOS.md",
+      "status": "A"
+    },
+    {
+      "path": "docs/implementacion/automatizacion/GUIA_MODAL_CORREOS.md",
+      "status": "A"
+    },
+    {
+      "path": "docs/implementacion/automatizacion/GUIA_SIMPLIFICACION_FORMULARIO_PASOS.md",
+      "status": "A"
+    },
+    {
+      "path": "docs/implementacion/automatizacion/MATERIALES_APOYO_EN_EJECUCION.md",
+      "status": "A"
+    },
+    {
+      "path": "docs/implementacion/automatizacion/NFC_SOLUCIONES_PUBLICAS.md",
+      "status": "A"
+    },
+    {
+      "path": "docs/implementacion/automatizacion/PLAN_PRUEBA_GMAIL_CONTROLADA.md",
+      "status": "A"
+    },
+    {
+      "path": "docs/implementacion/automatizacion/PORTAL_PUBLICO_AUTOSERVICIO.md",
+      "status": "A"
+    },
+    {
+      "path": "docs/implementacion/automatizacion/PRUEBA_ADMINISTRATIVA_GMAIL_API.md",
+      "status": "A"
+    },
+    {
+      "path": "docs/implementacion/automatizacion/RECEPCION_MANUAL_EVIDENCIAS.md",
+      "status": "A"
+    },
+    {
+      "path": "docs/implementacion/automatizacion/REPARACION_MYSQL_2026-11-07.md",
+      "status": "A"
+    },
+    {
+      "path": "docs/implementacion/automatizacion/RESULTADOS_ASISTENTE_POR_PASO.json",
+      "status": "A"
+    },
+    {
+      "path": "docs/implementacion/automatizacion/RESULTADOS_CONSULTA21.json",
+      "status": "A"
+    },
+    {
+      "path": "docs/implementacion/automatizacion/RESULTADOS_EDICION_ADMINISTRATIVA.json",
+      "status": "A"
+    },
+    {
+      "path": "docs/implementacion/automatizacion/RESULTADOS_FLUJO_EVIDENCIAS.json",
+      "status": "A"
+    },
+    {
+      "path": "docs/implementacion/automatizacion/RESULTADOS_MODAL_CORREOS.json",
+      "status": "A"
+    },
+    {
+      "path": "docs/implementacion/automatizacion/VERIFICACION_MYSQL_2026-11-07.json",
+      "status": "A"
+    },
+    {
+      "path": "docs/implementacion/automatizacion/herramientas/InspectGuidedContext.java",
+      "status": "A"
+    },
+    {
+      "path": "docs/implementacion/automatizacion/herramientas/RepairExecutionSchema.java",
+      "status": "A"
+    },
+    {
+      "path": "docs/implementacion/automatizacion/herramientas/VerifyAutomationRollback.java",
+      "status": "A"
+    },
+    {
+      "path": "docs/implementacion/automatizacion/herramientas/VerifyExecutionJpa.java",
+      "status": "A"
+    },
+    {
+      "path": "docs/implementacion/automatizacion/herramientas/VerifyGmailSchema.java",
+      "status": "A"
+    },
+    {
+      "path": "docs/implementacion/automatizacion/herramientas/VerifyMailSchema.java",
+      "status": "A"
+    },
+    {
+      "path": "docs/implementacion/automatizacion/herramientas/diagnosticar_recepcion_local.py",
+      "status": "A"
+    },
+    {
+      "path": "docs/implementacion/automatizacion/herramientas/reiniciar_backend_staging_local.py",
+      "status": "A"
+    },
+    {
+      "path": "docs/implementacion/automatizacion/herramientas/reparar_esquema_local.py",
+      "status": "A"
+    },
+    {
+      "path": "docs/propuestas/2026-11-07_Automatizacion_Procedimientos/BACKLOG_JIRA_PROPUESTO.md",
+      "status": "A"
+    },
+    {
+      "path": "docs/propuestas/2026-11-07_Automatizacion_Procedimientos/DIAGNOSTICO_Y_PROPUESTA.md",
+      "status": "A"
+    },
+    {
+      "path": "docs/propuestas/2026-11-07_Automatizacion_Procedimientos/EVIDENCIA_REVISION.json",
+      "status": "A"
+    },
+    {
+      "path": "frontend-dimabug/README.md",
+      "status": "M"
+    },
+    {
+      "path": "frontend-dimabug/proxy.conf.json",
+      "status": "M"
+    },
+    {
+      "path": "frontend-dimabug/src/app/app.routes.ts",
+      "status": "M"
+    },
+    {
+      "path": "frontend-dimabug/src/app/core/config/api.ts",
+      "status": "M"
+    },
+    {
+      "path": "frontend-dimabug/src/app/core/http/plazo-consulta.ts",
+      "status": "A"
+    },
+    {
+      "path": "frontend-dimabug/src/app/core/interceptors/auth.interceptor.spec.ts",
+      "status": "M"
+    },
+    {
+      "path": "frontend-dimabug/src/app/core/interceptors/auth.interceptor.ts",
+      "status": "M"
+    },
+    {
+      "path": "frontend-dimabug/src/app/core/models/configuracion-paso.model.ts",
+      "status": "A"
+    },
+    {
+      "path": "frontend-dimabug/src/app/core/models/ejecucion.model.ts",
+      "status": "M"
+    },
+    {
+      "path": "frontend-dimabug/src/app/core/models/procedimiento.model.ts",
+      "status": "M"
+    },
+    {
+      "path": "frontend-dimabug/src/app/core/services/admin-sucursales-api.service.spec.ts",
+      "status": "A"
+    },
+    {
+      "path": "frontend-dimabug/src/app/core/services/admin-sucursales-api.service.ts",
+      "status": "A"
+    },
+    {
+      "path": "frontend-dimabug/src/app/core/services/automatizacion-ejecucion.service.ts",
+      "status": "A"
+    },
+    {
+      "path": "frontend-dimabug/src/app/core/services/automatizacion-lectura.service.spec.ts",
+      "status": "A"
+    },
+    {
+      "path": "frontend-dimabug/src/app/core/services/autoservicio.service.ts",
+      "status": "A"
+    },
+    {
+      "path": "frontend-dimabug/src/app/core/services/chatbot.service.spec.ts",
+      "status": "M"
+    },
+    {
+      "path": "frontend-dimabug/src/app/core/services/chatbot.service.ts",
+      "status": "M"
+    },
+    {
+      "path": "frontend-dimabug/src/app/core/services/ejecucion.service.spec.ts",
+      "status": "A"
+    },
+    {
+      "path": "frontend-dimabug/src/app/core/services/ejecucion.service.ts",
+      "status": "M"
+    },
+    {
+      "path": "frontend-dimabug/src/app/core/services/gmail-admin.service.spec.ts",
+      "status": "A"
+    },
+    {
+      "path": "frontend-dimabug/src/app/core/services/gmail-admin.service.ts",
+      "status": "A"
+    },
+    {
+      "path": "frontend-dimabug/src/app/core/services/hardware-procedimiento.service.spec.ts",
+      "status": "A"
+    },
+    {
+      "path": "frontend-dimabug/src/app/core/services/notificacion.service.ts",
+      "status": "M"
+    },
+    {
+      "path": "frontend-dimabug/src/app/core/services/procedimiento.service.ts",
+      "status": "M"
+    },
+    {
+      "path": "frontend-dimabug/src/app/features/admin/admin-gmail.component.css",
+      "status": "A"
+    },
+    {
+      "path": "frontend-dimabug/src/app/features/admin/admin-gmail.component.html",
+      "status": "A"
+    },
+    {
+      "path": "frontend-dimabug/src/app/features/admin/admin-gmail.component.spec.ts",
+      "status": "A"
+    },
+    {
+      "path": "frontend-dimabug/src/app/features/admin/admin-gmail.component.ts",
+      "status": "A"
+    },
+    {
+      "path": "frontend-dimabug/src/app/features/admin/admin-sucursales.component.css",
+      "status": "A"
+    },
+    {
+      "path": "frontend-dimabug/src/app/features/admin/admin-sucursales.component.html",
+      "status": "A"
+    },
+    {
+      "path": "frontend-dimabug/src/app/features/admin/admin-sucursales.component.spec.ts",
+      "status": "A"
+    },
+    {
+      "path": "frontend-dimabug/src/app/features/admin/admin-sucursales.component.ts",
+      "status": "A"
+    },
+    {
+      "path": "frontend-dimabug/src/app/features/admin/admin.component.html",
+      "status": "M"
+    },
+    {
+      "path": "frontend-dimabug/src/app/features/auth/login/login.component.html",
+      "status": "M"
+    },
+    {
+      "path": "frontend-dimabug/src/app/features/autoservicio/portal-layout.component.ts",
+      "status": "A"
+    },
+    {
+      "path": "frontend-dimabug/src/app/features/autoservicio/portal-publico.component.spec.ts",
+      "status": "A"
+    },
+    {
+      "path": "frontend-dimabug/src/app/features/autoservicio/portal-soluciones.component.css",
+      "status": "A"
+    },
+    {
+      "path": "frontend-dimabug/src/app/features/autoservicio/portal-soluciones.component.html",
+      "status": "A"
+    },
+    {
+      "path": "frontend-dimabug/src/app/features/autoservicio/portal-soluciones.component.ts",
+      "status": "A"
+    },
+    {
+      "path": "frontend-dimabug/src/app/features/ejecucion/correo-paso-modal.component.spec.ts",
+      "status": "A"
+    },
+    {
+      "path": "frontend-dimabug/src/app/features/ejecucion/ejecucion-checklist.component.css",
+      "status": "M"
+    },
+    {
+      "path": "frontend-dimabug/src/app/features/ejecucion/ejecucion-checklist.component.html",
+      "status": "M"
+    },
+    {
+      "path": "frontend-dimabug/src/app/features/ejecucion/ejecucion-checklist.component.spec.ts",
+      "status": "A"
+    },
+    {
+      "path": "frontend-dimabug/src/app/features/ejecucion/ejecucion-checklist.component.ts",
+      "status": "M"
+    },
+    {
+      "path": "frontend-dimabug/src/app/features/ejecucion/ejecucion-conectividad.component.spec.ts",
+      "status": "A"
+    },
+    {
+      "path": "frontend-dimabug/src/app/features/ejecucion/ejecucion-progreso-layout.component.spec.ts",
+      "status": "A"
+    },
+    {
+      "path": "frontend-dimabug/src/app/features/ejecucion/materiales-ejecucion.component.css",
+      "status": "A"
+    },
+    {
+      "path": "frontend-dimabug/src/app/features/ejecucion/materiales-ejecucion.component.html",
+      "status": "A"
+    },
+    {
+      "path": "frontend-dimabug/src/app/features/ejecucion/materiales-ejecucion.component.spec.ts",
+      "status": "A"
+    },
+    {
+      "path": "frontend-dimabug/src/app/features/ejecucion/materiales-ejecucion.component.ts",
+      "status": "A"
+    },
+    {
+      "path": "frontend-dimabug/src/app/features/ejecucion/validacion-externa.component.css",
+      "status": "A"
+    },
+    {
+      "path": "frontend-dimabug/src/app/features/ejecucion/validacion-externa.component.html",
+      "status": "A"
+    },
+    {
+      "path": "frontend-dimabug/src/app/features/ejecucion/validacion-externa.component.spec.ts",
+      "status": "A"
+    },
+    {
+      "path": "frontend-dimabug/src/app/features/ejecucion/validacion-externa.component.ts",
+      "status": "A"
+    },
+    {
+      "path": "frontend-dimabug/src/app/features/procedimiento/pasos-qa013.component.spec.ts",
+      "status": "M"
+    },
+    {
+      "path": "frontend-dimabug/src/app/features/procedimiento/procedimiento-automatizacion.component.spec.ts",
+      "status": "A"
+    },
+    {
+      "path": "frontend-dimabug/src/app/features/procedimiento/procedimiento-detalle.component.css",
+      "status": "M"
+    },
+    {
+      "path": "frontend-dimabug/src/app/features/procedimiento/procedimiento-detalle.component.html",
+      "status": "M"
+    },
+    {
+      "path": "frontend-dimabug/src/app/features/procedimiento/procedimiento-detalle.component.ts",
+      "status": "M"
+    },
+    {
+      "path": "frontend-dimabug/src/app/features/procedimiento/procedimiento-form.component.css",
+      "status": "M"
+    },
+    {
+      "path": "frontend-dimabug/src/app/features/procedimiento/procedimiento-form.component.html",
+      "status": "M"
+    },
+    {
+      "path": "frontend-dimabug/src/app/features/procedimiento/procedimiento-form.component.spec.ts",
+      "status": "M"
+    },
+    {
+      "path": "frontend-dimabug/src/app/features/procedimiento/procedimiento-form.component.ts",
+      "status": "M"
+    },
+    {
+      "path": "frontend-dimabug/src/app/features/procedimiento/procedimiento-lista.component.ts",
+      "status": "M"
+    },
+    {
+      "path": "frontend-dimabug/src/app/features/soluciones/enlace-nfc.component.spec.ts",
+      "status": "A"
+    },
+    {
+      "path": "frontend-dimabug/src/app/features/soluciones/enlace-nfc.component.ts",
+      "status": "A"
+    },
+    {
+      "path": "frontend-dimabug/src/app/features/soluciones/materiales-solucion.component.ts",
+      "status": "A"
+    },
+    {
+      "path": "frontend-dimabug/src/app/features/soluciones/soluciones.component.css",
+      "status": "M"
+    },
+    {
+      "path": "frontend-dimabug/src/app/features/soluciones/soluciones.component.html",
+      "status": "M"
+    },
+    {
+      "path": "frontend-dimabug/src/app/features/soluciones/soluciones.component.spec.ts",
+      "status": "M"
+    },
+    {
+      "path": "frontend-dimabug/src/app/features/soluciones/soluciones.component.ts",
+      "status": "M"
+    },
+    {
+      "path": "frontend-dimabug/src/app/shared/ui/configuracion-paso.component.css",
+      "status": "A"
+    },
+    {
+      "path": "frontend-dimabug/src/app/shared/ui/configuracion-paso.component.html",
+      "status": "A"
+    },
+    {
+      "path": "frontend-dimabug/src/app/shared/ui/configuracion-paso.component.spec.ts",
+      "status": "A"
+    },
+    {
+      "path": "frontend-dimabug/src/app/shared/ui/configuracion-paso.component.ts",
+      "status": "A"
+    },
+    {
+      "path": "frontend-dimabug/src/app/shared/ui/destinatarios-editor.component.spec.ts",
+      "status": "A"
+    },
+    {
+      "path": "frontend-dimabug/src/app/shared/ui/destinatarios-editor.component.ts",
+      "status": "A"
+    },
+    {
+      "path": "frontend-dimabug/src/environments/environment.prod.ts",
+      "status": "M"
+    },
+    {
+      "path": "frontend-dimabug/src/environments/environment.ts",
+      "status": "M"
+    }
+  ],
+  "state": "Preparados para publicación; push pendiente de autorización."
+}

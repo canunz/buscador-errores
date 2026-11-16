@@ -1,0 +1,1 @@
+package cl.casol.backend.conocimiento.domain.exception; public class PruebaInvalidaException extends RuntimeException { public PruebaInvalidaException(String mensaje){super(mensaje);} }

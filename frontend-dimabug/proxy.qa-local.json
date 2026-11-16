@@ -1,0 +1,10 @@
+{
+  "/api": {
+    "target": "http://127.0.0.1:19090",
+    "secure": false,
+    "changeOrigin": false,
+    "logLevel": "warn",
+    "proxyTimeout": 20000,
+    "timeout": 20000
+  }
+}

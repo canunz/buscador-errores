@@ -1,0 +1,62 @@
+{
+  "fecha": "2026-11-08",
+  "alcance": "Rediseño del editor y ejecución con modal de correo por paso",
+  "frontend": {
+    "suite_tests": 351,
+    "resultado": "SUCCESS",
+    "build": "OK",
+    "modal_foco": "OK",
+    "pasos_manuales": "Siguiente, sin casilla adicional",
+    "runtime": "Angular restaurado en 4200 con proxy.conf.json"
+  },
+  "backend": {
+    "suite_completa_tests": 1016,
+    "fallos": 0,
+    "errores": 0,
+    "http_autenticado_aislado": "inicio sin sucursal, envío, reintento idempotente e historial OK",
+    "base_pruebas": "H2 efímera; sin correo real",
+    "pruebas_integracion_finales": 36,
+    "integracion_final_resultado": "36 aprobadas; incluye reutilización de contexto automático sin correos adicionales"
+  },
+  "mysql": {
+    "destino": "127.0.0.1:3307/dima_bug_staging",
+    "migracion": "05_directorio_ciudad_cargo_desarrollo.sql aplicada por usuaria",
+    "lectura_hibernate": "OK; 90 filas de ejecución de paso y mapeos de automatización verificados",
+    "procedimientos_originales": "sin actualizaciones arbitrarias",
+    "ejecuciones_de_demostracion_en_mysql": 0
+  },
+  "interfaz": {
+    "editor": "Secciones A-E y campos condicionales; evidencias con opciones individuales",
+    "ejecucion": "Inicio sin selección de sucursal; modal Enviar correo dentro del paso",
+    "modal": "Busqueda código/nombre/ciudad, responsables, Para/CC, asunto/cuerpo según permisos, progreso/error",
+    "historial": "Línea de tiempo desde eventos persistidos de todas las rondas del paso; consulta autenticada de fotos"
+  },
+  "seguridad": {
+    "destinatarios": "@dimarsa.cl; técnicos restringidos a catálogo/paso; edición de contenido solo administradores",
+    "concurrencia": "bloqueo de ejecución, solicitud determinista por instancia de paso y devolución del mismo envío al reintentar",
+    "trazabilidad": "solicitud + instancia del paso + ejecución + fecha de servidor + eventos"
+  },
+  "pendiente": [
+    "Registrar ciudad, cargo y correos reales cuando falten en el catálogo",
+    "Configurar modalidades de pasos existentes que aún sean manuales",
+    "Integración Gmail real no implementada: correo SIMULADO explícito"
+  ],
+  "limites": [
+    "Descripción de interfaces entregada; no se realizó una revisión visual autenticada con capturas",
+    "Pruebas de foco/DOM y controles accesibles no constituyen certificación completa de WCAG 2.2 AA",
+    "AUTOMATICO valida contexto de sucursal previamente registrado; no ejecuta comandos del POS"
+  ],
+  "runtime": {
+    "backend_pid": 47688,
+    "backend_port": 9090,
+    "backend_health": 200,
+    "workspace_classes_verified": true,
+    "angular_pid": 27080,
+    "angular_port": 4200,
+    "angular_status": 200,
+    "proxy_health": 200,
+    "websocket": "OPEN",
+    "hibernate": "OK",
+    "authenticated_browser_review": "Pendiente; consultas sin sesión devuelven 401"
+  }
+}

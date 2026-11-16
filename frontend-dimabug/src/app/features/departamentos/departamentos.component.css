@@ -1,0 +1,111 @@
+.dep-page .tabla-wrap {
+  border-radius: 18px;
+  border-color: #dce3f0;
+  box-shadow: 0 10px 28px rgba(15, 23, 42, 0.05);
+}
+
+.dep-page table {
+  min-width: 900px;
+  table-layout: auto;
+}
+
+.dep-page th {
+  background: #eef3fb;
+  color: #475569;
+  font-weight: 800;
+  padding: 14px 16px;
+}
+
+.dep-page td {
+  padding: 16px;
+  color: #334155;
+  vertical-align: middle;
+}
+
+.dep-page tbody tr:hover td {
+  background: #f8faff;
+}
+
+.dep-page .nombre {
+  color: #0b1b4d;
+  font-size: 15px;
+}
+
+.dep-page .chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.dep-page .chip {
+  margin: 0;
+}
+
+.dep-page .muted,
+.pad {
+  color: #667085;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.pad {
+  margin: 0;
+  padding: 18px 16px;
+}
+
+.alert {
+  margin: 0 0 12px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: #fef2f2;
+  color: #b42318;
+  font-size: 13px;
+}
+
+.dep-page .estado.activo {
+  background: #059669;
+  color: #fff;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.dep-form-modal, .dep-confirm-modal { z-index: 80; }
+.dep-respaldo { padding: 12px 16px; margin-bottom: 16px; border: 1px solid #cbd5e1; border-radius: 12px; }
+.dep-page .acciones { flex-wrap: wrap; }
+.dep-page .btn-accion.ver { width: auto; padding: 6px 10px; }
+.dep-contacto-acciones { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+.dep-page .chip { display: inline-block; margin: 4px; overflow-wrap: anywhere; }
+.dep-form-modal .alert { margin: 12px 20px; }
+@media (max-width: 720px) { .dep-page .franja { flex-direction: column; align-items: stretch; } }
+
+/* Mismo patrón visual de Hardware, limitado a esta pantalla. */
+.dep-page button, .detalle-modal-card button, .dep-form-modal button, .dep-confirm-modal button {
+  border-radius: 10px; padding: 8px 12px; border: 1px solid #cbd5e1;
+  background: #fff; color: #163070; font: inherit; font-weight: 600; cursor: pointer;
+}
+.dep-page .btn-crear, .detalle-modal-card .btn-crear, .dep-form-modal button[type="submit"] {
+  background: #163070; color: #fff; border-color: #163070;
+}
+.dep-page button:disabled, .detalle-modal-card button:disabled, .dep-form-modal button:disabled,
+.dep-confirm-modal button:disabled { opacity: .55; cursor: not-allowed; }
+.dep-page button:focus-visible, .detalle-modal-card button:focus-visible, .dep-form-modal button:focus-visible,
+.dep-form-modal select:focus-visible { outline: 3px solid #6794ff; outline-offset: 3px; }
+.dep-page .estado { padding: 6px 10px; border-radius: 999px; font-size: 12px; font-weight: 800; }
+.dep-page .estado.inactivo { background: #e2e8f0; color: #475569; }
+.detalle-modal { position: fixed; inset: 0; z-index: 50; display: grid; place-items: center; padding: 28px; }
+.detalle-modal-fondo { position: absolute; inset: 0; background: rgba(22,48,112,.5); backdrop-filter: blur(3px); }
+.detalle-modal-card { position: relative; width: min(900px,100%); max-height: calc(100vh - 56px); overflow: auto; border-radius: 22px; background: #fff; box-shadow: 0 28px 70px rgba(22,48,112,.32); }
+.detalle-modal-franja { display: flex; justify-content: space-between; gap: 16px; padding: 22px 26px; background: #163070; color: white; }
+.detalle-modal-franja h2, .detalle-modal-franja p { margin: 0; }
+.detalle-modal-cuerpo { padding: 24px; }
+.detalle-bloque + .detalle-bloque { margin-top: 24px; border-top: 1px solid #dce3f0; padding-top: 16px; }
+.dep-seccion-cabecera { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+.dep-tabla-detalle { overflow-x: auto; }
+.dep-tabla-detalle table { width: 100%; border-collapse: collapse; }
+.dep-tabla-detalle th, .dep-tabla-detalle td { text-align: left; padding: 10px; border-bottom: 1px solid #e2e8f0; overflow-wrap: anywhere; }
+.dep-tabla-detalle .acciones { display: flex; flex-wrap: wrap; gap: 8px; }
+.dep-aviso { padding: 0 20px; color: #475569; }
+.dep-form-modal select { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px; background: white; }
+@media (max-width: 720px) { .detalle-modal { padding: 12px; } .detalle-modal-card { max-height: calc(100vh - 24px); } .detalle-modal-cuerpo { padding: 16px; } }

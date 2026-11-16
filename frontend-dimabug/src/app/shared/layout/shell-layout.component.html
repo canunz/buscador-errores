@@ -1,10 +1,13 @@
+@if (accesoBasico()) {
+  <router-outlet />
+} @else {
 <div class="app-shell" [class.tema-oscuro]="temaOscuro" [class.menu-abierto]="menuOpen">
   <aside class="sidebar">
     <div class="brand-panel">
       <img src="assets/img/logo_dimabug.png" alt="DimaBug" class="brand-logo" />
     </div>
 
-    <nav>
+        <nav>
       <p class="nav-label">Principal</p>
       <a routerLink="/inicio" routerLinkActive="activo" [routerLinkActiveOptions]="{ exact: true }" (click)="closeMenu()">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
@@ -19,6 +22,33 @@
         </svg>
         Conocimiento
       </a>
+      <a routerLink="/chatbot" routerLinkActive="activo" (click)="closeMenu()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 4h16v12H9l-5 4V4z"/></svg>
+        Asistente DimaBug
+      </a>
+      @if (isStaff()) {
+        <a routerLink="/tickets/bandeja" routerLinkActive="activo" (click)="closeMenu()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 12h-6l-2 3h-4l-2-3H2"/>
+            <path d="M5.45 5.11L2 12v6a2 2 0 002 2h16a2 2 0 002-2v-6l-3.45-6.89A2 2 0 0016.76 4H7.24a2 2 0 00-1.79 1.11z"/>
+          </svg>
+          {{ isAdmin() ? 'Supervisión de tickets' : 'Bandeja de soporte' }}
+        </a>
+      } @else {
+        <a routerLink="/tickets" routerLinkActive="activo" (click)="closeMenu()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 8a2 2 0 012-2h14a2 2 0 012 2v2a2 2 0 000 4v2a2 2 0 01-2 2H5a2 2 0 01-2-2v-2a2 2 0 000-4V8z"/>
+            <path d="M14 6v12" stroke-dasharray="2 2"/>
+          </svg>
+          Mis tickets
+        </a>
+      }
+      <a routerLink="/favoritos" routerLinkActive="activo" (click)="closeMenu()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 3.6l2.35 4.76 5.25.76-3.8 3.7.9 5.24L12 15.7l-4.7 2.46.9-5.24-3.8-3.7 5.25-.76L12 3.6z"/>
+        </svg>
+        Favoritos
+      </a>
       <a routerLink="/procedimientos" routerLinkActive="activo" (click)="closeMenu()">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
           <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/>
@@ -27,19 +57,6 @@
         </svg>
         Procedimientos
       </a>
-      <a routerLink="/ejecuciones" routerLinkActive="activo" (click)="closeMenu()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="12" cy="12" r="9"/>
-          <path d="M10 8.8l6 3.2-6 3.2V8.8z"/>
-        </svg>
-        Mis ejecuciones
-      </a>
-      <a routerLink="/favoritos" routerLinkActive="activo" (click)="closeMenu()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M12 3.6l2.35 4.76 5.25.76-3.8 3.7.9 5.24L12 15.7l-4.7 2.46.9-5.24-3.8-3.7 5.25-.76L12 3.6z"/>
-        </svg>
-        Favoritos
-      </a>
       <a routerLink="/reportes" routerLinkActive="activo" (click)="closeMenu()">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
           <path d="M4 19V5M4 19h16"/>
@@ -47,51 +64,76 @@
         </svg>
         Reportes
       </a>
+      @if (isStaff()) {
+        <a routerLink="/error/nuevo" routerLinkActive="activo" (click)="closeMenu()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="9"/>
+            <path d="M12 8v8M8 12h8"/>
+          </svg>
+          Nuevo error
+        </a>
+        <a routerLink="/ejecuciones" routerLinkActive="activo" (click)="closeMenu()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="9"/>
+            <path d="M10 8.8l6 3.2-6 3.2V8.8z"/>
+          </svg>
+          Mis ejecuciones
+        </a>
 
-      <p class="nav-label">Catálogos</p>
-      <a routerLink="/plataforma/hardware" routerLinkActive="activo" (click)="closeMenu()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-          <rect x="3" y="4" width="18" height="12" rx="2"/>
-          <path d="M8 20h8M12 16v4"/>
-        </svg>
-        Hardware
-      </a>
-      <a routerLink="/departamentos" routerLinkActive="activo" (click)="closeMenu()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-          <rect x="4" y="3" width="16" height="18" rx="2"/>
-          <path d="M8 7h8M8 11h8M8 15h5"/>
-        </svg>
-        Departamentos
-      </a>
-      <a routerLink="/pruebas" routerLinkActive="activo" (click)="closeMenu()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-          <rect x="6" y="3" width="12" height="18" rx="2"/>
-          <path d="M9 8h6M9 12h6M9 16h3"/>
-        </svg>
-        Pruebas
-      </a>
-      <a routerLink="/soluciones" routerLinkActive="activo" (click)="closeMenu()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/>
-        </svg>
-        Soluciones
-      </a>
-      <a routerLink="/error/nuevo" routerLinkActive="activo" (click)="closeMenu()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="12" cy="12" r="9"/>
-          <path d="M12 8v8M8 12h8"/>
-        </svg>
-        Nuevo error
-      </a>
+        <p class="nav-label">Catálogos</p>
+        @if (isAdmin()) {
+          <a routerLink="/admin/catalogo/sistemas" routerLinkActive="activo" (click)="closeMenu()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <rect x="3" y="4" width="18" height="12" rx="2"/>
+              <path d="M8 20h8M12 16v4M7 8h10M7 12h6"/>
+            </svg>
+            Sistemas
+          </a>
+          <a routerLink="/admin/catalogo/modulos" routerLinkActive="activo" (click)="closeMenu()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
+              <rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>
+            </svg>
+            Módulos
+          </a>
+        }
+        <a routerLink="/plataforma/hardware" routerLinkActive="activo" (click)="closeMenu()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="4" width="18" height="12" rx="2"/>
+            <path d="M8 20h8M12 16v4"/>
+          </svg>
+          Hardware
+        </a>
+        <a routerLink="/departamentos" routerLinkActive="activo" (click)="closeMenu()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="4" y="3" width="16" height="18" rx="2"/>
+            <path d="M8 7h8M8 11h8M8 15h5"/>
+          </svg>
+          Departamentos
+        </a>
+        <a routerLink="/pruebas" routerLinkActive="activo" (click)="closeMenu()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="6" y="3" width="12" height="18" rx="2"/>
+            <path d="M9 8h6M9 12h6M9 16h3"/>
+          </svg>
+          Pruebas
+        </a>
+        <a routerLink="/soluciones" routerLinkActive="activo" (click)="closeMenu()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/>
+          </svg>
+          Soluciones
+        </a>
+      }
 
-      <p class="nav-label">Sistema</p>
       @if (isAdmin()) {
-        <a routerLink="/admin" routerLinkActive="activo" (click)="closeMenu()">
+        <p class="nav-label">Sistema</p>
+        <a routerLink="/admin" [class.activo]="esAdminMenuActivo()" (click)="closeMenu()">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
             <path d="M12 3l8 4v6c0 5-3.5 8.5-8 9-4.5-.5-8-4-8-9V7l8-4z"/>
             <path d="M9 12l2 2 4-4"/>
           </svg>
-          Admin
+          Administrador
         </a>
         <a routerLink="/usuarios" routerLinkActive="activo" (click)="closeMenu()">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
@@ -109,6 +151,49 @@
     <header>
       <button type="button" class="menu-toggle" (click)="toggleMenu()" aria-label="Menú">☰</button>
       <div class="header-actions">
+        <div class="avisos" (click)="$event.stopPropagation()">
+          <button
+            type="button"
+            class="tema-toggle campana"
+            (click)="alternarAvisos()"
+            [attr.aria-expanded]="avisosAbiertos"
+            aria-label="Notificaciones"
+            title="Notificaciones"
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M15 17H6.5a1.5 1.5 0 01-1.2-2.4L6 13.2V10a6 6 0 1112 0v3.2l.7 1.4A1.5 1.5 0 0117.5 17H15z"/>
+              <path d="M10 17a2 2 0 004 0"/>
+            </svg>
+            @if (sinLeer > 0) {
+              <span class="campana-cuenta">{{ sinLeer > 9 ? '9+' : sinLeer }}</span>
+            }
+          </button>
+          @if (avisosAbiertos) {
+            <div class="avisos-panel" role="dialog" aria-label="Notificaciones">
+              <header>
+                <strong>Notificaciones</strong>
+                @if (sinLeer > 0) {
+                  <button type="button" (click)="marcarTodasLeidas()">Marcar todas como leídas</button>
+                }
+              </header>
+              @if (avisos.length) {
+                <ul>
+                  @for (aviso of avisos.slice(0, 8); track aviso.id) {
+                    <li>
+                      <button type="button" [class.nueva]="!leidas.has(aviso.id)" (click)="abrirAviso(aviso)">
+                        <strong>{{ aviso.titulo }}</strong>
+                        <span>{{ aviso.detalle }}</span>
+                      </button>
+                    </li>
+                  }
+                </ul>
+              } @else {
+                <p class="avisos-vacio">No tienes notificaciones por ahora.</p>
+              }
+              <a class="avisos-todas" routerLink="/notificaciones" (click)="avisosAbiertos = false">Ver todas</a>
+            </div>
+          }
+        </div>
         <button
           type="button"
           class="tema-toggle"
@@ -158,3 +243,5 @@
     </div>
   </div>
 </div>
+
+}

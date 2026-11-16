@@ -1,0 +1,1 @@
+package cl.casol.backend.conocimiento.application.service; public record PruebaActualizada(Integer id) {}

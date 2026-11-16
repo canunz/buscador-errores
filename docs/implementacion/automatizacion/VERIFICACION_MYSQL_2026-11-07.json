@@ -1,0 +1,18 @@
+{
+  "fecha_local": "2026-11-07",
+  "zona_horaria": "America/Santiago",
+  "destino": {"host": "127.0.0.1", "puerto": 3307, "esquema": "dima_bug_staging"},
+  "migracion_aplicada_por": "usuario con cuenta administradora; posteriormente verificada en modo de solo lectura",
+  "columnas_faltantes": [],
+  "filas_antes": 25,
+  "filas_despues": 25,
+  "sha256_nueve_campos_preexistentes_antes": "6f75467b27e39bf142b31a8780c1951edd4649834624e0866893c8d467e09409",
+  "sha256_nueve_campos_preexistentes_despues": "6f75467b27e39bf142b31a8780c1951edd4649834624e0866893c8d467e09409",
+  "proyeccion_jdbc": "OK",
+  "consulta_hibernate_y_mapeo_dominio": "OK",
+  "filas_comprobadas_por_hibernate": 25,
+  "prueba_http_autenticada": false,
+  "datos_modificados_por_la_verificacion": false,
+  "credenciales_persistidas": false,
+  "tabla_u_sucursal_existe": false
+}

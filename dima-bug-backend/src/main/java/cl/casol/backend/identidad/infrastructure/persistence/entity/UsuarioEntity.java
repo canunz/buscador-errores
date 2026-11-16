@@ -1,7 +1,8 @@
 package cl.casol.backend.identidad.infrastructure.persistence.entity;
 
-//Paso 3: representa cómo está guardado el usuario en MySQL.
+//Paso 3: Representa cómo está guardado el usuario en MySQL.
 import jakarta.persistence.*;
+import cl.casol.backend.identidad.domain.EstadoRegistro;
 import java.time.LocalDateTime;
 
 @Entity
@@ -35,7 +36,33 @@ public class UsuarioEntity {
     @Column(name = "usuario_fecha_actualizacion", nullable = false)
     private LocalDateTime fechaActualizacion;
 
+    @Enumerated(EnumType.STRING)
+    @org.hibernate.annotations.JdbcTypeCode(org.hibernate.type.SqlTypes.VARCHAR)
+    @org.hibernate.annotations.ColumnDefault("'ADMINISTRADO'")
+    @Column(name="registro_estado", nullable=false, length=24)
+    private EstadoRegistro estadoRegistro = EstadoRegistro.ADMINISTRADO;
+
+    public UsuarioEntity(Integer id, RolEntity rol, String nombre, String email, String passwordHash,
+            boolean activo, LocalDateTime creada, LocalDateTime actualizada, EstadoRegistro estado) {
+        this(id, rol, nombre, email, passwordHash, activo, creada, actualizada);
+        this.estadoRegistro = java.util.Objects.requireNonNull(estado);
+    }
+    public EstadoRegistro getEstadoRegistro() { return estadoRegistro; }
+
     protected UsuarioEntity() {
+    }
+
+    public UsuarioEntity(Integer id, RolEntity rol, String nombre, String email,
+                         String passwordHash, boolean activo, LocalDateTime fechaCreacion,
+                         LocalDateTime fechaActualizacion) {
+        this.id = id;
+        this.rol = rol;
+        this.nombre = nombre;
+        this.email = email;
+        this.passwordHash = passwordHash;
+        this.activo = activo;
+        this.fechaCreacion = fechaCreacion;
+        this.fechaActualizacion = fechaActualizacion;
     }
 
     public Integer getId() {

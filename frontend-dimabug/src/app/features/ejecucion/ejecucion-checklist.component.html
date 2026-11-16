@@ -1,0 +1,320 @@
+<app-loading-modal
+  [visible]="completando || cancelando"
+  [mensaje]="cancelando ? 'Cancelando' : 'Completando'"
+/>
+
+<section class="tk-pagina ej">
+  <nav class="ej-crumb">
+    <a routerLink="/ejecuciones">Mis ejecuciones</a>
+    <span>/</span>
+    <span>{{ procedimiento?.nombre || 'Ejecución' }}</span>
+  </nav>
+
+  @if (error && !ejecucion && !loading) {
+    <div class="tk-card tk-vacio">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9" /><path d="M12 8v4M12 16h.01" /></svg>
+      <strong>No pudimos abrir esta ejecución</strong>
+      <span>{{ error }}</span>
+      <button type="button" class="tk-btn tk-btn-primario" (click)="reintentarCarga()" [disabled]="loading || cargandoPasos">Reintentar</button>
+      <a routerLink="/ejecuciones" class="tk-btn tk-btn-sec">Volver a mis ejecuciones</a>
+    </div>
+  } @else if (!ejecucion) {
+    <div class="tk-esqueleto ej-esq-franja"></div>
+    <div class="ej-cuerpo">
+      <div class="tk-card ej-pasos"><div class="tk-esqueleto"></div><div class="tk-esqueleto"></div><div class="tk-esqueleto"></div></div>
+      <div class="tk-card ej-panel"><div class="tk-esqueleto ej-esq-alto"></div></div>
+    </div>
+  } @else {
+    <!-- Cabecera -->
+    <header class="tk-franja ej-franja">
+      <div class="ej-franja-texto">
+        <span class="tk-chip-rol ej-estado" [attr.data-estado]="ejecucion.estado">
+          <i></i>{{ etiquetaEstado(ejecucion.estado) }}
+        </span>
+        <h1>{{ procedimiento?.nombre || 'Procedimiento ' + ejecucion.procedimientoId }}</h1>
+        @if (procedimiento?.descripcion) {
+          <p>{{ procedimiento?.descripcion }}</p>
+        }
+        <ul class="ej-meta">
+          <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></svg>
+            Inicio {{ ejecucion.fechaInicio ? (ejecucion.fechaInicio | date: 'dd/MM/yyyy HH:mm') : '—' }}
+          </li>
+          @if (ejecucion.fechaFin) {
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12l5 5L20 7" /></svg>
+              Fin {{ ejecucion.fechaFin | date: 'dd/MM/yyyy HH:mm' }}
+            </li>
+          }
+          @if (criticos > 0) {
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l9 16H3z" /><path d="M12 10v4M12 17h.01" /></svg>
+              {{ criticos }} {{ criticos === 1 ? 'paso crítico' : 'pasos críticos' }}
+            </li>
+          }
+        </ul>
+      </div>
+
+      <div class="ej-anillo" [attr.aria-label]="porcentaje + '% completado'">
+        <svg viewBox="0 0 100 100" aria-hidden="true">
+          <circle cx="50" cy="50" r="42" class="ej-anillo-fondo" />
+          <circle
+            cx="50"
+            cy="50"
+            r="42"
+            class="ej-anillo-valor"
+            [attr.stroke-dasharray]="circunferencia"
+            [attr.stroke-dashoffset]="anilloOffset"
+          />
+        </svg>
+        <div>
+          <strong>{{ porcentaje }}%</strong>
+          <small>{{ cumplidos }} de {{ pasos.length }} pasos</small>
+        </div>
+      </div>
+    </header>
+
+    @if (enCurso && !errorPasos && !cargandoPasos && !(pasosConsultados && !pasos.length)) {
+      <!-- Barra de cierre -->
+      <div class="tk-card ej-cierre" [class.listo]="puedeCompletar">
+        <div class="ej-cierre-texto">
+          @if (puedeCompletar) {
+            <strong>¡Listo! Todos los pasos están marcados.</strong>
+            <span>Finaliza el procedimiento para dejarlo registrado.</span>
+          } @else {
+            <strong>{{ pasos.length - cumplidos === 1 ? 'Falta 1 paso' : 'Faltan ' + (pasos.length - cumplidos) + ' pasos' }}</strong>
+            <span>{{ hayBorradoresPendientes ? 'Espera a que se guarden las observaciones o reintenta el guardado.' : 'Completa las actividades y validaciones pendientes para finalizar.' }}</span>
+          }
+          <div class="ej-cierre-barra" aria-hidden="true"><span [style.width.%]="porcentaje"></span></div>
+        </div>
+        <div class="ej-cierre-acciones">
+          <button type="button" class="tk-btn tk-btn-peligro" (click)="pedirCancelar()" [disabled]="cancelando || completando || guardando !== null">
+            Cancelar ejecución
+          </button>
+          <button type="button" class="tk-btn tk-btn-exito" (click)="completar()" [disabled]="!puedeCompletar || cancelando">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12l5 5L20 7" /></svg>
+            {{ completando ? 'Completando…' : 'Finalizar procedimiento' }}
+          </button>
+        </div>
+      </div>
+    }
+
+    @if (error) {
+      <div class="tk-alerta" role="alert">
+        <span>{{ error }}</span>
+        <button type="button" (click)="error = ''" aria-label="Cerrar">×</button>
+      </div>
+    }
+
+    @if (errorPasos) {
+      <div class="tk-card" role="alert">
+        <p>{{ errorPasos }}</p>
+        <button type="button" class="tk-btn tk-btn-primario" (click)="reintentarCarga()" [disabled]="cargandoPasos || sincronizando">Reintentar</button>
+      </div>
+    } @else if (cargandoPasos) {
+      <div class="tk-card" role="status">Cargando pasos del procedimiento…</div>
+    } @else if (pasosConsultados && !pasos.length) {
+      <div class="tk-card tk-vacio">
+        <strong>Este procedimiento no tiene pasos</strong>
+        <span>La consulta se completó y no devolvió pasos para esta ejecución.</span>
+      </div>
+    } @else if (enCurso) {
+      <div class="ej-cuerpo">
+        <!-- Lista de pasos -->
+        <aside class="tk-card ej-pasos" aria-label="Pasos del procedimiento">
+          <p class="ej-pasos-titulo">
+            Pasos
+            <span>{{ cumplidos }}/{{ pasos.length }}</span>
+          </p>
+          @if (cargandoPasos && !pasos.length) {
+            <div class="tk-esqueleto"></div>
+            <div class="tk-esqueleto"></div>
+            <div class="tk-esqueleto"></div>
+          }
+          <ol>
+            @for (item of pasos; track item.ejecucionPasoId; let i = $index) {
+              <li>
+                <button
+                  type="button"
+                  class="ej-paso-btn"
+                  [class.actual]="pasoActual === i + 1"
+                  [class.hecho]="item.cumplido"
+                  [class.critico]="item.esCritico && !item.cumplido"
+                  (click)="irPaso(i + 1)"
+                >
+                  <span class="ej-num">
+                    @if (item.cumplido) {
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5L20 7" /></svg>
+                    } @else {
+                      {{ i + 1 }}
+                    }
+                  </span>
+                  <span class="ej-paso-texto">
+                    <strong>{{ item.instruccion }}</strong>
+                    <small>
+                      {{ estadoPaso(item) }}
+                    </small>
+                  </span>
+                </button>
+              </li>
+            }
+          </ol>
+        </aside>
+
+        <!-- Paso actual -->
+        @if (paso; as item) {
+          <article class="tk-card ej-panel" [class.critico]="item.esCritico">
+            <div class="ej-panel-cabeza">
+              <span class="ej-kicker">Paso {{ pasoActual }} de {{ pasos.length }}</span>
+              @if (item.esCritico) {
+                <span class="tk-badge pri-critica">Crítico</span>
+              }
+              @if (item.cumplido) {
+                <span class="tk-badge est-resuelto">Hecho</span>
+              }
+            </div>
+
+            <h2 class="ej-instruccion">{{ item.instruccion }}</h2>
+            <app-materiales-ejecucion [procedimientoId]="ejecucion.procedimientoId" [pasoId]="item.pasoId" />
+
+            @if (item.esCritico && !item.cumplido) {
+              <p class="ej-aviso-critico">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l9 16H3z" /><path d="M12 10v4M12 17h.01" /></svg>
+                {{ esAccion(item) ? 'Paso crítico: revisa y aprueba las fotografías antes de continuar.' : 'Este paso requiere verificación explícita antes de continuar.' }}
+              </p>
+            }
+
+            @if (esAccion(item)) {
+              <app-validacion-externa [puedeEnviar]="puedeMarcarPaso(item)" [ejecucionId]="ejecucion.id" [paso]="item" [enCurso]="enCurso"
+                (ocupacion)="gestionandoEvidencia = $event" (actualizada)="alAutomatizacionActualizada($event)" />
+            } @else {
+            @if(item.esCritico && !item.cumplido){<p>Al pulsar Siguiente confirmas que realizaste y verificaste esta actividad crítica.</p>}
+            <button type="button" class="tk-btn tk-btn-primario" (click)="completarYAvanzar(item)"
+              [disabled]="operacionEnCurso() || cargandoPasos || !puedeMarcarPaso(item) || item.cumplido">
+              {{ guardando===item.ejecucionPasoId ? 'Guardando progreso…' : item.cumplido ? 'Paso completado' : 'Siguiente' }}
+            </button>
+            @if(!item.cumplido && !puedeMarcarPaso(item)){<p role="status">Se habilitará al completar y validar los anteriores.</p>}
+            }
+
+            <label class="tk-campo ej-nota">
+              <span>Observación <small>(opcional)</small></span>
+              <textarea
+                rows="3"
+                maxlength="300"
+                placeholder="Algo que quede registrado de este paso"
+                [name]="'obs-' + item.ejecucionPasoId"
+                [(ngModel)]="borradores[item.ejecucionPasoId]"
+                (ngModelChange)="alEscribirObservacion(item, $event)"
+                [disabled]="completando || cancelando || cargandoPasos"
+              ></textarea>
+            </label>
+            <div class="ej-nota-pie">
+              <span class="ej-cuenta" [class.lleno]="(borradores[item.ejecucionPasoId] || '').length >= 300">
+                {{ (borradores[item.ejecucionPasoId] || '').length }} / 300
+              </span>
+              <button
+                type="button"
+                class="tk-btn tk-btn-sec"
+                [class.ej-guardada]="observacionListaId === item.ejecucionPasoId"
+                (click)="guardarObservacion(item)"
+                [disabled]="guardando !== null || completando || cancelando || cargandoPasos"
+              >
+                {{ observacionListaId === item.ejecucionPasoId ? 'Observación guardada' : 'Guardar observación' }}
+              </button>
+            </div>
+            <p role="status" aria-live="polite">
+              @if (guardando === item.ejecucionPasoId) { Guardando cambios… }
+              @else if (observacionListaId === item.ejecucionPasoId) { Observación guardada. }
+              @else { Las observaciones se guardan automáticamente. }
+            </p>
+            @if (estadoSincronizacion) { <p role="status">{{ estadoSincronizacion }}</p> }
+            @if (ultimaSincronizacion) { <small>Actualizado: {{ ultimaSincronizacion | date:'HH:mm:ss' }}</small> }
+
+            <div class="ej-nav">
+              <button type="button" class="tk-btn tk-btn-sec" (click)="irPaso(pasoActual - 1)" [disabled]="pasoActual <= 1">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6" /></svg>
+                Anterior
+              </button>
+
+            </div>
+          </article>
+        }
+      </div>
+
+    } @else {
+      <!-- Ejecución terminada -->
+      <div class="tk-card ej-resultado" [attr.data-estado]="ejecucion.estado">
+        <span class="ej-resultado-icono" aria-hidden="true">
+          @if (ejecucion.estado === 'COMPLETADA') {
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M5 12l5 5L20 7" /></svg>
+          } @else {
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M6 6l12 12M18 6L6 18" /></svg>
+          }
+        </span>
+        <div>
+          <strong>{{ ejecucion.estado === 'COMPLETADA' ? 'Ejecución completada' : 'Ejecución cancelada' }}</strong>
+          <span>
+            {{ cumplidos }} de {{ pasos.length }} pasos marcados
+            @if (ejecucion.fechaFin) {
+              · {{ ejecucion.fechaFin | date: 'dd/MM/yyyy HH:mm' }}
+            }
+          </span>
+          @if (ejecucion.observaciones) {
+            <p><b>Motivo:</b> {{ ejecucion.observaciones }}</p>
+          }
+        </div>
+        <a routerLink="/ejecuciones" class="tk-btn tk-btn-sec">Volver a mis ejecuciones</a>
+      </div>
+
+      <div class="tk-card ej-resumen">
+        <p class="ej-pasos-titulo">Registro de pasos</p>
+        <ol>
+          @for (item of pasos; track item.ejecucionPasoId; let i = $index) {
+            <li [class.hecho]="item.cumplido">
+              <span class="ej-num">
+                @if (item.cumplido) {
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5L20 7" /></svg>
+                } @else {
+                  {{ i + 1 }}
+                }
+              </span>
+              <div>
+                <strong>{{ item.instruccion }}</strong>
+                <small>
+                  {{ item.cumplido ? 'Hecho' : 'No marcado' }}{{ item.esCritico ? ' · Crítico' : '' }}
+                  @if (item.fecha && item.cumplido) {
+                    · {{ item.fecha | date: 'dd/MM/yyyy HH:mm' }}
+                  }
+                </small>
+                @if (item.observacion) {
+                  <p class="ej-obs">{{ item.observacion }}</p>
+                }
+                <app-materiales-ejecucion [procedimientoId]="ejecucion.procedimientoId" [pasoId]="item.pasoId" />
+              </div>
+            </li>
+          }
+        </ol>
+      </div>
+    }
+  }
+</section>
+
+@if (confirmarCancelacion) {
+  <div class="ej-capa">
+    <div class="ej-capa-fondo" (click)="cerrarCancelar()"></div>
+    <div class="tk-card ej-dialogo" role="alertdialog" aria-modal="true" aria-labelledby="ej-dialogo-titulo">
+      <h2 id="ej-dialogo-titulo">¿Cancelar esta ejecución?</h2>
+      <p>Los pasos que ya marcaste quedan guardados en el registro.</p>
+      <label class="tk-campo">
+        <span>Motivo <small>(opcional)</small></span>
+        <textarea rows="3" [(ngModel)]="motivoCancelacion" [disabled]="cancelando" placeholder="Por qué se detiene"></textarea>
+      </label>
+      <div class="ej-dialogo-acciones">
+        <button type="button" class="tk-btn tk-btn-sec" (click)="cerrarCancelar()" [disabled]="cancelando">Seguir ejecutando</button>
+        <button type="button" class="tk-btn ej-btn-rojo" (click)="confirmarCancelar()" [disabled]="cancelando">
+          {{ cancelando ? 'Cancelando…' : 'Cancelar ejecución' }}
+        </button>
+      </div>
+    </div>
+  </div>
+}

@@ -1,0 +1,24 @@
+{
+  "date": "2026-11-06",
+  "active_markdown_files_checked": 75,
+  "broken_links": [],
+  "backups_verified": 22,
+  "logical_tables": 31,
+  "relationships": 47,
+  "drawio_pages": 6,
+  "sql_scripts_copied": 5,
+  "api_mappings": 124,
+  "source_code_changed": false,
+  "tests_rerun_in_documentation_phase": false,
+  "mysql_verified": false,
+  "historical_missing_files_resolved": "Links now identify absence; no missing implementation fabricated.",
+  "limitations": [
+    "No official rubric or approved requirements provided",
+    "No UAT/E2E/MySQL/deployment/restoration evidence",
+    "SCA and functional risks remain open"
+  ],
+  "package_files": 47,
+  "package_markdown_broken_links": 0,
+  "zip_path": "entregables/DimaBug_Entrega_Duoc_Documentacion_2026-11-06.zip",
+  "zip_sha256": "f06e86c3ecd872b2b4258df619041d9b4ce91d13a251893ead3d1ce0495c62d1"
+}

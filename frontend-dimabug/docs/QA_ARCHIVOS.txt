@@ -1,0 +1,91 @@
+DimaBug — archivos nuevos, modificados o retirados de esta entrega
+M: modificado; D: retirado; ??: nuevo sin commit
+
+ M dima-bug-backend/src/main/java/cl/casol/backend/catalogo/infrastructure/persistence/entity/FrecuenciaEntity.java
+ M dima-bug-backend/src/main/java/cl/casol/backend/catalogo/infrastructure/persistence/entity/ModuloEntity.java
+ M dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/application/service/MantenerConocimientoService.java
+ M dima-bug-backend/src/main/java/cl/casol/backend/identidad/application/port/out/UsuarioRepository.java
+ M dima-bug-backend/src/main/java/cl/casol/backend/identidad/application/service/AdministrarUsuariosService.java
+ M dima-bug-backend/src/main/java/cl/casol/backend/identidad/infrastructure/persistence/adapter/UsuarioRepositoryAdapter.java
+ M dima-bug-backend/src/main/java/cl/casol/backend/identidad/infrastructure/persistence/repository/UsuarioJpaRepository.java
+ M dima-bug-backend/src/main/java/cl/casol/backend/procedimiento/application/port/out/ProcedimientoRepository.java
+ M dima-bug-backend/src/main/java/cl/casol/backend/procedimiento/application/service/MantenerMaterialPasoService.java
+ M dima-bug-backend/src/main/java/cl/casol/backend/procedimiento/application/service/MantenerPasoService.java
+ M dima-bug-backend/src/main/java/cl/casol/backend/procedimiento/application/service/MantenerProcedimientoService.java
+ M dima-bug-backend/src/main/java/cl/casol/backend/procedimiento/application/service/MaterialPasoArchivoService.java
+ M dima-bug-backend/src/main/java/cl/casol/backend/procedimiento/infrastructure/persistence/adapter/ProcedimientoRepositoryAdapter.java
+ M dima-bug-backend/src/main/java/cl/casol/backend/procedimiento/infrastructure/web/ProcedimientoController.java
+ M dima-bug-backend/src/main/java/cl/casol/backend/shared/infrastructure/security/SecurityConfig.java
+ M dima-bug-backend/src/main/java/cl/casol/backend/shared/infrastructure/web/GlobalExceptionHandler.java
+ M dima-bug-backend/src/test/java/cl/casol/backend/CatalogoSecurityIntegrationTest.java
+ M dima-bug-backend/src/test/java/cl/casol/backend/CatalogosOrganizacionSecurityIntegrationTest.java
+ M dima-bug-backend/src/test/java/cl/casol/backend/CausaSecurityIntegrationTest.java
+ M dima-bug-backend/src/test/java/cl/casol/backend/EliminarMaterialApoyoTest.java
+ M dima-bug-backend/src/test/java/cl/casol/backend/Hu01SecurityIntegrationTest.java
+ M dima-bug-backend/src/test/java/cl/casol/backend/Hu02SecurityIntegrationTest.java
+ M dima-bug-backend/src/test/java/cl/casol/backend/Hu03SecurityIntegrationTest.java
+ M dima-bug-backend/src/test/java/cl/casol/backend/Hu04SecurityIntegrationTest.java
+ M dima-bug-backend/src/test/java/cl/casol/backend/Hu05SecurityIntegrationTest.java
+ M dima-bug-backend/src/test/java/cl/casol/backend/Hu06SecurityIntegrationTest.java
+ M dima-bug-backend/src/test/java/cl/casol/backend/Hu07SecurityIntegrationTest.java
+ M dima-bug-backend/src/test/java/cl/casol/backend/MaterialApoyoSecurityIntegrationTest.java
+ M dima-bug-backend/src/test/java/cl/casol/backend/MaterialArchivoSecurityIntegrationTest.java
+ M dima-bug-backend/src/test/java/cl/casol/backend/PruebaSecurityIntegrationTest.java
+ M dima-bug-backend/src/test/java/cl/casol/backend/SintomaSecurityIntegrationTest.java
+ M dima-bug-backend/src/test/java/cl/casol/backend/SolucionSecurityIntegrationTest.java
+ M dima-bug-backend/src/test/java/cl/casol/backend/conocimiento/application/service/MantenerConocimientoServiceTest.java
+ M dima-bug-backend/src/test/java/cl/casol/backend/identidad/application/service/AdministrarUsuariosServiceTest.java
+ M dima-bug-backend/src/test/java/cl/casol/backend/procedimiento/application/service/MantenerMaterialPasoServiceTest.java
+ M dima-bug-backend/src/test/java/cl/casol/backend/procedimiento/application/service/MantenerPasoServiceTest.java
+ M dima-bug-backend/src/test/java/cl/casol/backend/procedimiento/application/service/MantenerProcedimientoServiceTest.java
+ M frontend-dimabug/src/app/core/models/usuario.model.ts
+ D frontend-dimabug/src/app/core/services/admin-maestros.service.ts
+ M frontend-dimabug/src/app/core/services/catalogo.service.ts
+ M frontend-dimabug/src/app/core/services/clasificacion.service.ts
+ M frontend-dimabug/src/app/core/services/usuario.service.ts
+ M frontend-dimabug/src/app/features/admin/admin-catalogo.component.html
+ M frontend-dimabug/src/app/features/admin/admin-catalogo.component.ts
+ M frontend-dimabug/src/app/features/admin/admin.component.html
+ M frontend-dimabug/src/app/features/admin/admin.component.ts
+ M frontend-dimabug/src/app/features/conocimiento/conocimiento-form.component.css
+ M frontend-dimabug/src/app/features/conocimiento/conocimiento-form.component.html
+ M frontend-dimabug/src/app/features/conocimiento/conocimiento-form.component.ts
+ M frontend-dimabug/src/app/features/error-nuevo/error-nuevo.component.html
+ M frontend-dimabug/src/app/features/error-nuevo/error-nuevo.component.ts
+ M frontend-dimabug/src/app/features/hardware/hardware.component.html
+ M frontend-dimabug/src/app/features/hardware/hardware.component.ts
+ M frontend-dimabug/src/app/features/procedimiento/procedimiento-detalle.component.html
+ M frontend-dimabug/src/app/features/procedimiento/procedimiento-form.component.html
+ M frontend-dimabug/src/app/features/procedimiento/procedimiento-form.component.ts
+ M frontend-dimabug/src/app/features/procedimiento/procedimiento-lista.component.html
+ M frontend-dimabug/src/app/features/usuarios/usuarios.component.html
+ M frontend-dimabug/src/app/features/usuarios/usuarios.component.ts
+?? dima-bug-backend/src/main/java/cl/casol/backend/catalogo/application/port/out/CatalogoAdministrativoRepository.java
+?? dima-bug-backend/src/main/java/cl/casol/backend/catalogo/application/service/AdministrarCatalogosService.java
+?? dima-bug-backend/src/main/java/cl/casol/backend/catalogo/domain/CatalogoAdministrativo.java
+?? dima-bug-backend/src/main/java/cl/casol/backend/catalogo/domain/TipoCatalogo.java
+?? dima-bug-backend/src/main/java/cl/casol/backend/catalogo/domain/exception/CatalogoConflictoException.java
+?? dima-bug-backend/src/main/java/cl/casol/backend/catalogo/domain/exception/CatalogoInvalidoException.java
+?? dima-bug-backend/src/main/java/cl/casol/backend/catalogo/infrastructure/persistence/adapter/CatalogoAdministrativoRepositoryAdapter.java
+?? dima-bug-backend/src/main/java/cl/casol/backend/catalogo/infrastructure/web/AdminCatalogoController.java
+?? dima-bug-backend/src/main/java/cl/casol/backend/catalogo/infrastructure/web/dto/CambiarEstadoCatalogoRequest.java
+?? dima-bug-backend/src/main/java/cl/casol/backend/catalogo/infrastructure/web/dto/CatalogoAdministrativoResponse.java
+?? dima-bug-backend/src/main/java/cl/casol/backend/catalogo/infrastructure/web/dto/GuardarCatalogoRequest.java
+?? dima-bug-backend/src/main/java/cl/casol/backend/identidad/domain/exception/UltimoAdministradorException.java
+?? dima-bug-backend/src/main/java/cl/casol/backend/procedimiento/application/service/EdicionProcedimiento.java
+?? dima-bug-backend/src/main/java/cl/casol/backend/shared/application/service/VisibilidadContenidoService.java
+?? dima-bug-backend/src/main/java/cl/casol/backend/shared/infrastructure/web/VisibilidadContenidoConfig.java
+?? dima-bug-backend/src/test/java/cl/casol/backend/AdminCatalogoSecurityIntegrationTest.java
+?? dima-bug-backend/src/test/java/cl/casol/backend/ContenidoRestringidoSecurityIntegrationTest.java
+?? dima-bug-backend/src/test/java/cl/casol/backend/catalogo/application/service/AdministrarCatalogosServiceTest.java
+?? dima-bug-backend/src/test/java/cl/casol/backend/shared/application/service/VisibilidadContenidoServiceTest.java
+?? frontend-dimabug/src/app/core/guards/auth.guard.spec.ts
+?? frontend-dimabug/src/app/core/services/admin-catalogos-api.service.spec.ts
+?? frontend-dimabug/src/app/core/services/admin-catalogos-api.service.ts
+?? frontend-dimabug/src/app/features/admin/admin-catalogo.component.spec.ts
+?? frontend-dimabug/src/app/features/conocimiento/conocimiento-form.component.spec.ts
+?? frontend-dimabug/src/app/features/usuarios/usuarios.component.spec.ts
+
+Documentación: frontend-dimabug/docs/QA_MVP_ESTABILIZACION.md, QA_RESULTADOS.txt y QA_ARCHIVOS.txt.
+Cambio previo conservado: frontend-dimabug/angular.json (budgets).
+ZIP previo conservado: frontend-dimabug/dimabug-frontend.zip.

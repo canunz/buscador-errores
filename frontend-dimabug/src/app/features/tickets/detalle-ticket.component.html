@@ -1,0 +1,524 @@
+<app-loading-modal [visible]="!!subiendo" [mensaje]="subiendo" />
+
+<section class="tk-pagina">
+  <a [routerLink]="volverA" class="dt-volver">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M15 18l-6-6 6-6" /></svg>
+    {{ esStaff ? 'Volver a la bandeja' : 'Volver a mis tickets' }}
+  </a>
+
+  @if (aviso) {
+    <p class="tk-alerta ok" role="status">{{ aviso }} <button type="button" (click)="aviso = ''" aria-label="Cerrar">×</button></p>
+  }
+  @if (error && !dialogo) {
+    <p class="tk-alerta" role="alert">{{ error }} <button type="button" (click)="error = ''" aria-label="Cerrar">×</button></p>
+  }
+
+  @if (cargando) {
+    <div class="tk-card dt-cabecera"><div class="tk-esqueleto"></div><div class="tk-esqueleto"></div></div>
+  } @else if (ticket) {
+    <!-- Cabecera -->
+    <header [class]="'tk-card dt-cabecera borde-' + estadoInfo[ticket.estado].clase">
+      <div class="dt-linea">
+        <span class="tk-codigo dt-codigo">{{ ticket.codigo }}</span>
+        <span [class]="'tk-badge ' + estadoInfo[ticket.estado].clase">{{ estadoInfo[ticket.estado].label }}</span>
+        <span [class]="'tk-badge ' + prioridadInfo[ticket.prioridad].clase">Prioridad {{ prioridadInfo[ticket.prioridad].label | lowercase }}</span>
+        @if (puedeCambiarPrioridad) {
+          <button type="button" class="dt-link dt-cambiar-prioridad" (click)="abrirDialogo('prioridad')" [disabled]="procesando">Cambiar prioridad</button>
+        }
+      </div>
+      <h1>{{ ticket.titulo }}</h1>
+
+      <dl class="dt-datos">
+        @if (esStaff) {
+          <div><dt>Solicitante</dt><dd>{{ ticket.solicitante?.nombre || '—' }}</dd></div>
+          <div><dt>Asignado a</dt><dd>{{ ticket.asignado?.nombre || 'Sin asignar' }}</dd></div>
+        } @else {
+          <div><dt>Técnico a cargo</dt><dd>{{ ticket.asignado?.nombre || 'Aún sin técnico' }}</dd></div>
+          <div><dt>Equipo o sistema</dt><dd>{{ ubicacion || '—' }}</dd></div>
+        }
+        <div><dt>Creado</dt><dd [title]="larga(ticket.fechaCreacion)">{{ relativa(ticket.fechaCreacion) }}</dd></div>
+        <div><dt>Última actualización</dt><dd [title]="larga(ticket.fechaActualizacion)">{{ relativa(ticket.fechaActualizacion) }}</dd></div>
+      </dl>
+
+      <div class="dt-etiquetas">
+        @if (!editandoEtiquetas) {
+          <div class="tk-etiquetas">
+            @for (e of ticket.etiquetas; track e.id) {
+              <span class="tk-etiqueta" [style.background]="e.color" [style.color]="colorTexto(e.color)">{{ e.nombre }}</span>
+            } @empty {
+              <span class="dt-sin-etiquetas">Sin etiquetas</span>
+            }
+          </div>
+          @if (esSoporte && !finalizado) {
+            <button type="button" class="dt-link" (click)="abrirEditorEtiquetas()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20.6 13.4l-7.2 7.2a2 2 0 01-2.8 0L3 13V3h10l7.6 7.6a2 2 0 010 2.8z" /></svg>
+              Editar etiquetas
+            </button>
+          }
+        } @else {
+          <div class="dt-editor-etiquetas">
+            <p>Elige las etiquetas del ticket o crea una nueva:</p>
+            <div class="tk-etiquetas">
+              @for (e of catalogoEtiquetas; track e.id) {
+                <button
+                  type="button"
+                  class="dt-chip-etiqueta"
+                  [class.on]="etiquetasElegidas.has(e.id)"
+                  [style.--color]="e.color"
+                  [attr.aria-pressed]="etiquetasElegidas.has(e.id)"
+                  (click)="alternarEtiqueta(e.id)"
+                >
+                  <span class="dt-punto" [style.background]="e.color"></span>{{ e.nombre }}
+                </button>
+              } @empty {
+                <span class="dt-sin-etiquetas">Todavía no hay etiquetas. Crea la primera aquí abajo.</span>
+              }
+            </div>
+            <form class="dt-nueva-etiqueta" (ngSubmit)="crearEtiqueta()">
+              <input
+                class="tk-input"
+                name="nuevaEtiqueta"
+                [(ngModel)]="nuevaEtiqueta"
+                maxlength="40"
+                placeholder="Nueva etiqueta, por ejemplo «impresoras»"
+                aria-label="Nombre de la etiqueta nueva"
+              />
+              <button type="submit" class="tk-btn tk-btn-sec" [disabled]="!nuevaEtiqueta.trim() || creandoEtiqueta">
+                {{ creandoEtiqueta ? 'Creando…' : '+ Crear' }}
+              </button>
+            </form>
+            <div class="dt-editor-acciones">
+              <button type="button" class="tk-btn tk-btn-sec" (click)="editandoEtiquetas = false" [disabled]="procesando">Cancelar</button>
+              <button type="button" class="tk-btn tk-btn-primario" (click)="guardarEtiquetas()" [disabled]="procesando">Guardar etiquetas</button>
+            </div>
+          </div>
+        }
+      </div>
+    </header>
+
+    <!-- Siguiente paso para soporte -->
+    @if (siguientePaso; as paso) {
+      <div [class]="'tk-card dt-siguiente tono-' + paso.tono">
+        <div class="dt-siguiente-texto">
+          <strong>{{ paso.titulo }}</strong>
+          <p>{{ paso.texto }}</p>
+        </div>
+        <div class="dt-siguiente-acciones">
+          @if (ticket.estado === 'ABIERTO' && puedeTomar && !esAdmin) {
+            <button type="button" class="tk-btn tk-btn-primario" (click)="tomar()" [disabled]="procesando">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 5v14l11-7z" /></svg>
+              Tomar y empezar
+            </button>
+          }
+          @if (ticket.estado === 'EN_PROGRESO' && esMio) {
+            <button type="button" class="tk-btn tk-btn-exito" (click)="abrirDialogo('resolver')" [disabled]="procesando">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12l5 5L20 7" /></svg>
+              Marcar como resuelto
+            </button>
+            <button type="button" class="tk-btn tk-btn-ambar" (click)="abrirDialogo('espera')" [disabled]="procesando">Pedir información</button>
+            <button type="button" class="tk-btn tk-btn-sec" (click)="enfocarMensaje()">Escribir al usuario</button>
+          }
+          @if ((ticket.estado === 'EN_PROGRESO' || ticket.estado === 'EN_ESPERA') && !esMio && puedeTomar && !esAdmin) {
+            <button type="button" class="tk-btn tk-btn-primario" (click)="tomar()" [disabled]="procesando">Asignármelo</button>
+          }
+          @if (ticket.estado === 'RESUELTO' && esMio && !esSolicitante) {
+            <button type="button" class="tk-btn tk-btn-sec" (click)="abrirDialogo('cerrar')" [disabled]="procesando">Cerrar ticket</button>
+          }
+          @if (ticket.estado === 'EN_ESPERA' && esMio) {
+            <button type="button" class="tk-btn tk-btn-primario" (click)="retomar()" [disabled]="procesando">Retomar ticket</button>
+          }
+        </div>
+      </div>
+    }
+
+    <!-- Seguimiento en palabras simples para quien pidió ayuda -->
+    @if (!esStaff) {
+      <div class="tk-card dt-seguimiento">
+        <ol class="dt-etapas" aria-label="Avance del ticket">
+          @for (etapa of etapas; track etapa.titulo; let i = $index) {
+            <li [class]="'dt-etapa ' + etapa.estado" [class.cancelado]="ticket.estado === 'CANCELADO'">
+              <span class="dt-etapa-punto" aria-hidden="true">
+                @if (etapa.estado === 'hecha') {
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5L20 7" /></svg>
+                } @else {
+                  {{ i + 1 }}
+                }
+              </span>
+              <strong>{{ etapa.titulo }}</strong>
+              <small>{{ etapa.detalle }}</small>
+            </li>
+          }
+        </ol>
+        @if (queSigue; as q) {
+          <div [class]="'dt-que-sigue tono-' + q.tono">
+            <strong>{{ q.titulo }}</strong>
+            <p>{{ q.texto }}</p>
+          </div>
+        }
+      </div>
+    }
+
+    <!-- Llamado al solicitante cuando soporte lo resolvió -->
+    @if (ticket.estado === 'RESUELTO' && esSolicitante) {
+      <div class="dt-confirmar">
+        <div class="dt-confirmar-icono" aria-hidden="true">✓</div>
+        <div>
+          <strong>Soporte marcó este ticket como resuelto</strong>
+          <p>Revisa la solución. ¿Se arregló el problema?</p>
+        </div>
+        <div class="dt-confirmar-botones">
+          <button type="button" class="tk-btn tk-btn-exito" (click)="abrirDialogo('cerrar')">Sí, quedó solucionado</button>
+          <button type="button" class="tk-btn tk-btn-ambar" (click)="abrirDialogo('reabrir')">No, sigue fallando</button>
+        </div>
+      </div>
+    }
+
+    @if (cuerpoListo) {
+    <div class="dt-grid">
+      <div class="dt-principal">
+        <article class="tk-card dt-bloque">
+          <h2 class="tk-card-titulo">Descripción</h2>
+          <p class="dt-texto">{{ ticket.descripcion }}</p>
+          @if (adjuntosTicket.length) {
+            <div class="dt-archivos">
+              <span class="dt-archivos-titulo">Archivos adjuntos · {{ adjuntosTicket.length }}</span>
+              <app-galeria-adjuntos [ticketId]="ticket.id" [adjuntos]="adjuntosTicket" />
+            </div>
+          }
+          @if (ubicacion && esStaff) {
+            <p class="dt-ubicacion">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="4" width="18" height="12" rx="2" /><path d="M8 20h8M12 16v4" /></svg>
+              {{ ubicacion }}
+            </p>
+          }
+        </article>
+
+        @if (ticket.solucion || ticket.conocimiento) {
+          <article class="tk-card dt-bloque dt-solucion">
+            <h2 class="tk-card-titulo">Solución</h2>
+            @if (ticket.solucion) {
+              <p class="dt-texto">{{ ticket.solucion }}</p>
+            }
+            @if (ticket.conocimiento) {
+              <a class="dt-conocimiento" [routerLink]="conocimientoNavegable ? ['/conocimiento', ticket.conocimiento.id] : null" [class.sin-enlace]="!conocimientoNavegable">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 016.5 17H20" /><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z" /></svg>
+                <span>
+                  <small>Conocimiento vinculado</small>
+                  <strong>{{ ticket.conocimiento.titulo || 'Conocimiento #' + ticket.conocimiento.id }}</strong>
+                </span>
+                @if (ticket.conocimiento.estado === 'BORRADOR') {
+                  <em class="dt-borrador">Borrador</em>
+                }
+              </a>
+            }
+          </article>
+        }
+
+        <article class="tk-card dt-bloque">
+          <h2 class="tk-card-titulo">
+            {{ esStaff ? 'Conversación' : 'Conversación con soporte' }}
+            <span class="dt-contador">{{ ticket.comentarios.length }}</span>
+          </h2>
+
+          @if (ticket.comentarios.length) {
+            <ol class="dt-comentarios">
+              @for (c of ticket.comentarios; track c.id) {
+                <li [class.interno]="c.interno" [class.mio]="c.autor?.id === miId">
+                  <span class="dt-avatar" aria-hidden="true">{{ iniciales(c.autor?.nombre || '') }}</span>
+                  <div class="dt-burbuja">
+                    <div class="dt-burbuja-cabeza">
+                      <strong>{{ c.autor?.nombre || 'Usuario' }}</strong>
+                      @if (c.interno) {
+                        <span class="dt-interno">Interno</span>
+                      }
+                      <time [title]="larga(c.fecha)">{{ relativa(c.fecha) }}</time>
+                    </div>
+                    <p>{{ c.texto }}</p>
+                    @if (adjuntosDe(c.id).length) {
+                      <app-galeria-adjuntos [ticketId]="ticket.id" [adjuntos]="adjuntosDe(c.id)" [compacta]="true" />
+                    }
+                  </div>
+                </li>
+              }
+            </ol>
+          } @else {
+            <p class="dt-vacio-texto">Aún no hay mensajes. {{ finalizado || esAdmin ? '' : 'Escribe el primero.' }}</p>
+          }
+
+          @if (esAdmin && !finalizado) {
+            <p class="dt-cerrado-nota">Modo supervisión: ves la conversación, pero solo soporte y el usuario escriben aquí.</p>
+          } @else if (!finalizado) {
+            <form class="dt-composer" (ngSubmit)="enviarComentario()">
+              <textarea
+                class="tk-input"
+                name="comentario"
+                rows="3"
+                [(ngModel)]="textoComentario"
+                [maxlength]="maxComentario"
+                [placeholder]="esStaff ? 'Escribe una respuesta o una nota interna…' : ticket.estado === 'EN_ESPERA' ? 'Escribe aquí tu respuesta para soporte…' : 'Escribe un mensaje para soporte…'"
+                aria-label="Comentario"
+              ></textarea>
+              <app-selector-adjuntos
+                class="dt-composer-archivos"
+                texto="Adjuntar foto, video o PDF"
+                [archivos]="archivosComentario"
+                (archivosChange)="archivosComentario = $event"
+                [deshabilitado]="procesando"
+              />
+              <div class="dt-composer-pie">
+                @if (esStaff) {
+                  <label class="dt-switch">
+                    <input type="checkbox" name="interno" [(ngModel)]="comentarioInterno" />
+                    <span class="dt-switch-pista" aria-hidden="true"></span>
+                    Nota interna <small>(solo soporte la ve)</small>
+                  </label>
+                }
+                <span class="dt-largo">{{ textoComentario.length }}/{{ maxComentario }}</span>
+                <button type="submit" class="tk-btn tk-btn-primario" [disabled]="procesando || (!textoComentario.trim() && !archivosComentario.length)">
+                  {{ procesando ? 'Enviando…' : 'Enviar' }}
+                </button>
+              </div>
+            </form>
+          } @else {
+            <p class="dt-cerrado-nota">Este ticket está {{ estadoInfo[ticket.estado].label | lowercase }} y ya no admite mensajes.</p>
+          }
+        </article>
+      </div>
+
+      <aside class="dt-lateral">
+        @if (hayAcciones) {
+          <div class="tk-card dt-bloque">
+            <h2 class="tk-card-titulo">{{ esAdmin ? 'Repartir el trabajo' : esStaff ? 'Acciones' : '¿Ya no lo necesitas?' }}</h2>
+            @if (!esStaff) {
+              <p class="dt-ayuda-accion">Si el problema se arregló solo o lo creaste por error, puedes cancelarlo.</p>
+            }
+            <div class="dt-acciones">
+              @if (esSoporte && ticket.estado === 'EN_PROGRESO' && !esMio) {
+                <button type="button" class="tk-btn tk-btn-exito" (click)="abrirDialogo('resolver')" [disabled]="procesando">Resolver</button>
+                <button type="button" class="tk-btn tk-btn-ambar" (click)="abrirDialogo('espera')" [disabled]="procesando">Poner en espera</button>
+              }
+              @if (esSoporte && ticket.estado === 'EN_ESPERA' && !esMio) {
+                <button type="button" class="tk-btn tk-btn-primario" (click)="retomar()" [disabled]="procesando">Retomar</button>
+              }
+              @if (puedeCrearConocimiento) {
+                <button type="button" class="tk-btn tk-btn-sec" (click)="abrirDialogo('conocimiento')" [disabled]="procesando">
+                  Crear conocimiento desde ticket
+                </button>
+              }
+              @if (puedeGestionarComoSolicitante && ticket.estado === 'ABIERTO') {
+                <button type="button" class="tk-btn tk-btn-peligro" (click)="abrirDialogo('cancelar')" [disabled]="procesando">Cancelar ticket</button>
+              }
+            </div>
+
+            @if (puedeAsignarOtro && tecnicos.length) {
+              <div class="dt-asignar">
+                <label class="tk-campo">
+                  {{ ticket.asignado ? 'Reasignar a otro técnico' : 'Asignar a un técnico' }}
+                  <select [(ngModel)]="tecnicoElegido" name="tecnico">
+                    <option [ngValue]="null">Selecciona un técnico</option>
+                    @for (t of tecnicos; track t.id) {
+                      @if (t.id !== ticket.asignado?.id) {
+                        <option [ngValue]="t.id">{{ t.nombre }}</option>
+                      }
+                    }
+                  </select>
+                </label>
+                <button type="button" class="tk-btn tk-btn-sec" (click)="asignarTecnico()" [disabled]="!tecnicoElegido || procesando">{{ ticket.asignado ? 'Reasignar' : 'Asignar' }}</button>
+              </div>
+            }
+          </div>
+        }
+
+        <div class="tk-card dt-bloque">
+          <h2 class="tk-card-titulo">{{ esStaff ? 'Historial' : 'Movimientos del ticket' }}</h2>
+          <ol class="dt-historial">
+            @for (h of ticket.historial; track h.id) {
+              <li>
+                <span [class]="'dt-hito ' + colorHistorial(h.estadoNuevo)" aria-hidden="true"></span>
+                <div>
+                  <p>
+                    @if (cambioPrioridad(h); as cp) {
+                      <strong>{{ h.usuario?.nombre || 'Alguien' }}</strong> cambió la prioridad de {{ cp.de }} a
+                      <b>{{ cp.a }}</b>
+                    } @else if (h.estadoAnterior) {
+                      <strong>{{ h.usuario?.nombre || 'Alguien' }}</strong> cambió a
+                      <b>{{ estadoInfo[h.estadoNuevo].label }}</b>
+                    } @else {
+                      <strong>{{ h.usuario?.nombre || 'Alguien' }}</strong> creó el ticket
+                    }
+                  </p>
+                  @if (cambioPrioridad(h); as cp) {
+                    @if (cp.motivo) {
+                      <q>{{ cp.motivo }}</q>
+                    }
+                  } @else if (h.motivo) {
+                    <q>{{ h.motivo }}</q>
+                  }
+                  <time [title]="larga(h.fecha)">{{ relativa(h.fecha) }}</time>
+                </div>
+              </li>
+            }
+          </ol>
+        </div>
+      </aside>
+    </div>
+    } @else {
+      <div class="tk-card dt-bloque"><div class="tk-esqueleto"></div><div class="tk-esqueleto"></div></div>
+    }
+  }
+</section>
+
+<!-- Diálogos -->
+@if (dialogo && ticket) {
+  <div class="dt-capa" (click)="cerrarDialogo()" role="presentation">
+    <div class="dt-dialogo" role="dialog" aria-modal="true" (click)="$event.stopPropagation()">
+      @switch (dialogo) {
+        @case ('resolver') {
+          <div class="dt-dialogo-ticket">
+            <span class="tk-codigo">{{ ticket.codigo }}</span>
+            <strong>{{ ticket.titulo }}</strong>
+            <small>Solicitado por {{ ticket.solicitante?.nombre || 'un usuario' }}</small>
+          </div>
+          <h2>Resolver ticket</h2>
+          <p class="dt-dialogo-sub">Cuéntale al usuario qué hiciste. Él recibirá un aviso para confirmar si quedó solucionado.</p>
+
+          <div class="dt-paso-dialogo">
+            <span class="dt-paso-num">1</span>
+            <label class="tk-campo">
+              <span>¿Qué hiciste para solucionarlo? <span class="dt-req">*</span></span>
+              <textarea [(ngModel)]="solucion" name="solucion" rows="5" maxlength="2000" placeholder="Ej: Se reinstaló el driver de la impresora, se limpió la cola de impresión y se probó una página de prueba."></textarea>
+              <small class="dt-largo-campo">{{ solucion.length }}/2000</small>
+            </label>
+          </div>
+
+          <div class="dt-paso-dialogo">
+            <span class="dt-paso-num">2</span>
+            <div class="tk-campo">
+              <span>Evidencia <small>(opcional: captura o video de que ya funciona)</small></span>
+              <app-selector-adjuntos [archivos]="archivosDialogo" (archivosChange)="archivosDialogo = $event" [deshabilitado]="procesando" />
+            </div>
+          </div>
+
+          <div class="dt-paso-dialogo">
+            <span class="dt-paso-num">3</span>
+            <div class="tk-campo">
+              <span>Guía de conocimiento relacionada <small>(opcional)</small></span>
+              @if (conocimientoElegido) {
+                <div class="dt-elegido">
+                  <span>{{ conocimientoElegido.titulo }}</span>
+                  <button type="button" (click)="conocimientoElegido = null" aria-label="Quitar">×</button>
+                </div>
+              } @else {
+                <input class="tk-input" type="search" [(ngModel)]="textoConocimiento" (ngModelChange)="buscarConocimiento($event)" name="buscarConocimiento" placeholder="Buscar en la base de conocimiento" />
+                @if (sugerenciasConocimiento.length) {
+                  <ul class="dt-opciones">
+                    @for (s of sugerenciasConocimiento; track s.id) {
+                      <li><button type="button" (click)="conocimientoElegido = s">{{ s.titulo }}</button></li>
+                    }
+                  </ul>
+                } @else if (textoConocimiento.trim().length >= 3) {
+                  <small>No hay guías parecidas. Después de resolverlo puedes crear un conocimiento desde el ticket.</small>
+                }
+              }
+            </div>
+          </div>
+        }
+        @case ('espera') {
+          <h2>Poner en espera</h2>
+          <p class="dt-dialogo-sub">Úsalo cuando necesites una respuesta del solicitante.</p>
+          <label class="tk-campo">
+            <span>¿Qué estás esperando? <small>(opcional)</small></span>
+            <input class="tk-input" [(ngModel)]="motivo" name="motivo" maxlength="255" placeholder="Ej: Foto del mensaje de error" />
+          </label>
+          <div class="tk-campo">
+            <span>Archivos para el usuario <small>(opcional: una captura o video de ejemplo)</small></span>
+            <app-selector-adjuntos [archivos]="archivosDialogo" (archivosChange)="archivosDialogo = $event" [deshabilitado]="procesando" />
+          </div>
+          <p class="dt-dialogo-nota">El usuario recibe un aviso y verá tu pregunta en la conversación.</p>
+        }
+        @case ('cancelar') {
+          <h2>Cancelar ticket</h2>
+          <p class="dt-dialogo-sub">El ticket quedará cancelado y no se podrá modificar.</p>
+          <label class="tk-campo">
+            <span>Motivo <small>(opcional)</small></span>
+            <input class="tk-input" [(ngModel)]="motivo" name="motivo" maxlength="255" placeholder="Ej: Ya se solucionó solo" />
+          </label>
+        }
+        @case ('reabrir') {
+          <h2>{{ esSolicitante ? 'El problema sigue' : 'Reabrir ticket' }}</h2>
+          <p class="dt-dialogo-sub">El ticket volverá a soporte para seguir revisándolo.</p>
+          <label class="tk-campo">
+            <span>¿Qué sigue fallando? <span class="dt-req">*</span></span>
+            <textarea [(ngModel)]="motivo" name="motivo" rows="3" maxlength="255" placeholder="Cuéntanos qué pasó al probar la solución"></textarea>
+          </label>
+        }
+        @case ('cerrar') {
+          <h2>{{ esSolicitante ? '¡Qué bueno!' : 'Cerrar ticket' }}</h2>
+          <p class="dt-dialogo-sub">
+            {{ esSolicitante ? 'El ticket quedará cerrado. Si vuelve a pasar, crea uno nuevo.' : 'Úsalo si el usuario no respondió para confirmar. El ticket quedará cerrado.' }}
+          </p>
+          <label class="tk-campo">
+            <span>Comentario final <small>(opcional)</small></span>
+            <input class="tk-input" [(ngModel)]="motivo" name="motivo" maxlength="255" [placeholder]="esSolicitante ? 'Ej: Funciona perfecto, gracias' : 'Ej: El usuario no respondió en 3 días'" />
+          </label>
+        }
+        @case ('prioridad') {
+          <div class="dt-dialogo-ticket">
+            <span class="tk-codigo">{{ ticket.codigo }}</span>
+            <strong>{{ ticket.titulo }}</strong>
+            <small>Prioridad actual: {{ prioridadInfo[ticket.prioridad].label | lowercase }}</small>
+          </div>
+          <h2>Cambiar prioridad</h2>
+          <p class="dt-dialogo-sub">Corrige la urgencia si la que eligió el usuario no corresponde. Queda registrado en el historial.</p>
+          <div class="dt-prioridades" role="radiogroup" aria-label="Prioridad nueva">
+            @for (p of prioridades; track p) {
+              <button
+                type="button"
+                role="radio"
+                [class]="'dt-prioridad tk-badge ' + prioridadInfo[p].clase"
+                [class.on]="prioridadElegida === p"
+                [attr.aria-checked]="prioridadElegida === p"
+                [disabled]="p === ticket.prioridad"
+                (click)="prioridadElegida = p"
+              >
+                {{ prioridadInfo[p].label }}{{ p === ticket.prioridad ? ' (actual)' : '' }}
+              </button>
+            }
+          </div>
+          <label class="tk-campo">
+            <span>Motivo <small>(opcional)</small></span>
+            <input class="tk-input" [(ngModel)]="motivo" name="motivo" maxlength="180" placeholder="Ej: Afecta a toda la sucursal" />
+          </label>
+        }
+        @case ('conocimiento') {
+          <h2>Crear conocimiento desde el ticket</h2>
+          <p class="dt-dialogo-sub">
+            Se creará un conocimiento en <b>borrador</b> con el título, la descripción, la clasificación y la solución del ticket.
+            Un administrador lo revisa y lo publica con el flujo normal.
+          </p>
+          @if (!ticket.solucion) {
+            <p class="dt-advertencia">Este ticket aún no tiene solución escrita; el conocimiento quedará sin solución por ahora.</p>
+          }
+        }
+      }
+
+      @if (error) {
+        <p class="tk-alerta" role="alert">{{ error }}</p>
+      }
+
+      <div class="dt-dialogo-acciones">
+        <button type="button" class="tk-btn tk-btn-sec" (click)="cerrarDialogo()" [disabled]="procesando">Volver</button>
+        <button
+          type="button"
+          class="tk-btn"
+          [class.tk-btn-primario]="dialogo !== 'cancelar'"
+          [class.tk-btn-peligro]="dialogo === 'cancelar'"
+          (click)="confirmarDialogo()"
+          [disabled]="procesando || (dialogo === 'resolver' && !solucion.trim()) || (dialogo === 'reabrir' && !motivo.trim()) || (dialogo === 'prioridad' && !prioridadElegida)"
+        >
+          {{ procesando ? 'Guardando…' : dialogo === 'resolver' ? 'Marcar como resuelto' : dialogo === 'conocimiento' ? 'Crear borrador' : 'Confirmar' }}
+        </button>
+      </div>
+    </div>
+  </div>
+}
