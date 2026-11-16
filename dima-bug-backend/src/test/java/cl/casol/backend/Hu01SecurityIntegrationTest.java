@@ -9,6 +9,7 @@ import cl.casol.backend.identidad.application.service.SolicitudCodigo;
 import cl.casol.backend.identidad.domain.exception.CodigoAccesoInvalidoException;
 import cl.casol.backend.identidad.domain.exception.CorreoNoRegistradoException;
 import cl.casol.backend.identidad.domain.exception.CredencialesInvalidasException;
+import cl.casol.backend.identidad.domain.exception.IngresoBloqueadoException;
 import cl.casol.backend.identidad.domain.exception.ReenvioCodigoAnticipadoException;
 import cl.casol.backend.identidad.domain.exception.UsuarioInactivoException;
 import cl.casol.backend.identidad.infrastructure.security.JwtAuthenticationFilter;
@@ -115,6 +116,19 @@ class Hu01SecurityIntegrationTest {
     }
 
     @Test
+    void ingresoBloqueadoResponde429() throws Exception {
+        when(autenticarUsuarioService.verificarCodigo(anyString(), anyString()))
+                .thenThrow(new IngresoBloqueadoException(30));
+
+        mockMvc.perform(post("/api/auth/codigo/verificar")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"email\":\"user@example.com\",\"codigo\":\"000000\"}"))
+                .andExpect(status().isTooManyRequests())
+                .andExpect(jsonPath("$.segundosRestantes").value(30))
+                .andExpect(jsonPath("$.bloqueo").value(true));
+    }
+
+    @Test
     void codigoIncorrectoOVencidoResponde401() throws Exception {
         when(autenticarUsuarioService.verificarCodigo(anyString(), anyString()))
                 .thenThrow(new CodigoAccesoInvalidoException());
@@ -184,15 +198,16 @@ class Hu01SecurityIntegrationTest {
     }
 
     @Test
-    void administradorRecibeModoPasswordSinEnviarCodigo() throws Exception {
+    void administradorTambienRecibeCodigoDeAcceso() throws Exception {
         when(autenticarUsuarioService.solicitarCodigo("admin@example.com"))
-                .thenReturn(SolicitudCodigo.password());
+                .thenReturn(new SolicitudCodigo(300, 4));
 
         mockMvc.perform(post("/api/auth/codigo")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"email\":\"admin@example.com\"}"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.modo").value("PASSWORD"));
+                .andExpect(jsonPath("$.modo").value("CODIGO"))
+                .andExpect(jsonPath("$.segundosVigencia").value(300));
     }
 
     @Test

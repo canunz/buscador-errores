@@ -1,6 +1,6 @@
 package cl.casol.backend.identidad.application.service;
 
-/** Datos que el frontend necesita para mostrar el contador, el reenvío o el ingreso con contraseña. */
+/** Datos que el frontend necesita para mostrar el contador y el reenvío del código. */
 public record SolicitudCodigo(int segundosVigencia, int segundosReenvio, String modo) {
     public static final String CODIGO = "CODIGO";
     public static final String PASSWORD = "PASSWORD";

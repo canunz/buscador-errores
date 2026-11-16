@@ -147,6 +147,18 @@ public class GlobalExceptionHandler {
                 .body(Map.of("message", ex.getMessage(), "segundosRestantes", ex.getSegundosRestantes()));
     }
 
+    @ExceptionHandler(cl.casol.backend.identidad.domain.exception.IngresoBloqueadoException.class)
+    public ResponseEntity<Map<String, Object>> handleIngresoBloqueado(
+            cl.casol.backend.identidad.domain.exception.IngresoBloqueadoException ex
+    ) {
+        return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS)
+                .body(Map.of(
+                        "message", ex.getMessage(),
+                        "segundosRestantes", ex.getSegundosRestantes(),
+                        "bloqueo", true
+                ));
+    }
+
     @ExceptionHandler(cl.casol.backend.identidad.domain.exception.EnvioCodigoAccesoException.class)
     public ResponseEntity<Map<String, String>> handleEnvioCodigo(
             cl.casol.backend.identidad.domain.exception.EnvioCodigoAccesoException ex

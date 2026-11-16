@@ -3,12 +3,11 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService, CodigoAccesoError, SolicitudCodigoAcceso } from '../../../core/services/auth.service';
 
-type Paso = 'identificar' | 'codigo' | 'password';
+type Paso = 'identificar' | 'codigo';
 
 /**
  * 1) el usuario escribe su correo;
- * 2) Administrador y Soporte ingresan con contraseña;
- * 3) el resto recibe un código de 6 dígitos al correo.
+ * 2) Administrador, Soporte y Usuario reciben el mismo código de 6 dígitos.
  */
 @Component({
   selector: 'app-login',
@@ -25,14 +24,14 @@ export class LoginComponent implements OnDestroy {
   paso: Paso = 'identificar';
   loading = false;
   reenviando = false;
-  mostrarClave = false;
   error = '';
   aviso = '';
   identificador = '';
 
-  /** Momento en que vence el código y momento desde el que se puede reenviar. */
+  /** Momento en que vence el código, el reenvío y un bloqueo por intentos fallidos. */
   private venceEn = 0;
   private reenvioDesde = 0;
+  private bloqueoHasta = 0;
   private ahora = Date.now();
   private reloj: ReturnType<typeof setInterval> | null = null;
 
@@ -42,10 +41,6 @@ export class LoginComponent implements OnDestroy {
 
   codigoForm = this.fb.nonNullable.group({
     codigo: ['', [Validators.required, Validators.pattern(/^\d{6}$/)]],
-  });
-
-  passwordForm = this.fb.nonNullable.group({
-    password: ['', [Validators.required, Validators.minLength(6), Validators.maxLength(72)]],
   });
 
   get segundosParaVencer(): number {
@@ -58,6 +53,14 @@ export class LoginComponent implements OnDestroy {
 
   get codigoVencido(): boolean {
     return this.paso === 'codigo' && this.segundosParaVencer === 0;
+  }
+
+  get segundosBloqueo(): number {
+    return Math.max(0, Math.ceil((this.bloqueoHasta - this.ahora) / 1000));
+  }
+
+  get ingresoBloqueado(): boolean {
+    return this.segundosBloqueo > 0;
   }
 
   formatear(segundos: number): string {
@@ -87,12 +90,6 @@ export class LoginComponent implements OnDestroy {
         this.loading = false;
         this.identificador = valor;
         this.form.controls.email.disable();
-        if (res.modo === 'PASSWORD') {
-          this.paso = 'password';
-          this.aviso = '';
-          setTimeout(() => document.getElementById('password')?.focus(), 0);
-          return;
-        }
         this.iniciarContadores(res);
         this.paso = 'codigo';
         this.aviso = 'Enviamos un código de 6 dígitos a su correo. Revise también la carpeta de spam.';
@@ -101,7 +98,6 @@ export class LoginComponent implements OnDestroy {
       error: (err: CodigoAccesoError) => {
         this.loading = false;
         if (err.segundosRestantes) {
-          // Ya tiene un código reciente: se pasa directo a ingresarlo.
           this.identificador = valor;
           this.paso = 'codigo';
           this.form.controls.email.disable();
@@ -142,29 +138,13 @@ export class LoginComponent implements OnDestroy {
     });
   }
 
-  ingresarConPassword(): void {
-    this.error = '';
-    const password = this.passwordForm.controls.password.value;
-    if (this.passwordForm.invalid || !password) {
-      this.passwordForm.markAllAsTouched();
-      this.error = 'Ingrese su contraseña.';
-      return;
-    }
-    this.loading = true;
-    this.auth.login(this.identificador, password).subscribe({
-      next: () => {
-        this.router.navigateByUrl('/inicio');
-      },
-      error: (err: Error) => {
-        this.loading = false;
-        this.error = err.message || 'Correo o contraseña incorrectos.';
-      },
-    });
-  }
-
   /** Paso 2: validar el código e ingresar. */
   verificar(): void {
     this.error = '';
+    if (this.ingresoBloqueado) {
+      this.error = `Demasiados intentos fallidos. Espere ${this.formatear(this.segundosBloqueo)} para volver a intentar.`;
+      return;
+    }
     const codigo = this.codigoForm.controls.codigo.value.replace(/\D/g, '');
     this.codigoForm.controls.codigo.setValue(codigo);
     if (this.codigoVencido) {
@@ -182,16 +162,22 @@ export class LoginComponent implements OnDestroy {
         this.detenerReloj();
         this.router.navigateByUrl('/inicio');
       },
-      error: (err: Error) => {
+      error: (err: CodigoAccesoError) => {
         this.loading = false;
-        this.error = err.message;
         this.codigoForm.reset({ codigo: '' });
+        if (err.bloqueo && err.segundosRestantes) {
+          this.aplicarBloqueo(err.segundosRestantes);
+        }
+        this.error = err.message;
       },
     });
   }
 
   /** Deja solo números y envía automáticamente al completar los 6 dígitos. */
   alEscribirCodigo(): void {
+    if (this.ingresoBloqueado) {
+      return;
+    }
     const control = this.codigoForm.controls.codigo;
     const limpio = control.value.replace(/\D/g, '').slice(0, 6);
     if (limpio !== control.value) {
@@ -210,9 +196,9 @@ export class LoginComponent implements OnDestroy {
     this.aviso = '';
     this.venceEn = 0;
     this.reenvioDesde = 0;
-    this.mostrarClave = false;
+    this.bloqueoHasta = 0;
+    this.codigoForm.enable();
     this.codigoForm.reset({ codigo: '' });
-    this.passwordForm.reset({ password: '' });
   }
 
   ngOnDestroy(): void {
@@ -226,12 +212,27 @@ export class LoginComponent implements OnDestroy {
     this.arrancarReloj();
   }
 
+  private aplicarBloqueo(segundos: number): void {
+    this.bloqueoHasta = Date.now() + Math.max(1, segundos) * 1000;
+    this.codigoForm.disable();
+    this.arrancarReloj();
+  }
+
   private arrancarReloj(): void {
     this.ahora = Date.now();
     if (this.reloj) {
       return;
     }
-    this.reloj = setInterval(() => (this.ahora = Date.now()), 1000);
+    this.reloj = setInterval(() => {
+      this.ahora = Date.now();
+      if (this.bloqueoHasta && this.ahora >= this.bloqueoHasta) {
+        this.bloqueoHasta = 0;
+        if (this.paso === 'codigo') {
+          this.codigoForm.enable();
+          this.error = 'Ya puede intentar ingresar de nuevo.';
+        }
+      }
+    }, 1000);
   }
 
   private detenerReloj(): void {

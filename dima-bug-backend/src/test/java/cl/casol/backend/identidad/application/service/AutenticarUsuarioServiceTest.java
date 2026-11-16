@@ -10,6 +10,7 @@ import cl.casol.backend.identidad.domain.Usuario;
 import cl.casol.backend.identidad.domain.exception.CodigoAccesoInvalidoException;
 import cl.casol.backend.identidad.domain.exception.CorreoNoRegistradoException;
 import cl.casol.backend.identidad.domain.exception.CredencialesInvalidasException;
+import cl.casol.backend.identidad.domain.exception.IngresoBloqueadoException;
 import cl.casol.backend.identidad.domain.exception.ReenvioCodigoAnticipadoException;
 import cl.casol.backend.identidad.domain.exception.UsuarioInactivoException;
 import org.junit.jupiter.api.Test;
@@ -139,6 +140,20 @@ class AutenticarUsuarioServiceTest {
     }
 
     @Test
+    void tresCodigosIncorrectosBloqueanTreintaSegundos() {
+        when(usuarios.buscarPorEmail("user@example.com")).thenReturn(Optional.of(usuario(true)));
+        when(codigos.buscarPendiente(1)).thenReturn(Optional.of(codigo(AHORA.minusMinutes(1), 0, false)));
+        when(encoder.coincide("000000", "hash-codigo")).thenReturn(false);
+
+        assertThrows(CodigoAccesoInvalidoException.class, () -> service.verificarCodigo("user@example.com", "000000"));
+        assertThrows(CodigoAccesoInvalidoException.class, () -> service.verificarCodigo("user@example.com", "000000"));
+        IngresoBloqueadoException bloqueo = assertThrows(IngresoBloqueadoException.class,
+                () -> service.verificarCodigo("user@example.com", "000000"));
+        assertEquals(30, bloqueo.getSegundosRestantes());
+        assertThrows(IngresoBloqueadoException.class, () -> service.verificarCodigo("user@example.com", "123456"));
+    }
+
+    @Test
     void codigoVencidoSeRechazaAunqueSeaCorrecto() {
         when(usuarios.buscarPorEmail("user@example.com")).thenReturn(Optional.of(usuario(true)));
         when(codigos.buscarPendiente(1)).thenReturn(Optional.of(codigo(AHORA.minusMinutes(6), 0, false)));
@@ -186,13 +201,15 @@ class AutenticarUsuarioServiceTest {
     }
 
     @Test
-    void administradorPideIngresoConPasswordSinEnviarCodigo() {
+    void administradorRecibeCodigoDeAccesoIgualQueElUsuario() {
         when(usuarios.buscarPorEmail("admin@example.com")).thenReturn(Optional.of(usuario(true, "ADMINISTRADOR", "admin@example.com")));
+        when(codigos.buscarUltimo(1)).thenReturn(Optional.empty());
+        when(encoder.codificar(anyString())).thenReturn("hash-codigo");
 
         SolicitudCodigo solicitud = service.solicitarCodigo("admin@example.com");
 
-        assertEquals(SolicitudCodigo.PASSWORD, solicitud.modo());
-        verifyNoInteractions(envio, codigos);
+        assertEquals(SolicitudCodigo.CODIGO, solicitud.modo());
+        verify(envio).enviar(eq("admin@example.com"), anyString(), anyString(), eq(5));
     }
 
     @Test

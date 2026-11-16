@@ -18,10 +18,10 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Map;
 
 /**
- * Ingreso: Administrador/Soporte con contraseña; el resto con código al correo.
- * POST /api/auth/codigo           → modo CODIGO o PASSWORD según el rol.
- * POST /api/auth/codigo/verificar → código de 6 dígitos.
- * POST /api/auth/login            → correo y contraseña (solo staff).
+ * Ingreso con código al correo para todos los roles.
+ * POST /api/auth/codigo           → envía el código.
+ * POST /api/auth/codigo/verificar → valida el código y entrega el JWT.
+ * POST /api/auth/login            → correo y contraseña (pruebas / legado).
  */
 @RestController
 @RequestMapping("/api/auth")
@@ -43,14 +43,6 @@ public class AuthController {
             @Valid @RequestBody SolicitarCodigoRequest request
     ) {
         SolicitudCodigo solicitud = autenticarUsuarioService.solicitarCodigo(request.identificador());
-        if (SolicitudCodigo.PASSWORD.equals(solicitud.modo())) {
-            return ResponseEntity.ok(new SolicitarCodigoResponse(
-                    "Ingrese su contraseña.",
-                    0,
-                    0,
-                    SolicitudCodigo.PASSWORD
-            ));
-        }
         return ResponseEntity.ok(new SolicitarCodigoResponse(
                 "Enviamos un código de acceso a su correo.",
                 solicitud.segundosVigencia(),

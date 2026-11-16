@@ -9,6 +9,7 @@ import cl.casol.backend.identidad.domain.Usuario;
 import cl.casol.backend.identidad.domain.exception.CodigoAccesoInvalidoException;
 import cl.casol.backend.identidad.domain.exception.CorreoNoRegistradoException;
 import cl.casol.backend.identidad.domain.exception.CredencialesInvalidasException;
+import cl.casol.backend.identidad.domain.exception.IngresoBloqueadoException;
 import cl.casol.backend.identidad.domain.exception.ReenvioCodigoAnticipadoException;
 import cl.casol.backend.identidad.domain.exception.UsuarioInactivoException;
 import org.slf4j.Logger;
@@ -25,12 +26,12 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 
 /**
- * Ingreso: Administrador y Soporte con contraseña; el resto con código de 6 dígitos al correo.
+ * Ingreso con código de 6 dígitos al correo para todos los roles (Administrador, Soporte y Usuario).
  */
 @Service
 public class AutenticarUsuarioService {
 
-    public static final int MAX_INTENTOS = 5;
+    public static final int MAX_INTENTOS = 20;
 
     private static final Logger log = LoggerFactory.getLogger(AutenticarUsuarioService.class);
 
@@ -41,6 +42,7 @@ public class AutenticarUsuarioService {
     private final Clock clock;
     private final int minutosVigencia;
     private final int segundosReenvio;
+    private final ControlBloqueoIngreso bloqueoIngreso;
     private final SecureRandom random = new SecureRandom();
 
     @Autowired
@@ -50,10 +52,11 @@ public class AutenticarUsuarioService {
             EnvioCodigoAccesoPort envioCodigo,
             PasswordEncoderPort encoder,
             @Value("${dimabug.auth.codigo.minutos-vigencia:5}") int minutosVigencia,
-            @Value("${dimabug.auth.codigo.segundos-reenvio:4}") int segundosReenvio
+            @Value("${dimabug.auth.codigo.segundos-reenvio:4}") int segundosReenvio,
+            ControlBloqueoIngreso bloqueoIngreso
     ) {
         this(usuarioRepository, codigoRepository, envioCodigo, encoder, Clock.systemDefaultZone(),
-                minutosVigencia, segundosReenvio);
+                minutosVigencia, segundosReenvio, bloqueoIngreso);
     }
 
     AutenticarUsuarioService(
@@ -65,6 +68,20 @@ public class AutenticarUsuarioService {
             int minutosVigencia,
             int segundosReenvio
     ) {
+        this(usuarioRepository, codigoRepository, envioCodigo, encoder, clock, minutosVigencia, segundosReenvio,
+                new ControlBloqueoIngreso(clock));
+    }
+
+    AutenticarUsuarioService(
+            UsuarioRepository usuarioRepository,
+            CodigoAccesoRepository codigoRepository,
+            EnvioCodigoAccesoPort envioCodigo,
+            PasswordEncoderPort encoder,
+            Clock clock,
+            int minutosVigencia,
+            int segundosReenvio,
+            ControlBloqueoIngreso bloqueoIngreso
+    ) {
         this.usuarioRepository = usuarioRepository;
         this.codigoRepository = codigoRepository;
         this.envioCodigo = envioCodigo;
@@ -72,6 +89,7 @@ public class AutenticarUsuarioService {
         this.clock = clock;
         this.minutosVigencia = Math.max(1, minutosVigencia);
         this.segundosReenvio = Math.max(0, segundosReenvio);
+        this.bloqueoIngreso = bloqueoIngreso == null ? new ControlBloqueoIngreso(clock) : bloqueoIngreso;
     }
 
     /**
@@ -89,9 +107,6 @@ public class AutenticarUsuarioService {
         if (!usuario.isActivo()) {
             log.info("Código de acceso rechazado: la cuenta '{}' está inactiva", usuario.getEmail());
             throw new UsuarioInactivoException();
-        }
-        if (ingresaConPassword(usuario)) {
-            return SolicitudCodigo.password();
         }
         return emitirCodigo(usuario, false);
     }
@@ -134,16 +149,22 @@ public class AutenticarUsuarioService {
         if (!usuario.isActivo()) {
             throw new UsuarioInactivoException();
         }
-        if (ingresaConPassword(usuario)) {
-            throw new CredencialesInvalidasException();
+        bloqueoIngreso.exigirDesbloqueado(usuario.getEmail());
+        try {
+            coincidirCodigoPendiente(usuario, codigoIngresado, true);
+        } catch (CodigoAccesoInvalidoException ex) {
+            int segundos = bloqueoIngreso.registrarFallo(usuario.getEmail());
+            if (segundos > 0) {
+                throw new IngresoBloqueadoException(segundos);
+            }
+            throw new CodigoAccesoInvalidoException(bloqueoIngreso.intentosRestantes(usuario.getEmail()));
         }
-
-        coincidirCodigoPendiente(usuario, codigoIngresado, true);
+        bloqueoIngreso.limpiar(usuario.getEmail());
         usuarioRepository.registrarIngreso(usuario.getId(), LocalDateTime.now(clock));
         return usuario;
     }
 
-    /** Administrador y Soporte ingresan con contraseña. */
+    /** Ingreso con correo y contraseña (pruebas / legado). El inicio de sesión de la aplicación usa código. */
     @Transactional
     public Usuario autenticar(String identificador, String password) {
         Usuario usuario = buscar(identificador).orElseThrow(CredencialesInvalidasException::new);

@@ -8,7 +8,6 @@ import jakarta.mail.Session;
 import jakarta.mail.internet.MimeMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
@@ -22,12 +21,10 @@ import java.util.Base64;
 import java.util.Date;
 import java.util.Properties;
 import java.util.UUID;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 /** Envía el código de acceso por Gmail API (HTTPS) o, si no está conectada, por SMTP. */
 @Component
-public class EnvioCodigoAccesoCorreoAdapter implements EnvioCodigoAccesoPort, DisposableBean {
+public class EnvioCodigoAccesoCorreoAdapter implements EnvioCodigoAccesoPort {
 
     private static final Logger log = LoggerFactory.getLogger(EnvioCodigoAccesoCorreoAdapter.class);
 
@@ -43,15 +40,7 @@ public class EnvioCodigoAccesoCorreoAdapter implements EnvioCodigoAccesoPort, Di
     private final boolean mostrarEnLog;
     private final boolean exigirGmailApi;
 
-    /**
-     * Gmail tarda varios segundos en aceptar un correo. El envío se hace en segundo plano para que
-     * la pantalla avance de inmediato; si falla, queda en el log y el usuario puede reenviar.
-     */
-    private final ExecutorService envios = Executors.newFixedThreadPool(2, r -> {
-        Thread t = new Thread(r, "envio-codigo-acceso");
-        t.setDaemon(true);
-        return t;
-    });
+    /** El envío va en el mismo request: si Gmail falla, la pantalla no dice que el código ya salió. */
 
     public EnvioCodigoAccesoCorreoAdapter(
             ObjectProvider<JavaMailSender> mailSender,
@@ -82,8 +71,11 @@ public class EnvioCodigoAccesoCorreoAdapter implements EnvioCodigoAccesoPort, Di
     }
 
     private void despachar(String email, String nombre, String codigo, int minutosVigencia, boolean recuperacion) {
+        if (mostrarEnLog) {
+            log.warn("Código {} para {}: {}", recuperacion ? "de recuperación" : "de acceso", email, codigo);
+        }
         if (gmailApiLista()) {
-            envios.execute(() -> enviarPorGmailApi(email, nombre, codigo, minutosVigencia, recuperacion));
+            enviarPorGmailApi(email, nombre, codigo, minutosVigencia, recuperacion);
             return;
         }
         if (exigirGmailApi) {
@@ -93,12 +85,11 @@ public class EnvioCodigoAccesoCorreoAdapter implements EnvioCodigoAccesoPort, Di
         JavaMailSender sender = mailSender.getIfAvailable();
         if (sender == null || remitente.isEmpty()) {
             if (mostrarEnLog) {
-                log.warn("Correo no configurado. Código {} para {}: {}", recuperacion ? "de recuperación" : "de acceso", email, codigo);
                 return;
             }
             throw new EnvioCodigoAccesoException(new IllegalStateException("spring.mail no configurado"));
         }
-        envios.execute(() -> enviarAhora(sender, email, nombre, codigo, minutosVigencia, recuperacion));
+        enviarAhora(sender, email, nombre, codigo, minutosVigencia, recuperacion);
     }
 
     private boolean gmailApiLista() {
@@ -123,6 +114,7 @@ public class EnvioCodigoAccesoCorreoAdapter implements EnvioCodigoAccesoPort, Di
             log.info("Código {} enviado a {} vía Gmail API", recuperacion ? "de recuperación" : "de acceso", email);
         } catch (Exception e) {
             log.error("No se pudo enviar el código a {}", email, e);
+            throw new EnvioCodigoAccesoException(e);
         }
     }
 
@@ -134,6 +126,7 @@ public class EnvioCodigoAccesoCorreoAdapter implements EnvioCodigoAccesoPort, Di
             log.info("Código {} enviado a {}", recuperacion ? "de recuperación" : "de acceso", email);
         } catch (Exception e) {
             log.error("No se pudo enviar el código a {}", email, e);
+            throw new EnvioCodigoAccesoException(e);
         }
     }
 
@@ -141,13 +134,14 @@ public class EnvioCodigoAccesoCorreoAdapter implements EnvioCodigoAccesoPort, Di
         ClassPathResource banner = new ClassPathResource(BANNER);
         boolean conBanner = banner.exists();
         MimeMessageHelper helper = new MimeMessageHelper(mensaje, true, "UTF-8");
+        String perfil = nombrePerfil(nombre);
         helper.setFrom(from, nombreRemitente);
         helper.setTo(email);
         helper.setSubject(recuperacion
-                ? "Tu código de recuperación: " + codigo
-                : "Tu código de acceso a DimaBug: " + codigo);
+                ? perfil + ", tu código de recuperación: " + codigo
+                : perfil + ", tu código de acceso a DimaBug: " + codigo);
         helper.setSentDate(new Date());
-        helper.setText(texto(nombre, codigo, minutosVigencia, recuperacion), html(nombre, codigo, minutosVigencia, conBanner, recuperacion));
+        helper.setText(texto(perfil, codigo, minutosVigencia, recuperacion), html(perfil, codigo, minutosVigencia, conBanner, recuperacion));
         if (conBanner) {
             helper.addInline(BANNER_CID, banner, "image/jpeg");
         }
@@ -155,25 +149,20 @@ public class EnvioCodigoAccesoCorreoAdapter implements EnvioCodigoAccesoPort, Di
         mensaje.setHeader("Auto-Submitted", "auto-generated");
     }
 
-    @Override
-    public void destroy() {
-        envios.shutdown();
-    }
-
-    private String texto(String nombre, String codigo, int minutos, boolean recuperacion) {
+    private String texto(String perfil, String codigo, int minutos, boolean recuperacion) {
         if (recuperacion) {
-            return "Hola, " + saludo(nombre) + "\n\n"
-                    + "Se pidió recuperar la contraseña de tu cuenta de DimaBug. "
-                    + "Escribe este código en la pantalla de recuperación para continuar:\n\n"
+            return "Hola, " + perfil + "\n\n"
+                    + "Este código es para el perfil \"" + perfil + "\" asociado a este correo. "
+                    + "Escríbelo en la pantalla de recuperación para continuar:\n\n"
                     + "    " + codigo + "\n\n"
                     + "Vence en " + minutos + " minutos y sirve para un solo cambio de clave. No lo compartas con nadie.\n\n"
                     + "¿No fuiste tú? Puedes ignorar este correo. Sin este código nadie puede cambiar tu contraseña.\n\n"
                     + "DimaBug · Soporte TI Holding Dimarsa\n"
                     + "Mensaje automático, por favor no respondas este correo.";
         }
-        return "Hola, " + saludo(nombre) + "\n\n"
-                + "Se pidió ingresar a tu cuenta de DimaBug. "
-                + "Escribe este código en la pantalla de inicio de sesión para continuar:\n\n"
+        return "Hola, " + perfil + "\n\n"
+                + "Este código es para el perfil \"" + perfil + "\" asociado a este correo. "
+                + "Escríbelo en la pantalla de inicio de sesión para continuar:\n\n"
                 + "    " + codigo + "\n\n"
                 + "Vence en " + minutos + " minutos y sirve para un solo ingreso. No lo compartas con nadie.\n\n"
                 + "¿No fuiste tú? Puedes ignorar este correo. Sin este código nadie puede entrar a tu cuenta.\n\n"
@@ -181,7 +170,7 @@ public class EnvioCodigoAccesoCorreoAdapter implements EnvioCodigoAccesoPort, Di
                 + "Mensaje automático, por favor no respondas este correo.";
     }
 
-    private String html(String nombre, String codigo, int minutos, boolean conBanner, boolean recuperacion) {
+    private String html(String perfil, String codigo, int minutos, boolean conBanner, boolean recuperacion) {
         // Si el lector bloquea imágenes, la franja mantiene su alto y color y muestra "DimaBug".
         String cabecera = conBanner
                 ? """
@@ -235,10 +224,10 @@ public class EnvioCodigoAccesoCorreoAdapter implements EnvioCodigoAccesoPort, Di
                 """.formatted(
                         recuperacion ? "Código de recuperación DimaBug" : "Código de acceso DimaBug",
                         cabecera,
-                        HtmlUtils.htmlEscape(saludo(nombre)),
+                        HtmlUtils.htmlEscape(perfil),
                         recuperacion
-                                ? "Se pidió recuperar la contraseña de tu cuenta de DimaBug. Escribe este código en la pantalla de recuperación para continuar:"
-                                : "Se pidió ingresar a tu cuenta de DimaBug. Escribe este código en la pantalla de inicio de sesión para continuar:",
+                                ? "Este código es para el perfil <strong style=\"color:#f1f5f9;\">" + HtmlUtils.htmlEscape(perfil) + "</strong> asociado a este correo. Escríbelo en la pantalla de recuperación para continuar:"
+                                : "Este código es para el perfil <strong style=\"color:#f1f5f9;\">" + HtmlUtils.htmlEscape(perfil) + "</strong> asociado a este correo. Escríbelo en la pantalla de inicio de sesión para continuar:",
                         recuperacion ? "TU CÓDIGO DE RECUPERACIÓN" : "TU CÓDIGO DE ACCESO",
                         HtmlUtils.htmlEscape(codigo),
                         minutos,
@@ -249,12 +238,9 @@ public class EnvioCodigoAccesoCorreoAdapter implements EnvioCodigoAccesoPort, Di
                 );
     }
 
-    /** Usa solo el primer nombre para que el saludo sea más cercano. */
-    private String saludo(String nombre) {
+    /** Nombre de perfil de la cuenta (usuario_nombre). */
+    private String nombrePerfil(String nombre) {
         String limpio = nombre == null ? "" : nombre.trim();
-        if (limpio.isEmpty()) {
-            return "usuario";
-        }
-        return limpio.split("\\s+")[0];
+        return limpio.isEmpty() ? "usuario" : limpio;
     }
 }

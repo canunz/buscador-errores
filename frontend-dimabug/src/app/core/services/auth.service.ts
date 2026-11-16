@@ -23,7 +23,7 @@ export interface SolicitudCodigoAcceso {
 }
 
 /** Error del ingreso con código; en un reenvío anticipado indica cuántos segundos faltan. */
-export type CodigoAccesoError = Error & { segundosRestantes?: number };
+export type CodigoAccesoError = Error & { segundosRestantes?: number; bloqueo?: boolean };
 
 interface AuthMeResponse {
   email: string;
@@ -58,7 +58,7 @@ export class AuthService {
       .pipe(catchError((err: HttpErrorResponse) => throwError(() => this.codigoError(err, 'solicitar'))));
   }
 
-  /** Administrador y Soporte: correo y contraseña. */
+  /** Correo y contraseña (legado / pruebas). El ingreso de la aplicación usa código. */
   login(email: string, password: string): Observable<AuthSession> {
     return this.http
       .post<LoginResponse>(apiUrl('/auth/login'), {
@@ -181,6 +181,7 @@ export class AuthService {
     const error = new Error(this.codigoMensaje(err, paso)) as CodigoAccesoError;
     if (err.status === 429) {
       error.segundosRestantes = Number(err.error?.segundosRestantes) || 60;
+      error.bloqueo = paso === 'verificar' || err.error?.bloqueo === true;
     }
     return error;
   }
