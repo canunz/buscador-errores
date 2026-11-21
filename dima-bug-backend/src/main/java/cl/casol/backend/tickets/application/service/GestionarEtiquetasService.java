@@ -12,6 +12,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+/**
+ * Servicio de gestionar etiquetas (módulo de tickets).
+ * Aquí van las reglas de negocio; para leer o guardar datos usa los puertos de salida.
+ */
 @Service
 @Transactional
 public class GestionarEtiquetasService implements GestionarEtiquetasUseCase {
@@ -23,6 +27,7 @@ public class GestionarEtiquetasService implements GestionarEtiquetasUseCase {
         this.contexto = contexto;
     }
 
+    // Lista las incluir inactivas.
     @Override
     @Transactional(readOnly = true)
     public List<Etiqueta> listar(boolean incluirInactivas, String emailAutenticado) {
@@ -30,6 +35,7 @@ public class GestionarEtiquetasService implements GestionarEtiquetasUseCase {
         return etiquetas.listar(incluirInactivas && actor.esSoporte());
     }
 
+    // Crea el nombre.
     @Override
     public Etiqueta crear(String nombre, String color, NivelEtiqueta nivel, String emailAutenticado) {
         contexto.exigirSoporte(contexto.actor(emailAutenticado), "crear etiquetas");
@@ -38,6 +44,7 @@ public class GestionarEtiquetasService implements GestionarEtiquetasUseCase {
         return etiquetas.guardar(nueva);
     }
 
+    // Edita la etiqueta indicada.
     @Override
     public Etiqueta editar(Long etiquetaId, String nombre, String color, NivelEtiqueta nivel, String emailAutenticado) {
         contexto.exigirSoporte(contexto.actor(emailAutenticado), "editar etiquetas");
@@ -49,6 +56,7 @@ public class GestionarEtiquetasService implements GestionarEtiquetasUseCase {
         return etiquetas.guardar(etiqueta);
     }
 
+    // Cambia estado.
     @Override
     public Etiqueta cambiarEstado(Long etiquetaId, boolean activa, String emailAutenticado) {
         contexto.exigirSoporte(contexto.actor(emailAutenticado), "activar o desactivar etiquetas");
@@ -57,6 +65,7 @@ public class GestionarEtiquetasService implements GestionarEtiquetasUseCase {
         return etiquetas.guardar(etiqueta);
     }
 
+    // Busca la etiqueta indicada.
     private Etiqueta buscar(Long etiquetaId) {
         return etiquetas.buscarPorId(etiquetaId).orElseThrow(() -> new EtiquetaNoEncontradaException(etiquetaId));
     }

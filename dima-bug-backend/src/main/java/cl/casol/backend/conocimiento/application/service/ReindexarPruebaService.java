@@ -2,6 +2,10 @@ package cl.casol.backend.conocimiento.application.service;
 import cl.casol.backend.conocimiento.application.port.out.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.*;
+/**
+ * Servicio de reindexar prueba (módulo de conocimiento).
+ * Aquí van las reglas de negocio; para leer o guardar datos usa los puertos de salida.
+ */
 @Service public class ReindexarPruebaService {
  private final PruebaAdministrativaRepository pruebas;private final ConocimientoRepository conocimientos;private final IndexarConocimientoService index;
  public ReindexarPruebaService(PruebaAdministrativaRepository pruebas,ConocimientoRepository conocimientos,IndexarConocimientoService index){this.pruebas=pruebas;this.conocimientos=conocimientos;this.index=index;}

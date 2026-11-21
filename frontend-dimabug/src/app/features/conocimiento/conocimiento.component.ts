@@ -20,6 +20,7 @@ type TipoIcono = 'impresora' | 'pantalla' | 'red' | 'servidor' | 'documento';
   templateUrl: './conocimiento.component.html',
   styleUrl: './conocimiento.component.css',
 })
+/** Pantalla de la base de conocimiento: buscar, filtrar, publicar, editar y eliminar. */
 export class ConocimientoComponent implements OnInit, OnDestroy {
   private readonly conocimientosApi = inject(ConocimientoService);
   private readonly clasificacion = inject(ClasificacionService);
@@ -58,6 +59,7 @@ export class ConocimientoComponent implements OnInit, OnDestroy {
   publicandoId: number | null = null;
   private detalles = new Map<number, Conocimiento>();
 
+  /** Al abrir: carga los filtros y la lista. */
   ngOnInit(): void {
     const state = history.state as { conocimientoEliminado?: boolean } | null;
     if (state?.conocimientoEliminado) {
@@ -117,6 +119,7 @@ export class ConocimientoComponent implements OnInit, OnDestroy {
     });
   }
 
+  /** Cambia entre publicados y borradores. */
   mostrarPestana(pestana: 'publicados' | 'borradores'): void {
     this.pestana = pestana;
     if (pestana === 'publicados') {
@@ -157,6 +160,7 @@ export class ConocimientoComponent implements OnInit, OnDestroy {
     }, delayMs);
   }
 
+  /** Busca con el texto y los filtros elegidos. */
   buscar(): void {
     this.busquedaSub?.unsubscribe();
     this.listaSub?.unsubscribe();
@@ -228,6 +232,7 @@ export class ConocimientoComponent implements OnInit, OnDestroy {
       });
   }
 
+  /** Quita todos los filtros. */
   limpiar(): void {
     this.texto = '';
     this.hardwareId = null;
@@ -251,6 +256,7 @@ export class ConocimientoComponent implements OnInit, OnDestroy {
     void this.router.navigate(['/conocimiento', item.id]);
   }
 
+  /** Publica un borrador. */
   publicar(item: Conocimiento): void {
     if (!this.esAdministrador() || item.estado !== 'BORRADOR' || this.publicandoId != null) {
       return;
@@ -292,6 +298,7 @@ export class ConocimientoComponent implements OnInit, OnDestroy {
     this.pendienteEliminar = null;
   }
 
+  /** Elimina el conocimiento después de confirmar. */
   confirmarEliminar(): void {
     const item = this.pendienteEliminar;
     if (!item || this.eliminando) {

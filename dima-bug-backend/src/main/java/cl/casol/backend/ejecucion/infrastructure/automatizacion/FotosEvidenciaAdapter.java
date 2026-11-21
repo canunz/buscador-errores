@@ -7,8 +7,13 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
+/**
+ * Adaptador de fotos evidencia.
+ * Implementa un puerto de salida conectándose con un servicio externo o de infraestructura.
+ */
 @Component
 public class FotosEvidenciaAdapter implements FotosEvidenciaPort {
+    // Normaliza con los datos recibidos.
     public byte[] normalizar(byte[] entrada) {
         if(entrada==null || entrada.length==0 || entrada.length>2*1024*1024)throw invalida();
         try(var in=ImageIO.createImageInputStream(new ByteArrayInputStream(entrada))) {
@@ -24,6 +29,7 @@ public class FotosEvidenciaAdapter implements FotosEvidenciaPort {
             } finally {reader.dispose();}
         } catch(IOException | RuntimeException e) {throw invalida();}
     }
+    // Devuelve muestra.
     public byte[] muestra(Categoria categoria) {
         var image=new BufferedImage(900,500,BufferedImage.TYPE_INT_RGB);var g=image.createGraphics();
         try {
@@ -34,6 +40,7 @@ public class FotosEvidenciaAdapter implements FotosEvidenciaPort {
         } finally {g.dispose();}
         try {return jpeg(image);} catch(IOException e) {throw new IllegalStateException("No se pudo generar la imagen de prueba");}
     }
+    // Devuelve jpeg.
     private byte[] jpeg(BufferedImage original) throws IOException {
         var limpia=new BufferedImage(original.getWidth(),original.getHeight(),BufferedImage.TYPE_INT_RGB);var g=limpia.createGraphics();
         try {g.setColor(Color.WHITE);g.fillRect(0,0,limpia.getWidth(),limpia.getHeight());g.drawImage(original,0,0,null);}finally{g.dispose();}

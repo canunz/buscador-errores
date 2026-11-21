@@ -1,29 +1,33 @@
 package cl.casol.backend.identidad.domain.exception;
 
-public class IngresoBloqueadoException extends RuntimeException {
+/**
+ * Se lanza cuando el usuario se equivocó demasiadas veces con su código
+ * y tiene que esperar antes de volver a intentarlo.
+ *
+ * Hereda de CodigoAccesoInvalidoException porque, para el resto del sistema,
+ * sigue siendo un ingreso rechazado. La diferencia es que además informa
+ * cuántos segundos debe esperar el usuario.
+ */
+public class IngresoBloqueadoException extends CodigoAccesoInvalidoException {
 
     private final long segundosRestantes;
 
     public IngresoBloqueadoException(long segundosRestantes) {
         super(mensaje(segundosRestantes));
-        this.segundosRestantes = Math.max(1, segundosRestantes);
+        this.segundosRestantes = segundosRestantes;
     }
 
     public long getSegundosRestantes() {
         return segundosRestantes;
     }
 
+    /** Arma el mensaje en segundos o en minutos, según cuánto falte. */
     private static String mensaje(long segundos) {
-        long t = Math.max(1, segundos);
-        if (t < 60) {
-            return "Demasiados intentos fallidos. Espere " + t + " segundos para volver a intentar.";
+        if (segundos < 60) {
+            return "Demasiados intentos fallidos. Espere " + segundos + " segundos para volver a intentarlo.";
         }
-        long minutos = t / 60;
-        long resto = t % 60;
-        if (resto == 0) {
-            return "Demasiados intentos fallidos. Espere " + minutos
-                    + (minutos == 1 ? " minuto" : " minutos") + " para volver a intentar.";
-        }
-        return "Demasiados intentos fallidos. Espere " + minutos + " min " + resto + " s para volver a intentar.";
+        long minutos = (segundos + 59) / 60;
+        return "Demasiados intentos fallidos. Espere " + minutos
+                + (minutos == 1 ? " minuto" : " minutos") + " para volver a intentarlo.";
     }
 }

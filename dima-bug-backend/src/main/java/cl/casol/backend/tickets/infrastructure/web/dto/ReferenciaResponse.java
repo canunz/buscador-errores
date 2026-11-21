@@ -4,11 +4,13 @@ import cl.casol.backend.tickets.application.port.out.UsuarioTicket;
 
 /** Par id + nombre para usuarios y catálogos. */
 public record ReferenciaResponse(Number id, String nombre) {
+    // Devuelve usuario.
     public static ReferenciaResponse usuario(Integer id, UsuarioTicket usuario) {
         if (id == null) return null;
         return new ReferenciaResponse(id, usuario == null ? "Usuario " + id : usuario.nombre());
     }
 
+    // Devuelve catálogo.
     public static ReferenciaResponse catalogo(Integer id, String nombre) {
         return id == null ? null : new ReferenciaResponse(id, nombre);
     }

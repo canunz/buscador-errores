@@ -1,6 +1,9 @@
 package cl.casol.backend.conocimiento.application.service;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.event.*;
+/**
+ * Escucha el evento para reindexar prueba y reacciona cuando ocurre.
+ */
 @Component public class ReindexarPruebaListener {
  private static final org.slf4j.Logger LOG=org.slf4j.LoggerFactory.getLogger(ReindexarPruebaListener.class);
  private final ReindexarPruebaService servicio;

@@ -2,6 +2,10 @@ package cl.casol.backend.ejecucion.infrastructure.persistence.entity;
 import cl.casol.backend.ejecucion.domain.EvidenciaFotografica;
 import jakarta.persistence.*;
 import java.time.Instant;
+/**
+ * Entidad JPA de evidencia fotográfica. Representa una fila de la tabla se_evidencia.
+ * Se usa solo en la capa de persistencia; el dominio trabaja con su propio modelo.
+ */
 @Entity @Table(name="se_evidencia",uniqueConstraints=@UniqueConstraint(name="uk_evidencia_categoria",columnNames={"solicitud_id","categoria"}))
 public class EvidenciaFotograficaEntity {
     @Id @GeneratedValue(strategy=GenerationType.IDENTITY) private Long id;
@@ -12,5 +16,6 @@ public class EvidenciaFotograficaEntity {
     @Column(nullable=false) private Instant recibida;
     protected EvidenciaFotograficaEntity() { }
     public EvidenciaFotograficaEntity(EvidenciaFotografica e) { id=e.id();solicitudId=e.solicitudId();categoria=e.categoria();sha256=e.sha256();datos=e.datos();recibida=e.recibida(); }
+    // Convierte la entidad al modelo del dominio.
     public EvidenciaFotografica toDomain() { return new EvidenciaFotografica(id,solicitudId,categoria,sha256,datos,recibida); }
 }

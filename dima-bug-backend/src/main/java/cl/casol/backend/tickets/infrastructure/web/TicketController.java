@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.LinkedHashSet;
 import java.util.List;
 
+/** API HTTP de tickets. El controlador no tiene reglas: solo traduce el request al caso de uso. */
 @RestController
 @RequestMapping("/api/tickets")
 public class TicketController {
@@ -42,6 +43,7 @@ public class TicketController {
         this.etiquetar = etiquetar;
     }
 
+    /** POST /api/tickets: crea un ticket con los datos del formulario. */
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public TicketDetalleResponse crear(@Valid @RequestBody CrearTicketRequest request, Authentication authentication) {
@@ -50,6 +52,7 @@ public class TicketController {
                 request.moduloId()), authentication.getName()));
     }
 
+    /** GET /api/tickets: lista tickets con filtros (estado, prioridad, texto) y paginación. */
     @GetMapping
     public PaginaResponse<TicketResumenResponse> listar(
             @RequestParam(required = false) EstadoTicket estado,
@@ -65,28 +68,32 @@ public class TicketController {
                 TicketResumenResponse::from);
     }
 
-    /** Contadores de la bandeja en una sola llamada (antes eran ocho). */
+    /** GET /api/tickets/conteo: totales por estado para los indicadores, en una sola llamada. */
     @GetMapping("/conteo")
     public ConteoTicketsResponse conteo(Authentication authentication) {
         return ConteoTicketsResponse.from(consultar.conteo(authentication.getName()));
     }
 
+    /** GET /api/tickets/sugerencias: soluciones parecidas al texto escrito. */
     @GetMapping("/sugerencias")
     public List<ConocimientoSugeridoResponse> sugerencias(@RequestParam(required = false) String texto) {
         return consultar.sugerencias(texto).stream().map(ConocimientoSugeridoResponse::from).toList();
     }
 
+    /** GET /api/tickets/{id}: detalle con comentarios e historial. */
     @GetMapping("/{id}")
     public TicketDetalleResponse detalle(@PathVariable Long id, Authentication authentication) {
         return TicketDetalleResponse.from(consultar.detalle(id, authentication.getName()));
     }
 
+    /** «Tomar» o asignar: el email sale del token, no del cuerpo, para no falsificar quién actúa. */
     @PatchMapping("/{id}/asignacion")
     public TicketDetalleResponse asignar(@PathVariable Long id, @Valid @RequestBody AsignarTicketRequest request,
             Authentication authentication) {
         return TicketDetalleResponse.from(asignar.asignar(id, request.asignadoId(), authentication.getName()));
     }
 
+    /** PATCH /api/tickets/{id}/estado: cambia el estado (en espera, cerrado, etc.). */
     @PatchMapping("/{id}/estado")
     public TicketDetalleResponse cambiarEstado(@PathVariable Long id,
             @Valid @RequestBody CambiarEstadoTicketRequest request, Authentication authentication) {
@@ -94,6 +101,7 @@ public class TicketController {
                 authentication.getName()));
     }
 
+    /** PATCH /api/tickets/{id}/resolucion: marca el ticket como resuelto con su solución. */
     @PatchMapping("/{id}/resolucion")
     public TicketDetalleResponse resolver(@PathVariable Long id, @Valid @RequestBody ResolverTicketRequest request,
             Authentication authentication) {
@@ -101,12 +109,14 @@ public class TicketController {
                 authentication.getName()));
     }
 
+    /** POST /api/tickets/{id}/conocimiento: crea un conocimiento desde el ticket. */
     @PostMapping("/{id}/conocimiento")
     @ResponseStatus(HttpStatus.CREATED)
     public TicketDetalleResponse crearConocimiento(@PathVariable Long id, Authentication authentication) {
         return TicketDetalleResponse.from(resolver.crearConocimientoDesdeTicket(id, authentication.getName()));
     }
 
+    /** POST /api/tickets/{id}/comentarios: agrega un comentario. */
     @PostMapping("/{id}/comentarios")
     @ResponseStatus(HttpStatus.CREATED)
     public TicketDetalleResponse comentar(@PathVariable Long id, @Valid @RequestBody ComentarTicketRequest request,
@@ -115,6 +125,7 @@ public class TicketController {
                 authentication.getName()));
     }
 
+    /** PUT /api/tickets/{id}/etiquetas: asigna etiquetas. */
     @PutMapping("/{id}/etiquetas")
     public TicketDetalleResponse etiquetar(@PathVariable Long id, @Valid @RequestBody EtiquetarTicketRequest request,
             Authentication authentication) {

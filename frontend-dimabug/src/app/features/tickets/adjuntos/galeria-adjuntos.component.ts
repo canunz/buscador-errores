@@ -70,6 +70,7 @@ import { TicketService } from '../../../core/services/ticket.service';
     }
   `,
   styles: `
+
     .ga { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; margin: 0; padding: 0; list-style: none; }
     .ga.compacta { grid-template-columns: repeat(auto-fill, minmax(110px, 140px)); margin-top: 8px; }
     .ga-item {
@@ -100,9 +101,7 @@ import { TicketService } from '../../../core/services/ticket.service';
     .ga-contenido img, .ga-contenido video { max-width: 100%; max-height: calc(100vh - 140px); border-radius: 10px; }
     .ga-contenido iframe { width: 100%; height: calc(100vh - 140px); border: 0; border-radius: 10px; background: #fff; }
     .ga-error { margin: 6px 0 0; color: #b91c1c; font-size: 12.5px; }
-    :host-context(.tema-oscuro) .ga-item { background: #111a2e; border-color: #1f2a3d; }
-    :host-context(.tema-oscuro) .ga-pie strong { color: #e5e7eb; }
-  `,
+    `,
 })
 export class GaleriaAdjuntosComponent implements OnChanges {
   private readonly tickets = inject(TicketService);

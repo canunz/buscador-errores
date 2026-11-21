@@ -42,6 +42,7 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    // Maneja el caso de archivo y arma la respuesta de error.
     @ExceptionHandler(cl.casol.backend.shared.application.archivo.ArchivoException.class)
     public ResponseEntity<Map<String, String>> handleArchivo(cl.casol.backend.shared.application.archivo.ArchivoException ex) {
         HttpStatus status = switch (ex.motivo()) {
@@ -53,6 +54,7 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(status).body(Map.of("message", ex.getMessage()));
     }
 
+    // Maneja el caso de tamano archivo y arma la respuesta de error.
     @ExceptionHandler(org.springframework.web.multipart.MaxUploadSizeExceededException.class)
     public ResponseEntity<Map<String, String>> handleTamanoArchivo(Exception ex) {
         return ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE)
@@ -68,26 +70,31 @@ public class GlobalExceptionHandler {
             MaterialApoyoNoEncontradoException.class, ProcedimientoNoEncontradoException.class,
             cl.casol.backend.identidad.domain.exception.ContactoDepartamentoNoEncontradoException.class, PasoNoEncontradoException.class, EjecucionNoEncontradaException.class,
             EjecucionPasoNoEncontradoException.class})
+    // Maneja el caso de no encontrado y arma la respuesta de error.
     public ResponseEntity<Map<String, String>> handleNoEncontrado(RuntimeException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", ex.getMessage()));
     }
 
     @ExceptionHandler({cl.casol.backend.conocimiento.domain.exception.MaterialDuplicadoException.class, cl.casol.backend.conocimiento.domain.exception.SolucionDuplicadaException.class, cl.casol.backend.conocimiento.domain.exception.PruebaConflictoException.class, cl.casol.backend.identidad.domain.exception.OrganizacionConflictoException.class, cl.casol.backend.identidad.domain.exception.UltimoAdministradorException.class, cl.casol.backend.catalogo.domain.exception.CatalogoConflictoException.class, EmailDuplicadoException.class, PruebaYaAsociadaException.class,
             OrdenPasoDuplicadoException.class, cl.casol.backend.conocimiento.domain.exception.UltimaSolucionActivaException.class, cl.casol.backend.conocimiento.domain.exception.SolucionInactivaException.class})
+    // Maneja el caso de conflicto y arma la respuesta de error.
     public ResponseEntity<Map<String, String>> handleConflicto(RuntimeException ex) {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("message", ex.getMessage()));
     }
 
+    // Maneja el caso de versión y arma la respuesta de error.
     @ExceptionHandler(org.springframework.orm.ObjectOptimisticLockingFailureException.class)
     public ResponseEntity<Map<String,String>> handleVersion(Exception ex) {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("message","El registro cambió en otra sesión. Recarga y revisa los cambios"));
     }
 
+    // Maneja el caso de conflicto ejecución y arma la respuesta de error.
     @ExceptionHandler(cl.casol.backend.ejecucion.domain.exception.ConflictoEjecucionException.class)
     public ResponseEntity<Map<String,String>> handleConflictoEjecucion(RuntimeException ex) {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("message",ex.getMessage()));
     }
 
+    // Maneja el caso de integridad y arma la respuesta de error.
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<Map<String, String>> handleIntegridad(DataIntegrityViolationException ex) {
         return ResponseEntity.status(HttpStatus.CONFLICT)
@@ -98,10 +105,12 @@ public class GlobalExceptionHandler {
             ClasificacionInvalidaException.class, AsignacionSolucionInvalidaException.class,
             EstadoProcedimientoInvalidoException.class, cl.casol.backend.shared.domain.DestinatarioInvalidoException.class, ReglaEjecucionException.class, cl.casol.backend.correo.application.service.GmailException.class,
             EstadoConocimientoNoEvaluableException.class, cl.casol.backend.conocimiento.domain.exception.TituloSolucionInvalidoException.class})
+    // Maneja el caso de regla negocio y arma la respuesta de error.
     public ResponseEntity<Map<String, String>> handleReglaNegocio(RuntimeException ex) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", ex.getMessage()));
     }
 
+    // Maneja el caso de validation y arma la respuesta de error.
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, String>> handleValidation(
             MethodArgumentNotValidException ex
@@ -116,6 +125,7 @@ public class GlobalExceptionHandler {
                 .body(Map.of("message", message));
     }
 
+    // Maneja el caso de unreadable request y arma la respuesta de error.
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<Map<String, String>> handleUnreadableRequest(
             HttpMessageNotReadableException ex
@@ -125,6 +135,7 @@ public class GlobalExceptionHandler {
                 .body(Map.of("message", "Request inválido"));
     }
 
+    // Maneja el caso de correo no registrado y arma la respuesta de error.
     @ExceptionHandler(cl.casol.backend.identidad.domain.exception.CorreoNoRegistradoException.class)
     public ResponseEntity<Map<String, String>> handleCorreoNoRegistrado(
             cl.casol.backend.identidad.domain.exception.CorreoNoRegistradoException ex
@@ -132,6 +143,7 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", ex.getMessage()));
     }
 
+    // Maneja el caso de código inválido y arma la respuesta de error.
     @ExceptionHandler(cl.casol.backend.identidad.domain.exception.CodigoAccesoInvalidoException.class)
     public ResponseEntity<Map<String, String>> handleCodigoInvalido(
             cl.casol.backend.identidad.domain.exception.CodigoAccesoInvalidoException ex
@@ -139,6 +151,16 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", ex.getMessage()));
     }
 
+    /** Demasiados códigos incorrectos: se responde 429 con los segundos que faltan para volver a intentar. */
+    @ExceptionHandler(cl.casol.backend.identidad.domain.exception.IngresoBloqueadoException.class)
+    public ResponseEntity<Map<String, Object>> handleIngresoBloqueado(
+            cl.casol.backend.identidad.domain.exception.IngresoBloqueadoException ex
+    ) {
+        return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS)
+                .body(Map.of("message", ex.getMessage(), "segundosRestantes", ex.getSegundosRestantes()));
+    }
+
+    // Maneja el caso de reenvío anticipado y arma la respuesta de error.
     @ExceptionHandler(cl.casol.backend.identidad.domain.exception.ReenvioCodigoAnticipadoException.class)
     public ResponseEntity<Map<String, Object>> handleReenvioAnticipado(
             cl.casol.backend.identidad.domain.exception.ReenvioCodigoAnticipadoException ex
@@ -147,18 +169,7 @@ public class GlobalExceptionHandler {
                 .body(Map.of("message", ex.getMessage(), "segundosRestantes", ex.getSegundosRestantes()));
     }
 
-    @ExceptionHandler(cl.casol.backend.identidad.domain.exception.IngresoBloqueadoException.class)
-    public ResponseEntity<Map<String, Object>> handleIngresoBloqueado(
-            cl.casol.backend.identidad.domain.exception.IngresoBloqueadoException ex
-    ) {
-        return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS)
-                .body(Map.of(
-                        "message", ex.getMessage(),
-                        "segundosRestantes", ex.getSegundosRestantes(),
-                        "bloqueo", true
-                ));
-    }
-
+    // Maneja el caso de envío código y arma la respuesta de error.
     @ExceptionHandler(cl.casol.backend.identidad.domain.exception.EnvioCodigoAccesoException.class)
     public ResponseEntity<Map<String, String>> handleEnvioCodigo(
             cl.casol.backend.identidad.domain.exception.EnvioCodigoAccesoException ex
@@ -166,16 +177,19 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(Map.of("message", ex.getMessage()));
     }
 
+    // Maneja el caso de usuario con registros y arma la respuesta de error.
     @ExceptionHandler(cl.casol.backend.identidad.domain.exception.UsuarioConRegistrosException.class)
     public ResponseEntity<Map<String, String>> handleUsuarioConRegistros(RuntimeException ex) {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("message", ex.getMessage()));
     }
 
+    // Maneja el caso de auto eliminación y arma la respuesta de error.
     @ExceptionHandler(cl.casol.backend.identidad.domain.exception.AutoEliminacionException.class)
     public ResponseEntity<Map<String, String>> handleAutoEliminacion(RuntimeException ex) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", ex.getMessage()));
     }
 
+    // Maneja el caso de recuperación no disponible y arma la respuesta de error.
     @ExceptionHandler(cl.casol.backend.identidad.domain.exception.RecuperacionNoDisponibleException.class)
     public ResponseEntity<Map<String, String>> handleRecuperacionNoDisponible(
             cl.casol.backend.identidad.domain.exception.RecuperacionNoDisponibleException ex
@@ -183,6 +197,7 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", ex.getMessage()));
     }
 
+    // Maneja el caso de credenciales invalidas y arma la respuesta de error.
     @ExceptionHandler(CredencialesInvalidasException.class)
     public ResponseEntity<Map<String, String>> handleCredencialesInvalidas(
             CredencialesInvalidasException ex
@@ -196,11 +211,13 @@ public class GlobalExceptionHandler {
             org.springframework.dao.DataAccessException.class,
             org.springframework.jdbc.CannotGetJdbcConnectionException.class
     })
+    // Maneja el caso de base de datos y arma la respuesta de error.
     public ResponseEntity<Map<String, String>> handleBaseDeDatos(Exception ex) {
         return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
                 .body(Map.of("message", "No se pudo conectar con la base de datos. Intente de nuevo."));
     }
 
+    // Maneja el caso de usuario inactivo y arma la respuesta de error.
     @ExceptionHandler(UsuarioInactivoException.class)
     public ResponseEntity<Map<String, String>> handleUsuarioInactivo(
             UsuarioInactivoException ex

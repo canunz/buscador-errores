@@ -7,16 +7,26 @@ import cl.casol.backend.procedimiento.infrastructure.persistence.repository.Paso
 import org.springframework.stereotype.Component;
 import java.util.*;
 
+/**
+ * Adaptador de base de datos para paso.
+ * Implementa el puerto de salida usando JPA y convierte entre entidades y objetos del dominio.
+ */
 @Component
 public class PasoRepositoryAdapter implements PasoRepository {
     private final PasoJpaRepository repository;
     @jakarta.persistence.PersistenceContext private jakarta.persistence.EntityManager em;
     public PasoRepositoryAdapter(PasoJpaRepository repository){this.repository=repository;}
+    // Busca por procedimiento ordenados.
     public List<Paso> buscarPorProcedimientoOrdenados(Integer id){return repository.findByProcedimientoIdOrderByOrdenAsc(id).stream().map(PasoMapper::toDomain).toList();}
+    // Busca por id.
     public Optional<Paso> buscarPorId(Integer id){return repository.findById(id).map(PasoMapper::toDomain);}
+    // Indica si existe orden.
     public boolean existeOrden(Integer p,Integer o){return repository.existsByProcedimientoIdAndOrden(p,o);}
+    // Indica si existe orden excluyendo paso.
     public boolean existeOrdenExcluyendoPaso(Integer p,Integer o,Integer id){return repository.existsByProcedimientoIdAndOrdenAndIdNot(p,o,id);}
+    // Guarda el paso.
     public Paso guardar(Paso paso){var entity=PasoMapper.toEntity(paso);if(paso.id()!=null)repository.findById(paso.id()).ifPresent(v->entity.setHistorial(v.getHistorial()));return PasoMapper.toDomain(repository.save(entity));}
+    // Configura el paso.
     public Paso configurar(Paso paso,Integer actorId){
         var anterior=repository.findById(paso.id()).orElseThrow();
         var json=tools.jackson.databind.json.JsonMapper.builder().build();
@@ -26,7 +36,9 @@ public class PasoRepositoryAdapter implements PasoRepository {
         var entity=PasoMapper.toEntity(paso);entity.setHistorial(json.writeValueAsString(historial));
         return PasoMapper.toDomain(repository.save(entity));
     }
+    // Elimina por id.
     public void eliminar(Integer id){em.createQuery("delete from MaterialApoyoEntity m where m.pasoId=:id").setParameter("id",id).executeUpdate();repository.deleteById(id);em.flush();}
+    // Reordena los ordenados.
     public void reordenar(List<Paso> ordenados){
         int max=ordenados.stream().mapToInt(Paso::orden).max().orElse(0);
         if(max>Integer.MAX_VALUE-ordenados.size())throw new cl.casol.backend.procedimiento.domain.exception.EstadoProcedimientoInvalidoException("No se puede reservar el orden temporal");

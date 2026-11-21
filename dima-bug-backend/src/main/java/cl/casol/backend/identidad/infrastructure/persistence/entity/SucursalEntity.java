@@ -3,6 +3,10 @@ package cl.casol.backend.identidad.infrastructure.persistence.entity;
 import cl.casol.backend.identidad.domain.Sucursal;
 import jakarta.persistence.*;
 
+/**
+ * Entidad JPA de sucursal. Representa una fila de la tabla u_sucursal.
+ * Se usa solo en la capa de persistencia; el dominio trabaja con su propio modelo.
+ */
 @Entity @Table(name="u_sucursal",uniqueConstraints=@UniqueConstraint(name="uk_sucursal_codigo",columnNames="sucursal_codigo"))
 public class SucursalEntity {
     @Id @GeneratedValue(strategy=GenerationType.IDENTITY) @Column(name="sucursal_id") private Integer id;
@@ -22,5 +26,6 @@ public class SucursalEntity {
         responsableEmail=s.responsableEmail();activa=s.activa();version=s.version();
         destinatariosJson=cl.casol.backend.procedimiento.infrastructure.persistence.mapper.ConfiguracionPasoJson.escribir(s.destinatarios());
     }
+    // Convierte la entidad al modelo del dominio.
     public Sucursal toDomain() { return new Sucursal(id,codigo,nombre,responsableNombre,responsableEmail,activa,version,cl.casol.backend.procedimiento.infrastructure.persistence.mapper.ConfiguracionPasoJson.destinatarios(destinatariosJson),ciudad,responsableCargo); }
 }

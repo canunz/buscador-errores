@@ -8,6 +8,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
+/**
+ * Controlador REST de material paso. Atiende las rutas que empiezan con /api/procedimientos/{procedimientoId}/pasos/{pasoId}/materiales.
+ * Solo recibe la petición, valida los datos y llama al caso de uso que corresponde.
+ */
 @RestController
 @RequestMapping("/api/procedimientos/{procedimientoId}/pasos/{pasoId}/materiales")
 public class MaterialPasoController {
@@ -18,11 +22,14 @@ public class MaterialPasoController {
         this.auditoria=auditoria;this.service = service;
         this.archivos = archivos;
     }
+    // GET /api/procedimientos/{procedimientoId}/pasos/{pasoId}/materiales: listar.
     @GetMapping public List<MaterialApoyoResponse> listar(@PathVariable Integer procedimientoId,@PathVariable Integer pasoId){return service.listar(procedimientoId,pasoId).stream().map(m -> MaterialApoyoResponse.fromPaso(m,procedimientoId,pasoId)).toList();}
     @PostMapping @ResponseStatus(HttpStatus.CREATED) @org.springframework.transaction.annotation.Transactional
     public MaterialApoyoResponse crear(@PathVariable Integer procedimientoId,@PathVariable Integer pasoId,@Valid @RequestBody GuardarMaterialApoyoRequest r,org.springframework.security.core.Authentication a){cl.casol.backend.shared.infrastructure.web.ArchivoHttp.validarEnlace(r.url());var m=service.crear(procedimientoId,pasoId,r.nombre(),r.tipo(),r.url());auditoria.registrar(procedimientoId,"MATERIAL_CREADO",a.getName(),null,m);return MaterialApoyoResponse.fromPaso(m,procedimientoId,pasoId);}
+    // PUT /api/procedimientos/{procedimientoId}/pasos/{pasoId}/materiales/{materialId}: modificar.
     @PutMapping("/{materialId}") @org.springframework.transaction.annotation.Transactional
     public MaterialApoyoResponse modificar(@PathVariable Integer procedimientoId,@PathVariable Integer pasoId,@PathVariable Integer materialId,@Valid @RequestBody GuardarMaterialApoyoRequest r,org.springframework.security.core.Authentication a){cl.casol.backend.shared.infrastructure.web.ArchivoHttp.validarEnlace(r.url());var antes=service.listar(procedimientoId,pasoId).stream().filter(m->m.id().equals(materialId)).findFirst().orElse(null);var m=service.modificar(procedimientoId,pasoId,materialId,r.nombre(),r.tipo(),r.url());auditoria.registrar(procedimientoId,"MATERIAL_MODIFICADO",a.getName(),antes,m);return MaterialApoyoResponse.fromPaso(m,procedimientoId,pasoId);}
+    // DELETE /api/procedimientos/{procedimientoId}/pasos/{pasoId}/materiales/{materialId}: eliminar.
     @DeleteMapping("/{materialId}") @ResponseStatus(HttpStatus.NO_CONTENT)
     public void eliminar(@PathVariable Integer procedimientoId,@PathVariable Integer pasoId,@PathVariable Integer materialId){archivos.eliminar(procedimientoId,pasoId,materialId);}
 }

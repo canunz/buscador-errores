@@ -15,40 +15,50 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
+/** Caso de uso de «Tomar» / asignar: quién puede hacerlo y el saludo al usuario. */
 @Service
 @Transactional
 public class AsignarTicketService implements AsignarTicketUseCase {
     private final TicketRepositoryPort tickets;
     private final ContextoTicketService contexto;
+    private final PresentacionTecnicoTicket presentacion;
 
     private final UsuarioConsultaPort usuarios;
 
     public AsignarTicketService(TicketRepositoryPort tickets, UsuarioConsultaPort usuarios,
-            ContextoTicketService contexto) {
+            ContextoTicketService contexto, PresentacionTecnicoTicket presentacion) {
         this.usuarios = usuarios;
         this.tickets = tickets;
         this.contexto = contexto;
+        this.presentacion = presentacion;
     }
 
+    // Asigna el ticket indicado.
     @Override
     public TicketVista asignar(Long ticketId, Integer asignadoId, String emailAutenticado) {
+        // Quién está logueado (soporte o administrador).
         ActorTicket actor = contexto.actor(emailAutenticado);
         contexto.exigirStaff(actor, "asignar tickets");
         if (asignadoId == null) throw new TicketInvalidoException("Debe indicar el técnico asignado");
         Ticket ticket = contexto.ticketVisible(ticketId, actor);
 
         if (actor.esAdministrador()) {
-            // El administrador reparte el trabajo: asigna o reasigna a un técnico de soporte activo.
+            // El admin reparte trabajo: solo a un técnico de soporte activo, no a otro admin ni a un usuario.
             UsuarioTicket tecnico = usuarios.buscarPorId(asignadoId)
                     .filter(u -> u.activo() && u.rol() != null && u.rol().esStaff() && u.rol() != RolTicket.ADMINISTRADOR)
                     .orElseThrow(() -> new TicketInvalidoException("El usuario indicado no es un técnico de soporte activo"));
             asignadoId = tecnico.id();
         } else if (!asignadoId.equals(actor.id())) {
-            // Soporte toma sus propios tickets ("Tomar" o "Asignármelo").
+            // Un técnico solo puede tomarlo él: no se lo pasa a un compañero desde aquí.
             throw new AccesoTicketDenegadoException("Solo puedes asignarte tickets a ti mismo");
         }
 
-        ticket.asignar(asignadoId, actor.id(), LocalDateTime.now());
+        Integer anterior = ticket.getAsignadoId();
+        LocalDateTime ahora = LocalDateTime.now();
+        // En el dominio: queda asignado y, si estaba ABIERTO, pasa a EN_PROGRESO.
+        ticket.asignar(asignadoId, actor.id(), ahora);
+        // Si cambió el técnico, se publica el «Hola, soy…» en la conversación.
+        presentacion.siCambioAsignado(ticket, anterior, asignadoId, ahora);
         return contexto.detalle(tickets.guardar(ticket), actor);
     }
 }

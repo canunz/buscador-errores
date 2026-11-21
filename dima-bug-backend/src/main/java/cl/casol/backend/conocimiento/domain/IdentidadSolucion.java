@@ -7,10 +7,12 @@ import java.util.Objects;
 /** Compara contenido; conserva literalmente el original al guardarlo. */
 public final class IdentidadSolucion {
     private IdentidadSolucion() { }
+    // Normaliza el texto.
     private static String normalizar(String texto) {
         return texto == null ? "" : Normalizer.normalize(texto, Normalizer.Form.NFC)
                 .replaceAll("[\\s\\p{Z}]+", " ").strip().toLowerCase(Locale.ROOT);
     }
+    // Exige nueva.
     public static void exigirNueva(List<Solucion> actuales, String titulo, String descripcion, TipoSolucion tipo) {
         if (actuales.stream().anyMatch(s -> Objects.equals(s.tipo(), tipo)
                 && normalizar(s.titulo()).equals(normalizar(titulo))

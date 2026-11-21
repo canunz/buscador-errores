@@ -6,6 +6,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.context.ApplicationEventPublisher;
 import java.util.*;
+/**
+ * Servicio de administrar organización (módulo de usuarios y acceso).
+ * Aquí van las reglas de negocio; para leer o guardar datos usa los puertos de salida.
+ */
 @Service @Transactional(readOnly=true)
 public class AdministrarOrganizacionService {
     private final AdministracionOrganizacionRepository repo;
@@ -14,6 +18,7 @@ public class AdministrarOrganizacionService {
         this.repo=repo; this.eventos=eventos;
     }
     public List<DepartamentoAdministrativo> listar() { return repo.listarDepartamentos(); }
+    // Busca por id.
     public DepartamentoAdministrativo buscar(Integer id) {
         return repo.buscarDepartamento(id).orElseThrow(()->new DepartamentoNoEncontradoException(id));
     }
@@ -32,9 +37,11 @@ public class AdministrarOrganizacionService {
         var guardado=actual.activo()==activo ? actual : repo.guardarDepartamento(new DepartamentoAdministrativo(id,actual.nombre(),activo,actual.version()));
         eventos.publishEvent(new OrganizacionActualizada(id)); return guardado;
     }
+    // Devuelve contactos.
     public List<ContactoDepartamentoAdministrativo> contactos(Integer padre) {
         buscar(padre); return repo.listarContactos(padre);
     }
+    // Devuelve contacto.
     public ContactoDepartamentoAdministrativo contacto(Integer padre,Integer id) {
         buscar(padre); return repo.buscarContacto(id).filter(c->padre.equals(c.departamentoId()))
             .orElseThrow(()->new ContactoDepartamentoNoEncontradoException("Contacto inexistente o ajeno al departamento"));
@@ -55,8 +62,11 @@ public class AdministrarOrganizacionService {
         if(activo && !c.activo()) disponible(d);
         return c.activo()==activo ? c : repo.guardarContacto(new ContactoDepartamentoAdministrativo(id,padre,c.tipo(),c.valor(),activo,c.version()));
     }
+    // Bloquea por id.
     private void bloquear(Integer id) { repo.bloquearEscrituras(); repo.bloquearDepartamento(id); }
+    // Devuelve nombre.
     private String nombre(String n) { return texto(n,100,"Nombre"); }
+    // Devuelve texto.
     private String texto(String texto,int limite,String campo) {
         if(texto==null || texto.isBlank() || texto.length()>limite)
             throw new OrganizacionInvalidaException(campo+" obligatorio; máximo "+limite+" caracteres");

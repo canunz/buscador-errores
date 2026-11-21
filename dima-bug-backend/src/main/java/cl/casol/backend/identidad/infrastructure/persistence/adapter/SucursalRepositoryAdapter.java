@@ -8,14 +8,21 @@ import jakarta.persistence.*;
 import org.springframework.stereotype.Repository;
 import java.util.*;
 
+/**
+ * Adaptador de base de datos para sucursal.
+ * Implementa el puerto de salida usando JPA y convierte entre entidades y objetos del dominio.
+ */
 @Repository
 public class SucursalRepositoryAdapter implements SucursalRepository {
     private final SucursalJpaRepository repo;
     @PersistenceContext private EntityManager em;
     public SucursalRepositoryAdapter(SucursalJpaRepository repo) { this.repo=repo; }
     public List<Sucursal> listar() { return repo.findAllByOrderByCodigoAsc().stream().map(SucursalEntity::toDomain).toList(); }
+    // Busca por id.
     public Optional<Sucursal> buscar(Integer id) { return repo.findById(id).map(SucursalEntity::toDomain); }
+    // Busca por código.
     public Optional<Sucursal> buscarPorCodigo(String c) { return repo.findByCodigo(c).map(SucursalEntity::toDomain); }
+    // Bloquea por id.
     public void bloquear(Integer id) {
         var s=em.find(SucursalEntity.class,id,LockModeType.PESSIMISTIC_WRITE);
         if(s!=null) em.refresh(s,LockModeType.PESSIMISTIC_WRITE);

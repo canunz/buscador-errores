@@ -6,6 +6,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 import java.util.Arrays;
+/**
+ * Adaptador de correo simulado.
+ * Implementa un puerto de salida conectándose con un servicio externo o de infraestructura.
+ */
 @Component
 @org.springframework.boot.autoconfigure.condition.ConditionalOnExpression("!'SMTP'.equalsIgnoreCase('${dimabug.automatizacion.modo:DESHABILITADO}') && !'GMAIL_API'.equalsIgnoreCase('${dimabug.automatizacion.modo:DESHABILITADO}')")
 public class CorreoSimuladoAdapter implements CorreoEvidenciaPort {
@@ -18,7 +22,9 @@ public class CorreoSimuladoAdapter implements CorreoEvidenciaPort {
             throw new IllegalStateException("La simulación solo admite una base local de desarrollo o H2 efímero");
         simulado=modo.equalsIgnoreCase("SIMULADO");
     }
+    // Indica si está simulado.
     public boolean simulado(){return simulado;}
+    // Indica si está disponible.
     public boolean disponible(){return simulado;}
     public String enviar(SolicitudEvidencia s,int regla) {
         if(!simulado)throw new ReglaEjecucionException("Gmail corporativo no está conectado. Configura SIMULADO solo en desarrollo para probar el flujo sin correos reales");

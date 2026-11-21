@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 
 //CASO DE USO: C) Almacenar y validar contraseñas de forma segura.
 
+/** Adaptador de BCrypt: crea el hash del código y lo compara al verificar. */
 @Component
 public class BCryptPasswordEncoderAdapter implements PasswordEncoderPort {
 
@@ -17,6 +18,7 @@ public class BCryptPasswordEncoderAdapter implements PasswordEncoderPort {
         this.passwordEncoder = passwordEncoder;
     }
 
+    /** Compara lo que escribió el usuario con el hash guardado. */
     @Override
     public boolean coincide(
             String passwordPlano,
@@ -34,9 +36,10 @@ public class BCryptPasswordEncoderAdapter implements PasswordEncoderPort {
                 return false;
             }
         }
-        return hash.equals(plano);
+        return false;
     }
 
+    /** Genera el hash que se guarda en la base de datos. */
     @Override
     public String codificar(String passwordPlano) {
         return passwordEncoder.encode(passwordPlano);

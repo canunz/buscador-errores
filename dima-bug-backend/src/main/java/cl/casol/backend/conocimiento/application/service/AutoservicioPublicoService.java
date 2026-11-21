@@ -7,6 +7,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.*;
 import java.net.URI;
+/**
+ * Servicio de autoservicio público (módulo de conocimiento).
+ * Aquí van las reglas de negocio; para leer o guardar datos usa los puertos de salida.
+ */
 @Service @Transactional(readOnly=true)
 public class AutoservicioPublicoService {
  private final SolucionRepository soluciones;private final ConocimientoRepository conocimientos;

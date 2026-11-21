@@ -14,6 +14,7 @@ public record AdjuntoTicket(Long id, Long ticketId, Long comentarioId, String no
     public static final long MAX_BYTES = 25L * 1024 * 1024;
     public static final int MAX_NOMBRE = 150;
 
+    // Devuelve nuevo.
     public static AdjuntoTicket nuevo(Long ticketId, Long comentarioId, String nombre, byte[] contenido,
             String referencia, Integer autorId, LocalDateTime fecha) {
         validarContenido(contenido);
@@ -33,12 +34,14 @@ public record AdjuntoTicket(Long id, Long ticketId, Long comentarioId, String no
         return FormatoAdjunto.tipo(mime);
     }
 
+    // Indica si visible para.
     public boolean visiblePara(ActorTicket actor, Ticket ticket) {
         if (comentarioId == null) return true;
         return ticket.getComentarios().stream()
                 .anyMatch(c -> comentarioId.equals(c.id()) && c.visiblePara(actor));
     }
 
+    // Limpia nombre.
     private static String limpiarNombre(String nombre, String mime) {
         String base = nombre == null ? "" : nombre.replace('\\', '/');
         base = base.substring(base.lastIndexOf('/') + 1).replaceAll("[\\p{Cntrl}\"]", "").strip();

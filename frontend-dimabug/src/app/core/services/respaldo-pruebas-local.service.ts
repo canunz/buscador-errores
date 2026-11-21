@@ -1,4 +1,8 @@
 import { Injectable } from '@angular/core';
+/**
+ * Servicio de respaldo pruebas local.
+ * Guarda una copia local de los datos para que la pantalla siga funcionando si la API no responde.
+ */
 @Injectable({ providedIn: 'root' })
 export class RespaldoPruebasLocalService {
   inspeccionar(): { origen: string; clave: string; datos: unknown }[] {

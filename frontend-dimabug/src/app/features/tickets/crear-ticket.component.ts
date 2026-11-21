@@ -15,6 +15,10 @@ import { ClasificacionService } from '../../core/services/clasificacion.service'
 import { TicketService } from '../../core/services/ticket.service';
 import { SelectorAdjuntosComponent } from './adjuntos/selector-adjuntos.component';
 
+/**
+ * Pantalla para reportar un problema (crear un ticket).
+ * Pide título, descripción, prioridad, clasificación y archivos opcionales.
+ */
 @Component({
   selector: 'app-crear-ticket',
   standalone: true,
@@ -33,6 +37,7 @@ export class CrearTicketComponent implements OnInit {
   readonly prioridades = PRIORIDADES_TICKET;
   readonly prioridadInfo = PRIORIDAD_INFO;
   readonly maxTitulo = 150;
+  // Soporte vuelve a la bandeja; el usuario vuelve a sus tickets
   readonly volverA = this.auth.isStaff() ? '/tickets/bandeja' : '/tickets';
 
   hardwares: CatalogoRef[] = [];
@@ -46,6 +51,7 @@ export class CrearTicketComponent implements OnInit {
   enviando = false;
   error = '';
 
+  // Formulario con sus validaciones: título y descripción son obligatorios
   form = this.fb.nonNullable.group({
     titulo: ['', [Validators.required, Validators.maxLength(this.maxTitulo)]],
     descripcion: ['', Validators.required],
@@ -55,6 +61,7 @@ export class CrearTicketComponent implements OnInit {
     moduloId: this.fb.control<number | null>({ value: null, disabled: true }),
   });
 
+  /** Al abrir la pantalla: carga el hardware y prepara las listas que dependen una de otra. */
   ngOnInit(): void {
     this.hardwares = this.clasificacion.snapshotHardware();
     this.clasificacion.listarHardware().subscribe({
@@ -69,6 +76,7 @@ export class CrearTicketComponent implements OnInit {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((id) => this.alCambiarSistema(id));
 
+    // Mientras escribe el título, busca soluciones parecidas para sugerirlas
     this.form.controls.titulo.valueChanges
       .pipe(
         map((texto) => texto.trim()),
@@ -99,6 +107,7 @@ export class CrearTicketComponent implements OnInit {
     return control.invalid && (control.touched || control.dirty);
   }
 
+  /** Marca la prioridad elegida por el usuario. */
   elegirPrioridad(prioridad: PrioridadTicket): void {
     this.form.controls.prioridad.setValue(prioridad);
   }
@@ -111,15 +120,18 @@ export class CrearTicketComponent implements OnInit {
   archivos: File[] = [];
   subiendoArchivos = false;
 
+  /** Envía el ticket al backend y, si hay archivos, los sube después. */
   enviar(): void {
     if (this.form.invalid || this.enviando) {
       this.form.markAllAsTouched();
       return;
     }
+    // Toma los valores del formulario
     const v = this.form.getRawValue();
     this.enviando = true;
     this.error = '';
     this.tickets
+      // Llama al servicio, que hace el POST a /api/tickets
       .crear({
         titulo: v.titulo.trim(),
         descripcion: v.descripcion.trim(),
@@ -130,6 +142,7 @@ export class CrearTicketComponent implements OnInit {
       })
       .subscribe({
         next: (ticket) => {
+          // Cuando se crea, abre el detalle del ticket nuevo
           const ir = () => this.router.navigate(['/tickets', ticket.id], { queryParams: { creado: 1 } });
           if (!this.archivos.length) {
             ir();
@@ -146,6 +159,7 @@ export class CrearTicketComponent implements OnInit {
       });
   }
 
+  /** Al elegir un hardware, carga sus sistemas y limpia lo que dependía del anterior. */
   private alCambiarHardware(hardwareId: number | null): void {
     const { sistemaId, moduloId } = this.form.controls;
     sistemaId.setValue(null, { emitEvent: false });
@@ -165,6 +179,7 @@ export class CrearTicketComponent implements OnInit {
     });
   }
 
+  /** Al elegir un sistema, carga sus módulos. */
   private alCambiarSistema(sistemaId: number | null): void {
     const { moduloId } = this.form.controls;
     moduloId.setValue(null, { emitEvent: false });

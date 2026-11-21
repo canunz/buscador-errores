@@ -391,18 +391,6 @@
 .ej-esq-alto { height: 260px; }
 .ej-panel .tk-esqueleto { margin: 0; }
 
-/* ---------- Tema oscuro ---------- */
-:host-context(.tema-oscuro) .ej-aviso-critico { background: rgba(127, 29, 29, 0.25); border-color: #7f1d1d; color: #fecaca; }
-:host-context(.tema-oscuro) .ej-marcar { border-color: #334155; }
-:host-context(.tema-oscuro) .ej-marcar.on { background: rgba(22, 163, 74, 0.14); border-color: #166534; }
-:host-context(.tema-oscuro) .ej-marcar.on strong { color: #86efac; }
-:host-context(.tema-oscuro) .ej-paso-btn.critico .ej-paso-texto small { color: #fca5a5; }
-:host-context(.tema-oscuro) .ej-paso-btn.hecho .ej-paso-texto small,
-:host-context(.tema-oscuro) .ej-resumen li.hecho small { color: #86efac; }
-:host-context(.tema-oscuro) .ej-resultado-icono { background: rgba(22, 163, 74, 0.2); color: #86efac !important; }
-:host-context(.tema-oscuro) .ej-resultado[data-estado='CANCELADA'] .ej-resultado-icono { background: rgba(239, 68, 68, 0.2); color: #fca5a5 !important; }
-:host-context(.tema-oscuro) .ej-pasos-titulo span { color: #93c5fd; }
-
 /* ---------- Pantallas chicas ---------- */
 @media (max-width: 900px) {
   .ej-cuerpo { grid-template-columns: 1fr; }

@@ -49,6 +49,10 @@ function trazoCurva(ctx: ScriptableContext<'line'>): CanvasGradient | string {
   return degradado;
 }
 
+/**
+ * Pantalla de tendencia línea.
+ * Carga los datos con su servicio y maneja lo que el usuario hace en la vista.
+ */
 @Component({
   selector: 'app-tendencia-linea',
   standalone: true,

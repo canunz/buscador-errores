@@ -28,31 +28,37 @@ public class TicketExceptionHandler {
 
     @ExceptionHandler({TicketNoEncontradoException.class, EtiquetaNoEncontradaException.class,
             AdjuntoNoEncontradoException.class})
+    // Devuelve no encontrado.
     public ResponseEntity<Map<String, String>> noEncontrado(RuntimeException ex) {
         return respuesta(HttpStatus.NOT_FOUND, ex.getMessage());
     }
 
     @ExceptionHandler({TransicionEstadoInvalidaException.class, EtiquetaDuplicadaException.class,
             ConocimientoYaVinculadoException.class})
+    // Devuelve conflicto.
     public ResponseEntity<Map<String, String>> conflicto(RuntimeException ex) {
         return respuesta(HttpStatus.CONFLICT, ex.getMessage());
     }
 
+    // Devuelve inválido.
     @ExceptionHandler(TicketInvalidoException.class)
     public ResponseEntity<Map<String, String>> invalido(TicketInvalidoException ex) {
         return respuesta(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
 
+    // Devuelve sin permiso.
     @ExceptionHandler(AccesoTicketDenegadoException.class)
     public ResponseEntity<Map<String, String>> sinPermiso(AccesoTicketDenegadoException ex) {
         return respuesta(HttpStatus.FORBIDDEN, ex.getMessage());
     }
 
+    // Devuelve parametro inválido.
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<Map<String, String>> parametroInvalido(MethodArgumentTypeMismatchException ex) {
         return respuesta(HttpStatus.BAD_REQUEST, "El parámetro " + ex.getName() + " no es válido");
     }
 
+    // Devuelve respuesta.
     private static ResponseEntity<Map<String, String>> respuesta(HttpStatus status, String mensaje) {
         return ResponseEntity.status(status).body(Map.of("message", mensaje));
     }

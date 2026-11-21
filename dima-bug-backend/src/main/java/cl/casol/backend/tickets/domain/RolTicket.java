@@ -6,6 +6,7 @@ public enum RolTicket {
     SOPORTE,
     ADMINISTRADOR;
 
+    // Indica si es staff.
     public boolean esStaff() {
         return this == SOPORTE || this == ADMINISTRADOR;
     }

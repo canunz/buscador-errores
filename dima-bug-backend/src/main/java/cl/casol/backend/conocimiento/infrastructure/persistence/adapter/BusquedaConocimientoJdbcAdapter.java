@@ -3,6 +3,7 @@ package cl.casol.backend.conocimiento.infrastructure.persistence.adapter;
 import cl.casol.backend.conocimiento.application.port.out.BusquedaConocimientoRepository;
 import cl.casol.backend.conocimiento.application.port.out.DocumentoBusquedaConocimientoRepository;
 import cl.casol.backend.conocimiento.domain.DocumentoBusquedaConocimiento;
+import cl.casol.backend.conocimiento.domain.ConsultaError;
 import cl.casol.backend.conocimiento.domain.ResultadoBusquedaConocimiento;
 import jakarta.persistence.EntityManager;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -14,6 +15,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Adaptador de base de datos para búsqueda conocimiento jdbc.
+ * Implementa el puerto de salida usando JPA y convierte entre entidades y objetos del dominio.
+ */
 @Component
 public class BusquedaConocimientoJdbcAdapter
         implements DocumentoBusquedaConocimientoRepository, BusquedaConocimientoRepository {
@@ -29,6 +34,7 @@ public class BusquedaConocimientoJdbcAdapter
         this.entityManager = entityManager;
     }
 
+    // Obtiene el conocimiento indicado.
     @Override
     public Optional<DocumentoBusquedaConocimiento> obtener(Integer conocimientoId) {
         entityManager.flush();
@@ -74,6 +80,7 @@ public class BusquedaConocimientoJdbcAdapter
                         """, conocimientoId)));
     }
 
+    // Guarda el conocimiento indicado.
     @Override
     public void guardar(Integer conocimientoId, String contenido) {
         jdbc.update("""
@@ -83,11 +90,13 @@ public class BusquedaConocimientoJdbcAdapter
                 """, conocimientoId, contenido);
     }
 
+    // Elimina el conocimiento indicado.
     @Override
     public void eliminar(Integer conocimientoId) {
         jdbc.update("DELETE FROM co_conocimiento_busqueda WHERE conocimiento_id = ?", conocimientoId);
     }
 
+    // Busca el texto.
     @Override
     public List<ResultadoBusquedaConocimiento> buscar(String texto, Integer hardwareId, Integer sistemaId,
             Integer moduloId, Integer frecuenciaId) {
@@ -132,6 +141,7 @@ public class BusquedaConocimientoJdbcAdapter
                 rs.getObject("relevancia", Double.class)));
     }
 
+    // Agrega filtro.
     private void agregarFiltro(StringBuilder sql, MapSqlParameterSource params, String nombre,
             String columna, Integer valor) {
         if (valor != null) {
@@ -140,41 +150,82 @@ public class BusquedaConocimientoJdbcAdapter
         }
     }
 
-    /** Busca solo en contenido autorizado; no utiliza el índice de contenido interno. */
+    /** Preselección SQL pública y ranking compartido en memoria, sin usar el índice interno. */
     @Override
     public List<ResultadoBusquedaConocimiento> buscarAutoservicio(String texto) {
-        StringBuilder sql = new StringBuilder("""
-                SELECT c.conocimiento_id, c.conocimiento_titulo,
-                       COUNT(DISTINCT so.solucion_id) AS relevancia
-                  FROM co_conocimiento c
-                  JOIN co_solucion so ON so.conocimiento_id = c.conocimiento_id
-                                    AND so.solucion_estado = 1
-                                    AND so.solucion_autoservicio = 1
-                 WHERE c.conocimiento_estado = 'PUBLICADO'
-                """);
-        MapSqlParameterSource params = new MapSqlParameterSource();
-        String[] terminos = texto.trim().split("\\s+");
-        for (int i = 0; i < terminos.length; i++) {
-            String nombre = "termino" + i;
-            sql.append(" AND LOWER(CONCAT_WS(' ', c.conocimiento_titulo, so.solucion_titulo, so.solucion_descripcion)) LIKE :")
-                    .append(nombre);
-            params.addValue(nombre, "%" + terminos[i].toLowerCase(java.util.Locale.ROOT) + "%");
+        var consulta = new ConsultaError(texto);
+        if (consulta.terminos().isEmpty()) return List.of();
+        String titulo = normalizarSql("c.conocimiento_titulo");
+        String solucion = normalizarSql("so.solucion_titulo");
+        String descripcion = normalizarSql("so.solucion_descripcion");
+        var params = new MapSqlParameterSource().addValue("original", consulta.original());
+        List<String> condiciones = new ArrayList<>();
+        StringBuilder prioridad = new StringBuilder("CASE WHEN " + titulo + " = :original THEN 20000 ELSE 0 END");
+        prioridad.append(" + CASE WHEN ").append(solucion).append(" = :original THEN 10000 ELSE 0 END");
+        for (int i = 0; i < consulta.terminos().size(); i++) {
+            String termino = consulta.terminos().get(i), parametro = "termino" + i;
+            params.addValue(parametro, "%" + escaparLike(termino) + "%");
+            List<String> campos = List.of(titulo, solucion, descripcion);
+            List<Integer> pesos = List.of(6, 4, 1);
+            List<String> coincidencias = new ArrayList<>();
+            for (int j = 0; j < campos.size(); j++) {
+                String coincide = campos.get(j) + " LIKE :" + parametro + " ESCAPE '!'";
+                coincidencias.add(coincide);
+                prioridad.append(" + CASE WHEN ").append(coincide).append(" THEN ")
+                        .append(consulta.peso(termino) * pesos.get(j)).append(" ELSE 0 END");
+            }
+            condiciones.add("(" + String.join(" OR ", coincidencias) + ")");
         }
-        sql.append(" GROUP BY c.conocimiento_id, c.conocimiento_titulo ORDER BY relevancia DESC, c.conocimiento_id");
-        return namedJdbc.query(sql.toString(), params, (rs, row) -> new ResultadoBusquedaConocimiento(
-                rs.getObject("conocimiento_id", Integer.class), rs.getString("conocimiento_titulo"),
-                null, null, null, null, null, null, null, null, rs.getObject("relevancia", Double.class)));
+        String sql = """
+                SELECT c.conocimiento_id, c.conocimiento_titulo, so.solucion_titulo, so.solucion_descripcion,
+                """ + prioridad + " AS prioridad FROM co_conocimiento c JOIN co_solucion so"
+                + " ON so.conocimiento_id = c.conocimiento_id AND so.solucion_estado = 1 AND so.solucion_autoservicio = 1"
+                + " WHERE c.conocimiento_estado = 'PUBLICADO' AND (" + String.join(" OR ", condiciones) + ")"
+                + " ORDER BY prioridad DESC, c.conocimiento_id, so.solucion_orden, so.solucion_id LIMIT 250";
+        // Devuelve candidato.
+        record Candidato(Integer id, String titulo, String solucion, String descripcion) { }
+        List<Candidato> candidatos = namedJdbc.query(sql, params, (rs, row) -> new Candidato(
+                rs.getInt("conocimiento_id"), rs.getString("conocimiento_titulo"),
+                rs.getString("solucion_titulo"), rs.getString("solucion_descripcion")));
+        var resultados = new java.util.HashMap<Integer, ResultadoBusquedaConocimiento>();
+        for (var candidato : candidatos) {
+            double puntos = consulta.puntuar(candidato.titulo(), candidato.solucion(), candidato.descripcion());
+            if (puntos <= 0) continue;
+            var resultado = new ResultadoBusquedaConocimiento(candidato.id(), candidato.titulo(),
+                    null, null, null, null, null, null, null, null, puntos);
+            resultados.merge(candidato.id(), resultado, (a, b) -> a.relevancia() >= b.relevancia() ? a : b);
+        }
+        return resultados.values().stream().sorted(java.util.Comparator
+                .comparingDouble(ResultadoBusquedaConocimiento::relevancia).reversed()
+                .thenComparing(ResultadoBusquedaConocimiento::id)).limit(50).toList();
     }
 
+    // Escapa like.
+    private static String escaparLike(String valor) {
+        return valor.replace("!", "!!").replace("%", "!%").replace("_", "!_");
+    }
+
+    // Normaliza sql.
+    private static String normalizarSql(String columna) {
+        String expresion = "LOWER(COALESCE(" + columna + ", ''))";
+        String origen = "áéíóúüñ–—", destino = "aeiouun--";
+        for (int i = 0; i < origen.length(); i++)
+            expresion = "REPLACE(" + expresion + ", '" + origen.charAt(i) + "', '" + destino.charAt(i) + "')";
+        return expresion;
+    }
+
+    // Devuelve columna.
     private List<String> columna(String sql, Integer conocimientoId) {
         return jdbc.query(sql, (rs, row) -> rs.getString(1), conocimientoId);
     }
 
+    // Devuelve columnas.
     private List<String> columnas(String sql, int cantidad, Integer conocimientoId) {
         return jdbc.query(sql, (rs, row) -> valores(rs, cantidad), conocimientoId).stream()
                 .flatMap(List::stream).toList();
     }
 
+    // Devuelve valores.
     private List<String> valores(java.sql.ResultSet rs, int cantidad) throws java.sql.SQLException {
         List<String> valores = new ArrayList<>(cantidad);
         for (int i = 1; i <= cantidad; i++) valores.add(rs.getString(i));

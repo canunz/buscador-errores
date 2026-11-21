@@ -1,102 +1,137 @@
 package cl.casol.backend.identidad.application.service;
 
 import cl.casol.backend.identidad.domain.exception.IngresoBloqueadoException;
-import org.springframework.stereotype.Component;
 
 import java.time.Clock;
 import java.time.Duration;
-import java.time.Instant;
+import java.time.LocalDateTime;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Tras 3 códigos incorrectos se bloquea 30 segundos.
- * Cada fallo siguiente (cuando el bloqueo ya venció) duplica la espera: 60, 120, 240…
+ * Lleva la cuenta de los códigos mal ingresados por cada usuario y decide
+ * cuándo bloquear el ingreso y por cuánto tiempo.
+ *
+ * La regla es la siguiente:
+ *  - El usuario tiene 3 intentos para escribir bien su código.
+ *  - Si se equivoca las 3 veces, queda bloqueado 30 segundos.
+ *  - Si pasado ese tiempo se vuelve a equivocar, el bloqueo ya es por minutos:
+ *    primero 2 minutos, después 5 y desde ahí 15 minutos cada vez.
+ *  - Cuando por fin entra bien, todo vuelve a cero.
+ *  - Si pasa una hora sin errores, también se parte de cero.
+ *
+ * Los contadores se guardan en la memoria del servidor, uno por usuario.
+ * Si el backend se reinicia, se pierden y el usuario parte limpio.
  */
-@Component
 public class ControlBloqueoIngreso {
 
-    public static final int INTENTOS_ANTES_DE_BLOQUEO = 3;
-    public static final int SEGUNDOS_INICIAL = 30;
-    public static final int SEGUNDOS_MAXIMO = 15 * 60;
+    /** Intentos que tiene el usuario antes del primer bloqueo. */
+    public static final int INTENTOS_PERMITIDOS = 3;
+
+    /** Duración de cada bloqueo, en orden. Al llegar al último, se repite ese. */
+    private static final Duration[] DURACION_BLOQUEOS = {
+            Duration.ofSeconds(30),
+            Duration.ofMinutes(2),
+            Duration.ofMinutes(5),
+            Duration.ofMinutes(15)
+    };
+
+    /** Si pasa este tiempo sin errores, se olvida lo que el usuario había fallado antes. */
+    private static final Duration OLVIDAR_DESPUES_DE = Duration.ofHours(1);
 
     private final Clock clock;
-    private final ConcurrentHashMap<String, Estado> porCorreo = new ConcurrentHashMap<>();
-
-    public ControlBloqueoIngreso() {
-        this(Clock.systemDefaultZone());
-    }
+    private final Map<Integer, Estado> estadosPorUsuario = new ConcurrentHashMap<>();
 
     public ControlBloqueoIngreso(Clock clock) {
-        this.clock = clock == null ? Clock.systemDefaultZone() : clock;
+        this.clock = clock;
     }
 
-    public void exigirDesbloqueado(String correo) {
-        Estado estado = porCorreo.get(clave(correo));
+    /**
+     * Revisa si el usuario está bloqueado en este momento.
+     * Si lo está, corta el ingreso y le indica cuántos segundos le faltan.
+     */
+    public void exigirDesbloqueado(Integer usuarioId) {
+        Estado estado = estadosPorUsuario.get(usuarioId);
         if (estado == null) {
             return;
         }
-        Instant ahora = Instant.now(clock);
-        if (estado.hasta != null && ahora.isBefore(estado.hasta)) {
-            throw new IngresoBloqueadoException(Math.max(1, Duration.between(ahora, estado.hasta).getSeconds()));
+
+        long segundos = estado.segundosRestantes(ahora());
+        if (segundos > 0) {
+            throw new IngresoBloqueadoException(segundos);
         }
     }
 
-    /** @return segundos de bloqueo si este fallo acaba de cerrar el ingreso; 0 si aún puede intentar */
-    public int registrarFallo(String correo) {
-        String key = clave(correo);
-        Instant ahora = Instant.now(clock);
-        Estado siguiente = porCorreo.compute(key, (k, actual) -> {
-            Estado base = actual == null ? new Estado() : actual;
-            if (base.hasta != null && ahora.isBefore(base.hasta)) {
-                return base;
-            }
-            int fallos = base.fallosSeguidos + 1;
-            int rondas = base.rondasBloqueo;
-            Instant hasta = null;
-            boolean bloquear = rondas > 0 || fallos >= INTENTOS_ANTES_DE_BLOQUEO;
-            if (bloquear) {
-                int segundos = Math.min(SEGUNDOS_MAXIMO, SEGUNDOS_INICIAL * (1 << Math.min(rondas, 10)));
-                hasta = ahora.plusSeconds(segundos);
-                rondas = rondas + 1;
-                fallos = 0;
-            }
-            return new Estado(fallos, rondas, hasta);
+    /**
+     * Anota que el usuario escribió mal su código.
+     *
+     * @return los segundos de bloqueo si este error activó uno, o 0 si todavía puede seguir intentando
+     */
+    public long registrarFallo(Integer usuarioId) {
+        LocalDateTime ahora = ahora();
+
+        Estado nuevoEstado = estadosPorUsuario.compute(usuarioId, (id, actual) -> {
+            // Si no tenía errores, o los tenía pero hace mucho, se parte de cero.
+            Estado base = (actual == null || actual.sePuedeOlvidar(ahora)) ? Estado.inicial() : actual;
+            return base.conUnFalloMas(ahora);
         });
-        if (siguiente.hasta != null && ahora.isBefore(siguiente.hasta) && siguiente.fallosSeguidos == 0) {
-            return (int) Math.max(1, Duration.between(ahora, siguiente.hasta).getSeconds());
-        }
-        return 0;
+
+        return nuevoEstado.segundosRestantes(ahora);
     }
 
-    public int intentosRestantes(String correo) {
-        Estado estado = porCorreo.get(clave(correo));
-        if (estado == null || estado.rondasBloqueo > 0) {
-            return estado != null && estado.rondasBloqueo > 0 ? 0 : INTENTOS_ANTES_DE_BLOQUEO;
-        }
-        return Math.max(0, INTENTOS_ANTES_DE_BLOQUEO - estado.fallosSeguidos);
+    /** El usuario entró bien, así que se borra su historial de errores. */
+    public void limpiar(Integer usuarioId) {
+        estadosPorUsuario.remove(usuarioId);
     }
 
-    public void limpiar(String correo) {
-        porCorreo.remove(clave(correo));
+    private LocalDateTime ahora() {
+        return LocalDateTime.now(clock);
     }
 
-    private static String clave(String correo) {
-        return correo == null ? "" : correo.trim().toLowerCase();
-    }
+    /**
+     * Situación de un usuario.
+     *
+     * @param fallos         errores seguidos desde el último bloqueo (o desde el inicio)
+     * @param bloqueos       cuántas veces ya ha sido bloqueado
+     * @param bloqueadoHasta momento en que termina el bloqueo actual, o null si no tiene
+     * @param ultimoFallo    momento del último error
+     */
+    private record Estado(int fallos, int bloqueos, LocalDateTime bloqueadoHasta, LocalDateTime ultimoFallo) {
 
-    private static final class Estado {
-        final int fallosSeguidos;
-        final int rondasBloqueo;
-        final Instant hasta;
-
-        Estado() {
-            this(0, 0, null);
+        static Estado inicial() {
+            return new Estado(0, 0, null, null);
         }
 
-        Estado(int fallosSeguidos, int rondasBloqueo, Instant hasta) {
-            this.fallosSeguidos = fallosSeguidos;
-            this.rondasBloqueo = rondasBloqueo;
-            this.hasta = hasta;
+        // Devuelve con un fallo mas.
+        Estado conUnFalloMas(LocalDateTime ahora) {
+            int fallosAcumulados = fallos + 1;
+
+            // La primera vez tiene 3 intentos. Si ya estuvo bloqueado antes,
+            // basta un error más para volver a bloquearlo, ahora por más tiempo.
+            boolean tocaBloquear = bloqueos > 0 || fallosAcumulados >= INTENTOS_PERMITIDOS;
+            if (!tocaBloquear) {
+                return new Estado(fallosAcumulados, bloqueos, bloqueadoHasta, ahora);
+            }
+
+            Duration duracion = DURACION_BLOQUEOS[Math.min(bloqueos, DURACION_BLOQUEOS.length - 1)];
+            return new Estado(0, bloqueos + 1, ahora.plus(duracion), ahora);
+        }
+
+        // Devuelve segundos restantes.
+        long segundosRestantes(LocalDateTime ahora) {
+            if (bloqueadoHasta == null || !ahora.isBefore(bloqueadoHasta)) {
+                return 0;
+            }
+            // Se redondea hacia arriba para no mostrar "0 segundos" cuando aún falta un poco.
+            long milisegundos = Duration.between(ahora, bloqueadoHasta).toMillis();
+            return Math.max(1, (milisegundos + 999) / 1000);
+        }
+
+        // Indica si se puede olvidar.
+        boolean sePuedeOlvidar(LocalDateTime ahora) {
+            return ultimoFallo != null
+                    && segundosRestantes(ahora) == 0
+                    && Duration.between(ultimoFallo, ahora).compareTo(OLVIDAR_DESPUES_DE) >= 0;
         }
     }
 }

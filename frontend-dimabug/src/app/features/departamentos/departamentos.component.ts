@@ -8,10 +8,15 @@ import { RespaldoDepartamentosLocalService } from '../../core/services/respaldo-
 import { AuthService } from '../../core/services/auth.service';
 import { DepartamentoAdmin, ContactoDepartamentoAdmin, ResponsableAdmin } from '../../core/models/organizacion-admin.model';
 import { AyudaFranjaComponent } from '../../shared/ui/ayuda-franja.component';
+import { AvisoErrorComponent } from '../../shared/ui/aviso-error.component';
 import { LoadingModalComponent } from '../../shared/ui/loading-modal.component';
+/**
+ * Pantalla de departamentos.
+ * Carga los datos con su servicio y maneja lo que el usuario hace en la vista.
+ */
 export interface DepartamentoFila extends DepartamentoAdmin { contactos: ContactoDepartamentoAdmin[]; responsables: ResponsableAdmin[]; errorDetalle?: string; }
 @Component({ selector: 'app-departamentos', standalone: true,
-  imports: [ReactiveFormsModule, LoadingModalComponent, AyudaFranjaComponent],
+  imports: [ReactiveFormsModule, LoadingModalComponent, AyudaFranjaComponent, AvisoErrorComponent],
   templateUrl: './departamentos.component.html',
   styleUrls: ['../../shared/ui/catalogo-page.css', './departamentos.component.css'] })
 export class DepartamentosComponent implements OnInit {

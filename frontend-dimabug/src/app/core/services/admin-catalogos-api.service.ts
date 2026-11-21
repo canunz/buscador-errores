@@ -4,6 +4,10 @@ import { Observable, catchError, tap, throwError } from 'rxjs';
 import { apiUrl } from '../config/api';
 import { mensajeApiError } from '../http/api-error';
 import { ClasificacionService } from './clasificacion.service';
+/**
+ * Servicio de admin catálogos api.
+ * Hace las llamadas HTTP al backend y entrega los datos a los componentes.
+ */
 export type TipoCatalogoAdmin = 'hardware' | 'sistemas' | 'modulos' | 'frecuencias';
 export const TIPOS_CATALOGO_ADMIN: TipoCatalogoAdmin[] = ['hardware', 'sistemas', 'modulos', 'frecuencias'];
 export interface CatalogoAdmin {

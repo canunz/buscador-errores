@@ -5,6 +5,10 @@ import cl.casol.backend.conocimiento.infrastructure.web.dto.PruebaResponse;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
+/**
+ * Controlador REST de prueba. Atiende las rutas que empiezan con /api/pruebas.
+ * Solo recibe la petición, valida los datos y llama al caso de uso que corresponde.
+ */
 @RestController
 @RequestMapping("/api/pruebas")
 public class PruebaController {
@@ -12,6 +16,7 @@ public class PruebaController {
 
     public PruebaController(GestionarPruebasConocimientoService service) { this.service = service; }
 
+    // GET /api/pruebas: listar.
     @GetMapping
     public List<PruebaResponse> listar() {
         return service.listarCatalogo().stream().map(PruebaResponse::from).toList();

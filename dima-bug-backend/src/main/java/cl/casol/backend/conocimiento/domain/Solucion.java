@@ -1,5 +1,8 @@
 package cl.casol.backend.conocimiento.domain;
 
+/**
+ * Modelo de dominio de solución. Es inmutable: cada cambio crea un objeto nuevo.
+ */
 public record Solucion(Integer id, Integer conocimientoId, String descripcion, TipoSolucion tipo,
         Integer orden, String titulo, boolean activo, boolean autoservicio) {
     // Compatibilidad con registros históricos sin título y fixtures anteriores.

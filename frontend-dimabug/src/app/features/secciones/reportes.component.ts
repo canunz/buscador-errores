@@ -30,6 +30,10 @@ type CategoriaItem = {
   ancho: number;
 };
 
+/**
+ * Pantalla de reportes.
+ * Carga los datos con su servicio y maneja lo que el usuario hace en la vista.
+ */
 @Component({
   selector: 'app-reportes',
   standalone: true,

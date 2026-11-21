@@ -5,6 +5,10 @@ import { Subscription } from 'rxjs';
 import { EfectividadSolucion, ResultadoSolucion } from '../../core/models/conocimiento.model';
 import { ConocimientoService } from '../../core/services/conocimiento.service';
 
+/**
+ * Pantalla de solución efectividad.
+ * Carga los datos con su servicio y maneja lo que el usuario hace en la vista.
+ */
 @Component({
   selector: 'app-solucion-efectividad',
   standalone: true,

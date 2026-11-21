@@ -4,6 +4,10 @@ package cl.casol.backend.identidad.infrastructure.persistence.entity;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
+/**
+ * Entidad JPA de rol. Representa una fila de la tabla u_rol.
+ * Se usa solo en la capa de persistencia; el dominio trabaja con su propio modelo.
+ */
 @Entity
 @Table(name = "u_rol")
 public class RolEntity {

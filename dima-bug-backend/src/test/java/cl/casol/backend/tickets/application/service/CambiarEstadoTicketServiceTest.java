@@ -14,13 +14,15 @@ import static org.mockito.Mockito.*;
 
 class CambiarEstadoTicketServiceTest {
     private final EscenarioTickets e = new EscenarioTickets();
-    private final CambiarEstadoTicketService service = new CambiarEstadoTicketService(e.tickets, e.contexto);
+    private final PresentacionTecnicoTicket presentacion = new PresentacionTecnicoTicket(e.usuarios);
+    private final CambiarEstadoTicketService service = new CambiarEstadoTicketService(e.tickets, e.contexto, presentacion);
 
     @Test void soporteTomaTicketAbiertoYQuedaAsignado() {
         var ticket = e.ticket(EstadoTicket.ABIERTO, null);
         service.cambiarEstado(100L, EstadoTicket.EN_PROGRESO, null, EMAIL_SOPORTE);
         assertEquals(EstadoTicket.EN_PROGRESO, ticket.getEstado());
         assertEquals(SOPORTE.id(), ticket.getAsignadoId());
+        assertEquals("Hola, soy Tito. Yo te ayudaré con tu problema.", ticket.getComentarios().get(0).texto());
     }
 
     @Test void usuarioNoPuedeIniciarSuTicket() {

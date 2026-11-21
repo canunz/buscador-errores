@@ -7,10 +7,15 @@ import org.springframework.http.ResponseEntity;
 import jakarta.validation.Valid;
 import java.net.URI;
 import java.util.List;
+/**
+ * Controlador REST de admin prueba. Atiende las rutas que empiezan con /api/admin/pruebas.
+ * Solo recibe la petición, valida los datos y llama al caso de uso que corresponde.
+ */
 @RestController @RequestMapping("/api/admin/pruebas")
 public class AdminPruebaController {
  private final AdministrarPruebasService service;
  public AdminPruebaController(AdministrarPruebasService service){this.service=service;}
+ // GET /api/admin/pruebas: listar.
  @GetMapping public List<Prueba> listar(){return service.listar();}
  @GetMapping("/{id}") public Prueba buscar(@PathVariable Integer id){return service.buscar(id);}
  @PostMapping public ResponseEntity<Prueba> crear(@Valid @RequestBody GuardarPruebaAdministrativaRequest r){var p=service.crear(r.descripcion(),r.resultadoEsperado());return ResponseEntity.created(URI.create("/api/admin/pruebas/"+p.id())).body(p);}

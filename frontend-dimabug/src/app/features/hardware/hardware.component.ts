@@ -8,12 +8,17 @@ import { CatalogoRef } from '../../core/models/conocimiento.model';
 import { AdminCatalogosApiService } from '../../core/services/admin-catalogos-api.service';
 import { AuthService } from '../../core/services/auth.service';
 import { AyudaFranjaComponent } from '../../shared/ui/ayuda-franja.component';
+import { AvisoErrorComponent } from '../../shared/ui/aviso-error.component';
 import { LoadingModalComponent } from '../../shared/ui/loading-modal.component';
 
+/**
+ * Pantalla de hardware.
+ * Carga los datos con su servicio y maneja lo que el usuario hace en la vista.
+ */
 @Component({
   selector: 'app-hardware',
   standalone: true,
-  imports: [RouterLink, LoadingModalComponent, AyudaFranjaComponent],
+  imports: [RouterLink, LoadingModalComponent, AyudaFranjaComponent, AvisoErrorComponent],
   templateUrl: './hardware.component.html',
   styleUrls: ['../../shared/ui/catalogo-page.css', './hardware.component.css'],
 })

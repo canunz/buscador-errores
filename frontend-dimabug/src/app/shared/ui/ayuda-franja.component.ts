@@ -1,5 +1,9 @@
 import { Component, ElementRef, HostListener, Input, ViewChild } from '@angular/core';
 
+/**
+ * Componente reutilizable de ayuda franja.
+ * Se usa dentro de otras pantallas; recibe datos por @Input y avisa cambios por @Output.
+ */
 @Component({
   selector: 'app-ayuda-franja',
   standalone: true,
@@ -22,6 +26,7 @@ import { Component, ElementRef, HostListener, Input, ViewChild } from '@angular/
     </div>
   `,
   styles: `
+
     :host {
       position: absolute;
       top: 16px;
@@ -101,16 +106,7 @@ import { Component, ElementRef, HostListener, Input, ViewChild } from '@angular/
       background: #1e4fd6;
       color: #fff;
     }
-
-    :host-context(.tema-oscuro) .panel {
-      background: #152238;
-      color: #e5e7eb;
-    }
-
-    :host-context(.tema-oscuro) .panel strong {
-      color: #f8fafc;
-    }
-  `,
+    `,
 })
 export class AyudaFranjaComponent {
   @Input({ required: true }) titulo = '';
@@ -151,6 +147,7 @@ export class AyudaFranjaComponent {
   }
 
   @HostListener('document:keydown.escape')
+  @HostListener('document:click')
   cerrarTecla(): void {
     const nodo = this.panel?.nativeElement;
     if (nodo?.matches(':popover-open')) {

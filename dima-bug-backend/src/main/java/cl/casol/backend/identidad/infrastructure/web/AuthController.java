@@ -17,12 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
-/**
- * Ingreso con código al correo para todos los roles.
- * POST /api/auth/codigo           → envía el código.
- * POST /api/auth/codigo/verificar → valida el código y entrega el JWT.
- * POST /api/auth/login            → correo y contraseña (pruebas / legado).
- */
+/** Ingreso mediante código para todos los roles. Los contratos retirados responden 410. */
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
@@ -38,32 +33,24 @@ public class AuthController {
         this.tokenService = tokenService;
     }
 
+    /** Paso 1 del login: recibe el correo y pide que se envíe un código. */
     @PostMapping("/codigo")
     public ResponseEntity<SolicitarCodigoResponse> solicitarCodigo(
             @Valid @RequestBody SolicitarCodigoRequest request
     ) {
         SolicitudCodigo solicitud = autenticarUsuarioService.solicitarCodigo(request.identificador());
-        return ResponseEntity.ok(new SolicitarCodigoResponse(
-                "Enviamos un código de acceso a su correo.",
-                solicitud.segundosVigencia(),
-                solicitud.segundosReenvio(),
-                SolicitudCodigo.CODIGO
-        ));
+        return ResponseEntity.accepted().body(new SolicitarCodigoResponse(
+                "Si la cuenta está habilitada, recibirá un código. Revise también spam.",
+                solicitud.segundosVigencia(), solicitud.segundosReenvio(), SolicitudCodigo.CODIGO));
     }
 
+    // Devuelve login.
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest request) {
-        Usuario usuario = autenticarUsuarioService.autenticar(request.identificador(), request.clave());
-        String token = tokenService.generarToken(usuario);
-        return ResponseEntity.ok(new LoginResponse(
-                token,
-                usuario.getId(),
-                usuario.getNombre(),
-                usuario.getEmail(),
-                usuario.getRol().getNombre()
-        ));
+        return ResponseEntity.status(410).build();
     }
 
+    /** Paso 2 del login: revisa el código y, si está bien, entrega el token JWT. */
     @PostMapping("/codigo/verificar")
     public ResponseEntity<LoginResponse> verificarCodigo(
             @Valid @RequestBody VerificarCodigoRequest request
@@ -73,6 +60,7 @@ public class AuthController {
                 request.codigo()
         );
 
+        // Código correcto: se crea el token con el que el usuario navega
         String token = tokenService.generarToken(usuario);
 
         return ResponseEntity.ok(new LoginResponse(
@@ -80,52 +68,41 @@ public class AuthController {
                 usuario.getId(),
                 usuario.getNombre(),
                 usuario.getEmail(),
-                usuario.getRol().getNombre()
+                usuario.getRol().getNombre(), usuario.isAccesoBasico()
         ));
     }
 
+    // Solicita recuperación.
     @PostMapping("/recuperar/email")
     public ResponseEntity<SolicitarCodigoResponse> solicitarRecuperacion(
             @Valid @RequestBody SolicitarCodigoRequest request
     ) {
-        SolicitudCodigo solicitud = autenticarUsuarioService.solicitarRecuperacion(request.identificador());
-        return ResponseEntity.ok(new SolicitarCodigoResponse(
-                "Enviamos un código de 6 dígitos a su correo.",
-                solicitud.segundosVigencia(),
-                solicitud.segundosReenvio(),
-                SolicitudCodigo.CODIGO
-        ));
+        return solicitarCodigo(request);
     }
 
+    /** Contratos antiguos retirados sin eliminar datos ni columnas. */
     @PostMapping("/recuperar/codigo")
-    public ResponseEntity<Map<String, String>> validarRecuperacion(
-            @Valid @RequestBody VerificarCodigoRequest request
-    ) {
-        autenticarUsuarioService.validarRecuperacion(request.identificador(), request.codigo());
-        return ResponseEntity.ok(Map.of("message", "Código validado. Ya puede definir su contraseña."));
+    public ResponseEntity<Map<String, String>> validarRecuperacion(@RequestBody Map<String, Object> request) {
+        return ResponseEntity.status(410).body(Map.of("message", "Ingrese mediante un código desde el inicio de sesión."));
     }
 
+    // Completa recuperación.
     @PostMapping("/recuperar/password")
-    public ResponseEntity<Map<String, String>> completarRecuperacion(
-            @Valid @RequestBody RecuperarPasswordRequest request
-    ) {
-        autenticarUsuarioService.completarRecuperacion(
-                request.identificador(),
-                request.codigo(),
-                request.clave()
-        );
-        return ResponseEntity.ok(Map.of("message", "Contraseña actualizada. Ya puede iniciar sesión."));
+    public ResponseEntity<Map<String, String>> completarRecuperacion(@RequestBody Map<String, Object> request) {
+        return ResponseEntity.status(410).body(Map.of("message", "Ingrese mediante un código desde el inicio de sesión."));
     }
 
     @GetMapping("/me")
-    public ResponseEntity<Map<String, String>> me(
+    public ResponseEntity<Map<String, Object>> me(
             Authentication authentication
     ) {
 
         return ResponseEntity.ok(
                 Map.of(
                         "email", authentication.getName(),
-                        "estado", "AUTENTICADO"
+                        "estado", "AUTENTICADO",
+                        "accesoBasico", authentication.getAuthorities().stream()
+                            .anyMatch(a -> a.getAuthority().equals("SCOPE_TICKETS_PROPIOS"))
                 )
         );
     }

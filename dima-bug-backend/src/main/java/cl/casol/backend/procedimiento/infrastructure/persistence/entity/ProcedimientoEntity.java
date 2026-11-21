@@ -5,6 +5,10 @@ import cl.casol.backend.procedimiento.domain.EstadoProcedimiento;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
+/**
+ * Entidad JPA de procedimiento. Representa una fila de la tabla pr_procedimiento.
+ * Se usa solo en la capa de persistencia; el dominio trabaja con su propio modelo.
+ */
 @Entity
 @Table(name = "pr_procedimiento")
 public class ProcedimientoEntity {

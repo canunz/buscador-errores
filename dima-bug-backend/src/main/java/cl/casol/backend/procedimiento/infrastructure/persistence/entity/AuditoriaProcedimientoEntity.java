@@ -2,6 +2,10 @@ package cl.casol.backend.procedimiento.infrastructure.persistence.entity;
 import jakarta.persistence.*;
 import java.time.Instant;
 
+/**
+ * Entidad JPA de auditoría procedimiento. Representa una fila de la tabla pr_auditoria_procedimiento.
+ * Se usa solo en la capa de persistencia; el dominio trabaja con su propio modelo.
+ */
 @Entity @Table(name="pr_auditoria_procedimiento") @org.hibernate.annotations.Immutable
 public class AuditoriaProcedimientoEntity {
     @Id @GeneratedValue(strategy=GenerationType.IDENTITY) private Long id;

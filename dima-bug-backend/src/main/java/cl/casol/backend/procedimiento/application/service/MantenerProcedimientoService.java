@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 
+/** Casos de uso de procedimientos: crear, modificar y publicar. */
 @Service
 @Transactional(readOnly = true)
 public class MantenerProcedimientoService {
@@ -23,15 +24,18 @@ public class MantenerProcedimientoService {
 
     public List<Procedimiento> listar() { return procedimientos.buscarTodos(); }
 
+    /** Soporte ve todos; el usuario solo los publicados. */
     public List<Procedimiento> listarVisibles(boolean staff) {
         return listar().stream().filter(p -> p.datos().vigente() && (staff || p.estado()==EstadoProcedimiento.PUBLICADO)).toList();
     }
 
+    // Busca por id.
     public Procedimiento buscar(Integer id) {
         return procedimientos.buscarPorId(id)
                 .orElseThrow(() -> new ProcedimientoNoEncontradoException(id));
     }
 
+    /** Crea un procedimiento nuevo como borrador. */
     @Transactional
     public Procedimiento crear(String nombre, String descripcion, String emailAutenticado) {
         Usuario usuario = obtenerUsuario(emailAutenticado);
@@ -39,6 +43,7 @@ public class MantenerProcedimientoService {
                 EstadoProcedimiento.BORRADOR, usuario, LocalDateTime.now(), null, null));
     }
 
+    // Modifica por id.
     @Transactional
     public Procedimiento modificar(Integer id, String nombre, String descripcion, String emailAutenticado) {
         procedimientos.bloquear(id);
@@ -49,6 +54,7 @@ public class MantenerProcedimientoService {
                 actual.creadoPor(), actual.fechaCreacion(), usuario, LocalDateTime.now(),actual.datos(),actual.hardwareId()));
     }
 
+    /** Publica el procedimiento. */
     @Transactional
     public Procedimiento publicar(Integer id, String emailAutenticado) {
         procedimientos.bloquear(id);
@@ -62,6 +68,7 @@ public class MantenerProcedimientoService {
                 LocalDateTime.now(),actual.datos(),actual.hardwareId()));
     }
 
+    // Obtiene usuario.
     private Usuario obtenerUsuario(String email) {
         return usuarios.buscarPorEmail(email).orElseThrow(UsuarioNoEncontradoException::new);
     }

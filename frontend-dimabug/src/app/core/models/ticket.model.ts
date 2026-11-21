@@ -1,3 +1,4 @@
+import { DatosSolicitante } from './datos-solicitante.model';
 export type EstadoTicket = 'ABIERTO' | 'EN_PROGRESO' | 'EN_ESPERA' | 'RESUELTO' | 'CERRADO' | 'CANCELADO';
 export type PrioridadTicket = 'BAJA' | 'MEDIA' | 'ALTA' | 'CRITICA';
 
@@ -53,6 +54,7 @@ export interface ConocimientoVinculado {
 }
 
 export interface TicketDetalle extends TicketResumen {
+  datosSolicitante?: DatosSolicitante | null;
   descripcion: string;
   hardware: Referencia | null;
   sistema: Referencia | null;
@@ -195,6 +197,47 @@ export function fechaLarga(valor: string | null | undefined): string {
 export function fechaCorta(valor: string | null | undefined): string {
   const fecha = valor ? new Date(valor) : null;
   return fecha && !isNaN(fecha.getTime()) ? FORMATO_DIA.format(fecha) : '—';
+}
+
+/** "2 horas", "1 día": para decir cuánto lleva el ticket en el estado actual. */
+export function duracionEnPalabras(valor: string | null | undefined): string {
+  const fecha = valor ? new Date(valor) : null;
+  if (!fecha || isNaN(fecha.getTime())) return '';
+  const minutos = Math.max(0, Math.round((Date.now() - fecha.getTime()) / 60000));
+  if (minutos < 1) return 'menos de un minuto';
+  if (minutos < 60) return `${minutos} min`;
+  const horas = Math.round(minutos / 60);
+  if (horas < 24) return `${horas} hora${horas === 1 ? '' : 's'}`;
+  const dias = Math.round(horas / 24);
+  return `${dias} día${dias === 1 ? '' : 's'}`;
+}
+
+/**
+ * Tiempo que el caso lleva trabado: sin técnico, esperando al usuario o por confirmar.
+ * alerta = ya se alargó más de lo razonable (o es crítico sin tomar).
+ */
+export function avisoTiempoTicket(
+  ticket: Pick<TicketResumen, 'estado' | 'prioridad' | 'asignado' | 'fechaCreacion' | 'fechaActualizacion'>,
+  desdeEstado?: string | null,
+): { texto: string; alerta: boolean } | null {
+  const desde = desdeEstado || ticket.fechaActualizacion || ticket.fechaCreacion;
+  const duracion = duracionEnPalabras(desde);
+  if (!duracion) return null;
+  const minutos = Math.max(0, Math.round((Date.now() - new Date(desde).getTime()) / 60000));
+  const critico = ticket.prioridad === 'CRITICA';
+  if (ticket.estado === 'ABIERTO' && !ticket.asignado) {
+    return { texto: `Lleva ${duracion} sin técnico`, alerta: critico ? minutos >= 60 : minutos >= 4 * 60 };
+  }
+  if (ticket.estado === 'EN_ESPERA') {
+    return { texto: `Lleva ${duracion} esperando al usuario`, alerta: minutos >= 8 * 60 };
+  }
+  if (ticket.estado === 'EN_PROGRESO') {
+    return { texto: `En atención hace ${duracion}`, alerta: minutos >= 48 * 60 };
+  }
+  if (ticket.estado === 'RESUELTO') {
+    return { texto: `Esperando confirmación hace ${duracion}`, alerta: minutos >= 24 * 60 };
+  }
+  return null;
 }
 
 /** "hace 5 min", "hace 3 h", "hace 2 días"; más de una semana muestra la fecha. */

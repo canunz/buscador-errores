@@ -6,8 +6,12 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
+/**
+ * Archivo http (módulo de uso común).
+ */
 public final class ArchivoHttp {
     private ArchivoHttp() { }
+    // Convierte el archivo.
     public static ArchivoSubido convertir(MultipartFile archivo) {
         if (archivo == null || archivo.isEmpty())
             throw new ArchivoException(ArchivoException.Motivo.INVALIDO, "El archivo está vacío");
@@ -22,6 +26,7 @@ public final class ArchivoHttp {
             throw new ArchivoException(ArchivoException.Motivo.ALMACENAMIENTO, "No fue posible recibir el archivo", ex);
         }
     }
+    // Devuelve respuesta.
     public static ResponseEntity<byte[]> respuesta(ArchivoDescarga archivo) {
         return ResponseEntity.ok()
                 .contentType(MediaType.parseMediaType(archivo.mime()))
@@ -32,6 +37,7 @@ public final class ArchivoHttp {
                 .header(HttpHeaders.CACHE_CONTROL, "no-store")
                 .body(archivo.contenido());
     }
+    // Valida enlace.
     public static void validarEnlace(String url) {
         if (url != null && url.trim().startsWith(FormatoArchivo.PREFIJO))
             throw new ArchivoException(ArchivoException.Motivo.INVALIDO, "Las referencias administradas solo se crean mediante upload");

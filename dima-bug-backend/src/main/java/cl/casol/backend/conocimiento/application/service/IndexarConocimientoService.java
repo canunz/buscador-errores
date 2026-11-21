@@ -7,6 +7,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.stream.Stream;
 
+/**
+ * Servicio de indexar conocimiento (módulo de conocimiento).
+ * Aquí van las reglas de negocio; para leer o guardar datos usa los puertos de salida.
+ */
 @Service
 @Transactional
 public class IndexarConocimientoService {
@@ -16,15 +20,18 @@ public class IndexarConocimientoService {
         this.documentos = documentos;
     }
 
+    // Indexa el conocimiento indicado.
     public void indexar(Integer conocimientoId) {
         documentos.obtener(conocimientoId).ifPresent(documento ->
                 documentos.guardar(conocimientoId, construirContenido(documento)));
     }
 
+    // Elimina el conocimiento indicado.
     public void eliminar(Integer conocimientoId) {
         documentos.eliminar(conocimientoId);
     }
 
+    // Construye contenido.
     String construirContenido(DocumentoBusquedaConocimiento documento) {
         return Stream.of(documento.conocimientoYClasificacion(), documento.sintomas(), documento.causas(),
                         documento.pruebas(), documento.soluciones(), documento.asignaciones(), documento.materiales())

@@ -8,9 +8,13 @@ import cl.casol.backend.conocimiento.infrastructure.persistence.entity.Conocimie
 import cl.casol.backend.identidad.infrastructure.persistence.entity.UsuarioEntity;
 import cl.casol.backend.identidad.infrastructure.persistence.mapper.UsuarioMapper;
 
+/**
+ * Convierte los datos de conocimiento entre la base de datos o la API y el dominio.
+ */
 public final class ConocimientoMapper {
     private ConocimientoMapper() { }
 
+    // Convierte la entidad al modelo del dominio.
     public static Conocimiento toDomain(ConocimientoEntity entity) {
         Frecuencia frecuencia = entity.getFrecuencia() == null ? null
                 : new Frecuencia(entity.getFrecuencia().getId(), entity.getFrecuencia().getNombre(),
@@ -23,6 +27,7 @@ public final class ConocimientoMapper {
                 UsuarioMapper.toDomain(entity.getModificadoPor()), entity.getFechaModificacion());
     }
 
+    // Convierte el modelo del dominio a la entidad de base de datos.
     public static ConocimientoEntity toEntity(Conocimiento c, HardwareEntity hardware, SistemaEntity sistema,
             ModuloEntity modulo, FrecuenciaEntity frecuencia, UsuarioEntity creadoPor,
             UsuarioEntity modificadoPor) {

@@ -9,6 +9,10 @@ import cl.casol.backend.procedimiento.domain.exception.*;
 import cl.casol.backend.shared.application.archivo.*;
 import org.springframework.stereotype.Service;
 
+/**
+ * Servicio de material paso archivo (módulo de procedimientos).
+ * Aquí van las reglas de negocio; para leer o guardar datos usa los puertos de salida.
+ */
 @Service
 public class MaterialPasoArchivoService {
     private AuditoriaProcedimientoService auditoria;
@@ -24,10 +28,12 @@ public class MaterialPasoArchivoService {
         this.procedimientos = procedimientos; this.pasos = pasos; this.materiales = materiales;
         this.mantener = mantener; this.archivos = archivos;
     }
+    // Sube el procedimiento indicado.
     public MaterialApoyo subir(Integer procedimientoId, Integer pasoId, String nombre, TipoMaterial tipo, ArchivoSubido archivo) {
         verificar(procedimientoId, pasoId);
         return archivos.crear(nombre, tipo, archivo, referencia -> mantener.crear(procedimientoId, pasoId, nombre, tipo, referencia));
     }
+    // Elimina el procedimiento indicado.
     public void eliminar(Integer procedimientoId, Integer pasoId, Integer materialId) {
         archivos.eliminar(() -> {
             procedimientos.bloquear(procedimientoId);
@@ -38,6 +44,7 @@ public class MaterialPasoArchivoService {
                     .orElseThrow(() -> new MaterialApoyoNoEncontradoException(materialId));
         }, material -> {if(auditoria!=null){var actor=org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();auditoria.registrar(procedimientoId,"MATERIAL_ELIMINADO",actor.getName(),material,null);}materiales.eliminar(material.id());});
     }
+    // Descarga el procedimiento indicado.
     public ArchivoDescarga descargar(Integer procedimientoId, Integer pasoId, Integer materialId) {
         verificar(procedimientoId, pasoId);
         MaterialApoyo material = materiales.buscarPorId(materialId)
@@ -45,6 +52,7 @@ public class MaterialPasoArchivoService {
                 .orElseThrow(() -> new MaterialApoyoNoEncontradoException(materialId));
         return archivos.descargar(material);
     }
+    // Verifica el procedimiento indicado.
     private void verificar(Integer procedimientoId, Integer pasoId) {
         procedimientos.buscarPorId(procedimientoId).orElseThrow(() -> new ProcedimientoNoEncontradoException(procedimientoId));
         pasos.buscarPorId(pasoId).filter(p -> procedimientoId.equals(p.procedimientoId()))

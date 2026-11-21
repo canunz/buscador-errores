@@ -5,6 +5,10 @@ import cl.casol.backend.catalogo.domain.Frecuencia;
 import org.springframework.stereotype.Service;
 import java.util.List;
 
+/**
+ * Servicio de consultar frecuencias (módulo de catálogos).
+ * Aquí van las reglas de negocio; para leer o guardar datos usa los puertos de salida.
+ */
 @Service
 public class ConsultarFrecuenciasService {
     private final FrecuenciaRepository frecuencias;

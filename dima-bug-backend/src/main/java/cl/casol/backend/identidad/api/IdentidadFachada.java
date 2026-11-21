@@ -20,16 +20,19 @@ public class IdentidadFachada {
         this.usuarios = usuarios;
     }
 
+    // Busca por email.
     public Optional<UsuarioPublico> buscarPorEmail(String email) {
         if (email == null || email.isBlank()) return Optional.empty();
         return usuarios.buscarPorEmail(email.trim()).map(IdentidadFachada::publico);
     }
 
+    // Busca por id.
     public Optional<UsuarioPublico> buscarPorId(Integer id) {
         if (id == null) return Optional.empty();
         return usuarios.buscarPorId(id).map(IdentidadFachada::publico);
     }
 
+    // Busca por ids.
     public List<UsuarioPublico> buscarPorIds(Collection<Integer> ids) {
         if (ids == null || ids.isEmpty()) return List.of();
         List<Integer> distintos = ids.stream().filter(Objects::nonNull).distinct().toList();
@@ -42,8 +45,9 @@ public class IdentidadFachada {
         return usuarios.buscarTodos().stream().filter(Usuario::isActivo).map(IdentidadFachada::publico).toList();
     }
 
+    // Devuelve público.
     private static UsuarioPublico publico(Usuario usuario) {
         String rol = usuario.getRol() == null ? null : usuario.getRol().getNombre();
-        return new UsuarioPublico(usuario.getId(), usuario.getNombre(), usuario.getEmail(), rol, usuario.isActivo());
+        return new UsuarioPublico(usuario.getId(), usuario.getNombre(), usuario.getEmail(), rol, usuario.puedeIngresar(), usuario.isAccesoBasico());
     }
 }

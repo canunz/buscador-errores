@@ -9,6 +9,10 @@ import cl.casol.backend.catalogo.domain.exception.CatalogoNoEncontradoException;
 import org.springframework.stereotype.Service;
 import java.util.List;
 
+/**
+ * Servicio de consultar sistemas (módulo de catálogos).
+ * Aquí van las reglas de negocio; para leer o guardar datos usa los puertos de salida.
+ */
 @Service
 public class ConsultarSistemasService {
     private final SistemaRepository sistemas;
@@ -21,16 +25,19 @@ public class ConsultarSistemasService {
 
     public List<Sistema> listar() { return sistemas.buscarActivos(); }
 
+    // Busca por id.
     public Sistema buscar(Integer id) {
         return sistemas.buscarActivoPorId(id)
                 .orElseThrow(() -> new CatalogoNoEncontradoException("Sistema", id));
     }
 
+    // Lista módulos.
     public List<Modulo> listarModulos(Integer id) {
         buscar(id);
         return modulos.buscarActivosPorSistema(id);
     }
 
+    // Lista hardware.
     public List<Hardware> listarHardware(Integer id) {
         buscar(id);
         return sistemas.buscarHardwareActivoPorSistema(id);

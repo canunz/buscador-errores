@@ -2,6 +2,10 @@ package cl.casol.backend.identidad.infrastructure.persistence.entity;
 
 import jakarta.persistence.*;
 
+/**
+ * Entidad JPA de responsable. Representa una fila de la tabla u_responsable.
+ * Se usa solo en la capa de persistencia; el dominio trabaja con su propio modelo.
+ */
 @Entity
 @Table(name = "u_responsable")
 public class ResponsableEntity {
@@ -29,6 +33,7 @@ public class ResponsableEntity {
     public ResponsableEntity(Integer departamentoId, String nombre, String cargo, String contacto, boolean activo) {
         this.departamentoId = departamentoId; actualizar(nombre, cargo, contacto, activo);
     }
+    // Actualiza el nombre.
     public void actualizar(String nombre, String cargo, String contacto, boolean activo) {
         this.nombre = nombre; this.cargo = cargo; this.contacto = contacto; this.activo = activo;
     }

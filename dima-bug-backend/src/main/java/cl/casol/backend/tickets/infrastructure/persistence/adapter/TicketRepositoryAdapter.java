@@ -30,6 +30,10 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 
+/**
+ * Adaptador de base de datos: implementa el puerto del repositorio usando JPA y MySQL.
+ * Convierte entre el objeto Ticket del dominio y la tabla ticket (con TicketMapper).
+ */
 @Component
 public class TicketRepositoryAdapter implements TicketRepositoryPort {
     private final TicketJpaRepository tickets;
@@ -46,6 +50,7 @@ public class TicketRepositoryAdapter implements TicketRepositoryPort {
         this.historial = historial;
     }
 
+    /** Guarda el ticket y sus comentarios e historial nuevos. */
     @Override
     public Ticket guardar(Ticket ticket) {
         TicketEntity guardado = tickets.save(TicketMapper.toEntity(ticket));
@@ -57,16 +62,19 @@ public class TicketRepositoryAdapter implements TicketRepositoryPort {
         return buscarPorId(ticketId).orElseThrow(() -> new TicketNoEncontradoException(ticketId));
     }
 
+    // Devuelve solicitante de.
     @Override
     public Optional<Integer> solicitanteDe(Long ticketId) {
         return tickets.solicitanteDe(ticketId);
     }
 
+    // Devuelve comentario interno.
     @Override
     public Optional<Boolean> comentarioInterno(Long ticketId, Long comentarioId) {
         return comentarios.internoDe(ticketId, comentarioId);
     }
 
+    /** Busca un ticket con sus comentarios e historial. */
     @Override
     public Optional<Ticket> buscarPorId(Long id) {
         return tickets.findById(id).map(entity -> TicketMapper.toDomain(entity,
@@ -74,6 +82,7 @@ public class TicketRepositoryAdapter implements TicketRepositoryPort {
                 historial.findAllByTicketIdOrderByFechaAscIdAsc(id).stream().map(TicketMapper::toDomain).toList()));
     }
 
+    /** Lista paginada con los filtros, del más nuevo al más antiguo. */
     @Override
     public PaginaTickets<Ticket> buscar(FiltroTickets filtro, int pagina, int tamano) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
@@ -94,6 +103,7 @@ public class TicketRepositoryAdapter implements TicketRepositoryPort {
         return new PaginaTickets<>(contenido, pagina, tamano, total);
     }
 
+    // Lista ligero.
     @Override
     public List<ResumenTicketFila> listarLigero(Integer solicitanteId, int limite) {
         @SuppressWarnings("unchecked")
@@ -121,6 +131,7 @@ public class TicketRepositoryAdapter implements TicketRepositoryPort {
         return filas.stream().map(TicketRepositoryAdapter::filaResumen).toList();
     }
 
+    // Devuelve fila resumen.
     private static ResumenTicketFila filaResumen(Object[] fila) {
         return new ResumenTicketFila(
                 numero(fila[0]).longValue(),
@@ -137,6 +148,7 @@ public class TicketRepositoryAdapter implements TicketRepositoryPort {
                 etiquetas(texto(fila[11])));
     }
 
+    // Devuelve etiquetas.
     private static List<Etiqueta> etiquetas(String crudo) {
         if (crudo == null || crudo.isBlank()) return List.of();
         List<Etiqueta> etiquetas = new ArrayList<>();
@@ -156,14 +168,17 @@ public class TicketRepositoryAdapter implements TicketRepositoryPort {
         return etiquetas;
     }
 
+    // Devuelve número.
     private static Number numero(Object valor) {
         return (Number) valor;
     }
 
+    // Devuelve texto.
     private static String texto(Object valor) {
         return valor == null ? null : valor.toString();
     }
 
+    // Devuelve fecha.
     private static java.time.LocalDateTime fecha(Object valor) {
         if (valor instanceof java.time.LocalDateTime fecha) return fecha;
         if (valor instanceof java.sql.Timestamp marca) return marca.toLocalDateTime();
@@ -181,6 +196,7 @@ public class TicketRepositoryAdapter implements TicketRepositoryPort {
         return entityManager.createQuery(consulta).getSingleResult();
     }
 
+    /** Cuenta tickets por estado, críticos activos y sin técnico. */
     @Override
     public ConteoTickets contar(Integer solicitanteId) {
         java.util.Map<EstadoTicket, Long> porEstado = new java.util.EnumMap<>(EstadoTicket.class);
@@ -193,6 +209,7 @@ public class TicketRepositoryAdapter implements TicketRepositoryPort {
         return new ConteoTickets(porEstado, criticos, sinTecnico);
     }
 
+    /** Siguiente número del año para el código del ticket. */
     @Override
     public int siguienteCorrelativo(int anio) {
         String prefijo = Ticket.prefijoCodigo(anio);
@@ -200,6 +217,7 @@ public class TicketRepositoryAdapter implements TicketRepositoryPort {
         return (maximo == null ? 0 : maximo.intValue()) + 1;
     }
 
+    /** Arma las condiciones del filtro (estado, prioridad, texto, etc.). */
     private static Specification<TicketEntity> especificacion(FiltroTickets filtro) {
         return (root, query, cb) -> {
             List<Predicate> condiciones = new ArrayList<>();

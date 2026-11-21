@@ -6,6 +6,10 @@ import cl.casol.backend.identidad.application.port.out.UsuarioRepository;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+/**
+ * Servicio de configurar paso (módulo de procedimientos).
+ * Aquí van las reglas de negocio; para leer o guardar datos usa los puertos de salida.
+ */
 @Service
 public class ConfigurarPasoService {
     private final ProcedimientoRepository procedimientos;private final PasoRepository pasos;private final UsuarioRepository usuarios;

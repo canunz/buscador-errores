@@ -12,6 +12,7 @@ public final class UsuarioMapper {
     private UsuarioMapper() {
     }
 
+    // Convierte la entidad al modelo del dominio.
     public static Usuario toDomain(UsuarioEntity entity) {
 
         if (entity == null) {
@@ -28,10 +29,11 @@ public final class UsuarioMapper {
                 entity.getPasswordHash(),
                 entity.isActivo(),
                 entity.getFechaCreacion(),
-                entity.getFechaActualizacion()
-        );
+                entity.getFechaActualizacion(), entity.getEstadoRegistro()
+        ).conUltimoIngreso(entity.getUltimoIngreso());
     }
 
+    // Convierte la entidad al modelo del dominio.
     private static Rol toDomain(RolEntity entity) {
 
         if (entity == null) {
@@ -48,6 +50,7 @@ public final class UsuarioMapper {
         );
     }
 
+    // Convierte el modelo del dominio a la entidad de base de datos.
     public static UsuarioEntity toEntity(Usuario usuario) {
         Rol rol = usuario.getRol();
         RolEntity rolEntity = new RolEntity(
@@ -55,13 +58,16 @@ public final class UsuarioMapper {
                 rol.getFechaCreacion(), rol.getFechaActualizacion()
         );
 
-        return new UsuarioEntity(
+        UsuarioEntity entity = new UsuarioEntity(
                 usuario.getId(), rolEntity, usuario.getNombre(), usuario.getEmail(),
                 usuario.getPasswordHash(), usuario.isActivo(), usuario.getFechaCreacion(),
-                usuario.getFechaActualizacion()
+                usuario.getFechaActualizacion(), usuario.getEstadoRegistro()
         );
+        entity.setUltimoIngreso(usuario.getUltimoIngreso());
+        return entity;
     }
 
+    // Devuelve rol to domain.
     public static Rol rolToDomain(RolEntity entity) {
         return toDomain(entity);
     }

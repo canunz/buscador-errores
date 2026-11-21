@@ -10,14 +10,20 @@ import cl.casol.backend.tickets.domain.Ticket;
 import java.time.LocalDateTime;
 import java.util.List;
 
+/**
+ * Datos que se devuelven al frontend con ticket detalle.
+ * Solo lleva lo que la pantalla necesita mostrar.
+ */
 public record TicketDetalleResponse(Long id, String codigo, String titulo, String descripcion, EstadoTicket estado,
         PrioridadTicket prioridad, ReferenciaResponse solicitante, ReferenciaResponse asignado,
         ReferenciaResponse hardware, ReferenciaResponse sistema, ReferenciaResponse modulo,
         ConocimientoVinculadoResponse conocimiento, String solucion,
         LocalDateTime fechaCreacion, LocalDateTime fechaActualizacion, LocalDateTime fechaResolucion,
         LocalDateTime fechaCierre, List<EtiquetaResponse> etiquetas, List<ComentarioResponse> comentarios,
-        List<HistorialResponse> historial, List<AdjuntoResponse> adjuntos) {
+        List<HistorialResponse> historial, List<AdjuntoResponse> adjuntos,
+        cl.casol.backend.tickets.domain.DatosSolicitante datosSolicitante) {
 
+    // Crea el objeto a partir de los datos recibidos.
     public static TicketDetalleResponse from(TicketVista vista) {
         Ticket t = vista.ticket();
         ClasificacionTicket c = vista.clasificacion() == null ? ClasificacionTicket.VACIA : vista.clasificacion();
@@ -40,19 +46,24 @@ public record TicketDetalleResponse(Long id, String codigo, String titulo, Strin
                         h.fecha())).toList(),
                 vista.adjuntos().stream().map(a -> new AdjuntoResponse(a.id(), a.nombre(), a.mime(),
                         a.tipo().name(), a.tamano(), a.comentarioId(),
-                        ReferenciaResponse.usuario(a.autorId(), vista.usuario(a.autorId())), a.fecha())).toList());
+                        ReferenciaResponse.usuario(a.autorId(), vista.usuario(a.autorId())), a.fecha())).toList(), t.getDatosSolicitante());
     }
 
+    // Devuelve adjunto response.
     public record AdjuntoResponse(Long id, String nombre, String mime, String tipo, long tamano, Long comentarioId,
             ReferenciaResponse autor, LocalDateTime fecha) { }
 
+    // Devuelve comentario response.
     public record ComentarioResponse(Long id, ReferenciaResponse autor, String texto, boolean interno,
             LocalDateTime fecha) { }
 
+    // Devuelve historial response.
     public record HistorialResponse(Long id, EstadoTicket estadoAnterior, EstadoTicket estadoNuevo,
             ReferenciaResponse usuario, String motivo, LocalDateTime fecha) { }
 
+    // Devuelve conocimiento vinculado response.
     public record ConocimientoVinculadoResponse(Integer id, String titulo, String estado) {
+        // Crea el objeto a partir de los datos recibidos.
         static ConocimientoVinculadoResponse from(Integer id, ConocimientoReferencia referencia) {
             if (id == null) return null;
             return referencia == null ? new ConocimientoVinculadoResponse(id, null, null)

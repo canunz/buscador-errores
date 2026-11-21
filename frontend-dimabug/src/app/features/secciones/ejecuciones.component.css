@@ -75,10 +75,6 @@
 
 .ex-fila .tk-btn { min-width: 118px; }
 
-:host-context(.tema-oscuro) .ex-icono { background: rgba(245, 158, 11, 0.18); color: #fcd34d; }
-:host-context(.tema-oscuro) .ex-icono[data-estado='COMPLETADA'] { background: rgba(34, 197, 94, 0.18); color: #86efac; }
-:host-context(.tema-oscuro) .ex-icono[data-estado='CANCELADA'] { background: rgba(239, 68, 68, 0.18); color: #fca5a5; }
-
 @media (max-width: 640px) {
   .ex-fila { flex-wrap: wrap; }
   .ex-texto { flex-basis: calc(100% - 60px); }

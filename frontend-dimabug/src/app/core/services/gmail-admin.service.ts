@@ -4,6 +4,10 @@ import { catchError, throwError, Observable, timeout } from 'rxjs';
 import { apiUrl } from '../config/api';
 import { mensajeApiError } from '../http/api-error';
 import { plazoConsulta } from '../http/plazo-consulta';
+/**
+ * Servicio de gmail admin.
+ * Hace las llamadas HTTP al backend y entrega los datos a los componentes.
+ */
 export interface EstadoGmail {configurado:boolean;conectado:boolean;envioRealHabilitado:boolean;estado:string;expira:string|null;remitente:string;revocacionRemotaPendiente:boolean;}
 export interface ResultadoPruebaGmail {id:string;actor:number;remitente:string;destinatario:string;estado:'PENDIENTE'|'ENVIANDO'|'ENVIADO'|'FALLIDO'|'INCIERTO';creada:string;intento:string|null;finalizada:string|null;mensajeId:string|null;resultado:string|null;}
 export interface EstadoPruebaGmail {remitente:string;destinatario:string;conectado:boolean;transporte:string;habilitado:boolean;ultima:ResultadoPruebaGmail|null;}

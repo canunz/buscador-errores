@@ -1,5 +1,8 @@
 package cl.casol.backend.shared.domain;
 import java.util.*;
+/**
+ * Modelo de dominio de destinatario paso. Es inmutable: cada cambio crea un objeto nuevo.
+ */
 public record DestinatarioPaso(String correo,Tipo tipo) {
     public enum Tipo { PRINCIPAL, COPIA }
     public DestinatarioPaso {
@@ -10,6 +13,7 @@ public record DestinatarioPaso(String correo,Tipo tipo) {
         if(local.startsWith(".") || local.endsWith(".") || local.contains("..") || local.length()>64)throw new DestinatarioInvalidoException("Correo inválido");
         if(tipo==null)tipo=Tipo.PRINCIPAL;
     }
+    // Normaliza los valores.
     public static List<DestinatarioPaso> normalizar(Collection<DestinatarioPaso> valores) {
         var unicos=new LinkedHashMap<String,DestinatarioPaso>();
         if(valores!=null)for(var d:valores){if(d==null)throw new DestinatarioInvalidoException("Destinatario vacío");var previo=unicos.get(d.correo());if(previo==null || d.tipo()==Tipo.PRINCIPAL)unicos.put(d.correo(),d);}

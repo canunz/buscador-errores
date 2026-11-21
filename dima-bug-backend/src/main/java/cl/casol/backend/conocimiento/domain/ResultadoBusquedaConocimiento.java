@@ -1,5 +1,8 @@
 package cl.casol.backend.conocimiento.domain;
 
+/**
+ * Modelo de dominio de resultado búsqueda conocimiento. Es inmutable: cada cambio crea un objeto nuevo.
+ */
 public record ResultadoBusquedaConocimiento(
         Integer id,
         String titulo,

@@ -24,7 +24,7 @@ describe('QA-010 navegación Sistemas', () => {
   beforeEach(() => {
     usuario.set({ ...usuario(), rolNombre: 'ADMINISTRADOR' });
     TestBed.configureTestingModule({ providers: [provideRouter([ruta]),
-      { provide: AuthService, useValue: { usuario, isStaff: () => true, isAdmin: () => usuario().rolNombre === 'ADMINISTRADOR', isAuthenticated: () => true } },
+      { provide: AuthService, useValue: { usuario, isStaff: () => true, isAdmin: () => usuario().rolNombre === 'ADMINISTRADOR', isAuthenticated: () => true, accesoBasico: () => false } },
       { provide: ProcedimientoService, useValue: { listar: () => of([]) } },
       { provide: ConocimientoService, useValue: { listar: () => of([]) } },
       { provide: EjecucionService, useValue: { listar: () => of([]) } },

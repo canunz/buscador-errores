@@ -6,6 +6,10 @@ import { catchError, Observable, throwError } from 'rxjs';
 import { apiUrl } from '../config/api';
 import { mensajeApiError } from '../http/api-error';
 import { ConfiguracionPaso, DestinatarioPaso } from '../models/configuracion-paso.model';
+/**
+ * Servicio de automatización ejecución.
+ * Hace las llamadas HTTP al backend y entrega los datos a los componentes.
+ */
 export interface SucursalEjecucion { id: number; codigo: string; nombre: string; responsableNombre: string; ciudad?: string | null; }
 export interface DestinatarioSucursal { id: number; nombre: string; responsableNombre: string; responsableEmail: string; activa: boolean; ciudad?: string | null; responsableCargo?: string | null; destinatarios?: DestinatarioPaso[]; }
 export interface SolicitudEvidencia {

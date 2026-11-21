@@ -1,4 +1,8 @@
 import { ModalidadPaso, ConfiguracionPaso } from './configuracion-paso.model';
+/**
+ * Tipos de datos de procedimiento que usa el frontend.
+ * Deben coincidir con lo que responde el backend.
+ */
 export type EstadoProcedimiento = 'BORRADOR' | 'PUBLICADO';
 
 export interface UsuarioProcedimiento {

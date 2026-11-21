@@ -6,11 +6,15 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.*;
 import org.springframework.transaction.event.*;
 
+/**
+ * Despachar correo confirmado (módulo de ejecución de procedimientos).
+ */
 @Component
 public class DespacharCorreoConfirmado {
     private final AutomatizarEvidenciaService servicio;
     private final CorreoEvidenciaPort correo;
     public DespacharCorreoConfirmado(AutomatizarEvidenciaService servicio,CorreoEvidenciaPort correo){this.servicio=servicio;this.correo=correo;}
+    // Envía el evento.
     @Transactional(propagation=Propagation.NOT_SUPPORTED)
     @TransactionalEventListener(phase=TransactionPhase.AFTER_COMMIT)
     public void enviar(CorreoPendiente evento){

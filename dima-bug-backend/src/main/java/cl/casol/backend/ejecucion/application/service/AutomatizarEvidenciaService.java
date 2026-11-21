@@ -17,6 +17,10 @@ import java.security.MessageDigest;
 import java.util.*;
 import static cl.casol.backend.ejecucion.domain.SolicitudEvidencia.Estado.*;
 
+/**
+ * Servicio de automatizar evidencia (módulo de ejecución de procedimientos).
+ * Aquí van las reglas de negocio; para leer o guardar datos usa los puertos de salida.
+ */
 @Service @Transactional(readOnly=true, timeout=8)
 public class AutomatizarEvidenciaService implements AutomatizacionEjecucionPort {
     private final SolicitudEvidenciaRepository solicitudes;
@@ -40,15 +44,20 @@ public class AutomatizarEvidenciaService implements AutomatizacionEjecucionPort 
         this.usuarios=usuarios;this.correo=correo;this.fotos=fotos;this.reloj=reloj;this.eventosCorreo=eventosCorreo;
         politica=new SolicitudEvidencia.Politica("Enviar fotografías del mueble, punto de red y electricidad para revisión del técnico.",hora1,hora2,hora3);
     }
+    // Indica si está disponible.
     @Transactional(propagation=org.springframework.transaction.annotation.Propagation.SUPPORTS,readOnly=true)
     public boolean disponible(){return correo.disponible();}
+    // Indica si está simulado.
     @Transactional(propagation=org.springframework.transaction.annotation.Propagation.SUPPORTS,readOnly=true)
     public boolean simulado(){return correo.simulado();}
+    // Devuelve avisos.
     public List<SolicitudEvidencia> avisos(String email){return solicitudes.avisos(actor(email).getId()).stream().filter(s->!Set.of(ESPERANDO_EVIDENCIA,ESPERANDO_CONFIRMACION).contains(s.estado()) || s.reglaAplicada()>=s.politica().configuracion().plazoRespuestaHoras()).toList();}
+    // Valida inicio.
     public void validarInicio(Integer sucursalId) {
         if(!correo.disponible())throw regla("Gmail no está conectado. Habilita la simulación solo en desarrollo para probar este procedimiento");
         sucursal(sucursalId);
     }
+    // Devuelve sucursal.
     private Sucursal sucursal(Integer id) {
         if(id==null)throw regla("Selecciona una sucursal activa");
         var s=sucursales.buscar(id).filter(Sucursal::activa).orElseThrow(()->regla("Selecciona una sucursal activa"));
@@ -57,6 +66,7 @@ public class AutomatizarEvidenciaService implements AutomatizacionEjecucionPort 
             throw regla("Un administrador debe registrar el responsable y un correo @dimarsa.cl válido en el catálogo de sucursales");
         return s;
     }
+    // Busca inicio.
     public Optional<Integer> buscarInicio(Integer actor,String clave,Integer procedimiento,Integer sucursal) {
         if(clave==null)throw regla("El inicio automatizado requiere una clave UUID");
         try{UUID.fromString(clave);}catch(IllegalArgumentException e){throw regla("Clave de inicio inválida");}
@@ -66,6 +76,7 @@ public class AutomatizarEvidenciaService implements AutomatizacionEjecucionPort 
             return s.ejecucionId();
         });
     }
+    // Busca inicio.
     public Optional<Integer> buscarInicio(Integer actor,String clave,Integer procedimiento,Integer sucursal,List<DestinatarioPaso> adicionales) {
         var resultado=buscarInicio(actor,clave,procedimiento,sucursal);
         resultado.ifPresent(id->{
@@ -199,6 +210,7 @@ public class AutomatizarEvidenciaService implements AutomatizacionEjecucionPort 
         evento(s,reglaHoras==0?nombreCorreo("INICIADO"):"RECORDATORIO_"+nombreCorreo("INICIADO"),s.contexto().actorId(),"Regla "+reglaHoras);
         return Optional.of(s);
     }
+    // Registra resultado smtp.
     @Transactional(propagation=org.springframework.transaction.annotation.Propagation.REQUIRES_NEW)
     public void registrarResultadoSmtp(String id,int reglaHoras,String referencia){
         var inicial=solicitudes.buscar(id).orElseThrow();ejecuciones.bloquear(inicial.ejecucionId());
@@ -217,28 +229,36 @@ public class AutomatizarEvidenciaService implements AutomatizacionEjecucionPort 
         cambiarPaso(p,estado==ENVIADA?EstadoEjecucionPaso.COMPLETADO:p.contrato().modo().esEvidencia()?EstadoEjecucionPaso.ESPERANDO_EVIDENCIA:estado==ESPERANDO_CONFIRMACION?EstadoEjecucionPaso.ESPERANDO_CONFIRMACION:EstadoEjecucionPaso.EN_VALIDACION);
         if(estado==ENVIADA)avanzar(e);
     }
+    // Lista por id.
     @Transactional public void registrarManual(Ejecucion e,EjecucionPaso p,Integer actor){solicitudes.registrar(new EventoAutomatizacion(null,e.id(),null,p.contrato()!=null && p.contrato().esCritico()?"PASO_CRITICO_CONFIRMADO":"PASO_GUIADO_CONFIRMADO",actor,"Confirmación explícita mediante Siguiente del paso "+(p.contrato()==null?p.pasoId():p.contrato().orden()),reloj.instant()));}
     public List<SolicitudEvidencia> listar(Integer id,String email){autorizar(id,email);return solicitudes.porEjecucion(id);}
+    // Devuelve resultado envío.
     public SolicitudEvidencia resultadoEnvio(Integer id,String solicitudId,String email){
         autorizar(id,email);return solicitudes.buscarActualizada(solicitudId).filter(s->s.ejecucionId().equals(id)).orElseThrow(()->new AccessDeniedException("Solicitud ajena o inexistente"));
     }
+    // Devuelve eventos.
     public List<EventoAutomatizacion> eventos(Integer id,String email){autorizar(id,email);return solicitudes.eventos(id);}
+    // Devuelve evidencias.
     public List<EvidenciaFotografica> evidencias(Integer id,String solicitudId,String email){autorizar(id,email);pertenece(id,solicitudId);return solicitudes.evidencias(solicitudId);}
+    // Descarga por id.
     public EvidenciaFotografica descargar(Integer id,String solicitudId,Long evidenciaId,String email) {
         autorizar(id,email);pertenece(id,solicitudId);
         return solicitudes.evidencia(evidenciaId).filter(e->e.solicitudId().equals(solicitudId)).orElseThrow(()->new AccessDeniedException("Evidencia ajena o inexistente"));
     }
+    // Recibe simulada.
     @Transactional
     public SolicitudEvidencia recibirSimulada(Integer id,String solicitudId,String remitente,String mensajeId,
             Map<EvidenciaFotografica.Categoria,byte[]> archivos,String email) {
         exigirSimulacion();
         return registrarRecepcion(id,solicitudId,remitente,mensajeId,archivos,email,true);
     }
+    // Recibe por id.
     @Transactional
     public SolicitudEvidencia recibir(Integer id,String solicitudId,String remitente,String mensajeId,
             Map<EvidenciaFotografica.Categoria,byte[]> archivos,String email) {
         return registrarRecepcion(id,solicitudId,remitente,mensajeId,archivos,email,false);
     }
+    // Registra recepcion.
     private SolicitudEvidencia registrarRecepcion(Integer id,String solicitudId,String remitente,String mensajeId,
             Map<EvidenciaFotografica.Categoria,byte[]> archivos,String email,boolean simulada) {
         ejecuciones.bloquear(id);var e=autorizar(id,email);enCurso(e);var s=vigente(id,solicitudId);
@@ -264,10 +284,12 @@ public class AutomatizarEvidenciaService implements AutomatizacionEjecucionPort 
         return recibida;
     }
     public Map<EvidenciaFotografica.Categoria,byte[]> muestras(){exigirSimulacion();var result=new EnumMap<EvidenciaFotografica.Categoria,byte[]>(EvidenciaFotografica.Categoria.class);for(var c:List.of(EvidenciaFotografica.Categoria.MUEBLE,EvidenciaFotografica.Categoria.RED,EvidenciaFotografica.Categoria.ELECTRICIDAD))result.put(c,fotos.muestra(c));return result;}
+    // Decide por id.
     @Transactional
     public SolicitudEvidencia decidir(Integer id,String solicitudId,long version,boolean aprobar,boolean definitiva,String motivo,String email) {
         return decidir(id,solicitudId,version,aprobar,definitiva,motivo,email,true);
     }
+    // Decide por id.
     @Transactional
     public SolicitudEvidencia decidir(Integer id,String solicitudId,long version,boolean aprobar,boolean definitiva,String motivo,String email,boolean repetir) {
         ejecuciones.bloquear(id);var e=autorizar(id,email);enCurso(e);var s=vigente(id,solicitudId);
@@ -285,6 +307,7 @@ public class AutomatizarEvidenciaService implements AutomatizacionEjecucionPort 
         }
         if(aprobar || repetir)avanzar(e);return decidida;
     }
+    // Solicita nuevamente.
     @Transactional
     public SolicitudEvidencia solicitarNuevamente(Integer id,String solicitudId,long version,String email) {
         ejecuciones.bloquear(id);var e=autorizar(id,email);enCurso(e);var anterior=pertenece(id,solicitudId);
@@ -300,6 +323,7 @@ public class AutomatizarEvidenciaService implements AutomatizacionEjecucionPort 
         cambiarPaso(paso(anterior),EstadoEjecucionPaso.PENDIENTE);avanzar(e);
         return solicitudes.buscar(nueva.id()).orElseThrow();
     }
+    // Cancela con los datos recibidos.
     @Transactional
     public void cancelar(Ejecucion e,Integer actorId) {
         for(var s:solicitudes.porEjecucion(e.id()))if(Set.of(PENDIENTE,ESPERANDO_EVIDENCIA,EVIDENCIA_RECIBIDA,ERROR,ESPERANDO_CONFIRMACION,CONFIRMACION_RECIBIDA,ENVIADA_PENDIENTE_APROBACION,ACCION_PENDIENTE_APROBACION).contains(s.estado())) {
@@ -307,6 +331,7 @@ public class AutomatizarEvidenciaService implements AutomatizacionEjecucionPort 
         }
     }
     public List<String> vencidas(){return correo.disponible()?solicitudes.vencidas(reloj.instant(),!correo.simulado()):List.of();}
+    // Procesa seguimiento.
     @Transactional
     public void procesarSeguimiento(String solicitudId) {
         var inicial=solicitudes.buscar(solicitudId).orElseThrow();ejecuciones.bloquear(inicial.ejecucionId());
@@ -314,6 +339,7 @@ public class AutomatizarEvidenciaService implements AutomatizacionEjecucionPort 
         if(e.estado()!=EstadoEjecucion.EN_CURSO){cancelar(e,null);return;}
         seguimiento(solicitudes.buscar(solicitudId).orElseThrow(),reloj.instant());
     }
+    // Simula tiempo.
     @Transactional
     public void simularTiempo(Integer id,String solicitudId,int horas,String email) {
         exigirSimulacion();ejecuciones.bloquear(id);enCurso(autorizar(id,email));var s=vigente(id,solicitudId);
@@ -332,7 +358,9 @@ public class AutomatizarEvidenciaService implements AutomatizacionEjecucionPort 
         solicitudes.guardar(s.seguimiento(regla,proximo));
         evento(s,regla==cfg.plazoRespuestaHoras()?"ESCALADO_AL_TECNICO":correo.simulado()?"RECORDATORIO_SIMULADO":"RECORDATORIO_PROGRAMADO",null,"Regla "+regla+" horas; vencimientos anteriores coalescidos");
     }
+    // Devuelve categorias.
     private Set<EvidenciaFotografica.Categoria> categorias(SolicitudEvidencia s){return s.politica().configuracion().evidenciasRequeridas().stream().map(EvidenciaFotografica.Categoria::valueOf).collect(java.util.stream.Collectors.toSet());}
+    // Devuelve muestras.
     public Map<EvidenciaFotografica.Categoria,byte[]> muestras(Integer id,String solicitud,String email){exigirSimulacion();autorizar(id,email);var s=pertenece(id,solicitud);var result=new EnumMap<EvidenciaFotografica.Categoria,byte[]>(EvidenciaFotografica.Categoria.class);for(var c:categorias(s))result.put(c,fotos.muestra(c));return result;}
     @Transactional public SolicitudEvidencia confirmarRespuesta(Integer id,String solicitud,String remitente,String mensajeId,String texto,String email){
         exigirSimulacion();ejecuciones.bloquear(id);var e=autorizar(id,email);enCurso(e);var s=vigente(id,solicitud);
@@ -346,32 +374,44 @@ public class AutomatizarEvidenciaService implements AutomatizacionEjecucionPort 
         if(s.politica().configuracion().requiereAprobacion()){cambiarPaso(paso(s),EstadoEjecucionPaso.EN_VALIDACION);return recibida;}
         var terminada=solicitudes.guardar(recibida.estado(APROBADA));cambiarPaso(paso(s),EstadoEjecucionPaso.COMPLETADO);avanzar(e);return terminada;
     }
+    // Devuelve pertenece.
     private SolicitudEvidencia pertenece(Integer id,String solicitudId){return solicitudes.buscar(solicitudId).filter(s->s.ejecucionId().equals(id)).orElseThrow(()->new AccessDeniedException("Solicitud ajena o inexistente"));}
+    // Devuelve vigente.
     private SolicitudEvidencia vigente(Integer id,String solicitudId) {
         var s=pertenece(id,solicitudId);
         if(solicitudes.porEjecucion(id).stream().anyMatch(otra->otra.ejecucionPasoId().equals(s.ejecucionPasoId()) && otra.ronda()>s.ronda()))throw conflicto("La ronda fue reemplazada");
         return s;
     }
+    // Devuelve paso.
     private EjecucionPaso paso(SolicitudEvidencia s){return pasos.buscarPorId(s.ejecucionPasoId()).filter(p->p.ejecucionId().equals(s.ejecucionId())).orElseThrow();}
+    // Cambia paso.
     private void cambiarPaso(EjecucionPaso p,EstadoEjecucionPaso estado) {
         pasos.guardar(new EjecucionPaso(p.id(),p.ejecucionId(),p.pasoId(),estado==EstadoEjecucionPaso.COMPLETADO,p.observacion(),
                 estado==EstadoEjecucionPaso.COMPLETADO?LocalDateTime.ofInstant(reloj.instant(),ZoneId.of("America/Santiago")):null,p.contrato(),estado,p.version()+1));
     }
+    // Autoriza por id.
     private Ejecucion autorizar(Integer id,String email) {
         var u=actor(email);var e=ejecuciones.buscarPorId(id).orElseThrow(()->new EjecucionNoEncontradaException(id));
         if(!u.getId().equals(e.usuario().getId()) && !"ADMINISTRADOR".equalsIgnoreCase(u.getRol().getNombre().strip()))throw new AccessDeniedException("Ejecución ajena");return e;
     }
+    // Devuelve actor.
     private Usuario actor(String email) {
         var u=usuarios.buscarPorEmail(email).filter(Usuario::isActivo).orElseThrow(()->new AccessDeniedException("Usuario no disponible"));
         if(u.getRol()==null || !Set.of("ADMINISTRADOR","TECNICO","SOPORTE").contains(u.getRol().getNombre().strip().toUpperCase(Locale.ROOT)))throw new AccessDeniedException("Rol no autorizado");return u;
     }
     private void enCurso(Ejecucion e){if(e.estado()!=EstadoEjecucion.EN_CURSO)throw conflicto("La ejecución está cerrada");}
+    // Exige simulación.
     private void exigirSimulacion(){if(!correo.simulado())throw regla("La recepción de prueba solo está disponible en modo SIMULADO");}
+    // Indica si es envío simulado.
     private boolean esEnvioSimulado(SolicitudEvidencia s){return s.mensajeEnviadoId()!=null && s.mensajeEnviadoId().startsWith("SIMULADO-");}
+    // Devuelve nombre correo.
     private String nombreCorreo(String resultado){return ("GMAIL_API".equals(correo.transporte())?"GMAIL_":"SMTP_")+resultado;}
     private void evento(SolicitudEvidencia s,String tipo,Integer actor,String detalle){solicitudes.registrar(new EventoAutomatizacion(null,s.ejecucionId(),s.id(),tipo,actor,detalle,reloj.instant()));}
+    // Devuelve comunicacion.
     public record Comunicacion(EventoAutomatizacion evento,Integer pasoId,String estado,String responsable,List<DestinatarioPaso> destinatarios,List<Long> evidencias){}
+    // Devuelve solicitud lectura.
     public record SolicitudLectura(SolicitudEvidencia detalle,List<FotoEvidenciaResumen> fotos,boolean simulado){}
+    // Devuelve lectura automatización.
     public record LecturaAutomatizacion(List<SolicitudLectura> solicitudes,List<EventoAutomatizacion> actividad,boolean disponible,boolean simulado,List<Comunicacion> comunicaciones){}
     /** Una autorización y una sola transacción para toda la respuesta; nunca envía ni crea solicitudes. */
     public LecturaAutomatizacion consultarEstado(Integer id,String email){
@@ -379,10 +419,13 @@ public class AutomatizarEvidenciaService implements AutomatizacionEjecucionPort 
         var lista=rondas.stream().map(r->new SolicitudLectura(r,fotos.get(r.id()),r.mensajeEnviadoId()==null?correo.simulado():r.mensajeEnviadoId().startsWith("SIMULADO-"))).toList();
         return new LecturaAutomatizacion(lista,eventos,correo.disponible(),correo.simulado(),construirHistorial(rondas,eventos,fotos));
     }
+    // Devuelve historial.
     public List<Comunicacion> historial(Integer id,String email){
         autorizar(id,email);var rondas=solicitudes.porEjecucion(id);return construirHistorial(rondas,solicitudes.eventos(id),fotosDe(rondas));
     }
+    // Devuelve fotos de.
     private Map<String,List<FotoEvidenciaResumen>> fotosDe(List<SolicitudEvidencia> rondas){var fotos=new HashMap<String,List<FotoEvidenciaResumen>>();for(var r:rondas)fotos.put(r.id(),solicitudes.fotosResumen(r.id()));return fotos;}
+    // Construye historial.
     private List<Comunicacion> construirHistorial(List<SolicitudEvidencia> rondas,List<EventoAutomatizacion> eventos,Map<String,List<FotoEvidenciaResumen>> fotos){
         var nombres=new HashMap<Integer,String>();var actores=eventos.stream().map(EventoAutomatizacion::actorId).filter(Objects::nonNull).distinct().toList();
         if(!actores.isEmpty())usuarios.buscarPorIds(actores).forEach(u->nombres.put(u.getId(),u.getNombre()));
@@ -394,7 +437,10 @@ public class AutomatizarEvidenciaService implements AutomatizacionEjecucionPort 
             return new Comunicacion(v,solicitud.ejecucionPasoId(),estado,responsable,solicitud.contexto().destinatarios(),evidencias);
         }).toList();
     }
+    // Devuelve sha.
     private static String sha(byte[] data){try{return HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(data));}catch(Exception e){throw new IllegalStateException(e);}}
+    // Devuelve regla.
     private ReglaEjecucionException regla(String mensaje){return new ReglaEjecucionException(mensaje);}
+    // Devuelve conflicto.
     private ConflictoEjecucionException conflicto(String mensaje){return new ConflictoEjecucionException(mensaje);}
 }

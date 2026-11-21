@@ -27,6 +27,10 @@ const MESES = [
   'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre',
 ];
 
+/**
+ * Pantalla de inicio.
+ * Carga los datos con su servicio y maneja lo que el usuario hace en la vista.
+ */
 @Component({
   selector: 'app-inicio',
   standalone: true,

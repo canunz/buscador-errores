@@ -7,7 +7,8 @@ type Paso = 'identificar' | 'codigo';
 
 /**
  * 1) el usuario escribe su correo;
- * 2) Administrador, Soporte y Usuario reciben el mismo código de 6 dígitos.
+ * 2) una cuenta habilitada recibe un código;
+ * 3) todos los roles verifican el código antes de iniciar sesión.
  */
 @Component({
   selector: 'app-login',
@@ -28,10 +29,11 @@ export class LoginComponent implements OnDestroy {
   aviso = '';
   identificador = '';
 
-  /** Momento en que vence el código, el reenvío y un bloqueo por intentos fallidos. */
+  /** Momento en que vence el código y momento desde el que se puede reenviar. */
   private venceEn = 0;
   private reenvioDesde = 0;
-  private bloqueoHasta = 0;
+  /** Momento hasta el que el ingreso queda bloqueado por equivocarse varias veces con el código. */
+  private bloqueadoHasta = 0;
   private ahora = Date.now();
   private reloj: ReturnType<typeof setInterval> | null = null;
 
@@ -51,22 +53,26 @@ export class LoginComponent implements OnDestroy {
     return Math.max(0, Math.ceil((this.reenvioDesde - this.ahora) / 1000));
   }
 
+  /** Segundos que faltan para que termine el bloqueo; 0 si puede intentar. */
+  get segundosBloqueo(): number {
+    return Math.max(0, Math.ceil((this.bloqueadoHasta - this.ahora) / 1000));
+  }
+
   get codigoVencido(): boolean {
     return this.paso === 'codigo' && this.segundosParaVencer === 0;
-  }
-
-  get segundosBloqueo(): number {
-    return Math.max(0, Math.ceil((this.bloqueoHasta - this.ahora) / 1000));
-  }
-
-  get ingresoBloqueado(): boolean {
-    return this.segundosBloqueo > 0;
   }
 
   formatear(segundos: number): string {
     const m = Math.floor(segundos / 60);
     const s = segundos % 60;
     return `${m}:${s.toString().padStart(2, '0')}`;
+  }
+
+  get lineasAviso(): string[] {
+    return this.aviso
+      .split(/\n+/)
+      .map((linea) => linea.trim())
+      .filter(Boolean);
   }
 
   /** Paso 1: validar el correo y pedir el código. */
@@ -92,12 +98,13 @@ export class LoginComponent implements OnDestroy {
         this.form.controls.email.disable();
         this.iniciarContadores(res);
         this.paso = 'codigo';
-        this.aviso = 'Enviamos un código de 6 dígitos a su correo. Revise también la carpeta de spam.';
+        this.aviso = 'Si la cuenta está habilitada, recibirá un código.\nRevise también la carpeta de spam.';
         setTimeout(() => document.getElementById('codigo')?.focus(), 0);
       },
       error: (err: CodigoAccesoError) => {
         this.loading = false;
         if (err.segundosRestantes) {
+          // Ya tiene un código reciente: se pasa directo a ingresarlo.
           this.identificador = valor;
           this.paso = 'codigo';
           this.form.controls.email.disable();
@@ -106,7 +113,7 @@ export class LoginComponent implements OnDestroy {
             this.venceEn = Date.now() + 5 * 60 * 1000;
           }
           this.arrancarReloj();
-          this.aviso = 'Ya le enviamos un código hace poco. Ingréselo o espere para pedir otro.';
+          this.aviso = 'Espere antes de pedir otro código.';
           return;
         }
         this.error = err.message;
@@ -126,7 +133,7 @@ export class LoginComponent implements OnDestroy {
         this.reenviando = false;
         this.codigoForm.reset({ codigo: '' });
         this.iniciarContadores(res);
-        this.aviso = 'Le enviamos un código nuevo. El anterior ya no sirve.';
+        this.aviso = 'Solicitud recibida. Si corresponde emitir otro código, el anterior dejará de servir.';
       },
       error: (err: CodigoAccesoError) => {
         this.reenviando = false;
@@ -141,12 +148,12 @@ export class LoginComponent implements OnDestroy {
   /** Paso 2: validar el código e ingresar. */
   verificar(): void {
     this.error = '';
-    if (this.ingresoBloqueado) {
-      this.error = `Demasiados intentos fallidos. Espere ${this.formatear(this.segundosBloqueo)} para volver a intentar.`;
-      return;
-    }
     const codigo = this.codigoForm.controls.codigo.value.replace(/\D/g, '');
     this.codigoForm.controls.codigo.setValue(codigo);
+    if (this.segundosBloqueo > 0) {
+      // Mientras dure el bloqueo no se envía nada al servidor.
+      return;
+    }
     if (this.codigoVencido) {
       this.error = 'El código expiró. Solicite uno nuevo.';
       return;
@@ -160,13 +167,17 @@ export class LoginComponent implements OnDestroy {
     this.auth.verificarCodigoAcceso(this.identificador, codigo).subscribe({
       next: () => {
         this.detenerReloj();
-        this.router.navigateByUrl('/inicio');
+        this.router.navigateByUrl(this.auth.accesoBasico() ? '/solicitudes' : '/inicio');
       },
       error: (err: CodigoAccesoError) => {
         this.loading = false;
         this.codigoForm.reset({ codigo: '' });
-        if (err.bloqueo && err.segundosRestantes) {
-          this.aplicarBloqueo(err.segundosRestantes);
+        if (err.segundosRestantes) {
+          // Se equivocó demasiadas veces: se muestra la cuenta regresiva en vez del error.
+          this.bloqueadoHasta = Date.now() + err.segundosRestantes * 1000;
+          this.error = '';
+          this.arrancarReloj();
+          return;
         }
         this.error = err.message;
       },
@@ -175,15 +186,12 @@ export class LoginComponent implements OnDestroy {
 
   /** Deja solo números y envía automáticamente al completar los 6 dígitos. */
   alEscribirCodigo(): void {
-    if (this.ingresoBloqueado) {
-      return;
-    }
     const control = this.codigoForm.controls.codigo;
     const limpio = control.value.replace(/\D/g, '').slice(0, 6);
     if (limpio !== control.value) {
       control.setValue(limpio);
     }
-    if (limpio.length === 6 && !this.loading) {
+    if (limpio.length === 6 && !this.loading && this.segundosBloqueo === 0) {
       this.verificar();
     }
   }
@@ -196,8 +204,7 @@ export class LoginComponent implements OnDestroy {
     this.aviso = '';
     this.venceEn = 0;
     this.reenvioDesde = 0;
-    this.bloqueoHasta = 0;
-    this.codigoForm.enable();
+    this.bloqueadoHasta = 0;
     this.codigoForm.reset({ codigo: '' });
   }
 
@@ -208,13 +215,7 @@ export class LoginComponent implements OnDestroy {
   private iniciarContadores(res: SolicitudCodigoAcceso): void {
     const ahora = Date.now();
     this.venceEn = ahora + (res.segundosVigencia || 300) * 1000;
-    this.reenvioDesde = ahora + (res.segundosReenvio || 4) * 1000;
-    this.arrancarReloj();
-  }
-
-  private aplicarBloqueo(segundos: number): void {
-    this.bloqueoHasta = Date.now() + Math.max(1, segundos) * 1000;
-    this.codigoForm.disable();
+    this.reenvioDesde = ahora + (res.segundosReenvio || 60) * 1000;
     this.arrancarReloj();
   }
 
@@ -223,16 +224,7 @@ export class LoginComponent implements OnDestroy {
     if (this.reloj) {
       return;
     }
-    this.reloj = setInterval(() => {
-      this.ahora = Date.now();
-      if (this.bloqueoHasta && this.ahora >= this.bloqueoHasta) {
-        this.bloqueoHasta = 0;
-        if (this.paso === 'codigo') {
-          this.codigoForm.enable();
-          this.error = 'Ya puede intentar ingresar de nuevo.';
-        }
-      }
-    }, 1000);
+    this.reloj = setInterval(() => (this.ahora = Date.now()), 1000);
   }
 
   private detenerReloj(): void {

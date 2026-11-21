@@ -64,7 +64,8 @@ public class DetalleTicketJdbcAdapter implements DetalleTicketConsultaPort {
                           'fecha', DATE_FORMAT(a.fecha, '%Y-%m-%dT%H:%i:%s')))
                       FROM ticket_adjunto a
                       LEFT JOIN u_usuario aa ON aa.usuario_id = a.autor_id
-                     WHERE a.ticket_id = t.id)
+                     WHERE a.ticket_id = t.id),
+                   t.sol_nombre_completo, t.sol_sucursal_id, t.sol_sucursal_nombre, t.sol_departamento_id, t.sol_departamento_nombre, t.sol_contacto, t.sol_equipo, t.sol_codigo_usuario
               FROM ticket t
               LEFT JOIN u_usuario sol ON sol.usuario_id = t.solicitante_id
               LEFT JOIN u_usuario asig ON asig.usuario_id = t.asignado_id
@@ -81,6 +82,7 @@ public class DetalleTicketJdbcAdapter implements DetalleTicketConsultaPort {
         this.dataSource = dataSource;
     }
 
+    // Busca por id.
     @Override
     public Optional<DetalleTicketPlano> buscar(Long id) {
         try (Connection conexion = dataSource.getConnection();
@@ -95,6 +97,7 @@ public class DetalleTicketJdbcAdapter implements DetalleTicketConsultaPort {
         }
     }
 
+    // Arma la fila.
     private static DetalleTicketPlano armar(ResultSet fila) throws SQLException {
         Map<Integer, UsuarioTicket> usuarios = new HashMap<>();
         Integer solicitanteId = entero(fila, 7);
@@ -122,17 +125,20 @@ public class DetalleTicketJdbcAdapter implements DetalleTicketConsultaPort {
                 conocimiento == null ? null : conocimientoId, fila.getString(20),
                 fecha(fila, 21), fecha(fila, 22), fecha(fila, 23), fecha(fila, 24),
                 etiquetaIds, comentarios, historial);
+        if (fila.getString(29)!=null) ticket.registrarDatosSolicitante(new cl.casol.backend.tickets.domain.DatosSolicitante(fila.getString(29),entero(fila, 30),fila.getString(31),entero(fila, 32),fila.getString(33),fila.getString(34),fila.getString(35),fila.getString(36)));
         return new DetalleTicketPlano(ticket, etiquetas, usuarios,
                 new ClasificacionTicket(fila.getString(12), fila.getString(14), fila.getString(16)),
                 conocimiento, adjuntos);
     }
 
+    // Recorda los usuarios.
     private static void recordar(Map<Integer, UsuarioTicket> usuarios, Integer id, String nombre) {
         if (id == null) return;
         usuarios.putIfAbsent(id, new UsuarioTicket(id, nombre == null || nombre.isBlank() ? "Usuario " + id : nombre,
                 null, RolTicket.USUARIO, true));
     }
 
+    // Devuelve etiquetas.
     private static List<Etiqueta> etiquetas(JsonNode nodos) {
         List<Etiqueta> etiquetas = new ArrayList<>();
         if (!nodos.isArray()) return etiquetas;
@@ -154,6 +160,7 @@ public class DetalleTicketJdbcAdapter implements DetalleTicketConsultaPort {
         return etiquetas;
     }
 
+    // Devuelve comentarios.
     private static List<ComentarioTicket> comentarios(JsonNode nodos, Map<Integer, UsuarioTicket> usuarios) {
         List<ComentarioTicket> comentarios = new ArrayList<>();
         if (!nodos.isArray()) return comentarios;
@@ -167,6 +174,7 @@ public class DetalleTicketJdbcAdapter implements DetalleTicketConsultaPort {
         return comentarios;
     }
 
+    // Devuelve historial.
     private static List<HistorialEstadoTicket> historial(JsonNode nodos, Map<Integer, UsuarioTicket> usuarios) {
         List<HistorialEstadoTicket> historial = new ArrayList<>();
         if (!nodos.isArray()) return historial;
@@ -183,6 +191,7 @@ public class DetalleTicketJdbcAdapter implements DetalleTicketConsultaPort {
         return historial;
     }
 
+    // Devuelve adjuntos.
     private static List<AdjuntoTicket> adjuntos(JsonNode nodos, long ticketId, Map<Integer, UsuarioTicket> usuarios) {
         List<AdjuntoTicket> adjuntos = new ArrayList<>();
         if (!nodos.isArray()) return adjuntos;
@@ -198,6 +207,7 @@ public class DetalleTicketJdbcAdapter implements DetalleTicketConsultaPort {
         return adjuntos;
     }
 
+    // Devuelve json.
     private static JsonNode json(ResultSet fila, int columna) throws SQLException {
         String texto = fila.getString(columna);
         if (texto == null || texto.isBlank()) return JSON.missingNode();
@@ -208,11 +218,13 @@ public class DetalleTicketJdbcAdapter implements DetalleTicketConsultaPort {
         }
     }
 
+    // Devuelve entero.
     private static Integer entero(ResultSet fila, int columna) throws SQLException {
         int valor = fila.getInt(columna);
         return fila.wasNull() ? null : valor;
     }
 
+    // Devuelve fecha.
     private static LocalDateTime fecha(ResultSet fila, int columna) throws SQLException {
         Timestamp marca = fila.getTimestamp(columna);
         return marca == null ? null : marca.toLocalDateTime();

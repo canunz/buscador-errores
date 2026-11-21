@@ -11,6 +11,10 @@ import java.nio.file.*;
 import java.util.UUID;
 import static cl.casol.backend.shared.application.archivo.ArchivoException.Motivo.*;
 
+/**
+ * Adaptador de almacenamiento archivo filesystem.
+ * Implementa un puerto de salida conectándose con un servicio externo o de infraestructura.
+ */
 @Component
 public class AlmacenamientoArchivoFilesystemAdapter implements AlmacenamientoArchivoPort {
     private final Path directorio;
@@ -20,6 +24,7 @@ public class AlmacenamientoArchivoFilesystemAdapter implements AlmacenamientoArc
         this.directorio = Path.of(directorio).toAbsolutePath().normalize();
     }
 
+    // Guarda el contenido.
     @Override
     public String guardar(byte[] contenido) {
         if (contenido == null || contenido.length == 0) throw new ArchivoException(INVALIDO, "El archivo está vacío");
@@ -43,6 +48,7 @@ public class AlmacenamientoArchivoFilesystemAdapter implements AlmacenamientoArc
         }
     }
 
+    // Lee la referencia.
     @Override
     public byte[] leer(String referencia) {
         Path archivo = resolver(referencia);
@@ -58,6 +64,7 @@ public class AlmacenamientoArchivoFilesystemAdapter implements AlmacenamientoArc
         }
     }
 
+    // Elimina la referencia.
     @Override
     public void eliminar(String referencia) {
         Path archivo = resolver(referencia);
@@ -65,12 +72,14 @@ public class AlmacenamientoArchivoFilesystemAdapter implements AlmacenamientoArc
         catch (IOException ex) { throw new ArchivoException(ALMACENAMIENTO, "No fue posible eliminar el archivo", ex); }
     }
 
+    // Compensa la referencia.
     @Override
     public void compensar(String referencia) {
         try { Files.deleteIfExists(resolver(referencia)); }
         catch (IOException ex) { throw new ArchivoException(ALMACENAMIENTO, "No fue posible compensar el archivo", ex); }
     }
 
+    // Resuelve la referencia.
     private Path resolver(String referencia) {
         String clave = FormatoArchivo.clave(referencia);
         Path resultado = directorio.resolve(clave).normalize();

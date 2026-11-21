@@ -254,22 +254,3 @@ time {
     grid-column: 2;
   }
 }
-
-:host-context(.tema-oscuro) .pestanas,
-:host-context(.tema-oscuro) .vacio,
-:host-context(.tema-oscuro) li,
-:host-context(.tema-oscuro) li.nueva,
-:host-context(.tema-oscuro) .acciones .estado {
-  background: #111827;
-  border-color: #1f2937;
-  color: #e5e7eb;
-}
-
-:host-context(.tema-oscuro) .cuerpo strong {
-  color: #f8fafc;
-}
-
-:host-context(.tema-oscuro) .cuerpo em,
-:host-context(.tema-oscuro) time {
-  color: #94a3b8;
-}

@@ -1,6 +1,10 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { DestinatarioPaso } from '../../core/models/configuracion-paso.model';
+/**
+ * Componente reutilizable de destinatarios editor.
+ * Se usa dentro de otras pantallas; recibe datos por @Input y avisa cambios por @Output.
+ */
 @Component({selector:'app-destinatarios-editor',standalone:true,imports:[FormsModule],template:`
   <fieldset [disabled]="disabled"><legend>{{ titulo }}</legend>
     <div class="fila"><label>Correo<input type="email" [(ngModel)]="correo" [ngModelOptions]="{standalone:true}" placeholder="Correo corporativo" /></label>

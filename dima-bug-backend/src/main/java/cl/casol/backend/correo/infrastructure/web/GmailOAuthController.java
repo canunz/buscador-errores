@@ -10,16 +10,23 @@ import java.time.Duration;
 import java.net.URI;
 import java.util.Map;
 
+/**
+ * Controlador REST de gmail o auth.
+ * Solo recibe la petición, valida los datos y llama al caso de uso que corresponde.
+ */
 @RestController
 public class GmailOAuthController {
     private static final String COOKIE="dimabug_gmail_oauth";
     private final GmailOAuthService servicio;private final GmailConfig config;
     public GmailOAuthController(GmailOAuthService servicio,GmailConfig config){this.servicio=servicio;this.config=config;}
+    // Devuelve cookie.
     private ResponseCookie cookie(String valor,int segundos){return ResponseCookie.from(COOKIE,valor).path("/login/oauth2/code/google").httpOnly(true).secure(config.callback.startsWith("https:")).sameSite("Lax").maxAge(Duration.ofSeconds(segundos)).build();}
+    // POST /api/admin/gmail/autorizacion: iniciar.
     @GetMapping("/api/admin/gmail") public GmailOAuthService.Estado estado(Authentication a,HttpServletResponse r){r.setHeader("Cache-Control","no-store");return servicio.estado(a.getName());}
     @PostMapping("/api/admin/gmail/autorizacion") public ResponseEntity<Map<String,String>> iniciar(Authentication a){
         var inicio=servicio.iniciar(a.getName());return ResponseEntity.ok().cacheControl(CacheControl.noStore()).header(HttpHeaders.SET_COOKIE,cookie(inicio.navegador(),300).toString()).body(Map.of("authorizationUrl",inicio.url()));
     }
+    // GET /login/oauth2/code/google: callback.
     @PostMapping("/api/admin/gmail/revocar") public GmailOAuthService.Estado revocar(Authentication a,HttpServletResponse r){r.setHeader("Cache-Control","no-store");return servicio.revocar(a.getName());}
     @GetMapping("/login/oauth2/code/google") public ResponseEntity<?> callback(
         @RequestParam(required=false) String state,@RequestParam(required=false) String code,@RequestParam(required=false) String error,

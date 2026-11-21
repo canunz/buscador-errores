@@ -2,6 +2,10 @@ package cl.casol.backend.identidad.infrastructure.persistence.entity;
 
 import jakarta.persistence.*;
 
+/**
+ * Entidad JPA de departamento contacto. Representa una fila de la tabla u_departamento_contacto.
+ * Se usa solo en la capa de persistencia; el dominio trabaja con su propio modelo.
+ */
 @Entity
 @Table(name = "u_departamento_contacto")
 public class DepartamentoContactoEntity {

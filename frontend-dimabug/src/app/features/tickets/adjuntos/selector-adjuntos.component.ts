@@ -57,6 +57,7 @@ const TIPOS = ADJUNTO_ACEPTA.split(',');
     </div>
   `,
   styles: `
+
     .sa { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; border-radius: 12px; }
     .sa.arrastrando { outline: 2px dashed #1e4fd6; outline-offset: 4px; }
     .sa-boton {
@@ -81,10 +82,7 @@ const TIPOS = ADJUNTO_ACEPTA.split(',');
     .sa-lista button { border: 0; background: none; color: #94a3b8; font-size: 20px; line-height: 1; cursor: pointer; }
     .sa-lista button:hover { color: #b91c1c; }
     .sa-error { width: 100%; margin: 2px 0 0; color: #b91c1c; font-size: 12.5px; font-weight: 600; }
-    :host-context(.tema-oscuro) .sa-boton { background: #16264d; border-color: #2c4a99; color: #93c5fd; }
-    :host-context(.tema-oscuro) .sa-lista li { background: #111a2e; border-color: #1f2a3d; }
-    :host-context(.tema-oscuro) .sa-nombre strong { color: #e5e7eb; }
-  `,
+    `,
 })
 export class SelectorAdjuntosComponent implements OnDestroy {
   @Input() texto = 'Adjuntar archivos';

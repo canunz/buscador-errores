@@ -33,16 +33,6 @@
   color: #fff;
 }
 
-:host-context(.tema-oscuro) .tabs {
-  background: #111827;
-  border-color: #1f2937;
-}
-
-:host-context(.tema-oscuro) .tabs a,
-:host-context(.tema-oscuro) .tabs button {
-  color: #cbd5e1;
-}
-
 .franja {
   position: relative;
   display: flex;
@@ -134,8 +124,8 @@
 }
 
 .act.del {
-  background: #fef2f2;
-  color: #b91c1c;
+  background: #dc2626;
+  color: #fff;
 }
 
 .act.ver {
@@ -176,15 +166,6 @@
   .grid-cards {
     grid-template-columns: 1fr;
   }
-}
-
-:host-context(.tema-oscuro) .grid-card {
-  background: #111827;
-  border-color: #1f2937;
-}
-
-:host-context(.tema-oscuro) .grid-card h3 {
-  color: #f8fafc;
 }
 
 .cat-head {
@@ -634,34 +615,6 @@ td strong {
     grid-template-columns: 1fr;
     flex-direction: column;
   }
-}
-
-:host-context(.tema-oscuro) .tabla-wrap,
-:host-context(.tema-oscuro) .form-card,
-:host-context(.tema-oscuro) .modal-dialog {
-  background: #111827;
-  border-color: #1f2937;
-}
-
-:host-context(.tema-oscuro) th {
-  background: #0f172a;
-  color: #94a3b8;
-}
-
-:host-context(.tema-oscuro) th,
-:host-context(.tema-oscuro) td {
-  border-color: #1f2937;
-}
-
-:host-context(.tema-oscuro) .chip,
-:host-context(.tema-oscuro) .btn-icon,
-:host-context(.tema-oscuro) .buscador input,
-:host-context(.tema-oscuro) .form-grid input,
-:host-context(.tema-oscuro) .form-grid select,
-:host-context(.tema-oscuro) .form-grid textarea {
-  background: #1f2937;
-  border-color: #334155;
-  color: #e5e7eb;
 }
 
 .confirm-capa {

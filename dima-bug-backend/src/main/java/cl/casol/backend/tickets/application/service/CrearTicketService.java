@@ -13,6 +13,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
+/**
+ * Caso de uso "crear ticket": aplica las reglas antes de guardar.
+ * Usa puertos (interfaces) para guardar y consultar, sin saber que hay una base de datos detrás.
+ */
 @Service
 @Transactional
 public class CrearTicketService implements CrearTicketUseCase {
@@ -27,21 +31,34 @@ public class CrearTicketService implements CrearTicketUseCase {
         this.contexto = contexto;
     }
 
+    // Crea con los datos recibidos.
     @Override
     public TicketVista crear(Comando comando, String emailAutenticado) {
+        // Quién está creando el ticket (sale del token)
         ActorTicket actor = contexto.actor(emailAutenticado);
+        // Regla: el administrador supervisa, no crea tickets
         if (actor.esAdministrador()) {
             throw new AccesoTicketDenegadoException("El administrador supervisa los tickets, pero no los crea");
         }
+        // Regla: en el portal básico se exigen los datos del solicitante
+        if (actor.accesoBasico() && comando.datosSolicitante()==null)
+            throw new TicketInvalidoException("Completa los datos del solicitante en el portal de solicitudes");
+        if (actor.accesoBasico() && (comando.hardwareId()!=null || comando.sistemaId()!=null || comando.moduloId()!=null))
+            throw new AccesoTicketDenegadoException("Clasificación interna no disponible");
+        // Revisa que hardware, sistema y módulo calcen entre sí
         if (comando.hardwareId() != null || comando.sistemaId() != null || comando.moduloId() != null) {
             catalogo.validarClasificacion(comando.hardwareId(), comando.sistemaId(), comando.moduloId())
                     .ifPresent(motivo -> { throw new TicketInvalidoException(motivo); });
         }
         LocalDateTime ahora = LocalDateTime.now();
         int anio = ahora.getYear();
+        // Genera el código correlativo, por ejemplo TK-2026-0004
         String codigo = Ticket.generarCodigo(anio, tickets.siguienteCorrelativo(anio));
-        Ticket nuevo = Ticket.crear(codigo, comando.titulo(), comando.descripcion(), comando.prioridad(),
+        // Crea el ticket en estado ABIERTO
+        Ticket nuevo = Ticket.crear(codigo, comando.titulo(), comando.descripcion(), actor.accesoBasico() ? cl.casol.backend.tickets.domain.PrioridadTicket.MEDIA : comando.prioridad(),
                 actor.id(), comando.hardwareId(), comando.sistemaId(), comando.moduloId(), ahora);
+        nuevo.registrarDatosSolicitante(comando.datosSolicitante());
+        // Lo guarda (por el puerto del repositorio) y devuelve el detalle
         return contexto.detalle(tickets.guardar(nuevo), actor);
     }
 }

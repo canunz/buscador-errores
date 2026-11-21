@@ -3,10 +3,15 @@ import cl.casol.backend.identidad.application.port.out.ReferenciasOrganizacionRe
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import java.util.List;
+/**
+ * Adaptador de base de datos para referencias organización jdbc.
+ * Implementa el puerto de salida usando JPA y convierte entre entidades y objetos del dominio.
+ */
 @Component
 public class ReferenciasOrganizacionJdbcAdapter implements ReferenciasOrganizacionRepository {
     private final JdbcTemplate jdbc;
     public ReferenciasOrganizacionJdbcAdapter(JdbcTemplate jdbc) { this.jdbc=jdbc; }
+    // Devuelve conocimientos.
     public List<Integer> conocimientos(Integer id) {
         return jdbc.query("""
             select distinct so.conocimiento_id from co_solucion_asignacion a

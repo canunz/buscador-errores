@@ -14,6 +14,10 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 
+/**
+ * Servicio de registrar efectividad solución (módulo de seguimiento).
+ * Aquí van las reglas de negocio; para leer o guardar datos usa los puertos de salida.
+ */
 @Service
 @Transactional(readOnly=true)
 public class RegistrarEfectividadSolucionService {
@@ -28,6 +32,7 @@ public class RegistrarEfectividadSolucionService {
         this.usuarios=usuarios; this.resultados=resultados;
     }
 
+    // Registra el conocimiento indicado.
     @Transactional
     public DetalleResultadoSolucion registrar(Integer conocimientoId, Integer solucionId,
             boolean funciono, String comentario, String emailAutenticado) {
@@ -44,6 +49,7 @@ public class RegistrarEfectividadSolucionService {
         return new DetalleResultadoSolucion(guardado,usuario);
     }
 
+    // Lista el conocimiento indicado.
     public List<DetalleResultadoSolucion> listar(Integer conocimientoId,Integer solucionId) {
         validarPertenencia(conocimientoId,solucionId,false);
         return resultados.buscarPorSolucionOrdenados(solucionId).stream()
@@ -51,11 +57,13 @@ public class RegistrarEfectividadSolucionService {
                         .orElseThrow(UsuarioNoEncontradoException::new))).toList();
     }
 
+    // Obtiene efectividad.
     public EfectividadSolucion obtenerEfectividad(Integer conocimientoId,Integer solucionId) {
         validarPertenencia(conocimientoId,solucionId,false);
         return resultados.calcularEfectividad(solucionId);
     }
 
+    // Valida pertenencia.
     private void validarPertenencia(Integer conocimientoId,Integer solucionId,boolean exigirPublicado) {
         Conocimiento conocimiento=conocimientos.buscarPorIdIncluidoEliminado(conocimientoId)
                 .orElseThrow(() -> new ConocimientoNoEncontradoException(conocimientoId));

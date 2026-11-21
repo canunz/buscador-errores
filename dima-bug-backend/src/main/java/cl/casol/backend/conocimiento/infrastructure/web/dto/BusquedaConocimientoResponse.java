@@ -2,6 +2,10 @@ package cl.casol.backend.conocimiento.infrastructure.web.dto;
 
 import cl.casol.backend.conocimiento.domain.ResultadoBusquedaConocimiento;
 
+/**
+ * Datos que se devuelven al frontend con búsqueda conocimiento.
+ * Solo lleva lo que la pantalla necesita mostrar.
+ */
 public record BusquedaConocimientoResponse(
         Integer id, String titulo,
         Integer hardwareId, String hardwareNombre,
@@ -10,6 +14,7 @@ public record BusquedaConocimientoResponse(
         Integer frecuenciaId, String frecuenciaNombre,
         Double relevancia) {
 
+    // Crea el objeto a partir de los datos recibidos.
     public static BusquedaConocimientoResponse from(ResultadoBusquedaConocimiento resultado) {
         return new BusquedaConocimientoResponse(resultado.id(), resultado.titulo(), resultado.hardwareId(),
                 resultado.hardwareNombre(), resultado.sistemaId(), resultado.sistemaNombre(), resultado.moduloId(),

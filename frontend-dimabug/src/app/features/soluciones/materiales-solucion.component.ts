@@ -3,6 +3,10 @@ import {FormsModule} from '@angular/forms';
 import {Subject,takeUntil,finalize} from 'rxjs';
 import {AutoservicioService,MaterialSolucion} from '../../core/services/autoservicio.service';
 import {MaterialApoyoFormComponent,MaterialApoyoFormValue} from '../../shared/ui/material-apoyo-form.component';
+/**
+ * Pantalla de materiales solución.
+ * Carga los datos con su servicio y maneja lo que el usuario hace en la vista.
+ */
 @Component({selector:'app-materiales-solucion',standalone:true,imports:[FormsModule,MaterialApoyoFormComponent],template:`<section aria-label="Materiales de la solución"><h3>Material de apoyo</h3><p>Solo los materiales autorizados se mostrarán si la solución está activa y habilitada para autoservicio.</p>
 @if(error){<p role="alert">{{error}}</p><button type="button" (click)="cargar()" [disabled]="ocupado">Actualizar</button>}
 @if(cargando){<p role="status">Cargando materiales…</p>}

@@ -7,6 +7,10 @@ import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
 
+/**
+ * Entidad JPA de conocimiento. Representa una fila de la tabla co_conocimiento.
+ * Se usa solo en la capa de persistencia; el dominio trabaja con su propio modelo.
+ */
 @Entity
 @Table(name = "co_conocimiento")
 public class ConocimientoEntity {

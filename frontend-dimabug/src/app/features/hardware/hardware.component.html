@@ -10,15 +10,20 @@
     </div>
     @if (esAdministrador()) {
       <div class="hw-admin-actions">
-        <a routerLink="/admin/catalogo/hardware" class="btn-crear">Administrar Hardware</a>
+        <div class="hw-admin-botones">
+          <a routerLink="/admin/catalogo/hardware" class="btn-crear hw-admin-link">Administrar Hardware</a>
+          <a routerLink="/admin/catalogo/sistemas" class="btn-sec hw-admin-link">Todos los Sistemas</a>
+        </div>
+        <p class="hw-admin-nota">Crea, edita y asocia sistemas a cada equipo.</p>
       </div>
     }
   </div>
 
   @if (error) {
-    <p class="alert">{{ error }}</p>
+    <app-aviso-error [mensaje]="error" [ocupado]="loading" (reintentar)="cargar()" />
   }
 
+  @if (!error) {
   <div class="tabla-wrap">
     @if (items.length || !loading) {
       <table>
@@ -64,6 +69,7 @@
       </table>
     }
   </div>
+  }
 </section>
 
 @if (detalle) {
@@ -85,7 +91,9 @@
         <section class="hw-bloque">
           <h3>Sistemas asociados</h3>
           @if (cargandoSistemas) { <p role="status">Cargando sistemas…</p> }
-          @if (errorSistemas) { <p class="alert" role="alert">{{ errorSistemas }} <button type="button" (click)="ver(detalle)">Reintentar consulta</button></p> }
+          @if (errorSistemas) {
+            <app-aviso-error [mensaje]="errorSistemas" etiqueta="Reintentar consulta" [ocupado]="cargandoSistemas" (reintentar)="ver(detalle)" />
+          }
           @if (!cargandoSistemas && !errorSistemas) {
           <p class="hw-cuenta">{{ sistemasDetalle.length }} sistemas en este equipo</p>
           @if (sistemasDetalle.length) {

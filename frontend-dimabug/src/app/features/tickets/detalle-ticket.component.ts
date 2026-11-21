@@ -16,6 +16,7 @@ import {
   AdjuntoTicket,
   Referencia,
   TicketDetalle,
+  avisoTiempoTicket,
   colorTextoEtiqueta,
   esFinal,
   fechaLarga,
@@ -172,17 +173,33 @@ export class DetalleTicketComponent implements OnInit {
     );
   }
 
-  /** Etapas del ticket explicadas en palabras simples (vista del solicitante). */
+  /** Cuánto lleva el ticket en el estado actual (sin técnico, en espera, por confirmar). */
+  get espera(): { texto: string; alerta: boolean } | null {
+    const t = this.ticket;
+    if (!t) return null;
+    const hito = [...t.historial].reverse().find((h) => h.estadoNuevo === t.estado && h.estadoAnterior !== h.estadoNuevo);
+    return avisoTiempoTicket(t, hito?.fecha ?? t.fechaActualizacion);
+  }
+
+  /** Recibido → atender → resolver → confirmar. El mismo camino para usuario y soporte. */
   get etapas(): { titulo: string; detalle: string; estado: 'hecha' | 'actual' | 'espera' | 'pendiente' }[] {
     const e = this.estado;
     const orden: Record<string, number> = { ABIERTO: 0, EN_PROGRESO: 1, EN_ESPERA: 1, RESUELTO: 2, CERRADO: 3, CANCELADO: 0 };
     const paso = e ? orden[e] : 0;
-    const base = [
-      { titulo: 'Recibido', detalle: 'Soporte recibió tu ticket' },
-      { titulo: 'En revisión', detalle: e === 'EN_ESPERA' ? 'Esperan tu respuesta' : 'Un técnico lo está viendo' },
-      { titulo: 'Solucionado', detalle: 'Te toca confirmar' },
-      { titulo: 'Cerrado', detalle: 'Todo listo' },
-    ];
+    const tiempo = this.espera?.texto;
+    const base = this.esStaff
+      ? [
+          { titulo: 'Recibido', detalle: 'El usuario reportó el problema' },
+          { titulo: 'Atender', detalle: e === 'EN_ESPERA' ? (tiempo || 'Esperando al usuario') : e === 'ABIERTO' ? 'Tomarlo y saludar' : 'Resolver o pedir un dato' },
+          { titulo: 'Resuelto', detalle: 'El usuario confirma' },
+          { titulo: 'Cerrado', detalle: 'Opcional: guardar en conocimiento' },
+        ]
+      : [
+          { titulo: 'Recibido', detalle: 'Soporte recibió tu ticket' },
+          { titulo: 'En revisión', detalle: e === 'EN_ESPERA' ? (tiempo || 'Esperan tu respuesta') : 'Un técnico lo está viendo' },
+          { titulo: 'Solucionado', detalle: tiempo && e === 'RESUELTO' ? tiempo : 'Te toca confirmar' },
+          { titulo: 'Cerrado', detalle: 'Todo listo' },
+        ];
     return base.map((etapa, i) => ({
       ...etapa,
       estado:
@@ -204,25 +221,33 @@ export class DetalleTicketComponent implements OnInit {
       case 'ABIERTO':
         return {
           titulo: 'Tu ticket está en la fila de soporte',
-          texto: 'Un técnico lo tomará pronto. No necesitas hacer nada más; te avisaremos en la campana cuando haya novedades.',
+          texto: `${this.espera?.texto ? this.espera.texto + '. ' : ''}Un técnico lo tomará y te va a saludar en la conversación. Te avisamos en la campana.`,
           tono: 'azul',
         };
       case 'EN_PROGRESO':
         return {
-          titulo: `${t.asignado?.nombre || 'Un técnico'} está trabajando en tu problema`,
-          texto: 'Si tienes un dato nuevo (una foto, un mensaje de error), escríbelo en la conversación de abajo.',
+          titulo: 'Un técnico está trabajando en tu problema',
+          texto: `${this.espera?.texto ? this.espera.texto + '. ' : ''}Si tienes un dato nuevo, escríbelo abajo. Cuando lo resuelva, te pediremos confirmar.`,
           tono: 'violeta',
         };
       case 'EN_ESPERA': {
         const motivo = [...t.historial].reverse().find((h) => h.estadoNuevo === 'EN_ESPERA')?.motivo;
         return {
           titulo: 'Soporte necesita tu respuesta',
-          texto: motivo
-            ? `Te pidieron: «${motivo}». Respóndelo en la conversación de abajo para que puedan seguir.`
-            : 'Revisa la conversación de abajo y responde para que puedan seguir.',
+          texto: `${this.espera?.texto ? this.espera.texto + '. ' : ''}${
+            motivo
+              ? `Te pidieron: «${motivo}». Respóndelo abajo para que puedan seguir.`
+              : 'Revisa la conversación y responde para que puedan seguir.'
+          }`,
           tono: 'ambar',
         };
       }
+      case 'RESUELTO':
+        return {
+          titulo: 'Confirma si quedó solucionado',
+          texto: `${this.espera?.texto ? this.espera.texto + '. ' : ''}Revisa lo que hizo soporte y dime si se arregló. Si no, lo reabrimos.`,
+          tono: 'verde',
+        };
       case 'CERRADO':
         return { titulo: 'Ticket cerrado', texto: 'El problema quedó solucionado. Si vuelve a pasar, crea un ticket nuevo.', tono: 'gris' };
       case 'CANCELADO':
@@ -244,11 +269,13 @@ export class DetalleTicketComponent implements OnInit {
 
   // ------------------------------------------------------------ acciones
 
+  /** Soporte se asigna el ticket; el backend deja el saludo en la conversación. */
   tomar(): void {
     if (!this.ticket || !this.miId) return;
-    this.ejecutar(this.tickets.asignar(this.ticket.id, this.miId), 'Te asignaste este ticket.');
+    this.ejecutar(this.tickets.asignar(this.ticket.id, this.miId), 'Lo tomaste. El usuario ya ve tu saludo en la conversación.');
   }
 
+  /** El administrador elige a qué técnico se lo pasa. */
   asignarTecnico(): void {
     if (!this.ticket || !this.tecnicoElegido) return;
     this.ejecutar(this.tickets.asignar(this.ticket.id, this.tecnicoElegido), 'Ticket asignado.');
@@ -280,6 +307,32 @@ export class DetalleTicketComponent implements OnInit {
     return !!this.ticket && this.ticket.asignado?.id === this.miId;
   }
 
+  /**
+   * En la lista no sale el nombre del técnico. En el saludo sí:
+   * el usuario ve quién lo está atendiendo. El resto de mensajes dice «Soporte».
+   */
+  nombrePublico(
+    autorId: number | null | undefined,
+    nombre: string | null | undefined,
+    texto?: string | null,
+  ): string {
+    if (this.esStaff || autorId === this.miId) {
+      return nombre || 'Usuario';
+    }
+    if (texto?.includes('Yo te ayudaré con tu problema')) {
+      return nombre || 'Soporte';
+    }
+    return 'Soporte';
+  }
+
+  inicialesPublicas(
+    autorId: number | null | undefined,
+    nombre: string | null | undefined,
+    texto?: string | null,
+  ): string {
+    return this.iniciales(this.nombrePublico(autorId, nombre, texto));
+  }
+
   /** Qué le toca hacer ahora a soporte con este ticket. */
   get siguientePaso(): { tono: string; titulo: string; texto: string } | null {
     const t = this.ticket;
@@ -299,22 +352,36 @@ export class DetalleTicketComponent implements OnInit {
     }
     switch (t.estado) {
       case 'ABIERTO':
-        return { tono: 'azul', titulo: 'Este ticket espera un técnico', texto: 'Tómalo para empezar. Pasará a «En progreso» y el usuario recibirá un aviso.' };
+        return {
+          tono: 'azul',
+          titulo: 'Este ticket espera un técnico',
+          texto: `${this.espera?.texto ? this.espera.texto + '. ' : ''}Tómalo: el usuario verá un saludo tuyo y el caso pasa a «En progreso».`,
+        };
       case 'EN_PROGRESO':
         return this.esMio
-          ? { tono: 'violeta', titulo: 'Estás atendiendo este ticket', texto: 'Cuando lo soluciones, márcalo como resuelto. Si te falta un dato, pídeselo al usuario.' }
+          ? {
+              tono: 'violeta',
+              titulo: 'Estás atendiendo este ticket',
+              texto: `${this.espera?.texto ? this.espera.texto + '. ' : ''}Siguiente: resolverlo o pedir un dato. Al resolver, el usuario confirma.`,
+            }
           : { tono: 'violeta', titulo: `Lo está atendiendo ${quien}`, texto: 'Puedes dejar una nota interna o asignártelo si vas a continuar tú.' };
       case 'EN_ESPERA': {
         const motivo = [...t.historial].reverse().find((h) => h.estadoNuevo === 'EN_ESPERA')?.motivo;
         return {
           tono: 'ambar',
           titulo: 'Esperando respuesta del usuario',
-          texto: motivo ? `Se le pidió: «${motivo}». Cuando responda, retoma el ticket.` : 'Cuando responda, retoma el ticket para seguir.',
+          texto: `${this.espera?.texto ? this.espera.texto + '. ' : ''}${
+            motivo ? `Se le pidió: «${motivo}». ` : ''
+          }Cuando responda, retómalo y sigue hasta resolver.`,
         };
       }
       case 'RESUELTO':
         return this.esMio
-          ? { tono: 'verde', titulo: 'Resuelto: falta la confirmación del usuario', texto: 'Si el usuario no responde, puedes cerrarlo tú.' }
+          ? {
+              tono: 'verde',
+              titulo: 'Falta que el usuario confirme',
+              texto: `${this.espera?.texto ? this.espera.texto + '. ' : ''}Si confirma, el caso cierra. Si el arreglo sirve para otros, guárdalo en conocimiento.`,
+            }
           : { tono: 'verde', titulo: 'Resuelto: falta la confirmación del usuario', texto: 'El usuario debe confirmar si quedó solucionado o reabrirlo.' };
       default:
         return null;
@@ -337,6 +404,14 @@ export class DetalleTicketComponent implements OnInit {
   private aplicar(ticket: TicketDetalle): void {
     this.ticket = ticket;
     this.avisos.marcarVisto(ticket);
+    // Si lo tomé y aún no hay saludo (backend viejo), lo publicamos ahora.
+    if (this.esSoporte && ticket.asignado?.id === this.miId) {
+      this.tickets.completarSaludo(ticket).subscribe((actual) => {
+        if (actual !== ticket) {
+          this.ticket = actual;
+        }
+      });
+    }
     const valeEn: Partial<Record<Exclude<Dialogo, null>, EstadoTicket[]>> = {
       resolver: ['EN_PROGRESO'],
       espera: ['EN_PROGRESO'],
@@ -430,7 +505,7 @@ export class DetalleTicketComponent implements OnInit {
             ? this.comentarConArchivos(t.id, 'Evidencia de la solución aplicada.', false, this.archivosDialogo)
             : of(t)
           ).pipe(switchMap(() => this.tickets.resolver(t.id, this.solucion, this.conocimientoElegido?.id ?? null))),
-          'Ticket resuelto. El solicitante podrá confirmar la solución.',
+          'Resuelto. El usuario debe confirmar. Si el arreglo sirve para otros, guárdalo en conocimiento.',
         );
         break;
       case 'espera': {

@@ -1,3 +1,4 @@
+import { CatalogosSolicitud, DatosSolicitanteFormulario } from '../models/datos-solicitante.model';
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
 import { Observable, catchError, concat, finalize, forkJoin, map, of, shareReplay, switchMap, tap, throwError } from 'rxjs';
@@ -46,6 +47,10 @@ export function mensajeTicketError(err: HttpErrorResponse, fallback: string): st
 }
 
 @Injectable({ providedIn: 'root' })
+/**
+ * Servicio de tickets: aquí están todas las llamadas al backend sobre tickets.
+ * Las pantallas lo usan en vez de llamar a la API directamente.
+ */
 export class TicketService {
   private readonly http = inject(HttpClient);
   private readonly auth = inject(AuthService);
@@ -61,7 +66,7 @@ export class TicketService {
   private readonly enVuelo = new Map<string, Observable<unknown>>();
 
   private clave(resto: string): string {
-    return `${this.auth.usuario()?.usuarioId ?? 0}|${resto}`;
+    return `${this.auth.usuario()?.usuarioId ?? 0}|${this.auth.usuario()?.accesoBasico === true ? 'basico' : 'administrado'}|${resto}`;
   }
 
   private compartida<T>(clave: string, crear: () => Observable<T>): Observable<T> {
@@ -76,6 +81,7 @@ export class TicketService {
     return peticion;
   }
 
+  /** Lista tickets con filtros y paginación (GET /api/tickets). */
   listar(filtro: FiltroTickets): Observable<PaginaTickets> {
     let params = new HttpParams()
       .set('page', String(filtro.page ?? 0))
@@ -178,6 +184,7 @@ export class TicketService {
     return this.listar({ estado, page: 0, size: 1 }).pipe(map((pagina) => pagina.totalElementos));
   }
 
+  /** Trae el detalle de un ticket (GET /api/tickets/{id}). */
   obtener(id: number): Observable<TicketDetalle> {
     const clave = this.clave(`detalle/${id}`);
     const red = this.compartida(clave, () =>
@@ -188,17 +195,71 @@ export class TicketService {
     return previo ? concat(of(previo), red) : red;
   }
 
+  /** Crea un ticket nuevo (POST /api/tickets). */
   crear(request: CrearTicketRequest): Observable<TicketDetalle> {
     return this.detalle(this.http.post<TicketDetalle>(this.base, request), 'No fue posible crear el ticket.');
   }
 
+  limitesSolicitud(): Observable<{cantidad:number;bytes:number}> {
+    return this.http.get<{cantidad:number;bytes:number}>(`${this.base}/solicitudes/limites`);
+  }
+
+  catalogosSolicitud(): Observable<CatalogosSolicitud> {
+    return this.http.get<CatalogosSolicitud>(`${this.base}/solicitudes/catalogos`);
+  }
+
+  crearSolicitud(titulo:string, descripcion:string, fotos:File[], solicitante:DatosSolicitanteFormulario): Observable<TicketDetalle> {
+    const datos=new FormData(); datos.append('titulo',titulo); datos.append('descripcion',descripcion);
+    fotos.forEach(f=>datos.append('fotos',f,f.name));
+    // Explicit allowlist: never serialize account ids, roles, priority or catalog labels.
+    datos.append('nombreCompleto',solicitante.nombreCompleto.trim());
+    datos.append('sucursalId',String(solicitante.sucursalId));
+    datos.append('departamentoId',String(solicitante.departamentoId));
+    datos.append('contacto',solicitante.contacto.trim());
+    datos.append('equipo',solicitante.equipo.trim());
+    datos.append('codigoUsuario',solicitante.codigoUsuario.trim());
+    return this.http.post<TicketDetalle>(`${this.base}/solicitudes`,datos).pipe(
+      map(t=>this.normalizarDetalle(t)),
+      tap(t=>this.recordarDetalle(t)),
+      catchError((err:HttpErrorResponse)=> {
+        const mensaje=typeof err.error?.message==='string' ? err.error.message : '';
+        const seguro=err.status===400 && mensaje.length<=160 && /fotograf|formato|título|descripción|nombre|teléfono|anexo|sucursal|departamento|IP|AnyDesk|datos del solicitante|código de usuario/i.test(mensaje);
+        return throwError(()=>new Error(err.status===413 ? 'Las fotografías superan el límite de carga permitido.'
+          : seguro ? mensaje : 'No pudimos confirmar el envío. Actualiza el historial antes de volver a enviar para evitar duplicados.'));
+      })
+    );
+  }
+
+  /** Toma o asigna el ticket y, si aún no está, deja el saludo del técnico en la conversación. */
   asignar(id: number, asignadoId: number): Observable<TicketDetalle> {
     return this.detalle(
       this.http.patch<TicketDetalle>(`${this.base}/${id}/asignacion`, { asignadoId }),
       'No fue posible asignar el ticket.',
+    ).pipe(switchMap((ticket) => this.completarSaludo(ticket, asignadoId)));
+  }
+
+  private readonly saludoPendiente = new Set<number>();
+
+  /** Si el backend no trajo el «Hola, soy…», lo escribe el técnico que acaba de tomarlo. */
+  completarSaludo(ticket: TicketDetalle, asignadoId?: number | null): Observable<TicketDetalle> {
+    const marca = 'Yo te ayudaré con tu problema';
+    if ((ticket.comentarios ?? []).some((c) => (c.texto || '').includes(marca))) {
+      return of(ticket);
+    }
+    const yo = this.auth.usuario();
+    const destino = asignadoId ?? ticket.asignado?.id;
+    if (!yo || this.auth.isAdmin() || yo.usuarioId !== destino || this.saludoPendiente.has(ticket.id)) {
+      return of(ticket);
+    }
+    const corto = (yo.usuarioNombre || 'soporte').trim().split(/\s+/)[0] || 'soporte';
+    this.saludoPendiente.add(ticket.id);
+    return this.comentar(ticket.id, `Hola, soy ${corto}. Yo te ayudaré con tu problema.`, false).pipe(
+      finalize(() => this.saludoPendiente.delete(ticket.id)),
+      catchError(() => of(ticket)),
     );
   }
 
+  /** Cambia la prioridad (baja, media, alta o crítica). */
   cambiarPrioridad(id: number, prioridad: PrioridadTicket, motivo?: string | null): Observable<TicketDetalle> {
     return this.detalle(
       this.http.patch<TicketDetalle>(`${this.base}/${id}/prioridad`, { prioridad, motivo: motivo?.trim() || null }),
@@ -206,6 +267,7 @@ export class TicketService {
     );
   }
 
+  /** Cambia el estado: en progreso, en espera, cerrado, etc. */
   cambiarEstado(id: number, estado: EstadoTicket, motivo?: string | null): Observable<TicketDetalle> {
     return this.detalle(
       this.http.patch<TicketDetalle>(`${this.base}/${id}/estado`, { estado, motivo: motivo?.trim() || null }),
@@ -213,6 +275,7 @@ export class TicketService {
     );
   }
 
+  /** Marca el ticket como resuelto con la solución aplicada. */
   resolver(id: number, solucion: string, conocimientoId: number | null): Observable<TicketDetalle> {
     return this.detalle(
       this.http.patch<TicketDetalle>(`${this.base}/${id}/resolucion`, { solucion: solucion.trim(), conocimientoId }),
@@ -220,6 +283,7 @@ export class TicketService {
     );
   }
 
+  /** Crea un conocimiento a partir de un ticket resuelto. */
   crearConocimiento(id: number): Observable<TicketDetalle> {
     return this.detalle(
       this.http.post<TicketDetalle>(`${this.base}/${id}/conocimiento`, {}),
@@ -227,6 +291,7 @@ export class TicketService {
     );
   }
 
+  /** Agrega un comentario (interno = solo lo ve Soporte). */
   comentar(id: number, texto: string, interno: boolean): Observable<TicketDetalle> {
     return this.detalle(
       this.http.post<TicketDetalle>(`${this.base}/${id}/comentarios`, { texto: texto.trim(), interno }),
@@ -234,6 +299,7 @@ export class TicketService {
     );
   }
 
+  /** Asigna etiquetas al ticket. */
   etiquetar(id: number, etiquetaIds: number[]): Observable<TicketDetalle> {
     return this.detalle(
       this.http.put<TicketDetalle>(`${this.base}/${id}/etiquetas`, { etiquetaIds }),
@@ -286,7 +352,7 @@ export class TicketService {
 
   /** Descarga el archivo (con la sesión) para mostrarlo en pantalla. Se guarda en memoria. */
   archivo(ticketId: number, adjuntoId: number): Observable<Blob> {
-    const clave = `${ticketId}/${adjuntoId}`;
+    const clave = this.clave(`archivo/${ticketId}/${adjuntoId}`);
     let peticion = this.archivos.get(clave);
     if (!peticion) {
       peticion = this.http.get(`${this.base}/${ticketId}/adjuntos/${adjuntoId}`, { responseType: 'blob' }).pipe(
@@ -301,6 +367,7 @@ export class TicketService {
     return peticion;
   }
 
+  /** Busca conocimientos parecidos al título que se está escribiendo. */
   sugerencias(texto: string): Observable<ConocimientoSugerido[]> {
     const params = new HttpParams().set('texto', texto.trim());
     return this.http.get<ConocimientoSugerido[]>(`${this.base}/sugerencias`, { params }).pipe(
@@ -360,7 +427,10 @@ export class TicketService {
   }
 
   private escribirSesion(clave: string, valor: unknown): void {
-    const texto = JSON.stringify(valor);
+    // Contact and remote-access identifiers remain in memory, never in persistent ticket caches.
+    const cacheable = valor && typeof valor === 'object' && 'datosSolicitante' in valor
+      ? { ...valor, datosSolicitante: null } : valor;
+    const texto = JSON.stringify(cacheable);
     try {
       sessionStorage.setItem(`dimabug.tk.${clave}`, texto);
     } catch {

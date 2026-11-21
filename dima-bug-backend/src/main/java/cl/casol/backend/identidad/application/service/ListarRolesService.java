@@ -6,6 +6,10 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+/**
+ * Servicio de listar roles (módulo de usuarios y acceso).
+ * Aquí van las reglas de negocio; para leer o guardar datos usa los puertos de salida.
+ */
 @Service
 public class ListarRolesService {
 
@@ -15,6 +19,7 @@ public class ListarRolesService {
         this.rolRepository = rolRepository;
     }
 
+    // Lista activos.
     public List<Rol> listarActivos() {
         return rolRepository.buscarActivos();
     }

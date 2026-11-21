@@ -57,8 +57,6 @@
 .ct-prioridad:not(.on) { background: var(--tk-fondo-campo); color: var(--tk-suave); }
 .ct-prioridad.on { box-shadow: 0 8px 18px rgba(15, 23, 42, 0.08); }
 
-:host-context(.tema-oscuro) .ct-prioridad.on { background: var(--tk-azul-claro); }
-
 .ct-cascada { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
 
 .ct-acciones {

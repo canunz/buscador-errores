@@ -1,6 +1,10 @@
 package cl.casol.backend.correo.infrastructure.persistence;
 import jakarta.persistence.*;import java.time.Instant;
 import cl.casol.backend.correo.application.port.out.PruebaGmailStore.Estado;
+/**
+ * Entidad JPA de prueba gmail. Representa una fila de la tabla gm_prueba_correo.
+ * Se usa solo en la capa de persistencia; el dominio trabaja con su propio modelo.
+ */
 @Entity @Table(name="gm_prueba_correo",indexes=@Index(name="ix_gm_prueba_destino_fecha",columnList="destinatario,creada"))
 public class PruebaGmailEntity {
     @Id @Column(length=36) String id;

@@ -3,6 +3,9 @@ package cl.casol.backend.identidad.domain;
 //Paso 1
 import java.time.LocalDateTime;
 
+/**
+ * Modelo de dominio de rol (módulo de usuarios y acceso).
+ */
 public class Rol {
 
     private Integer id;

@@ -10,6 +10,10 @@ import { AyudaFranjaComponent } from '../../shared/ui/ayuda-franja.component';
 import { LoadingModalComponent } from '../../shared/ui/loading-modal.component';
 import { MaterialesSolucionComponent } from './materiales-solucion.component';
 import { EnlaceNfcComponent } from './enlace-nfc.component';
+/**
+ * Pantalla de soluciones.
+ * Carga los datos con su servicio y maneja lo que el usuario hace en la vista.
+ */
 @Component({
   selector: 'app-soluciones',
   standalone: true,
@@ -25,6 +29,10 @@ export class SolucionesComponent implements OnInit {
   private readonly fb = inject(FormBuilder);
 
   q = this.route.snapshot.queryParamMap.get('q') || '';
+  tipo = '';
+  conocimiento = '';
+  estado = '';
+  autoservicio = '';
   items: SolucionItem[] = [];
   guias: Conocimiento[] = [];
   loading = false;
@@ -54,17 +62,42 @@ export class SolucionesComponent implements OnInit {
     tipo: ['PASOS' as TipoSolucion, Validators.required],
   });
 
+  get conocimientosFiltro(): string[] {
+    return [...new Set(this.items.map((item) => item.conocimientoTitulo?.trim()).filter((titulo): titulo is string => !!titulo))].sort((a, b) =>
+      a.localeCompare(b, 'es'),
+    );
+  }
+
+  get filtrosActivos(): number {
+    return [this.q.trim(), this.tipo, this.conocimiento, this.estado, this.autoservicio].filter(Boolean).length;
+  }
+
   get filtrados(): SolucionItem[] {
     const term = this.q.trim().toLowerCase();
-    if (!term) {
-      return this.items;
-    }
-    return this.items.filter((item) =>
-      [item.nombre, item.descripcion || '', item.pasos, item.anexos, item.asignaciones.join(' '), item.conocimientoTitulo || '']
-        .join(' ')
-        .toLowerCase()
-        .includes(term),
-    );
+    return this.items.filter((item) => {
+      if (term) {
+        const texto = `${item.nombre} ${item.titulo ?? ''} ${item.descripcion ?? ''} ${item.pasos}`.toLowerCase();
+        if (!texto.includes(term)) return false;
+      }
+      if (this.tipo) {
+        const tipoItem = item.tipo === 'DERIVACION' ? 'DERIVACION' : 'PASOS';
+        if (tipoItem !== this.tipo) return false;
+      }
+      if (this.conocimiento && (item.conocimientoTitulo || '') !== this.conocimiento) return false;
+      if (this.estado === 'activa' && item.activo === false) return false;
+      if (this.estado === 'inactiva' && item.activo !== false) return false;
+      if (this.autoservicio === 'si' && !item.autoservicio) return false;
+      if (this.autoservicio === 'no' && item.autoservicio) return false;
+      return true;
+    });
+  }
+
+  limpiarFiltros(): void {
+    this.q = '';
+    this.tipo = '';
+    this.conocimiento = '';
+    this.estado = '';
+    this.autoservicio = '';
   }
 
   ngOnInit(): void {

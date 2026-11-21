@@ -1,1 +1,6 @@
-package cl.casol.backend.conocimiento.application.service; public record PruebaActualizada(Integer id) {}
+package cl.casol.backend.conocimiento.application.service;
+
+/**
+ * Prueba actualizada (módulo de conocimiento).
+ */
+public record PruebaActualizada(Integer id) {}

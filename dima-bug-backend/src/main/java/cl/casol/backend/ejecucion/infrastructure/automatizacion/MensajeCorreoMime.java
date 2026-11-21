@@ -7,12 +7,16 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import java.util.Properties;
 import java.nio.charset.StandardCharsets;
 
+/**
+ * Mensaje correo mime (módulo de ejecución de procedimientos).
+ */
 public final class MensajeCorreoMime {
     private MensajeCorreoMime(){}
     static MimeMessage crear(SolicitudEvidencia s,int regla,String remitente)throws Exception{
         if(s.politica().configuracion().asunto()==null)throw new IllegalArgumentException();
         return crear(remitente,s.contexto().destinatarios(),(regla>0?"Recordatorio: ":"")+s.politica().configuracion().asunto(),s.politica().mensaje(),"DIMABUG-"+s.id()+"-"+regla);
     }
+    // Crea el remitente.
     public static MimeMessage crear(String remitente,java.util.List<DestinatarioPaso> destinatarios,String asunto,String mensaje,String referencia)throws Exception{
         var mime=new MimeMessage(Session.getInstance(new Properties()));var helper=new MimeMessageHelper(mime,StandardCharsets.UTF_8.name());
         helper.setFrom(new InternetAddress(remitente,true));

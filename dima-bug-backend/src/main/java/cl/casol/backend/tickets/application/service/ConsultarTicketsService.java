@@ -29,6 +29,10 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Servicio de consultar tickets (módulo de tickets).
+ * Aquí van las reglas de negocio; para leer o guardar datos usa los puertos de salida.
+ */
 @Service
 @Transactional(readOnly = true)
 public class ConsultarTicketsService implements ConsultarTicketsUseCase {
@@ -57,10 +61,14 @@ public class ConsultarTicketsService implements ConsultarTicketsUseCase {
         this(tickets, conocimiento, contexto, id -> java.util.Optional.empty());
     }
 
+    // Lista el filtro.
     @Override
     public PaginaTickets<TicketVista> listar(FiltroTickets filtro, int pagina, int tamano, String emailAutenticado) {
         ActorTicket actor = contexto.actor(emailAutenticado);
         FiltroTickets base = filtro == null ? new FiltroTickets(null, null, null, null, null, null) : filtro;
+        if (actor.accesoBasico() && (base.etiquetaId()!=null || base.asignadoId()!=null
+                || base.texto()!=null && !base.texto().isBlank()))
+            throw new cl.casol.backend.tickets.domain.exception.AccesoTicketDenegadoException("Filtro no disponible");
         String texto = base.texto() == null || base.texto().isBlank() ? null : base.texto().strip();
         // Regla de visibilidad en el caso de uso: el rol USUARIO siempre queda limitado a sus tickets.
         Integer solicitanteId = actor.esStaff() ? base.solicitanteId() : actor.id();
@@ -69,34 +77,48 @@ public class ConsultarTicketsService implements ConsultarTicketsUseCase {
 
         int paginaUtil = Math.max(pagina, 0);
         int tamanoUtil = tamano <= 0 ? TAMANO_POR_DEFECTO : Math.min(tamano, TAMANO_MAXIMO);
+        if (actor.accesoBasico()) {
+            PaginaTickets<Ticket> propios = tickets.buscar(efectivo,paginaUtil,tamanoUtil);
+            return new PaginaTickets<>(propios.contenido().stream()
+                .map(t -> new TicketVista(t,List.of(),Map.of(),null,null,List.of()).paraBasico()).toList(),
+                propios.pagina(),propios.tamano(),propios.totalElementos());
+        }
         if (paginaUtil == 0 && efectivo.estado() == null && efectivo.prioridad() == null
                 && efectivo.etiquetaId() == null && efectivo.asignadoId() == null && texto == null) {
             List<TicketVista> vistas = tickets.listarLigero(solicitanteId, tamanoUtil).stream()
-                    .map(ConsultarTicketsService::vistaLigera).toList();
+                    .map(ConsultarTicketsService::vistaLigera).map(v -> actor.accesoBasico()?v.paraBasico():v).toList();
             return new PaginaTickets<>(vistas, 0, tamanoUtil, vistas.size());
         }
         PaginaTickets<Ticket> resultado = tickets.buscar(efectivo, paginaUtil, tamanoUtil);
-        return new PaginaTickets<>(contexto.resumenes(resultado.contenido()), resultado.pagina(),
+        return new PaginaTickets<>(contexto.resumenes(resultado.contenido()).stream().map(v -> actor.accesoBasico()?v.paraBasico():v).toList(), resultado.pagina(),
                 resultado.tamano(), resultado.totalElementos());
     }
 
+    // Devuelve conteo.
     @Override
     public ConteoTickets conteo(String emailAutenticado) {
         ActorTicket actor = contexto.actor(emailAutenticado);
         return tickets.contar(actor.esStaff() ? null : actor.id());
     }
 
+    // Devuelve detalle.
     @Override
     public TicketVista detalle(Long ticketId, String emailAutenticado) {
         ActorTicket actor = contexto.actor(emailAutenticado);
+        if (actor.accesoBasico()) {
+            contexto.exigirVisible(ticketId,actor);
+            return contexto.detalle(contexto.ticketVisible(ticketId,actor),actor);
+        }
         return detalleRapido.buscar(ticketId)
                 .map(plano -> vista(plano, actor, ticketId))
                 .orElseGet(() -> contexto.detalle(contexto.ticketVisible(ticketId, actor), actor));
     }
 
+    // Devuelve vista.
     private static TicketVista vista(DetalleTicketPlano plano, ActorTicket actor, Long ticketId) {
         Ticket ticket = plano.ticket();
         if (!ticket.puedeVer(actor)) throw new TicketNoEncontradoException(ticketId);
+        if (actor.accesoBasico()) return new TicketVista(ticket,List.of(),Map.of(),null,null,List.of()).paraBasico();
         List<ComentarioTicket> comentarios = ticket.comentariosVisiblesPara(actor);
         List<AdjuntoTicket> adjuntos = plano.adjuntos().stream()
                 .filter(adjunto -> adjunto.visiblePara(actor, ticket)).toList();
@@ -104,6 +126,7 @@ public class ConsultarTicketsService implements ConsultarTicketsUseCase {
                 plano.conocimiento(), comentarios, adjuntos);
     }
 
+    // Devuelve vista ligera.
     private static TicketVista vistaLigera(ResumenTicketFila fila) {
         Ticket ticket = new Ticket(fila.id(), fila.codigo(), fila.titulo(), "", fila.estado(), fila.prioridad(),
                 fila.solicitanteId(), fila.asignadoId(), null, null, null, null, null,
@@ -122,6 +145,7 @@ public class ConsultarTicketsService implements ConsultarTicketsUseCase {
         return new TicketVista(ticket, fila.etiquetas(), usuarios, null, null, List.of());
     }
 
+    // Devuelve sugerencias.
     @Override
     public List<ConocimientoSugerido> sugerencias(String texto) {
         if (texto == null || texto.strip().length() < MIN_LARGO_SUGERENCIA) return List.of();

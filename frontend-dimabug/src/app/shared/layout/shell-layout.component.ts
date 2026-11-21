@@ -12,11 +12,12 @@ import { OrganizacionService } from '../../core/services/organizacion.service';
 import { ProcedimientoService } from '../../core/services/procedimiento.service';
 import { UsuarioService } from '../../core/services/usuario.service';
 import { esAdministrador, iniciales, loginUsername } from '../../core/models/usuario.model';
+import { BotonWhatsappComponent } from '../ui/boton-whatsapp.component';
 
 @Component({
   selector: 'app-shell-layout',
   standalone: true,
-  imports: [RouterOutlet, RouterLink, RouterLinkActive],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, BotonWhatsappComponent],
   templateUrl: './shell-layout.component.html',
   styleUrl: './shell-layout.component.css',
 })
@@ -32,6 +33,7 @@ export class ShellLayoutComponent {
   private readonly usuariosApi = inject(UsuarioService);
   private readonly inicio = inject(InicioService);
 
+  readonly accesoBasico = this.auth.accesoBasico;
   readonly usuario = this.auth.usuario;
   readonly isAdmin = computed(() => esAdministrador(this.usuario()));
   readonly isStaff = this.auth.isStaff;
@@ -49,10 +51,8 @@ export class ShellLayoutComponent {
   leidas = new Set<string>();
   avisosAbiertos = false;
   private ultimaRevision = Date.now();
-  temaOscuro = localStorage.getItem('dimabug-tema') === 'oscuro';
 
   constructor() {
-    this.applyTema();
     // El resto de pantallas se precarga después, de a una, para no frenar la que estás viendo.
     setTimeout(() => this.precargarEnSegundoPlano(), 8000);
     setTimeout(() => this.cargarConteo(), 8000);
@@ -71,12 +71,6 @@ export class ShellLayoutComponent {
     });
   }
 
-  toggleTema(): void {
-    this.temaOscuro = !this.temaOscuro;
-    localStorage.setItem('dimabug-tema', this.temaOscuro ? 'oscuro' : 'claro');
-    this.applyTema();
-  }
-
   toggleMenu(): void {
     this.menuOpen = !this.menuOpen;
   }
@@ -93,11 +87,14 @@ export class ShellLayoutComponent {
     return url === '/admin' || url.startsWith('/admin/');
   }
 
+  /** Abre el menú de la cuenta y cierra las notificaciones para que no queden dos paneles. */
   toggleUsuarioMenu(event: Event): void {
     event.stopPropagation();
+    this.avisosAbiertos = false;
     this.usuarioMenuOpen = !this.usuarioMenuOpen;
   }
 
+  /** Igual al revés: campana abierta, menú de usuario cerrado. */
   alternarAvisos(): void {
     this.usuarioMenuOpen = false;
     this.avisosAbiertos = !this.avisosAbiertos;
@@ -145,6 +142,7 @@ export class ShellLayoutComponent {
   }
 
   private precargarEnSegundoPlano(): void {
+    if (this.accesoBasico()) return;
     const enTickets = this.router.url.includes('/tickets');
     const tareas: Observable<unknown>[] = [
       this.procedimientos.listar(),
@@ -164,6 +162,7 @@ export class ShellLayoutComponent {
   }
 
   private cargarConteo(): void {
+    if (this.accesoBasico()) return;
     this.ultimaRevision = Date.now();
     const id = this.usuario()?.usuarioId ?? 0;
     let leidas = new Set<string>();
@@ -184,10 +183,6 @@ export class ShellLayoutComponent {
   logout(): void {
     this.usuarioMenuOpen = false;
     this.auth.logout();
-  }
-
-  private applyTema(): void {
-    document.body.classList.toggle('tema-oscuro', this.temaOscuro);
   }
 
   private esInicio(url: string): boolean {

@@ -6,6 +6,10 @@ import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import jakarta.servlet.http.*;
 import java.util.regex.Pattern;
+/**
+ * Configuración de visibilidad contenido.
+ * Registra los beans que Spring necesita al iniciar.
+ */
 @Configuration
 public class VisibilidadContenidoConfig implements WebMvcConfigurer {
     private final VisibilidadContenidoService service;

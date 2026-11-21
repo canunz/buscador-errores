@@ -7,6 +7,10 @@ import cl.casol.backend.conocimiento.infrastructure.persistence.repository.Prueb
 import jakarta.persistence.*;
 import org.springframework.stereotype.Component;
 import java.util.*;
+/**
+ * Adaptador de base de datos para prueba administrativa.
+ * Implementa el puerto de salida usando JPA y convierte entre entidades y objetos del dominio.
+ */
 @Component
 public class PruebaAdministrativaRepositoryAdapter implements PruebaAdministrativaRepository {
  private final PruebaJpaRepository repo; private final EntityManager em;

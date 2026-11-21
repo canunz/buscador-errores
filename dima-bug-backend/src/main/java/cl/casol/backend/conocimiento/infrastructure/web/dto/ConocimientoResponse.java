@@ -5,11 +5,16 @@ import cl.casol.backend.conocimiento.domain.EstadoConocimiento;
 
 import java.time.LocalDateTime;
 
+/**
+ * Datos que se devuelven al frontend con conocimiento.
+ * Solo lleva lo que la pantalla necesita mostrar.
+ */
 public record ConocimientoResponse(Integer id, String titulo, String descripcion, EstadoConocimiento estado,
         ResumenResponse hardware, ResumenResponse sistema, ResumenResponse modulo,
         ResumenResponse frecuencia, String comentario, ResumenResponse creadoPor,
         LocalDateTime fechaCreacion, ResumenResponse modificadoPor, LocalDateTime fechaModificacion) {
 
+    // Crea el objeto a partir de los datos recibidos.
     public static ConocimientoResponse from(Conocimiento c) {
         return new ConocimientoResponse(c.getId(), c.getTitulo(), c.getDescripcion(), c.getEstado(),
                 c.getHardware() == null ? null : new ResumenResponse(c.getHardware().id(), c.getHardware().nombre()),
@@ -22,5 +27,6 @@ public record ConocimientoResponse(Integer id, String titulo, String descripcion
                 c.getFechaModificacion());
     }
 
+    // Devuelve resumen response.
     public record ResumenResponse(Integer id, String nombre) { }
 }

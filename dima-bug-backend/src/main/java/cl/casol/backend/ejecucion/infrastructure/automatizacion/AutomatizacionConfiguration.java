@@ -3,6 +3,10 @@ import java.time.Clock;
 import org.springframework.context.annotation.*;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.scheduling.annotation.EnableScheduling;
+/**
+ * Configuración de automatización.
+ * Registra los beans que Spring necesita al iniciar.
+ */
 @Configuration @EnableScheduling
 public class AutomatizacionConfiguration {
     @Bean @ConditionalOnMissingBean(Clock.class) public Clock relojAutomatizacion(){return Clock.systemUTC();}

@@ -27,7 +27,7 @@
     <div class="tabla"><table><thead><tr><th scope="col">Código / sucursal</th><th scope="col">Responsable</th><th scope="col">Estado</th><th scope="col">Acciones</th></tr></thead>
       <tbody>@for (s of sucursales; track s.id) { <tr><td><strong>{{ s.codigo }}</strong><br />{{ s.nombre }}</td><td>{{ s.responsableNombre }}<br />{{ s.responsableEmail }}</td><td>{{ s.activa ? 'Activa' : 'Inactiva' }}</td>
         <td><div class="acciones"><button class="tk-btn tk-btn-sec" type="button" [disabled]="guardando" (click)="editar(s)" [attr.aria-label]="'Editar ' + s.nombre">Editar</button>
-        <button class="tk-btn tk-btn-sec" type="button" [disabled]="guardando || tieneCambiosPendientes()" (click)="alternar(s)" [attr.aria-label]="(s.activa ? 'Desactivar ' : 'Activar ') + s.nombre">{{ s.activa ? 'Desactivar' : 'Activar' }}</button></div></td></tr> }
+        <button class="tk-btn" [class.tk-btn-sec]="!s.activa" [class.btn-desactivar]="s.activa" type="button" [disabled]="guardando || tieneCambiosPendientes()" (click)="alternar(s)" [attr.aria-label]="(s.activa ? 'Desactivar ' : 'Activar ') + s.nombre">{{ s.activa ? 'Desactivar' : 'Activar' }}</button></div></td></tr> }
       </tbody></table></div>
   </section>
 </section>

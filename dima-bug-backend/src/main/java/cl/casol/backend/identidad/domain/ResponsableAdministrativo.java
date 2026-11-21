@@ -9,6 +9,7 @@ import java.util.stream.Stream;
 /** Huella del estado leído: no añade una columna ni sustituye el bloqueo transaccional. */
 public record ResponsableAdministrativo(Integer id, Integer departamentoId, String nombre,
         String cargo, String contacto, boolean activo, String revision) {
+    // Crea el objeto a partir de los datos recibidos.
     public static ResponsableAdministrativo from(Responsable r) {
         String original = Stream.of(r.id(), r.departamentoId(), r.nombre(), r.cargo(), r.contacto(), r.activo())
                 .map(v -> v == null ? "-1:" : v.toString().length() + ":" + v).reduce("", String::concat);

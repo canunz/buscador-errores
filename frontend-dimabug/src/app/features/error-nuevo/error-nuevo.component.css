@@ -422,35 +422,6 @@
   }
 }
 
-:host-context(.tema-oscuro) .err-page th,
-:host-context(.tema-oscuro) .form-section {
-  background: #0b1220;
-}
-
-:host-context(.tema-oscuro) .err-page .nombre,
-:host-context(.tema-oscuro) .fila,
-:host-context(.tema-oscuro) .form-section label,
-:host-context(.tema-oscuro) .form-section h3,
-:host-context(.tema-oscuro) .err-modal .modal-head h2 {
-  color: #e5e7eb;
-}
-
-:host-context(.tema-oscuro) .form-section input,
-:host-context(.tema-oscuro) .form-section select,
-:host-context(.tema-oscuro) .form-section textarea,
-:host-context(.tema-oscuro) .fila,
-:host-context(.tema-oscuro) .err-modal .cerrar,
-:host-context(.tema-oscuro) .error-form .form-actions {
-  background: #1f2937;
-  border-color: #334155;
-  color: #e5e7eb;
-}
-
-:host-context(.tema-oscuro) .err-modal .modal-head {
-  background: #111827;
-  border-bottom-color: #1f2937;
-}
-
 .aviso-page {
   max-width: none;
   width: 100%;
@@ -685,21 +656,4 @@
     justify-content: center;
     margin-top: 14px;
   }
-}
-
-:host-context(.tema-oscuro) .aviso-card {
-  background: #111827;
-  border-color: #1f2937;
-}
-
-:host-context(.tema-oscuro) .aviso-campo label {
-  color: #e5e7eb;
-}
-
-:host-context(.tema-oscuro) .aviso-campo input,
-:host-context(.tema-oscuro) .aviso-campo select,
-:host-context(.tema-oscuro) .aviso-campo textarea {
-  background: #0b1220;
-  border-color: #334155;
-  color: #e5e7eb;
 }

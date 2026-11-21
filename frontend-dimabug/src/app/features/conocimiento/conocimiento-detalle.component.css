@@ -1702,48 +1702,6 @@
   color: #b91c1c;
 }
 
-:host-context(.tema-oscuro) .guide,
-:host-context(.tema-oscuro) .paso-nav,
-:host-context(.tema-oscuro) .paso-controles,
-:host-context(.tema-oscuro) .gestion,
-:host-context(.tema-oscuro) .ficha-bar,
-:host-context(.tema-oscuro) .panel,
-:host-context(.tema-oscuro) .checklist li,
-:host-context(.tema-oscuro) .tests li,
-:host-context(.tema-oscuro) .materials li,
-:host-context(.tema-oscuro) .solution,
-:host-context(.tema-oscuro) .owner,
-:host-context(.tema-oscuro) .expected {
-  background: #111827;
-  border-color: #1f2937;
-  color: #e5e7eb;
-}
-
-:host-context(.tema-oscuro) .paso-nav.activo {
-  background: #1e4fd6;
-  border-color: #1e4fd6;
-}
-
-:host-context(.tema-oscuro) .gestion-registro strong,
-:host-context(.tema-oscuro) .ficha-bar dd,
-:host-context(.tema-oscuro) .paso-nav,
-:host-context(.tema-oscuro) .guide-head h2,
-:host-context(.tema-oscuro) .panel h3,
-:host-context(.tema-oscuro) .checklist p,
-:host-context(.tema-oscuro) .solution strong,
-:host-context(.tema-oscuro) .panel dd {
-  color: #f8fafc;
-}
-
-:host-context(.tema-oscuro) .nota,
-:host-context(.tema-oscuro) .form-modal-dialog {
-  background: #111827;
-}
-
-:host-context(.tema-oscuro) .form-modal-dialog h2 {
-  color: #f8fafc;
-}
-
 .reutilizar-modal { position: fixed; inset: 0; z-index: 90; display: grid; place-items: center; padding: 20px; }
 .reutilizar-fondo { position: absolute; inset: 0; background: #16307099; backdrop-filter: blur(3px); }
 .reutilizar-tarjeta { position: relative; width: min(900px,100%); max-height: 92vh; overflow: auto; padding: 24px; border-radius: 20px; background: white; box-shadow: 0 20px 60px #16307055; }

@@ -3,6 +3,10 @@ package cl.casol.backend.tickets.infrastructure.persistence.entity;
 import cl.casol.backend.tickets.domain.NivelEtiqueta;
 import jakarta.persistence.*;
 
+/**
+ * Entidad JPA de etiqueta. Representa una fila de la tabla ticket_etiqueta.
+ * Se usa solo en la capa de persistencia; el dominio trabaja con su propio modelo.
+ */
 @Entity
 @Table(name = "ticket_etiqueta")
 public class EtiquetaEntity {

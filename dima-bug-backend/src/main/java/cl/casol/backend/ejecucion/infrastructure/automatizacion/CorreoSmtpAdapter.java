@@ -23,7 +23,9 @@ public class CorreoSmtpAdapter implements CorreoEvidenciaPort {
             @Value("${dimabug.correo.remitente:${spring.mail.username:}}") String remitente){
         this.sender=sender.getIfAvailable();this.remitente=remitente;
     }
+    // Indica si está simulado.
     public boolean simulado(){return false;}
+    // Indica si está disponible.
     public boolean disponible(){
         if(sender==null || remitente==null || remitente.isBlank())return false;
         try{new DestinatarioPaso(remitente,DestinatarioPaso.Tipo.PRINCIPAL);return true;}catch(cl.casol.backend.shared.domain.DestinatarioInvalidoException ex){return false;}

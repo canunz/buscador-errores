@@ -1,6 +1,10 @@
 package cl.casol.backend.conocimiento.infrastructure.persistence.entity;
 import cl.casol.backend.conocimiento.domain.*;
 import jakarta.persistence.*;
+/**
+ * Entidad JPA de material solución. Representa una fila de la tabla co_material_solucion.
+ * Se usa solo en la capa de persistencia; el dominio trabaja con su propio modelo.
+ */
 @Entity @Table(name="co_material_solucion")
 public class MaterialSolucionEntity {
  @Id @GeneratedValue(strategy=GenerationType.IDENTITY) @Column(name="material_id") private Integer id;

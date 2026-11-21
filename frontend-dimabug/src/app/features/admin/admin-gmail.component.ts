@@ -4,6 +4,10 @@ import { A11yModule } from '@angular/cdk/a11y';
 import { DatePipe } from '@angular/common';
 import { finalize, forkJoin, catchError, of } from 'rxjs';
 import { EstadoGmail, EstadoPruebaGmail, ResultadoPruebaGmail, GmailAdminService } from '../../core/services/gmail-admin.service';
+/**
+ * Pantalla de admin gmail.
+ * Carga los datos con su servicio y maneja lo que el usuario hace en la vista.
+ */
 @Component({selector:'app-admin-gmail',standalone:true,imports:[RouterLink,DatePipe,A11yModule],
   styleUrls:['../tickets/tickets-comun.css','./admin-gmail.component.css'],templateUrl:'./admin-gmail.component.html'})
 export class AdminGmailComponent implements OnInit {

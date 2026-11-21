@@ -14,6 +14,7 @@ import {
   PrioridadTicket,
   Referencia,
   TicketResumen,
+  avisoTiempoTicket,
   colorTextoEtiqueta,
   fechaLarga,
   fechaRelativa,
@@ -47,6 +48,7 @@ export class BandejaSoporteComponent implements OnInit {
   readonly colorTexto = colorTextoEtiqueta;
   readonly relativa = fechaRelativa;
   readonly larga = fechaLarga;
+  readonly tiempo = avisoTiempoTicket;
   readonly esAdmin = this.auth.isAdmin();
   readonly miId = this.auth.usuario()?.usuarioId ?? null;
 

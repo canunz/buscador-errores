@@ -9,6 +9,10 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Adaptador de base de datos para rol.
+ * Implementa el puerto de salida usando JPA y convierte entre entidades y objetos del dominio.
+ */
 @Component
 public class RolRepositoryAdapter implements RolRepository {
 
@@ -18,11 +22,13 @@ public class RolRepositoryAdapter implements RolRepository {
         this.rolJpaRepository = rolJpaRepository;
     }
 
+    // Busca por id.
     @Override
     public Optional<Rol> buscarPorId(Integer id) {
         return rolJpaRepository.findById(id).map(UsuarioMapper::rolToDomain);
     }
 
+    // Busca activos.
     @Override
     public List<Rol> buscarActivos() {
         return rolJpaRepository.findAllByActivoTrueOrderByNombreAsc().stream()

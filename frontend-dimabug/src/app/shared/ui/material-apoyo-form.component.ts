@@ -11,6 +11,10 @@ import {
   validarMaterialFormulario,
 } from '../../core/material/material-archivo';
 
+/**
+ * Componente reutilizable de material apoyo form.
+ * Se usa dentro de otras pantallas; recibe datos por @Input y avisa cambios por @Output.
+ */
 export interface MaterialApoyoFormValue {
   nombre: string;
   tipo: TipoMaterial;

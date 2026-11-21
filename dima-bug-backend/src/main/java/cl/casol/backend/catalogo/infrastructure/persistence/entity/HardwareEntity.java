@@ -4,6 +4,10 @@ import jakarta.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * Entidad JPA de hardware. Representa una fila de la tabla cl_hardware.
+ * Se usa solo en la capa de persistencia; el dominio trabaja con su propio modelo.
+ */
 @Entity
 @Table(name = "cl_hardware")
 public class HardwareEntity {

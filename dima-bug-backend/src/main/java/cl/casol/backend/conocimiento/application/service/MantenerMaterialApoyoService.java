@@ -10,6 +10,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
+/**
+ * Servicio de mantener material apoyo (módulo de conocimiento).
+ * Aquí van las reglas de negocio; para leer o guardar datos usa los puertos de salida.
+ */
 @Service
 @Transactional(readOnly = true)
 public class MantenerMaterialApoyoService {
@@ -24,11 +28,13 @@ public class MantenerMaterialApoyoService {
         this.indexador = indexador;
     }
 
+    // Lista el conocimiento indicado.
     public List<MaterialApoyo> listar(Integer conocimientoId) {
         verificarConocimiento(conocimientoId);
         return materiales.buscarDirectosPorConocimiento(conocimientoId);
     }
 
+    // Crea el conocimiento indicado.
     @Transactional
     public MaterialApoyo crear(Integer conocimientoId, String nombre, TipoMaterial tipo, String url) {
         verificarConocimiento(conocimientoId);
@@ -37,6 +43,7 @@ public class MantenerMaterialApoyoService {
         return guardado;
     }
 
+    // Modifica el conocimiento indicado.
     @Transactional
     public MaterialApoyo modificar(Integer conocimientoId, Integer materialId,
             String nombre, TipoMaterial tipo, String url) {
@@ -51,6 +58,7 @@ public class MantenerMaterialApoyoService {
         return guardado;
     }
 
+    // Verifica conocimiento.
     private void verificarConocimiento(Integer conocimientoId) {
         conocimientos.buscarPorId(conocimientoId)
                 .orElseThrow(() -> new ConocimientoNoEncontradoException(conocimientoId));

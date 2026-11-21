@@ -196,6 +196,10 @@ const SEED: CatalogoState = {
   errores: [],
 };
 
+/**
+ * Servicio de catálogo.
+ * Hace las llamadas HTTP al backend y entrega los datos a los componentes.
+ */
 @Injectable({ providedIn: 'root' })
 export class CatalogoService {
   private readonly state = signal<CatalogoState>(this.read());

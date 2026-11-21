@@ -7,14 +7,21 @@ import cl.casol.backend.seguimiento.infrastructure.persistence.repository.*;
 import org.springframework.stereotype.Component;
 import java.util.List;
 
+/**
+ * Adaptador de base de datos para resultado solución.
+ * Implementa el puerto de salida usando JPA y convierte entre entidades y objetos del dominio.
+ */
 @Component
 public class ResultadoSolucionRepositoryAdapter implements ResultadoSolucionRepository {
     private final ResultadoSolucionJpaRepository repository;
     public ResultadoSolucionRepositoryAdapter(ResultadoSolucionJpaRepository repository){this.repository=repository;}
+    // Guarda con los datos recibidos.
     public ResultadoSolucion guardar(ResultadoSolucion r){return ResultadoSolucionMapper.toDomain(
             repository.save(ResultadoSolucionMapper.toEntity(r)));}
+    // Busca por solución ordenados.
     public List<ResultadoSolucion> buscarPorSolucionOrdenados(Integer id){return repository
             .findBySolucionIdOrderByFechaDescIdDesc(id).stream().map(ResultadoSolucionMapper::toDomain).toList();}
+    // Calcula efectividad.
     public EfectividadSolucion calcularEfectividad(Integer id){EfectividadProjection p=repository.calcularEfectividad(id);
         long total=p.getTotalAplicaciones(),funciono=p.getTotalFunciono(),noFunciono=p.getTotalNoFunciono();
         Double porcentaje=total==0?null:funciono*100.0/total;

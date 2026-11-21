@@ -8,6 +8,7 @@ import cl.casol.backend.tickets.domain.Ticket;
 import java.util.List;
 import java.util.Optional;
 
+/** Puerto de salida: lo que el caso de uso necesita para guardar y leer tickets. Lo implementa TicketRepositoryAdapter. */
 public interface TicketRepositoryPort {
     /** Guarda el ticket, sus etiquetas y los comentarios/historial nuevos (los que aún no tienen id). */
     Ticket guardar(Ticket ticket);

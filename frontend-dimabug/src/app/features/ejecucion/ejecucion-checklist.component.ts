@@ -17,6 +17,10 @@ import { MaterialesEjecucionComponent } from './materiales-ejecucion.component';
   templateUrl: './ejecucion-checklist.component.html',
   styleUrls: ['../tickets/tickets-comun.css', './ejecucion-checklist.component.css'],
 })
+/**
+ * Pantalla del checklist: se recorre el procedimiento paso a paso,
+ * marcando cada paso y anotando observaciones.
+ */
 export class EjecucionChecklistComponent implements OnInit, OnDestroy {
   private readonly ejecuciones = inject(EjecucionService);
   private readonly procedimientos = inject(ProcedimientoService);
@@ -147,6 +151,7 @@ export class EjecucionChecklistComponent implements OnInit, OnDestroy {
     if(this.esAccion(paso) && (!paso.estado || paso.estado==='PENDIENTE'))return 'Pendiente de solicitud';
     return ({ESPERANDO_EVIDENCIA:'Esperando fotografías',ESPERANDO_CONFIRMACION:'Esperando respuesta',EVIDENCIA_RECIBIDA:'Evidencias disponibles',EN_VALIDACION:'Requiere validación',RECHAZADO:'Rechazado',ERROR:'Acción requerida'} as Record<string,string>)[paso.estado ?? ''] ?? 'Pendiente';
   }
+  /** Marca un paso como cumplido o no cumplido. */
   marcar(paso: EjecucionPaso, cumplido: boolean): void {
     if (!this.enCurso || !this.ejecucion || this.gestionandoEvidencia || this.cargandoPasos || this.guardando !== null || this.completando || this.cancelando ||
         (paso.modoEjecucion && paso.modoEjecucion !== 'MANUAL')) {
@@ -205,6 +210,7 @@ export class EjecucionChecklistComponent implements OnInit, OnDestroy {
     }, 800));
   }
 
+  /** Guarda la observación escrita en el paso. */
   guardarObservacion(paso: EjecucionPaso): void {
     const texto = (this.borradores[paso.ejecucionPasoId] ?? '').trim();
     if (!this.enCurso || !this.ejecucion || this.gestionandoEvidencia || this.cargandoPasos || this.guardando !== null || this.completando || this.cancelando || texto.length > 300 || texto === (paso.observacion ?? '')) {
@@ -269,6 +275,7 @@ export class EjecucionChecklistComponent implements OnInit, OnDestroy {
     }
   }
 
+  /** Termina la ejecución. */
   completar(): void {
     if (!this.puedeCompletar || !this.ejecucion) {
       return;
@@ -303,6 +310,7 @@ export class EjecucionChecklistComponent implements OnInit, OnDestroy {
     this.motivoCancelacion = '';
   }
 
+  /** Cancela la ejecución después de confirmar. */
   confirmarCancelar(): void {
     if (!this.ejecucion || !this.enCurso || this.gestionandoEvidencia || this.cancelando || this.guardando !== null) {
       return;

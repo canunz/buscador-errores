@@ -73,8 +73,6 @@
   50% { box-shadow: 0 0 0 6px rgba(220, 38, 38, 0); }
 }
 
-:host-context(.tema-oscuro) .bs-criticos { background: rgba(220, 38, 38, 0.12); border-color: #7f1d1d; color: #fecaca; }
-
 .bs-filtros {
   display: flex;
   flex-wrap: wrap;
@@ -133,6 +131,7 @@
 
 .bs-asignado { font-weight: 600; }
 .bs-sin, .bs-fecha { color: var(--tk-suave); font-size: 13px; white-space: nowrap; }
+.bs-fecha.bs-alerta { color: #b45309; font-weight: 700; }
 
 .bs-tomar {
   height: 30px;
@@ -172,7 +171,6 @@
 }
 
 .bs-error-icono svg { width: 24px; height: 24px; }
-:host-context(.tema-oscuro) .bs-error-icono { background: rgba(245, 158, 11, 0.18); color: #fcd34d; }
 
 @media (max-width: 1100px) {
   .bs-estados { grid-template-columns: repeat(4, minmax(0, 1fr)); }

@@ -6,9 +6,12 @@ import cl.casol.backend.identidad.domain.Usuario;
 //Filtro JWT Paso 1: ¿Es válido?
 public interface TokenServicePort {
 
+    // Genera token.
     String generarToken(Usuario usuario);
 
+    // Obtiene email.
     String obtenerEmail(String token);
 
+    // Indica si es valido.
     boolean esValido(String token);
 }

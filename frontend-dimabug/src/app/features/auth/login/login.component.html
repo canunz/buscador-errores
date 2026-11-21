@@ -21,9 +21,9 @@
       />
       <h1>Inicio de sesión</h1>
       @if (paso === 'identificar') {
-        <p>Ingrese su correo para recibir el código de acceso</p>
+        <p>Ingrese su correo para continuar</p>
       } @else {
-        <p>Ingrese el código de 6 dígitos que enviamos a su correo</p>
+        <p>Ingrese su código de 6 dígitos</p>
       }
     </div>
 
@@ -48,7 +48,7 @@
             id="email"
             type="email"
             formControlName="email"
-            placeholder="nombre@dimarsa.cl"
+            placeholder="nombre@correo.com"
             autocomplete="email"
             [attr.aria-disabled]="loading"
           />
@@ -72,24 +72,26 @@
             <span class="login-spinner" aria-hidden="true"></span>
             Validando correo…
           } @else {
-            Enviar código de acceso
+            Continuar
           }
         </button>
       }
     </form>
 
-    <!-- Paso 2: se habilita solo cuando el correo existe y el código fue enviado. -->
+    <!-- La respuesta no revela si la cuenta existe. -->
     @if (paso === 'codigo') {
       @if (aviso) {
         <div class="login-info" role="status">
-          <p>{{ aviso }}</p>
+          @for (linea of lineasAviso; track linea) {
+            <p>{{ linea }}</p>
+          }
         </div>
       }
 
       <form [formGroup]="codigoForm" (ngSubmit)="verificar()" novalidate>
         <div class="login-field">
           <label for="codigo">Código de acceso</label>
-          <div class="login-input login-codigo" [class.is-invalid]="!!error" [class.is-locked]="ingresoBloqueado">
+          <div class="login-input login-codigo" [class.is-invalid]="!!error">
             <input
               id="codigo"
               type="text"
@@ -99,31 +101,37 @@
               placeholder="••••••"
               autocomplete="one-time-code"
               (input)="alEscribirCodigo()"
-              [attr.aria-disabled]="loading || ingresoBloqueado"
+              [readonly]="segundosBloqueo > 0"
+              [attr.aria-disabled]="loading || segundosBloqueo > 0"
             />
           </div>
         </div>
 
-        <p class="login-timer" [class.vencido]="codigoVencido || ingresoBloqueado" aria-live="polite">
-          @if (ingresoBloqueado) {
-            Ingreso bloqueado. Intente de nuevo en <strong>{{ formatear(segundosBloqueo) }}</strong>
-          } @else if (codigoVencido) {
-            El código expiró. Solicite uno nuevo.
-          } @else {
-            El código vence en <strong>{{ formatear(segundosParaVencer) }}</strong>
-          }
-        </p>
+        <!-- Mientras está bloqueado, el aviso aparece en el botón y se oculta el tiempo del código. -->
+        @if (segundosBloqueo === 0) {
+          <p class="login-timer" [class.vencido]="codigoVencido" aria-live="polite">
+            @if (codigoVencido) {
+              El código expiró. Solicite uno nuevo.
+            } @else {
+              El código vence en <strong>{{ formatear(segundosParaVencer) }}</strong>
+            }
+          </p>
+        }
 
         <button
           type="submit"
           class="login-submit"
           [class.is-loading]="loading"
-          [disabled]="loading || codigoVencido || ingresoBloqueado"
+          [class.is-bloqueado]="segundosBloqueo > 0"
+          [disabled]="loading || codigoVencido || segundosBloqueo > 0"
           [attr.aria-busy]="loading"
+          aria-live="polite"
         >
           @if (loading) {
             <span class="login-spinner" aria-hidden="true"></span>
             Verificando…
+          } @else if (segundosBloqueo > 0) {
+            Demasiados intentos · intente en {{ formatear(segundosBloqueo) }}
           } @else {
             Ingresar
           }
@@ -135,7 +143,7 @@
             type="button"
             class="login-link-btn"
             (click)="reenviar()"
-            [disabled]="segundosParaReenviar > 0 || reenviando || loading || ingresoBloqueado"
+            [disabled]="segundosParaReenviar > 0 || reenviando || loading"
           >
             @if (reenviando) {
               Reenviando…

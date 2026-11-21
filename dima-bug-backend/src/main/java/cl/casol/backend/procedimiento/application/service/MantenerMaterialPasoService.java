@@ -9,6 +9,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
+/**
+ * Servicio de mantener material paso (módulo de procedimientos).
+ * Aquí van las reglas de negocio; para leer o guardar datos usa los puertos de salida.
+ */
 @Service
 @Transactional(readOnly = true)
 public class MantenerMaterialPasoService {
@@ -19,9 +23,11 @@ public class MantenerMaterialPasoService {
             MaterialApoyoRepository materiales) {
         this.procedimientos=procedimientos; this.pasos=pasos; this.materiales=materiales;
     }
+    // Lista el procedimiento indicado.
     public List<MaterialApoyo> listar(Integer procedimientoId,Integer pasoId){
         verificarPaso(procedimientoId,pasoId); return materiales.buscarPorPaso(pasoId);
     }
+    // Crea el procedimiento indicado.
     @Transactional
     public MaterialApoyo crear(Integer procedimientoId,Integer pasoId,String nombre,TipoMaterial tipo,String url){
         procedimientos.bloquear(procedimientoId);
@@ -29,6 +35,7 @@ public class MantenerMaterialPasoService {
         EdicionProcedimiento.exigirEditable(procedimientos.buscarPorId(procedimientoId).orElseThrow(() -> new ProcedimientoNoEncontradoException(procedimientoId)),procedimientos);
         return materiales.guardar(new MaterialApoyo(null,null,pasoId,nombre,tipo,url));
     }
+    // Modifica el procedimiento indicado.
     @Transactional
     public MaterialApoyo modificar(Integer procedimientoId,Integer pasoId,Integer materialId,
             String nombre,TipoMaterial tipo,String url){
@@ -40,6 +47,7 @@ public class MantenerMaterialPasoService {
                 .orElseThrow(() -> new MaterialApoyoNoEncontradoException(materialId));
         return materiales.guardar(new MaterialApoyo(actual.id(),null,pasoId,nombre,tipo,url));
     }
+    // Verifica paso.
     private void verificarPaso(Integer procedimientoId,Integer pasoId){
         procedimientos.buscarPorId(procedimientoId)
                 .orElseThrow(() -> new ProcedimientoNoEncontradoException(procedimientoId));

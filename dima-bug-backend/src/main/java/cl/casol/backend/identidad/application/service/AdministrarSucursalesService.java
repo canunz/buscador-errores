@@ -8,6 +8,10 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.*;
 import java.util.regex.Pattern;
 
+/**
+ * Servicio de administrar sucursales (módulo de usuarios y acceso).
+ * Aquí van las reglas de negocio; para leer o guardar datos usa los puertos de salida.
+ */
 @Service
 @Transactional(readOnly=true)
 public class AdministrarSucursalesService {
@@ -17,9 +21,11 @@ public class AdministrarSucursalesService {
 
     public List<Sucursal> listar() { return sucursales.listar(); }
     public List<Sucursal> disponibles() { return listar().stream().filter(Sucursal::activa).toList(); }
+    // Busca por id.
     public Sucursal buscar(Integer id) {
         return sucursales.buscar(id).orElseThrow(()->new OrganizacionInvalidaException("La sucursal no existe"));
     }
+    // Crea el código.
     @Transactional
     public Sucursal crear(String codigo,String nombre,String responsable,String correo) {
         return crear(codigo,nombre,responsable,correo,java.util.List.of());
@@ -29,6 +35,7 @@ public class AdministrarSucursalesService {
         return sucursales.guardar(new Sucursal(null,c,texto(nombre,100,"Nombre"),
                 texto(responsable,100,"Responsable"),correo(correo),true,null,destinatarios));
     }
+    // Edita por id.
     @Transactional
     public Sucursal editar(Integer id,String codigo,String nombre,String responsable,String correo,Long version) {
         return editar(id,codigo,nombre,responsable,correo,version,null);
@@ -39,6 +46,7 @@ public class AdministrarSucursalesService {
         return sucursales.guardar(new Sucursal(id,c,texto(nombre,100,"Nombre"),
                 texto(responsable,100,"Responsable"),correo(correo),actual.activa(),actual.version(),destinatarios==null?actual.destinatarios():destinatarios,actual.ciudad(),actual.responsableCargo()));
     }
+    // Devuelve estado.
     @Transactional
     public Sucursal estado(Integer id,boolean activa,Long version) {
         sucursales.bloquear(id); var actual=buscar(id); version(actual,version);
@@ -55,6 +63,7 @@ public class AdministrarSucursalesService {
         sucursales.bloquear(id);var a=buscar(id);version(a,version);
         return sucursales.guardar(new Sucursal(a.id(),a.codigo(),a.nombre(),a.responsableNombre(),a.responsableEmail(),a.activa(),a.version(),a.destinatarios(),opcional(ciudad),opcional(cargo)));
     }
+    // Devuelve opcional.
     private String opcional(String valor){return valor==null || valor.isBlank()?null:texto(valor,100,"Ciudad o cargo");}
     private void version(Sucursal s,Long v) {
         if(v==null || v<0) throw new OrganizacionInvalidaException("Versión obligatoria");
@@ -64,16 +73,19 @@ public class AdministrarSucursalesService {
         if(sucursales.buscarPorCodigo(c).filter(s->!Objects.equals(s.id(),id)).isPresent())
             throw new OrganizacionConflictoException("El código de sucursal ya existe, incluso si está inactiva");
     }
+    // Devuelve código.
     private String codigo(String c) {
         String normalizado=texto(c,30,"Código").toUpperCase(Locale.ROOT);
         if(!normalizado.matches("[A-Z0-9][A-Z0-9_-]{0,29}")) throw new OrganizacionInvalidaException("Código: usa letras sin acentos, números, guion o guion bajo");
         return normalizado;
     }
+    // Devuelve texto.
     private String texto(String t,int max,String campo) {
         if(t==null || t.isBlank() || t.length()>max || t.codePoints().anyMatch(Character::isISOControl))
             throw new OrganizacionInvalidaException(campo+" obligatorio; máximo "+max+" caracteres, sin controles");
         return t.strip();
     }
+    // Devuelve correo.
     private String correo(String c) {
         String email=texto(c,120,"Correo del responsable");
         String local=email.split("@",-1)[0];

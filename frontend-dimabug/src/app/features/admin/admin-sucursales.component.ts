@@ -4,6 +4,10 @@ import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { AdminSucursalesApiService, DatosSucursal, SucursalAdmin } from '../../core/services/admin-sucursales-api.service';
 
+/**
+ * Pantalla de admin sucursales.
+ * Carga los datos con su servicio y maneja lo que el usuario hace en la vista.
+ */
 @Component({
   selector: 'app-admin-sucursales', standalone: true, imports: [FormsModule, RouterLink, DestinatariosEditorComponent],
   templateUrl: './admin-sucursales.component.html',

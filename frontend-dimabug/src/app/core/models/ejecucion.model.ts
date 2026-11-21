@@ -1,4 +1,8 @@
 import { ModalidadPaso, ConfiguracionPaso } from './configuracion-paso.model';
+/**
+ * Tipos de datos de ejecución que usa el frontend.
+ * Deben coincidir con lo que responde el backend.
+ */
 export type EstadoEjecucion = 'EN_CURSO' | 'COMPLETADA' | 'CANCELADA';
 export type ModoEjecucionPaso = ModalidadPaso;
 export type EstadoEjecucionPaso = 'PENDIENTE' | 'EN_PROCESO' | 'ESPERANDO_RESPUESTA' |

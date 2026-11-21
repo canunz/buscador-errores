@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+/** API de la base de conocimiento: buscar, listar, crear, editar, publicar y eliminar. */
 @RestController
 @RequestMapping("/api/conocimientos")
 public class ConocimientoController {
@@ -26,6 +27,7 @@ public class ConocimientoController {
         this.buscador = buscador;
     }
 
+    /** Búsqueda por texto y filtros (hardware, sistema, módulo). */
     @GetMapping("/buscar")
     public List<BusquedaConocimientoResponse> buscar(
             @RequestParam(required = false) String texto,
@@ -37,6 +39,7 @@ public class ConocimientoController {
                 .map(BusquedaConocimientoResponse::from).toList();
     }
 
+    /** Lista los conocimientos que el usuario puede ver. */
     @GetMapping
     public List<ConocimientoResponse> listar(Authentication authentication) {
         boolean staff = esStaff(authentication);
@@ -46,6 +49,7 @@ public class ConocimientoController {
                 .toList();
     }
 
+    /** Detalle de un conocimiento. */
     @GetMapping("/{id}")
     public ConocimientoResponse buscar(@PathVariable Integer id, Authentication authentication) {
         var item = service.buscar(id);
@@ -55,6 +59,7 @@ public class ConocimientoController {
         return ConocimientoResponse.from(item);
     }
 
+    /** Crea un conocimiento nuevo (parte como borrador). */
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ConocimientoResponse crear(@Valid @RequestBody GuardarConocimientoRequest request,
@@ -64,6 +69,7 @@ public class ConocimientoController {
                 request.comentario(), authentication.getName()));
     }
 
+    /** Edita un conocimiento. */
     @PutMapping("/{id}")
     public ConocimientoResponse modificar(@PathVariable Integer id,
             @Valid @RequestBody GuardarConocimientoRequest request, Authentication authentication) {
@@ -72,6 +78,7 @@ public class ConocimientoController {
                 request.comentario(), authentication.getName()));
     }
 
+    /** Cambia el estado: borrador o publicado. */
     @PatchMapping("/{id}/estado")
     public ConocimientoResponse cambiarEstado(@PathVariable Integer id,
             @Valid @RequestBody CambiarEstadoConocimientoRequest request, Authentication authentication) {
@@ -85,12 +92,14 @@ public class ConocimientoController {
         return ConocimientoResponse.from(service.cambiarEstado(id, request.estado(), authentication.getName()));
     }
 
+    /** Elimina un conocimiento (solo el administrador). */
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void eliminar(@PathVariable Integer id, Authentication authentication) {
         service.eliminar(id, authentication.getName());
     }
 
+    // Indica si es staff.
     private boolean esStaff(Authentication authentication) {
         if (authentication == null) {
             return false;

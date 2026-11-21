@@ -4,6 +4,10 @@ import { Router } from '@angular/router';
 import { Aviso, NotificacionService } from '../../core/services/notificacion.service';
 import { AuthService } from '../../core/services/auth.service';
 
+/**
+ * Pantalla de notificaciones.
+ * Carga los datos con su servicio y maneja lo que el usuario hace en la vista.
+ */
 @Component({
   selector: 'app-notificaciones',
   standalone: true,

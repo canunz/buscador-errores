@@ -6,6 +6,7 @@ import {
   PRIORIDAD_INFO,
   PrioridadTicket,
   TicketResumen,
+  avisoTiempoTicket,
   fechaLarga,
   fechaRelativa,
 } from '../../core/models/ticket.model';
@@ -58,13 +59,20 @@ export class ResumenTicketsComponent implements OnInit {
   readonly prioridadInfo = PRIORIDAD_INFO;
   readonly relativa = fechaRelativa;
   readonly larga = fechaLarga;
+  readonly tiempo = avisoTiempoTicket;
   readonly rutaLista = this.vista === 'usuario' ? '/tickets' : '/tickets/bandeja';
 
   indicadores: Indicador[] = [];
   lista: TicketResumen[] = [];
+  /** Cuántos tickets tiene la cola completa (la lista del inicio muestra como máximo 3). */
+  listaTotal = 0;
   carga: CargaTecnico[] = [];
   cargando = true;
   sinServicio = false;
+
+  get verMasCola(): boolean {
+    return this.vista === 'soporte' && this.listaTotal > 3;
+  }
 
   readonly textos: Record<Vista, { titulo: string; lista: string; vacio: string }> = {
     admin: {
@@ -146,7 +154,7 @@ export class ResumenTicketsComponent implements OnInit {
         {
           clave: 'asignar',
           etiqueta: 'Sin técnico',
-          detalle: 'Soporte aún no los toma',
+          detalle: this.detalleEspera(sinTecnico, 'Soporte aún no los toma'),
           valor: sinTecnico.length,
           tono: 'azul',
           alerta: sinTecnico.some((t) => t.prioridad === 'CRITICA'),
@@ -217,7 +225,7 @@ export class ResumenTicketsComponent implements OnInit {
         {
           clave: 'tomar',
           etiqueta: 'Sin técnico',
-          detalle: 'Puedes tomarlos desde la bandeja',
+          detalle: this.detalleEspera(sinTecnico, 'Puedes tomarlos desde la bandeja'),
           valor: sinTecnico.length,
           tono: 'azul',
           alerta: sinTecnico.some((t) => t.prioridad === 'CRITICA'),
@@ -235,13 +243,15 @@ export class ResumenTicketsComponent implements OnInit {
         {
           clave: 'espera',
           etiqueta: 'Esperando al usuario',
-          detalle: 'De los tuyos, en espera de respuesta',
+          detalle: this.detalleEspera(misActivos.filter((t) => t.estado === 'EN_ESPERA'), 'De los tuyos, en espera de respuesta'),
           valor: misActivos.filter((t) => t.estado === 'EN_ESPERA').length,
           tono: 'ambar',
           filtro: { asignadoId: this.miId, estado: 'EN_ESPERA' },
         },
       ];
-      this.lista = this.ordenar(misActivos).slice(0, 6);
+      const cola = this.ordenar(misActivos);
+      this.listaTotal = cola.length;
+      this.lista = cola.slice(0, 3);
   }
 
   // ------------------------------------------------------------ usuario
@@ -255,7 +265,7 @@ export class ResumenTicketsComponent implements OnInit {
         {
           clave: 'confirmar',
           etiqueta: 'Por confirmar',
-          detalle: 'Cuéntanos si quedó solucionado',
+          detalle: this.detalleEspera(resueltos, 'Cuéntanos si quedó solucionado'),
           valor: resueltos.length,
           tono: 'verde',
           alerta: resueltos.length > 0,
@@ -264,7 +274,7 @@ export class ResumenTicketsComponent implements OnInit {
         {
           clave: 'espera',
           etiqueta: 'Esperan tu respuesta',
-          detalle: 'Soporte te hizo una pregunta',
+          detalle: this.detalleEspera(enEspera, 'Soporte te hizo una pregunta'),
           valor: enEspera.length,
           tono: 'ambar',
           filtro: { estado: 'EN_ESPERA' },
@@ -287,6 +297,13 @@ export class ResumenTicketsComponent implements OnInit {
         },
       ];
       this.lista = [...resueltos, ...enEspera].slice(0, 4);
+  }
+
+  /** Si hay casos, el detalle muestra el que más tiempo lleva en ese paso. */
+  private detalleEspera(lista: TicketResumen[], respaldo: string): string {
+    if (!lista.length) return respaldo;
+    const mayor = [...lista].sort((a, b) => a.fechaActualizacion.localeCompare(b.fechaActualizacion))[0];
+    return avisoTiempoTicket(mayor)?.texto || respaldo;
   }
 
   /** Críticos primero, luego por prioridad y antigüedad. */

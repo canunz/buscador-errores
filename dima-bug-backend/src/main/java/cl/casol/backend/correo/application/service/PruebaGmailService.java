@@ -7,14 +7,23 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.AccessDeniedException;
 import java.time.*;import java.util.*;
 import static cl.casol.backend.correo.application.port.out.PruebaGmailStore.Estado.*;
+/**
+ * Servicio de prueba gmail (módulo de correo).
+ * Aquí van las reglas de negocio; para leer o guardar datos usa los puertos de salida.
+ */
 @Service
 public class PruebaGmailService {
     private final GmailOAuthService oauth;private final GmailSettings config;private final PruebaGmailStore store;private final PruebaGmailTransport transporte;private final UsuarioRepository usuarios;private final Clock reloj;private final String modo;
     public PruebaGmailService(GmailOAuthService oauth,GmailSettings config,PruebaGmailStore store,PruebaGmailTransport transporte,UsuarioRepository usuarios,Clock reloj,@Value("${dimabug.automatizacion.modo:DESHABILITADO}") String modo){this.oauth=oauth;this.config=config;this.store=store;this.transporte=transporte;this.usuarios=usuarios;this.reloj=reloj;this.modo=modo;}
+    // Devuelve estado prueba.
     public record EstadoPrueba(String remitente,String destinatario,boolean conectado,String transporte,boolean habilitado,PruebaGmailStore.Prueba ultima){}
+    // Devuelve admin.
     private Integer admin(String email){return usuarios.buscarPorEmail(email).filter(u->u.isActivo() && "ADMINISTRADOR".equalsIgnoreCase(u.getRol().getNombre())).orElseThrow(()->new AccessDeniedException("Solo administradores pueden probar Gmail")).getId();}
+    // Devuelve visible.
     private PruebaGmailStore.Prueba visible(PruebaGmailStore.Prueba p){if(p.estado()==ENVIANDO && p.intento()!=null && p.intento().isBefore(reloj.instant().minusSeconds(60)))return new PruebaGmailStore.Prueba(p.id(),p.actor(),p.remitente(),p.destinatario(),INCIERTO,p.creada(),p.intento(),p.finalizada(),p.mensajeId(),"CONFIRMACION_PENDIENTE");return p;}
+    // Devuelve estado.
     public EstadoPrueba estado(String email){admin(email);var o=oauth.estado(email);String destino=config.remitente();return new EstadoPrueba(destino,destino,o.conectado(),modo,o.conectado() && config.envioHabilitado() && "GMAIL_API".equalsIgnoreCase(modo),store.ultima(destino).map(this::visible).orElse(null));}
+    // Envía el email.
     public PruebaGmailStore.Prueba enviar(String email,String clave,String anterior,boolean confirmado,String destinatario){
         Integer actor=admin(email);if(!confirmado)throw new GmailException(GmailException.Tipo.CONFLICTO);
         String destino=new DestinatarioPaso(destinatario,null).correo();String remitente=new DestinatarioPaso(config.remitente(),null).correo();if(!destino.equals(remitente))throw new GmailException(GmailException.Tipo.CONFLICTO);

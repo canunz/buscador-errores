@@ -19,8 +19,11 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 
-//Filtro JWT Paso 3: Crear. Esta request pertenece a un usuario autenticado
-
+/**
+ * Filtro que se ejecuta en cada petición.
+ * Lee el token, revisa que sea válido y que el usuario siga activo,
+ * y deja registrado quién es y qué rol tiene.
+ */
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
@@ -40,6 +43,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         this.usuariosAutenticados = usuariosAutenticados;
     }
 
+    // Se ejecuta en cada petición antes de llegar al controlador.
     @Override
     protected void doFilterInternal(
             HttpServletRequest request,
@@ -47,9 +51,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             FilterChain filterChain
     ) throws ServletException, IOException {
 
+        // 1. Lee el encabezado Authorization
         String authorizationHeader =
                 request.getHeader("Authorization");
 
+        // Sin token: sigue como petición anónima (las rutas privadas la rechazan después)
         if (authorizationHeader == null) {
             log.debug("JWT: falta header Authorization para {} {}", request.getMethod(), request.getRequestURI());
             filterChain.doFilter(request, response);
@@ -64,12 +70,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
 
+        // 2. Saca el token quitando la palabra "Bearer "
         String token =
                 authorizationHeader.substring(7);
 
         log.debug("JWT: token recibido con longitud {} para {} {}",
                 token.length(), request.getMethod(), request.getRequestURI());
 
+        // 3. Revisa la firma y que no esté vencido
         boolean tokenValido = !token.isBlank() && tokenService.esValido(token);
         log.debug("JWT: resultado de validacion={}", tokenValido);
 
@@ -80,8 +88,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         String email;
         try {
+            // 4. Obtiene el correo que va dentro del token
             email = tokenService.obtenerEmail(token);
-            log.debug("JWT: email extraido={}", email);
+            log.debug("JWT: identidad extraída");
         } catch (RuntimeException exception) {
             log.debug("JWT: no fue posible extraer el email; tipo={}",
                     exception.getClass().getSimpleName());
@@ -89,15 +98,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
 
-        Usuario usuario = usuariosAutenticados.obtener(email).orElse(null);
-        if (usuario == null) {
-            usuario = usuarioRepository
-                    .buscarPorEmail(email)
-                    .orElse(null);
-            if (usuario != null) {
-                usuariosAutenticados.guardar(email, usuario);
-            }
-        }
+        // 5. Busca al usuario en la base de datos
+        Usuario usuario = usuarioRepository.buscarPorEmail(email).orElse(null);
 
         log.debug("JWT: usuario encontrado={}", usuario != null);
 
@@ -105,7 +107,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             log.debug("JWT: usuario activo={}", usuario.isActivo());
         }
 
-        if (usuario != null && usuario.isActivo()) {
+        // 6. Solo si está activo se le da acceso con su rol (por ejemplo ROLE_SOPORTE)
+        if (usuario != null && usuario.puedeIngresar()) {
             String rolNombre = usuario.getRol().getNombre();
             log.debug("JWT: nombre exacto del rol={}", rolNombre);
 
@@ -121,9 +124,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     new UsernamePasswordAuthenticationToken(
                             usuario.getEmail(),
                             null,
-                            List.of(authority)
+                            usuario.isAccesoBasico() ? List.of(authority, new SimpleGrantedAuthority("SCOPE_TICKETS_PROPIOS")) : List.of(authority)
                     );
-            //Parte clave es:
+            // Guarda al usuario como autenticado para el resto de la petición
             SecurityContextHolder
                     .getContext()
                     .setAuthentication(authentication);

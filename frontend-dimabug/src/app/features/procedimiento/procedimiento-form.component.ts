@@ -6,6 +6,10 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { ProcedimientoService } from '../../core/services/procedimiento.service';
 import { LoadingModalComponent } from '../../shared/ui/loading-modal.component';
+/**
+ * Pantalla de procedimiento form.
+ * Carga los datos con su servicio y maneja lo que el usuario hace en la vista.
+ */
 @Component({ selector: 'app-procedimiento-form', standalone: true, imports: [ReactiveFormsModule, RouterLink, LoadingModalComponent],
   templateUrl: './procedimiento-form.component.html', styleUrl: './procedimiento-form.component.css' })
 export class ProcedimientoFormComponent implements OnInit {

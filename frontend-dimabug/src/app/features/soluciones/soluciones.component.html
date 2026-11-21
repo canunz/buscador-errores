@@ -11,18 +11,65 @@
     <button type="button" class="btn-crear" (click)="openCreate()" [disabled]="operando">Añadir solución</button>
   </div>
 
-  <div class="toolbar">
-    <label class="search">
-      <span class="sr">Buscar</span>
-      <input
-        type="search"
-        [(ngModel)]="q"
-        name="q"
-        placeholder="Buscar por solución, tipo, conocimiento o asignación…"
-        autocomplete="off"
-      />
-    </label>
-  </div>
+  <form class="filtros" (ngSubmit)="$event.preventDefault()">
+    <p class="filtros-titulo">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+        <path d="M3 5h18l-7 8.5V19l-4 2v-7.5L3 5z" />
+      </svg>
+      Filtrar
+      @if (filtrosActivos) {
+        <span class="filtros-contador">{{ filtrosActivos }}</span>
+      }
+    </p>
+    <div class="filtros-grid">
+      <label>
+        Solución
+        <input
+          type="search"
+          [(ngModel)]="q"
+          name="solucion"
+          placeholder="Nombre o instrucciones"
+          autocomplete="off"
+        />
+      </label>
+      <label>
+        Tipo
+        <select [(ngModel)]="tipo" name="tipo">
+          <option value="">Todos</option>
+          <option value="PASOS">Pasos a seguir</option>
+          <option value="DERIVACION">Derivación</option>
+        </select>
+      </label>
+      <label>
+        Conocimiento
+        <select [(ngModel)]="conocimiento" name="conocimiento">
+          <option value="">Todos</option>
+          @for (titulo of conocimientosFiltro; track titulo) {
+            <option [value]="titulo">{{ titulo }}</option>
+          }
+        </select>
+      </label>
+      <label>
+        Estado
+        <select [(ngModel)]="estado" name="estado">
+          <option value="">Todos</option>
+          <option value="activa">Activa</option>
+          <option value="inactiva">Inactiva</option>
+        </select>
+      </label>
+      <label>
+        Autoservicio
+        <select [(ngModel)]="autoservicio" name="autoservicio">
+          <option value="">Todos</option>
+          <option value="si">Activado</option>
+          <option value="no">Desactivado</option>
+        </select>
+      </label>
+      <button type="button" class="btn-limpiar" (click)="limpiarFiltros()" [disabled]="!filtrosActivos">
+        Limpiar
+      </button>
+    </div>
+  </form>
 
   @if (error) {
     <p class="alert" role="alert">{{ error }}</p>
@@ -50,7 +97,7 @@
                   <button type="button" class="act ver" (click)="ver(item)">Ver</button>
                   <button type="button" class="act edit" (click)="openEdit(item)" [disabled]="item.activo === false || operando">Editar</button>
                   @if (esAdministrador()) {
-                    <button type="button" class="act del estado-solucion" (click)="pedirEstado(item)" [disabled]="operando">
+                    <button type="button" class="act estado-solucion" [class.del]="item.activo !== false" (click)="pedirEstado(item)" [disabled]="operando">
                       {{ item.activo === false ? 'Reactivar' : 'Desactivar' }}
                     </button>
                   }
@@ -78,7 +125,9 @@
             </tr>
           } @empty {
             <tr>
-              <td colspan="6" class="vacio">No hay soluciones registradas en la base de datos.</td>
+              <td colspan="6" class="vacio">
+                {{ filtrosActivos ? 'No hay soluciones que coincidan con el filtro.' : 'No hay soluciones registradas en la base de datos.' }}
+              </td>
             </tr>
           }
         </tbody>
@@ -100,7 +149,7 @@
       @if (error) { <p class="alert" role="alert">{{ error }}</p> }
       <div class="confirm-acciones">
         <button type="button" class="btn-cancelar" (click)="cancelarEstado()" [disabled]="operando">Cancelar</button>
-        <button type="button" class="btn-peligro" (click)="confirmarEstado()" [disabled]="operando">
+        <button type="button" [class.btn-peligro]="pendienteEstado.activo !== false" (click)="confirmarEstado()" [disabled]="operando">
           {{ operando ? 'Guardando…' : pendienteEstado.activo === false ? 'Reactivar' : 'Desactivar' }}
         </button>
       </div>

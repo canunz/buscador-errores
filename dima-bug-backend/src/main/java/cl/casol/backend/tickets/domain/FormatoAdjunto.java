@@ -14,6 +14,7 @@ public final class FormatoAdjunto {
 
     private FormatoAdjunto() { }
 
+    // Devuelve mime.
     public static String mime(byte[] b) {
         if (empieza(b, 0, new byte[]{(byte) 0x89, 'P', 'N', 'G', 0x0D, 0x0A, 0x1A, 0x0A})) return "image/png";
         if (empieza(b, 0, new byte[]{(byte) 0xFF, (byte) 0xD8, (byte) 0xFF})) return "image/jpeg";
@@ -25,6 +26,7 @@ public final class FormatoAdjunto {
         throw new TicketInvalidoException(MENSAJE_NO_PERMITIDO);
     }
 
+    // Devuelve tipo.
     public static TipoAdjunto tipo(String mime) {
         if (mime == null) return TipoAdjunto.DOCUMENTO;
         if (mime.startsWith("image/")) return TipoAdjunto.IMAGEN;
@@ -32,11 +34,13 @@ public final class FormatoAdjunto {
         return TipoAdjunto.DOCUMENTO;
     }
 
+    // Devuelve texto.
     private static String texto(byte[] b, int inicio, int largo) {
         if (b == null || b.length < inicio + largo) return "";
         return new String(b, inicio, largo, StandardCharsets.ISO_8859_1);
     }
 
+    // Indica si empieza.
     private static boolean empieza(byte[] b, int inicio, byte[] firma) {
         if (b == null || b.length < inicio + firma.length) return false;
         for (int i = 0; i < firma.length; i++) if (b[inicio + i] != firma[i]) return false;

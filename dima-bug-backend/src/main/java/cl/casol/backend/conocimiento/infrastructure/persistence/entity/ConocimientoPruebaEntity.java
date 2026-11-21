@@ -2,6 +2,10 @@ package cl.casol.backend.conocimiento.infrastructure.persistence.entity;
 
 import jakarta.persistence.*;
 
+/**
+ * Entidad JPA de conocimiento prueba. Representa una fila de la tabla co_conocimiento_prueba.
+ * Se usa solo en la capa de persistencia; el dominio trabaja con su propio modelo.
+ */
 @Entity
 @Table(name = "co_conocimiento_prueba")
 public class ConocimientoPruebaEntity {

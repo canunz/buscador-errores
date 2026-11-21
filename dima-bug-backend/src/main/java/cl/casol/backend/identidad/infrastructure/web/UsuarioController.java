@@ -22,6 +22,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+/**
+ * Controlador REST de usuario. Atiende las rutas que empiezan con /api/usuarios.
+ * Solo recibe la petición, valida los datos y llama al caso de uso que corresponde.
+ */
 @RestController
 @RequestMapping("/api/usuarios")
 public class UsuarioController {
@@ -32,16 +36,19 @@ public class UsuarioController {
         this.service = service;
     }
 
+    // GET /api/usuarios: listar.
     @GetMapping
     public List<UsuarioResponse> listar() {
         return service.listar().stream().map(UsuarioResponse::from).toList();
     }
 
+    // GET /api/usuarios/{id}: buscar por id.
     @GetMapping("/{id}")
     public UsuarioResponse buscarPorId(@PathVariable Integer id) {
         return UsuarioResponse.from(service.buscarPorId(id));
     }
 
+    // POST /api/usuarios: crear.
     @PostMapping
     public ResponseEntity<UsuarioResponse> crear(@Valid @RequestBody CrearUsuarioRequest request) {
         Usuario usuario = service.crear(
@@ -50,6 +57,7 @@ public class UsuarioController {
         return ResponseEntity.status(HttpStatus.CREATED).body(UsuarioResponse.from(usuario));
     }
 
+    // PUT /api/usuarios/{id}: modificar.
     @PutMapping("/{id}")
     public UsuarioResponse modificar(@PathVariable Integer id,
                                      @Valid @RequestBody ModificarUsuarioRequest request) {
@@ -58,12 +66,14 @@ public class UsuarioController {
         );
     }
 
+    // PATCH /api/usuarios/{id}/password: cambiar password.
     @PatchMapping("/{id}/password")
     public UsuarioResponse cambiarPassword(@PathVariable Integer id,
                                            @Valid @RequestBody CambiarPasswordRequest request) {
         return UsuarioResponse.from(service.cambiarPassword(id, request.password()));
     }
 
+    // PATCH /api/usuarios/{id}/estado: cambiar estado.
     @PatchMapping("/{id}/estado")
     public UsuarioResponse cambiarEstado(@PathVariable Integer id,
                                          @Valid @RequestBody CambiarEstadoUsuarioRequest request,

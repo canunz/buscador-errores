@@ -11,16 +11,20 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.http.HttpMethod;
 
-//PASO IV: Enpoint público
-//Filtro JWT Paso 4: Modificamos. Conecta el filtro con Spring Security. Fin.
+/**
+ * Configuración de seguridad: define qué rutas son públicas, qué rol necesita cada una
+ * y en qué orden se revisa el token en cada petición.
+ */
 @Configuration
 public class SecurityConfig {
 
+    /** BCrypt: transforma el código en un hash que no se puede revertir. */
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
+    /** Reglas de acceso a la API. */
     @Bean
     public SecurityFilterChain securityFilterChain(
             HttpSecurity http,
@@ -28,12 +32,14 @@ public class SecurityConfig {
     ) throws Exception {
 
         http
+                // CSRF apagado: el token va en el encabezado, no en una cookie
                 .csrf(csrf -> csrf.disable())
-                //Login, JWT, Cliente conserva JWT, Cada request trae JWT, Servidor valida JWT
+                // Sin sesiones en el servidor: cada petición trae su token JWT
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
 
+                // 401 si no inició sesión, 403 si no tiene permiso
                 .exceptionHandling(exceptions -> exceptions
                         .authenticationEntryPoint((request, response, exception) ->
                                 response.sendError(HttpServletResponse.SC_UNAUTHORIZED)
@@ -43,12 +49,14 @@ public class SecurityConfig {
                         )
                 )
 
+                // Permisos por ruta: se revisan de arriba hacia abajo
                 .authorizeHttpRequests(auth -> auth
                         // Callback de vinculación Gmail: valida estado/PKCE, no crea una sesión de DimaBug.
                         .requestMatchers(HttpMethod.GET,"/login/oauth2/code/google").permitAll()
                         .requestMatchers(HttpMethod.GET,"/api/publico/soluciones","/api/publico/soluciones/*","/api/publico/soluciones/*/materiales","/api/publico/soluciones/*/materiales/*/archivo").permitAll()
                         .requestMatchers(HttpMethod.POST,"/api/publico/chatbot/consultas").permitAll()
                         .requestMatchers("/api/publico/**").denyAll()
+                        // Todo lo de administración es solo para el administrador
                         .requestMatchers("/api/admin/**").hasRole("ADMINISTRADOR")
                         .requestMatchers(HttpMethod.POST,"/api/procedimientos/*/ejecuciones").hasAnyRole("ADMINISTRADOR","TECNICO","SOPORTE")
                         .requestMatchers(HttpMethod.GET,"/api/procedimientos/*/historial").hasRole("ADMINISTRADOR")
@@ -100,14 +108,18 @@ public class SecurityConfig {
                                 "/api/auth/recuperar/password"
                         ).permitAll()
 
+                        // Cualquier otra ruta exige haber iniciado sesión
                         .anyRequest().authenticated()
                 )
 
+                // Antes de revisar permisos, el filtro JWT identifica al usuario
                 .addFilterBefore(
                         jwtAuthenticationFilter,
                         org.springframework.security.web.authentication
                                 .UsernamePasswordAuthenticationFilter.class
-                );
+                )
+                .addFilterAfter(new cl.casol.backend.identidad.infrastructure.security.AlcanceBasicoFilter(),
+                        cl.casol.backend.identidad.infrastructure.security.JwtAuthenticationFilter.class);
 
         return http.build();
     }

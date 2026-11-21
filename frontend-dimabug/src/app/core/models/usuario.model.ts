@@ -4,11 +4,13 @@ export interface Rol {
 }
 
 export interface Usuario {
+  accesoBasico?: boolean;
   usuarioId: number;
   usuarioNombre: string;
   usuarioEmail: string;
   usuarioEstado: boolean;
   usuarioFechaCreacion?: string;
+  usuarioUltimoIngreso?: string;
   rolId?: number;
   rol?: Rol;
   rolNombre?: string;
@@ -24,7 +26,6 @@ export interface UsuarioPayload {
   usuarioEmail: string;
   rolId: number;
   usuarioEstado: boolean;
-  usuarioPassword?: string;
 }
 
 function nombreRol(usuario: Usuario | null | undefined): string {

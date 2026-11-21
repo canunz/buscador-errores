@@ -1,3 +1,7 @@
+/**
+ * Tipos de datos de organización admin que usa el frontend.
+ * Deben coincidir con lo que responde el backend.
+ */
 export interface DepartamentoAdmin { id: number; nombre: string; activo: boolean; version: number; }
 export interface ContactoDepartamentoAdmin {
   id: number; departamentoId: number; tipo: string; valor: string; activo: boolean;

@@ -1,6 +1,126 @@
 /* Ajustes locales encima de catalogo-page.css */
-.sol-page .toolbar {
-  margin: 0 0 14px;
+.sol-page .filtros {
+  margin: 0 0 16px;
+  padding: 16px 18px 18px;
+  border: 1px solid #e3e8f2;
+  border-radius: 18px;
+  background: #fff;
+  box-shadow: 0 8px 22px rgba(15, 23, 42, 0.04);
+}
+
+.sol-page .filtros-titulo {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 12px;
+  color: #0b1b4d;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.sol-page .filtros-titulo svg {
+  width: 18px;
+  height: 18px;
+  color: #1e4fd6;
+}
+
+.sol-page .filtros-contador {
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  background: #1e4fd6;
+  color: #fff;
+  font-size: 11.5px;
+  font-weight: 700;
+}
+
+.sol-page .filtros-grid {
+  display: grid;
+  grid-template-columns: minmax(180px, 1.4fr) minmax(140px, 1fr) minmax(160px, 1.2fr) minmax(120px, 0.8fr) minmax(140px, 0.9fr) auto;
+  gap: 12px 14px;
+  align-items: end;
+}
+
+.sol-page .filtros-grid label {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+  color: #475569;
+  font-size: 12px;
+  font-weight: 750;
+  letter-spacing: 0.02em;
+}
+
+.sol-page .filtros-grid input,
+.sol-page .filtros-grid select {
+  width: 100%;
+  height: 42px;
+  border: 1px solid #e3e8f2;
+  border-radius: 12px;
+  padding: 0 12px;
+  background: #f8fafc;
+  color: #0f172a;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.sol-page .filtros-grid select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='none' stroke='%2364748b' stroke-width='1.8' d='M1 1.5l5 5 5-5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 32px;
+}
+
+.sol-page .filtros-grid input:focus,
+.sol-page .filtros-grid select:focus {
+  outline: none;
+  border-color: #1e4fd6;
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(30, 79, 214, 0.15);
+}
+
+.sol-page .btn-limpiar {
+  height: 42px;
+  padding: 0 16px;
+  border: 0;
+  border-radius: 12px;
+  background: #eef3ff;
+  color: #1e4fd6;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.sol-page .btn-limpiar:hover:not(:disabled) {
+  background: #e0e9ff;
+}
+
+.sol-page .btn-limpiar:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+@media (max-width: 1100px) {
+  .sol-page .filtros-grid {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+
+  .sol-page .btn-limpiar {
+    grid-column: 1 / -1;
+    justify-self: start;
+  }
+}
+
+@media (max-width: 640px) {
+  .sol-page .filtros-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 .modal-alert {
@@ -15,36 +135,6 @@
 .sol-page .form-grid textarea {
   resize: vertical;
   min-height: 96px;
-}
-
-.sol-page .search {
-  display: block;
-}
-
-.sol-page .search input {
-  width: 100%;
-  height: 44px;
-  border: 1px solid #d8deea;
-  border-radius: 12px;
-  padding: 0 14px;
-  background: #fff;
-  color: #0f172a;
-  font: inherit;
-  font-size: 14px;
-  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.03);
-}
-
-.sol-page .search input:focus {
-  outline: 2px solid rgba(30, 79, 214, 0.25);
-  border-color: #1e4fd6;
-}
-
-.sol-page .sr {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
-  clip: rect(0 0 0 0);
 }
 
 .sol-page .tabla-wrap {
@@ -105,8 +195,8 @@
 }
 
 .sol-page .act.del {
-  background: #fef2f2;
-  color: #b91c1c;
+  background: #dc2626;
+  color: #fff;
 }
 
 .sol-page .nombre {
@@ -222,24 +312,6 @@
   color: #94a3b8;
   font-size: 13px;
   font-weight: 600;
-}
-
-:host-context(.tema-oscuro) .sol-page .search input {
-  background: #111827;
-  border-color: #1f2937;
-  color: #e5e7eb;
-}
-
-:host-context(.tema-oscuro) .sol-page th {
-  background: #0b1220;
-}
-
-:host-context(.tema-oscuro) .sol-page tbody tr:hover td {
-  background: #0b1220;
-}
-
-:host-context(.tema-oscuro) .sol-page .nombre {
-  color: #f8fafc;
 }
 
 .solucion-resumen { margin: 8px 0 0; white-space: pre-line; overflow-wrap: anywhere; }

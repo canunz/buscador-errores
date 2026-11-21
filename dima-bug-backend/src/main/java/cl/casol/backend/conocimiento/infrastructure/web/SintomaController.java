@@ -8,6 +8,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
+/**
+ * Controlador REST de síntoma. Atiende las rutas que empiezan con /api/conocimientos/{conocimientoId}/sintomas.
+ * Solo recibe la petición, valida los datos y llama al caso de uso que corresponde.
+ */
 @RestController
 @RequestMapping("/api/conocimientos/{conocimientoId}/sintomas")
 public class SintomaController {
@@ -17,11 +21,13 @@ public class SintomaController {
         this.service = service;
     }
 
+    // GET /api/conocimientos/{conocimientoId}/sintomas: listar.
     @GetMapping
     public List<SintomaResponse> listar(@PathVariable Integer conocimientoId) {
         return service.listar(conocimientoId).stream().map(SintomaResponse::from).toList();
     }
 
+    // POST /api/conocimientos/{conocimientoId}/sintomas: crear.
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public SintomaResponse crear(@PathVariable Integer conocimientoId,
@@ -29,6 +35,7 @@ public class SintomaController {
         return SintomaResponse.from(service.crear(conocimientoId, request.descripcion(), request.orden()));
     }
 
+    // PUT /api/conocimientos/{conocimientoId}/sintomas/{sintomaId}: modificar.
     @PutMapping("/{sintomaId}")
     public SintomaResponse modificar(@PathVariable Integer conocimientoId, @PathVariable Integer sintomaId,
             @Valid @RequestBody GuardarSintomaRequest request) {
