@@ -1,5 +1,6 @@
 import { Component, OnDestroy, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService, CodigoAccesoError, SolicitudCodigoAcceso } from '../../../core/services/auth.service';
 
@@ -41,9 +42,31 @@ export class LoginComponent implements OnDestroy {
     email: ['', [Validators.required, Validators.email]],
   });
 
+  /** Cuando la persona corrige el correo, se borra el error anterior (por ejemplo, "ese correo no existe"). */
+  private readonly limpiarErrorAlEscribir = this.form.controls.email.valueChanges
+    .pipe(takeUntilDestroyed())
+    .subscribe(() => {
+      if (this.paso === 'identificar' && !this.loading) {
+        this.error = '';
+      }
+    });
+
   codigoForm = this.fb.nonNullable.group({
     codigo: ['', [Validators.required, Validators.pattern(/^\d{6}$/)]],
   });
+
+  /**
+   * Revisa el correo mientras se escribe y dice qué le falta.
+   * Devuelve un texto vacío cuando el correo está bien escrito.
+   */
+  get problemaCorreo(): string {
+    return LoginComponent.revisarCorreo(this.form.controls.email.value);
+  }
+
+  /** Se muestra el aviso solo cuando la persona ya escribió algo. */
+  get mostrarProblemaCorreo(): boolean {
+    return this.paso === 'identificar' && !!this.form.controls.email.value.trim() && !!this.problemaCorreo;
+  }
 
   get segundosParaVencer(): number {
     return Math.max(0, Math.ceil((this.venceEn - this.ahora) / 1000));
@@ -85,9 +108,10 @@ export class LoginComponent implements OnDestroy {
       this.error = 'Ingrese su correo.';
       return;
     }
-    if (this.form.controls.email.invalid || !valor.includes('@')) {
+    const problema = LoginComponent.revisarCorreo(valor);
+    if (problema) {
       this.form.markAllAsTouched();
-      this.error = 'Ingrese un correo válido.';
+      this.error = problema;
       return;
     }
     this.loading = true;
@@ -117,8 +141,43 @@ export class LoginComponent implements OnDestroy {
           return;
         }
         this.error = err.message;
+        if (err.correoNoRegistrado) {
+          // El correo no existe: no se envía nada y se deja el campo listo para escribir otro.
+          setTimeout(() => {
+            const campo = document.getElementById('email') as HTMLInputElement | null;
+            campo?.focus();
+            campo?.select();
+          }, 0);
+        }
       },
     });
+  }
+
+  /**
+   * Reglas del correo, en el orden en que la persona lo va escribiendo.
+   * Ej.: "fsdkj@" -> falta lo que va después del @; "fjksdgmail.com" -> falta el @.
+   */
+  static revisarCorreo(texto: string): string {
+    const valor = (texto ?? '').trim();
+    if (!valor) return 'Ingrese su correo.';
+    if (/\s/.test(valor)) return 'El correo no puede tener espacios.';
+
+    const arrobas = valor.split('@').length - 1;
+    if (arrobas === 0) return 'Falta el @. Ejemplo: nombre@gmail.com';
+    if (arrobas > 1) return 'El correo solo puede tener un @.';
+
+    const [usuario, dominio] = valor.split('@');
+    if (!usuario) return 'Escriba su nombre antes del @.';
+    if (!dominio) return 'Falta lo que va después del @. Ejemplo: gmail.com';
+    if (!dominio.includes('.')) return 'Al dominio le falta el punto. Ejemplo: gmail.com';
+
+    const partes = dominio.split('.');
+    if (partes.some((parte) => !parte)) return 'El dominio está incompleto. Ejemplo: gmail.com';
+    if (!/^[a-z]{2,}$/i.test(partes[partes.length - 1])) return 'La terminación del correo está incompleta. Ejemplo: .com o .cl';
+    if (!/^[a-z0-9._%+-]+$/i.test(usuario) || !/^[a-z0-9.-]+$/i.test(dominio)) {
+      return 'El correo tiene caracteres que no son válidos.';
+    }
+    return '';
   }
 
   /** Reenvía un código nuevo; el anterior deja de servir. */

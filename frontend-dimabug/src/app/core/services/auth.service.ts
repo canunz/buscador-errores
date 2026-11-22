@@ -24,7 +24,8 @@ export interface SolicitudCodigoAcceso {
 }
 
 /** Error del ingreso con código; en un reenvío anticipado indica cuántos segundos faltan. */
-export type CodigoAccesoError = Error & { segundosRestantes?: number };
+/** Error del ingreso con código. Puede traer los segundos de espera o avisar que el correo no existe. */
+export type CodigoAccesoError = Error & { segundosRestantes?: number; correoNoRegistrado?: boolean };
 
 interface AuthMeResponse {
   email: string;
@@ -138,6 +139,9 @@ export class AuthService {
     if (err.status === 429) {
       error.segundosRestantes = Number(err.error?.segundosRestantes) || 60;
     }
+    if (paso === 'solicitar' && err.status === 404) {
+      error.correoNoRegistrado = true;
+    }
     return error;
   }
 
@@ -148,7 +152,7 @@ export class AuthService {
         : this.safeApiMessage(this.extractApiMessage(err), 'Revise los datos ingresados.');
     }
     if (paso === 'solicitar' && err.status === 404) {
-      return this.safeApiMessage(this.extractApiMessage(err), 'Este correo no está registrado en DimaBug. Inténtelo con un correo que exista.');
+      return this.safeApiMessage(this.extractApiMessage(err), 'Ese correo no existe en DimaBug. Intente nuevamente con otro correo.');
     }
     if (paso === 'solicitar' && err.status === 401) {
       // El endpoint no responde: el backend sigue corriendo con la versión anterior.

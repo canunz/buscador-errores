@@ -37,7 +37,7 @@
     <form [formGroup]="form" (ngSubmit)="enviarCodigo()" novalidate>
       <div class="login-field">
         <label for="email">Correo</label>
-        <div class="login-input" [class.is-invalid]="!!error && paso === 'identificar'" [class.is-locked]="paso !== 'identificar'">
+        <div class="login-input" [class.is-invalid]="(!!error || mostrarProblemaCorreo) && paso === 'identificar'" [class.is-locked]="paso !== 'identificar'">
           <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
             <path
               fill="currentColor"
@@ -51,6 +51,8 @@
             placeholder="nombre@correo.com"
             autocomplete="email"
             [attr.aria-disabled]="loading"
+            [attr.aria-invalid]="mostrarProblemaCorreo"
+            aria-describedby="email-ayuda"
           />
           @if (paso !== 'identificar') {
             <button type="button" class="login-link-btn login-cambiar" (click)="cambiarUsuario()" [disabled]="loading">
@@ -58,6 +60,9 @@
             </button>
           }
         </div>
+        @if (mostrarProblemaCorreo) {
+          <p id="email-ayuda" class="login-ayuda" aria-live="polite">{{ problemaCorreo }}</p>
+        }
       </div>
 
       @if (paso === 'identificar') {
@@ -65,7 +70,7 @@
           type="submit"
           class="login-submit"
           [class.is-loading]="loading"
-          [disabled]="loading"
+          [disabled]="loading || !!problemaCorreo"
           [attr.aria-busy]="loading"
         >
           @if (loading) {
