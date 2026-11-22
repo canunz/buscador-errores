@@ -37,7 +37,7 @@ class HardwareProcedimientoHttpTest {
         jdbc.update("insert into cl_hardware(hardware_id,hardware_nombre,hardware_estado) values(1,'POS de venta QA',true),(2,'Impresora QA',true),(3,'Hardware legado QA',false)");
         jdbc.update("insert into cl_sistema(sistema_id,sistema_nombre,sistema_estado) values(1,'Sistema conservado',true)");
         jdbc.update("insert into cl_modulo(modulo_id,sistema_id,modulo_nombre,modulo_estado) values(1,1,'Módulo conservado',true)");
-        token=LoginCodigoTestSupport.autenticar(mvc,envioCodigo,"qa-hardware@example.invalid",jdbc);
+        token=LoginCodigoTestSupport.autenticar(mvc,envioCodigo,"qa-hardware@example.invalid",jdbc,"SoloPruebas123!");
     }
     @AfterAll void noDuplicaCatalogo(){assertEquals(3,jdbc.queryForObject("select count(*) from cl_hardware",Integer.class));}
     @Test void creaConHardwareYLoRecupera()throws Exception{int p=id(texto(crear(Map.of("nombre","Con POS","hardwareId",1)).andExpect(status().isCreated()).andExpect(jsonPath("$.hardwareId").value(1))));leer(p).andExpect(status().isOk()).andExpect(jsonPath("$.hardwareId").value(1));assertEquals(1,jdbc.queryForObject("select hardware_id from pr_procedimiento where procedimiento_id=?",Integer.class,p));}

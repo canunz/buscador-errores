@@ -1,0 +1,66 @@
+<main class="portal tk-pagina">
+  <nav class="marca" aria-label="DimaBug"><img src="assets/img/logo_dimabug.png" alt="DimaBug y su mascota de soporte" width="160" height="104" /><span>Portal de solicitudes</span><button class="tk-btn tk-btn-sec" (click)="auth.logout()">Cerrar sesión</button></nav>
+  <header class="tk-franja"><div><span class="tk-chip-rol">Soporte TI · Estamos para ayudarte</span><h1>Mis tickets</h1><p>Cuéntanos qué ocurre y sigue tus solicitudes en un solo lugar.</p></div></header>
+  <div class="columnas">
+    <section class="tk-card nueva" aria-labelledby="nueva-titulo">
+      <div class="seccion-cabecera"><span class="numero">+</span><div><h2 id="nueva-titulo">Nuevo ticket</h2><p>Describe el problema. Soporte TI se encargará de revisarlo.</p></div></div>
+      @if(error){<p class="aviso error" role="alert">{{error}}</p>}
+      @if(exito){<p class="aviso exito" role="status">{{exito}}</p>}
+      <form (ngSubmit)="crear()" #form="ngForm" [attr.aria-busy]="enviando">
+        <fieldset class="grupo-formulario" [disabled]="enviando">
+          <legend>Datos del solicitante</legend>
+          <p class="ayuda-grupo">Estos datos se guardan en esta solicitud; no cambian tu cuenta. Los campos sin «opcional» son obligatorios.</p>
+          @if(errorCatalogos){<div class="aviso error" role="alert">{{errorCatalogos}} <button type="button" class="reintentar" (click)="cargarCatalogos()">Reintentar</button></div>}
+          @if(!catalogosListos && !errorCatalogos){<p role="status">Cargando opciones de sucursal y departamento…</p>}
+          <label class="tk-campo" for="nombreCompleto">Nombre completo
+            <input id="nombreCompleto" name="nombreCompleto" [(ngModel)]="solicitante.nombreCompleto" #nombre="ngModel" required maxlength="150" autocomplete="name" placeholder="Nombre y apellidos" aria-describedby="error-nombre" />
+            @if(nombre.touched && !solicitante.nombreCompleto.trim()){<small id="error-nombre" class="validacion" role="alert">Ingresa tu nombre completo.</small>}
+          </label>
+          <div class="fila-datos">
+            <label class="tk-campo" for="sucursal">Sucursal
+              <select id="sucursal" name="sucursalId" [(ngModel)]="solicitante.sucursalId" #sucursal="ngModel" required [disabled]="!catalogosListos || enviando" aria-describedby="error-sucursal"><option [ngValue]="null" disabled>Selecciona una sucursal</option>@for(s of catalogos.sucursales;track s.id){<option [ngValue]="s.id">{{s.nombre}}</option>}</select>
+              @if(sucursal.touched && !solicitante.sucursalId){<small id="error-sucursal" class="validacion" role="alert">Selecciona una sucursal.</small>}
+            </label>
+            <label class="tk-campo" for="departamento">Área o departamento
+              <select id="departamento" name="departamentoId" [(ngModel)]="solicitante.departamentoId" #departamento="ngModel" required [disabled]="!catalogosListos || enviando" aria-describedby="error-departamento"><option [ngValue]="null" disabled>Selecciona un área</option>@for(d of catalogos.departamentos;track d.id){<option [ngValue]="d.id">{{d.nombre}}</option>}</select>
+              @if(departamento.touched && !solicitante.departamentoId){<small id="error-departamento" class="validacion" role="alert">Selecciona un área o departamento.</small>}
+            </label>
+          </div>
+          <label class="tk-campo" for="contacto">Anexo o teléfono de contacto
+            <input id="contacto" name="contacto" type="tel" [(ngModel)]="solicitante.contacto" #contacto="ngModel" required maxlength="50" autocomplete="tel" placeholder="Ej.: +56 9 1234 5678 o anexo 1234" aria-describedby="error-contacto" />
+            @if(contacto.touched && !contactoValido(solicitante.contacto)){<small id="error-contacto" class="validacion" role="alert">Ingresa un teléfono o anexo válido; por ejemplo +56 9 1234 5678 o anexo 1234.</small>}
+          </label>
+          <div class="fila-datos">
+            <label class="tk-campo" for="equipo">IP o AnyDesk del equipo <span class="opcional">(opcional)</span>
+              <input id="equipo" name="equipo" [(ngModel)]="solicitante.equipo" #equipo="ngModel" maxlength="100" autocomplete="off" placeholder="Ej.: 192.168.1.10 o 123 456 789" aria-describedby="ayuda-equipo error-equipo" />
+              <small id="ayuda-equipo">Si no lo conoces, puedes dejarlo vacío.</small>
+              @if(equipo.touched && !equipoValido(solicitante.equipo)){<small id="error-equipo" class="validacion" role="alert">Ingresa una IP válida o un ID AnyDesk de 9 a 10 dígitos.</small>}
+            </label>
+            <label class="tk-campo" for="codigoUsuario">Código de usuario <span class="opcional">(opcional)</span>
+              <input id="codigoUsuario" name="codigoUsuario" [(ngModel)]="solicitante.codigoUsuario" maxlength="80" autocomplete="off" placeholder="Tu código en el sistema Comercial" />
+              <small>No ingreses contraseñas.</small>
+            </label>
+          </div>
+        </fieldset>
+        <fieldset class="grupo-formulario" [disabled]="enviando">
+          <legend>Descripción del problema</legend>
+        <label class="tk-campo" for="titulo">Título del problema <span class="sr-only">(obligatorio)</span><input id="titulo" name="titulo" [(ngModel)]="titulo" required maxlength="150" placeholder="No puedo ingresar al sistema Comercial" [disabled]="enviando" /></label>
+        <label class="tk-campo" for="descripcion">Descripción <span class="sr-only">(obligatoria)</span><textarea id="descripcion" name="descripcion" [(ngModel)]="descripcion" required maxlength="10000" rows="6" placeholder="Al intentar ingresar aparece un mensaje de error…" [disabled]="enviando"></textarea><small>Indica qué estabas intentando hacer. No incluyas contraseñas.</small></label>
+        <div class="tk-campo"><label for="fotos">Fotografías <span class="opcional">(opcional)</span></label><div class="selector"><input id="fotos" type="file" accept="image/jpeg,image/png,image/webp" multiple (change)="seleccionar($event)" [disabled]="enviando || !limitesListos" aria-describedby="limites"/><p id="limites">JPG, PNG o WEBP · Hasta {{maxFotos}} fotos de {{maxBytes/1024/1024}} MB cada una</p></div></div>
+        @if(fotos.length){<ul class="fotos" aria-label="Fotografías seleccionadas">@for(f of fotos;track f.url;let i=$index){<li><img [src]="f.url" [alt]="f.archivo.name"/><button type="button" (click)="quitar(i)" [disabled]="enviando" [attr.aria-label]="'Quitar '+f.archivo.name">×</button><span>{{f.archivo.name}}</span></li>}</ul>}
+        </fieldset>
+        <button type="submit" class="tk-btn tk-btn-primario enviar" [disabled]="enviando || !limitesListos || !datosValidos() || form.invalid || !titulo.trim() || !descripcion.trim()">{{enviando?'Enviando solicitud…':'Enviar solicitud'}} <span aria-hidden="true">→</span></button>
+      </form>
+    </section>
+    <section class="tk-card historial" aria-labelledby="historial-titulo" [attr.aria-busy]="cargando">
+      <div class="seccion-cabecera"><div><h2 id="historial-titulo">Mis solicitudes</h2><p>Consulta el avance de tus tickets.</p></div><button class="tk-btn tk-btn-sec" (click)="cargar()" [disabled]="cargando">Actualizar</button></div>
+      @if(errorLista){<p class="aviso error" role="alert">{{errorLista}}</p>}
+      @if(cargando){<p role="status" class="vacio">Cargando tus solicitudes…</p>}
+      @else if(!tickets.length && !errorLista){<div class="vacio"><span aria-hidden="true">◎</span><h3>Todavía no tienes solicitudes registradas</h3><p>Cuando envíes tu primera solicitud, podrás seguirla aquí.</p></div>}
+      <ul class="lista">@for(t of tickets;track t.id){<li><button type="button" class="ticket" (click)="abrir(t.id)" [attr.aria-label]="'Abrir '+t.codigo+': '+t.titulo"><div class="ticket-meta"><span class="codigo">{{t.codigo}}</span><span class="estado" [attr.data-estado]="t.estado">{{estado(t.estado)}}</span></div><h3>{{t.titulo}}</h3><div class="fechas"><span>Creado {{t.fechaCreacion | date:'dd/MM/yyyy HH:mm'}}</span><span>Actualizado {{t.fechaActualizacion | date:'dd/MM/yyyy HH:mm'}}</span></div></button></li>}</ul>
+      @if(tickets.length || pagina>0){<div class="paginacion"><button class="tk-btn tk-btn-sec" (click)="cambiarPagina(-1)" [disabled]="pagina===0 || cargando">Anterior</button><span>Página {{pagina+1}}</span><button class="tk-btn tk-btn-sec" (click)="cambiarPagina(1)" [disabled]="!hayMas || cargando">Siguiente</button></div>}
+    </section>
+  </div>
+  @if(cargandoDetalle || detalle || errorDetalle){<section class="tk-card detalle" aria-labelledby="detalle-titulo" [attr.aria-busy]="cargandoDetalle"><h2 id="detalle-titulo">Detalle de la solicitud</h2>@if(cargandoDetalle){<p role="status">Cargando detalle…</p>}@if(errorDetalle){<p class="aviso error" role="alert">{{errorDetalle}}</p>}@if(detalle){<div class="ticket-meta"><span class="codigo">{{detalle.codigo}}</span><span class="estado" [attr.data-estado]="detalle.estado">{{estado(detalle.estado)}}</span></div><h3>{{detalle.titulo}}</h3><p class="descripcion">{{detalle.descripcion}}</p>@if(detalle.datosSolicitante;as datos){<div class="datos-declarados"><h4>Datos del solicitante registrados en este ticket</h4><dl><div><dt>Nombre completo</dt><dd>{{datos.nombreCompleto}}</dd></div><div><dt>Sucursal</dt><dd>{{datos.sucursalNombre}}</dd></div><div><dt>Área o departamento</dt><dd>{{datos.departamentoNombre}}</dd></div><div><dt>Contacto</dt><dd>{{datos.contacto}}</dd></div>@if(datos.equipo){<div><dt>IP o AnyDesk</dt><dd>{{datos.equipo}}</dd></div>}@if(datos.codigoUsuario){<div><dt>Código de usuario</dt><dd>{{datos.codigoUsuario}}</dd></div>}</dl></div>}<div class="galeria">@for(i of imagenes;track i.id){<a [href]="i.url" target="_blank" rel="noopener" [attr.aria-label]="'Ver fotografía '+i.nombre"><img [src]="i.url" [alt]="i.nombre"/></a>}</div>}</section>}
+  <footer>DimaBug · Soporte TI <span>Tus solicitudes, en un solo lugar.</span></footer>
+</main>

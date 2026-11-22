@@ -33,11 +33,15 @@
           <div><dt>Solicitante</dt><dd>{{ ticket.solicitante?.nombre || '—' }}</dd></div>
           <div><dt>Asignado a</dt><dd>{{ ticket.asignado?.nombre || 'Sin asignar' }}</dd></div>
         } @else {
-          <div><dt>Técnico a cargo</dt><dd>{{ ticket.asignado?.nombre || 'Aún sin técnico' }}</dd></div>
+          <!-- Al usuario no le mostramos quién es el técnico, solo si ya lo tomaron. -->
+          <div><dt>Atención</dt><dd>{{ ticket.asignado ? 'Tomado por un técnico' : 'En espera de un técnico' }}</dd></div>
           <div><dt>Equipo o sistema</dt><dd>{{ ubicacion || '—' }}</dd></div>
         }
         <div><dt>Creado</dt><dd [title]="larga(ticket.fechaCreacion)">{{ relativa(ticket.fechaCreacion) }}</dd></div>
         <div><dt>Última actualización</dt><dd [title]="larga(ticket.fechaActualizacion)">{{ relativa(ticket.fechaActualizacion) }}</dd></div>
+        @if (espera; as e) {
+          <div class="dt-tiempo" [class.alerta]="e.alerta"><dt>Tiempo en este paso</dt><dd>{{ e.texto }}</dd></div>
+        }
       </dl>
 
       <div class="dt-etiquetas">
@@ -96,6 +100,33 @@
       </div>
     </header>
 
+    <!-- Camino cerrado: recibido → atender → resolver → confirmar. -->
+    <div class="tk-card dt-seguimiento">
+      <ol class="dt-etapas" aria-label="Camino del ticket">
+        @for (etapa of etapas; track etapa.titulo; let i = $index) {
+          <li [class]="'dt-etapa ' + etapa.estado" [class.cancelado]="ticket.estado === 'CANCELADO'">
+            <span class="dt-etapa-punto" aria-hidden="true">
+              @if (etapa.estado === 'hecha') {
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5L20 7" /></svg>
+              } @else {
+                {{ i + 1 }}
+              }
+            </span>
+            <strong>{{ etapa.titulo }}</strong>
+            <small>{{ etapa.detalle }}</small>
+          </li>
+        }
+      </ol>
+      @if (!esStaff) {
+        @if (queSigue; as q) {
+          <div [class]="'dt-que-sigue tono-' + q.tono">
+            <strong>{{ q.titulo }}</strong>
+            <p>{{ q.texto }}</p>
+          </div>
+        }
+      }
+    </div>
+
     <!-- Siguiente paso para soporte -->
     @if (siguientePaso; as paso) {
       <div [class]="'tk-card dt-siguiente tono-' + paso.tono">
@@ -122,39 +153,15 @@
             <button type="button" class="tk-btn tk-btn-primario" (click)="tomar()" [disabled]="procesando">Asignármelo</button>
           }
           @if (ticket.estado === 'RESUELTO' && esMio && !esSolicitante) {
-            <button type="button" class="tk-btn tk-btn-sec" (click)="abrirDialogo('cerrar')" [disabled]="procesando">Cerrar ticket</button>
+            @if (puedeCrearConocimiento) {
+              <button type="button" class="tk-btn tk-btn-primario" (click)="abrirDialogo('conocimiento')" [disabled]="procesando">Guardar en conocimiento</button>
+            }
+            <button type="button" class="tk-btn tk-btn-sec" (click)="abrirDialogo('cerrar')" [disabled]="procesando">Cerrar sin esperar</button>
           }
           @if (ticket.estado === 'EN_ESPERA' && esMio) {
             <button type="button" class="tk-btn tk-btn-primario" (click)="retomar()" [disabled]="procesando">Retomar ticket</button>
           }
         </div>
-      </div>
-    }
-
-    <!-- Seguimiento en palabras simples para quien pidió ayuda -->
-    @if (!esStaff) {
-      <div class="tk-card dt-seguimiento">
-        <ol class="dt-etapas" aria-label="Avance del ticket">
-          @for (etapa of etapas; track etapa.titulo; let i = $index) {
-            <li [class]="'dt-etapa ' + etapa.estado" [class.cancelado]="ticket.estado === 'CANCELADO'">
-              <span class="dt-etapa-punto" aria-hidden="true">
-                @if (etapa.estado === 'hecha') {
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5L20 7" /></svg>
-                } @else {
-                  {{ i + 1 }}
-                }
-              </span>
-              <strong>{{ etapa.titulo }}</strong>
-              <small>{{ etapa.detalle }}</small>
-            </li>
-          }
-        </ol>
-        @if (queSigue; as q) {
-          <div [class]="'dt-que-sigue tono-' + q.tono">
-            <strong>{{ q.titulo }}</strong>
-            <p>{{ q.texto }}</p>
-          </div>
-        }
       </div>
     }
 
@@ -164,7 +171,7 @@
         <div class="dt-confirmar-icono" aria-hidden="true">✓</div>
         <div>
           <strong>Soporte marcó este ticket como resuelto</strong>
-          <p>Revisa la solución. ¿Se arregló el problema?</p>
+          <p>{{ espera && espera.texto ? espera.texto + '. ' : '' }}Revisa lo que hicieron. ¿Se arregló el problema?</p>
         </div>
         <div class="dt-confirmar-botones">
           <button type="button" class="tk-btn tk-btn-exito" (click)="abrirDialogo('cerrar')">Sí, quedó solucionado</button>
@@ -224,10 +231,10 @@
             <ol class="dt-comentarios">
               @for (c of ticket.comentarios; track c.id) {
                 <li [class.interno]="c.interno" [class.mio]="c.autor?.id === miId">
-                  <span class="dt-avatar" aria-hidden="true">{{ iniciales(c.autor?.nombre || '') }}</span>
+                  <span class="dt-avatar" aria-hidden="true">{{ inicialesPublicas(c.autor?.id, c.autor?.nombre, c.texto) }}</span>
                   <div class="dt-burbuja">
                     <div class="dt-burbuja-cabeza">
-                      <strong>{{ c.autor?.nombre || 'Usuario' }}</strong>
+                      <strong>{{ nombrePublico(c.autor?.id, c.autor?.nombre, c.texto) }}</strong>
                       @if (c.interno) {
                         <span class="dt-interno">Interno</span>
                       }
@@ -338,13 +345,13 @@
                 <div>
                   <p>
                     @if (cambioPrioridad(h); as cp) {
-                      <strong>{{ h.usuario?.nombre || 'Alguien' }}</strong> cambió la prioridad de {{ cp.de }} a
+                      <strong>{{ nombrePublico(h.usuario?.id, h.usuario?.nombre) }}</strong> cambió la prioridad de {{ cp.de }} a
                       <b>{{ cp.a }}</b>
                     } @else if (h.estadoAnterior) {
-                      <strong>{{ h.usuario?.nombre || 'Alguien' }}</strong> cambió a
+                      <strong>{{ nombrePublico(h.usuario?.id, h.usuario?.nombre) }}</strong> cambió a
                       <b>{{ estadoInfo[h.estadoNuevo].label }}</b>
                     } @else {
-                      <strong>{{ h.usuario?.nombre || 'Alguien' }}</strong> creó el ticket
+                      <strong>{{ nombrePublico(h.usuario?.id, h.usuario?.nombre) }}</strong> creó el ticket
                     }
                   </p>
                   @if (cambioPrioridad(h); as cp) {

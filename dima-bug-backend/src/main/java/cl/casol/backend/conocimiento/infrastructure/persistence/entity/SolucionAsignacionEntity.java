@@ -4,6 +4,10 @@ import cl.casol.backend.identidad.infrastructure.persistence.entity.Departamento
 import cl.casol.backend.identidad.infrastructure.persistence.entity.ResponsableEntity;
 import jakarta.persistence.*;
 
+/**
+ * Entidad JPA de solución asignación. Representa una fila de la tabla co_solucion_asignacion.
+ * Se usa solo en la capa de persistencia; el dominio trabaja con su propio modelo.
+ */
 @Entity
 @Table(name = "co_solucion_asignacion")
 public class SolucionAsignacionEntity {

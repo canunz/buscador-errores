@@ -9,6 +9,9 @@ public record LoginResponse(
         Integer usuarioId,
         String nombre,
         String email,
-        String rol
+        String rol, boolean accesoBasico
 ) {
+    public LoginResponse(String token,Integer usuarioId,String nombre,String email,String rol) {
+        this(token,usuarioId,nombre,email,rol,false);
+    }
 }

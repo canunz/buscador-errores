@@ -2,6 +2,9 @@ package cl.casol.backend.ejecucion.domain;
 
 import java.time.LocalDateTime;
 
+/**
+ * Modelo de dominio de ejecución paso. Es inmutable: cada cambio crea un objeto nuevo.
+ */
 public record EjecucionPaso(Integer id, Integer ejecucionId, Integer pasoId,
         boolean cumplido, String observacion, LocalDateTime fecha,
         ContratoPaso contrato, EstadoEjecucionPaso estado, long version) {
@@ -18,6 +21,7 @@ public record EjecucionPaso(Integer id, Integer ejecucionId, Integer pasoId,
         this(id, ejecucionId, pasoId, cumplido, observacion, fecha, null, null, 0);
     }
 
+    // Actualiza el nuevo cumplido.
     public EjecucionPaso actualizar(boolean nuevoCumplido, String nota, LocalDateTime momento) {
         if (contrato != null && !contrato.modo().esManual() && contrato.modo()!=cl.casol.backend.procedimiento.domain.ModoEjecucionPaso.INFORMATIVO)
             throw new cl.casol.backend.ejecucion.domain.exception.ConflictoEjecucionException("El paso no admite marcado manual");

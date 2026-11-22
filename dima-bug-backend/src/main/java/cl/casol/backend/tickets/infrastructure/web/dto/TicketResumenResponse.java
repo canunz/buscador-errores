@@ -8,10 +8,15 @@ import cl.casol.backend.tickets.domain.Ticket;
 import java.time.LocalDateTime;
 import java.util.List;
 
+/**
+ * Datos que se devuelven al frontend con ticket resumen.
+ * Solo lleva lo que la pantalla necesita mostrar.
+ */
 public record TicketResumenResponse(Long id, String codigo, String titulo, EstadoTicket estado,
         PrioridadTicket prioridad, ReferenciaResponse solicitante, ReferenciaResponse asignado,
         List<EtiquetaResponse> etiquetas, LocalDateTime fechaCreacion, LocalDateTime fechaActualizacion) {
 
+    // Crea el objeto a partir de los datos recibidos.
     public static TicketResumenResponse from(TicketVista vista) {
         Ticket t = vista.ticket();
         return new TicketResumenResponse(t.getId(), t.getCodigo(), t.getTitulo(), t.getEstado(), t.getPrioridad(),

@@ -9,6 +9,10 @@ import { FormsModule } from '@angular/forms';
 import { EjecucionPaso } from '../../core/models/ejecucion.model';
 import { configuracionInicial } from '../../core/models/configuracion-paso.model';
 import { ActividadEvidencia, AutomatizacionEjecucionService, SolicitudConFotos } from '../../core/services/automatizacion-ejecucion.service';
+/**
+ * Pantalla de validación externa.
+ * Carga los datos con su servicio y maneja lo que el usuario hace en la vista.
+ */
 @Component({
   selector: 'app-validacion-externa', standalone: true, imports: [FormsModule, A11yModule, DestinatariosEditorComponent],
   templateUrl: './validacion-externa.component.html', styleUrls: ['../tickets/tickets-comun.css', './validacion-externa.component.css'],

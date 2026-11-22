@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+/** Búsqueda de conocimientos (usa el índice de texto completo de MySQL). */
 @Service
 @Transactional(readOnly = true)
 public class BuscarConocimientoService {
@@ -16,10 +17,12 @@ public class BuscarConocimientoService {
         this.busqueda = busqueda;
     }
 
+    /** Búsqueda para el chatbot y el autoservicio: solo conocimientos publicados. */
     public List<ResultadoBusquedaConocimiento> buscarAutoservicio(String texto) {
         return busqueda.buscarAutoservicio(texto.trim());
     }
 
+    /** Búsqueda interna con filtros de hardware, sistema y módulo. */
     public List<ResultadoBusquedaConocimiento> buscar(String texto, Integer hardwareId, Integer sistemaId,
             Integer moduloId, Integer frecuenciaId) {
         String textoUtil = texto == null || texto.isBlank() ? null : texto.trim();

@@ -5,6 +5,10 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
+/**
+ * Datos que llegan en la petición para guardar etiqueta.
+ * Las anotaciones de validación revisan los campos antes de llegar al servicio.
+ */
 public record GuardarEtiquetaRequest(
         @NotBlank(message = "El nombre de la etiqueta es obligatorio")
         @Size(max = 40, message = "El nombre no puede superar 40 caracteres") String nombre,

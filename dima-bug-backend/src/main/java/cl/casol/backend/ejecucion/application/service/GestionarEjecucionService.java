@@ -15,6 +15,10 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.*;
 
+/**
+ * Casos de uso de la ejecución de procedimientos (checklist).
+ * Deja registro de quién ejecutó, cuándo y el resultado de cada paso.
+ */
 @Service
 @Transactional(readOnly = true, timeout = 8)
 public class GestionarEjecucionService {
@@ -37,10 +41,12 @@ public class GestionarEjecucionService {
         this.automatizacion=automatizacion;
     }
 
+    // Inicia el procedimiento indicado.
     @Transactional
     public Ejecucion iniciar(Integer procedimientoId, String email) {
         return iniciar(procedimientoId,null,null,email);
     }
+    // Inicia el procedimiento indicado.
     @Transactional
     public Ejecucion iniciar(Integer procedimientoId,Integer sucursalId,String claveInicio,String email) {
         return iniciar(procedimientoId,sucursalId,claveInicio,java.util.List.of(),email);
@@ -71,6 +77,7 @@ public class GestionarEjecucionService {
         return creada;
     }
 
+    // Busca por id.
     public Ejecucion buscar(Integer id, String email) {
         Usuario usuario = usuario(email);
         Ejecucion ejecucion = obtener(id);
@@ -78,11 +85,13 @@ public class GestionarEjecucionService {
         return ejecucion;
     }
 
+    // Lista el email.
     public List<Ejecucion> listar(String email) {
         Usuario usuario = usuario(email);
         return esAdministrador(usuario) ? ejecuciones.buscarTodas() : ejecuciones.buscarPorUsuario(usuario.getId());
     }
 
+    // Lista pasos.
     public List<DetalleEjecucionPaso> listarPasos(Integer id, String email) {
         buscar(id, email);
         Map<Integer, Paso> definiciones = new HashMap<>();
@@ -94,12 +103,14 @@ public class GestionarEjecucionService {
         }).sorted(Comparator.comparing(DetalleEjecucionPaso::orden)).toList();
     }
 
+    // Actualiza paso.
     @Transactional
     public DetalleEjecucionPaso actualizarPaso(Integer ejecucionId, Integer ejecucionPasoId,
             Boolean cumplido, String observacion, String email) {
         return actualizarPaso(ejecucionId, ejecucionPasoId, cumplido, observacion, null, email);
     }
 
+    // Actualiza paso.
     @Transactional
     public DetalleEjecucionPaso actualizarPaso(Integer ejecucionId, Integer ejecucionPasoId,
             Boolean cumplido, String observacion, Long versionEsperada, String email) {
@@ -137,6 +148,7 @@ public class GestionarEjecucionService {
         return new DetalleEjecucionPaso(guardado, definicion.orden(), definicion.instruccion(), definicion.esCritico());
     }
 
+    /** Termina la ejecución cuando todos los pasos obligatorios están listos. */
     @Transactional
     public Ejecucion completar(Integer id, String email) {
         ejecuciones.bloquear(id);
@@ -162,6 +174,7 @@ public class GestionarEjecucionService {
         return new DetalleEjecucionPaso(guardado,detalle.orden(),detalle.instruccion(),detalle.esCritico());
     }
 
+    /** Cancela la ejecución indicando el motivo. */
     @Transactional
     public Ejecucion cancelar(Integer id, String observaciones, String email) {
         ejecuciones.bloquear(id);
@@ -171,21 +184,28 @@ public class GestionarEjecucionService {
                 observaciones == null ? actual.observaciones() : observaciones);
     }
 
+    // Cierra con los datos recibidos.
     private Ejecucion cerrar(Ejecucion e, EstadoEjecucion estado, String observaciones) {
         return ejecuciones.guardar(new Ejecucion(e.id(),e.procedimientoId(),e.usuario(),e.fechaInicio(),
                 LocalDateTime.now(),estado,observaciones));
     }
+    // Devuelve detalle.
     private DetalleEjecucionPaso detalle(EjecucionPaso paso) {
         ContratoPaso c = paso.contrato();
         return new DetalleEjecucionPaso(paso, c.orden(), c.instruccion(), c.esCritico());
     }
+    // Obtiene por id.
     private Ejecucion obtener(Integer id) { return ejecuciones.buscarPorId(id)
             .orElseThrow(() -> new EjecucionNoEncontradaException(id)); }
+    // Devuelve usuario.
     private Usuario usuario(String email) { return usuarios.buscarPorEmail(email)
             .orElseThrow(UsuarioNoEncontradoException::new); }
+    // Exige en curso.
     private void exigirEnCurso(Ejecucion e) { if(e.estado()!=EstadoEjecucion.EN_CURSO)
         throw new ReglaEjecucionException("La ejecucion debe estar EN_CURSO"); }
+    // Autoriza con los datos recibidos.
     private void autorizar(Ejecucion e, Usuario u) { if(!esAdministrador(u) && !u.getId().equals(e.usuario().getId()))
         throw new AccessDeniedException("No puede acceder a una ejecucion de otro usuario"); }
+    // Indica si es administrador.
     private boolean esAdministrador(Usuario u) { return "ADMINISTRADOR".equalsIgnoreCase(u.getRol().getNombre().trim()); }
 }

@@ -13,6 +13,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
+/**
+ * Servicio de gestionar pruebas conocimiento (módulo de conocimiento).
+ * Aquí van las reglas de negocio; para leer o guardar datos usa los puertos de salida.
+ */
 @Service
 @Transactional(readOnly = true)
 public class GestionarPruebasConocimientoService {
@@ -29,15 +33,18 @@ public class GestionarPruebasConocimientoService {
         this.indexador = indexador;
     }
 
+    // Lista catálogo.
     public List<Prueba> listarCatalogo() {
         return pruebas.buscarActivasOrdenadasPorDescripcion();
     }
 
+    // Lista por conocimiento.
     public List<ConocimientoPrueba> listarPorConocimiento(Integer conocimientoId) {
         verificarConocimiento(conocimientoId);
         return asociaciones.buscarPorConocimientoOrdenadas(conocimientoId);
     }
 
+    // Asocia el conocimiento indicado.
     @Transactional
     public ConocimientoPrueba asociar(Integer conocimientoId, Integer pruebaId, Integer orden) {
         verificarConocimiento(conocimientoId);
@@ -53,6 +60,7 @@ public class GestionarPruebasConocimientoService {
         return guardada;
     }
 
+    // Actualiza orden.
     @Transactional
     public ConocimientoPrueba actualizarOrden(Integer conocimientoId, Integer pruebaId, Integer orden) {
         verificarConocimiento(conocimientoId);
@@ -64,11 +72,13 @@ public class GestionarPruebasConocimientoService {
         return guardada;
     }
 
+    // Verifica conocimiento.
     private void verificarConocimiento(Integer conocimientoId) {
         conocimientos.buscarPorId(conocimientoId)
                 .orElseThrow(() -> new ConocimientoNoEncontradoException(conocimientoId));
     }
 
+    // Devuelve orden o valor inicial.
     private int ordenOValorInicial(Integer orden) {
         return orden == null ? 1 : orden;
     }

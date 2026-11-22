@@ -7,6 +7,10 @@ import cl.casol.backend.procedimiento.domain.EstadoProcedimiento;
 import cl.casol.backend.procedimiento.domain.exception.ProcedimientoNoEncontradoException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+/**
+ * Servicio de visibilidad contenido (módulo de uso común).
+ * Aquí van las reglas de negocio; para leer o guardar datos usa los puertos de salida.
+ */
 @Service
 @Transactional(readOnly=true)
 public class VisibilidadContenidoService {
@@ -15,6 +19,7 @@ public class VisibilidadContenidoService {
     public VisibilidadContenidoService(ConocimientoRepository conocimientos,ProcedimientoRepository procedimientos) {
         this.conocimientos=conocimientos; this.procedimientos=procedimientos;
     }
+    // Verifica el tipo.
     public void verificar(String tipo,Integer id,boolean staff,boolean administrador,boolean historico) {
         if ("conocimientos".equals(tipo)) {
             var c=conocimientos.buscarPorIdIncluidoEliminado(id).orElseThrow(() -> new ConocimientoNoEncontradoException(id));

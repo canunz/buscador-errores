@@ -10,23 +10,30 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Adaptador de base de datos para hardware.
+ * Implementa el puerto de salida usando JPA y convierte entre entidades y objetos del dominio.
+ */
 @Component
 public class HardwareRepositoryAdapter implements HardwareRepository {
     private final HardwareJpaRepository repository;
 
     public HardwareRepositoryAdapter(HardwareJpaRepository repository) { this.repository = repository; }
 
+    // Busca activos.
     @Override
     public List<Hardware> buscarActivos() {
         return repository.findAllByActivoTrueOrderByNombreAsc().stream().map(CatalogoMapper::toDomain).toList();
     }
 
+    // Busca activo por id.
     @Override public Optional<Hardware> buscarPorId(Integer id){return repository.findById(id).map(CatalogoMapper::toDomain);}
     @Override
     public Optional<Hardware> buscarActivoPorId(Integer id) {
         return repository.findByIdAndActivoTrue(id).map(CatalogoMapper::toDomain);
     }
 
+    // Busca sistemas activos por hardware.
     @Override
     public List<Sistema> buscarSistemasActivosPorHardware(Integer hardwareId) {
         return repository.findWithSistemasByIdAndActivoTrue(hardwareId).stream()

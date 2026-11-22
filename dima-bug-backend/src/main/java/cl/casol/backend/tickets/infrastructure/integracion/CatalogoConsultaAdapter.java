@@ -17,11 +17,13 @@ public class CatalogoConsultaAdapter implements CatalogoConsultaPort {
         this.catalogo = catalogo;
     }
 
+    // Valida clasificación.
     @Override
     public Optional<String> validarClasificacion(Integer hardwareId, Integer sistemaId, Integer moduloId) {
         return catalogo.validarClasificacion(hardwareId, sistemaId, moduloId);
     }
 
+    // Devuelve nombres.
     @Override
     public ClasificacionTicket nombres(Integer hardwareId, Integer sistemaId, Integer moduloId) {
         NombresClasificacion nombres = catalogo.nombres(hardwareId, sistemaId, moduloId);

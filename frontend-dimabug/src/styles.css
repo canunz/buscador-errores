@@ -15,11 +15,6 @@ body {
   color: #0f172a;
 }
 
-body.tema-oscuro {
-  background: #0b1220;
-  color: #e5e7eb;
-}
-
 button,
 input,
 select {
@@ -32,6 +27,23 @@ a.act,
 .franja a,
 .acts a {
   text-decoration: none;
+}
+
+.btn-desactivar,
+button.act.del {
+  border: 0;
+  border-radius: 999px;
+  padding: 7px 12px;
+  background: #dc2626;
+  color: #fff;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.btn-desactivar:hover:not(:disabled),
+button.act.del:hover:not(:disabled) {
+  background: #b91c1c;
+  color: #fff;
 }
 
 .dimabug-ayuda-panel {
@@ -58,15 +70,6 @@ a.act,
   font-size: 13.5px;
   font-weight: 500;
   line-height: 1.5;
-}
-
-body.tema-oscuro .dimabug-ayuda-panel {
-  background: #152238;
-  color: #e5e7eb;
-}
-
-body.tema-oscuro .dimabug-ayuda-panel strong {
-  color: #f8fafc;
 }
 
 @keyframes page-fade {

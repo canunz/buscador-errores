@@ -4,6 +4,10 @@ import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
 
+/**
+ * Entidad JPA de adjunto ticket. Representa una fila de la tabla ticket_adjunto.
+ * Se usa solo en la capa de persistencia; el dominio trabaja con su propio modelo.
+ */
 @Entity
 @Table(name = "ticket_adjunto")
 public class AdjuntoTicketEntity {

@@ -11,6 +11,7 @@ import { primerNombre } from '../../core/models/usuario.model';
 import { LoadingModalComponent } from '../../shared/ui/loading-modal.component';
 import { TendenciaLineaComponent } from './tendencia-linea.component';
 import { ResumenTicketsComponent } from '../tickets/resumen-tickets.component';
+import { TicketsPorUsuarioComponent } from '../tickets/tickets-por-usuario.component';
 
 interface Kpi {
   clave: 'unicos' | 'diario' | 'semanal' | 'frecuente';
@@ -27,10 +28,14 @@ const MESES = [
   'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre',
 ];
 
+/**
+ * Pantalla de inicio.
+ * Carga los datos con su servicio y maneja lo que el usuario hace en la vista.
+ */
 @Component({
   selector: 'app-inicio',
   standalone: true,
-  imports: [DatePipe, ReactiveFormsModule, TendenciaLineaComponent, LoadingModalComponent, ResumenTicketsComponent],
+  imports: [DatePipe, ReactiveFormsModule, TendenciaLineaComponent, LoadingModalComponent, ResumenTicketsComponent, TicketsPorUsuarioComponent],
   templateUrl: './inicio.component.html',
   styleUrl: './inicio.component.css',
 })

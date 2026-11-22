@@ -8,6 +8,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
+/**
+ * Controlador REST de causa. Atiende las rutas que empiezan con /api/conocimientos/{conocimientoId}/causas.
+ * Solo recibe la petición, valida los datos y llama al caso de uso que corresponde.
+ */
 @RestController
 @RequestMapping("/api/conocimientos/{conocimientoId}/causas")
 public class CausaController {
@@ -17,11 +21,13 @@ public class CausaController {
         this.service = service;
     }
 
+    // GET /api/conocimientos/{conocimientoId}/causas: listar.
     @GetMapping
     public List<CausaResponse> listar(@PathVariable Integer conocimientoId) {
         return service.listar(conocimientoId).stream().map(CausaResponse::from).toList();
     }
 
+    // POST /api/conocimientos/{conocimientoId}/causas: crear.
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public CausaResponse crear(@PathVariable Integer conocimientoId,
@@ -29,6 +35,7 @@ public class CausaController {
         return CausaResponse.from(service.crear(conocimientoId, request.descripcion(), request.orden()));
     }
 
+    // PUT /api/conocimientos/{conocimientoId}/causas/{causaId}: modificar.
     @PutMapping("/{causaId}")
     public CausaResponse modificar(@PathVariable Integer conocimientoId, @PathVariable Integer causaId,
             @Valid @RequestBody GuardarCausaRequest request) {

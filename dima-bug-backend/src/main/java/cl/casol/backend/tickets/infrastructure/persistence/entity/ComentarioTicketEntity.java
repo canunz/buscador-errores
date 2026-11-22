@@ -4,6 +4,10 @@ import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
 
+/**
+ * Entidad JPA de comentario ticket. Representa una fila de la tabla ticket_comentario.
+ * Se usa solo en la capa de persistencia; el dominio trabaja con su propio modelo.
+ */
 @Entity
 @Table(name = "ticket_comentario")
 public class ComentarioTicketEntity {

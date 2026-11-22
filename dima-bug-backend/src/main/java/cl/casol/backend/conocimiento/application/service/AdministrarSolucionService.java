@@ -6,6 +6,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
+/**
+ * Servicio de administrar solución (módulo de conocimiento).
+ * Aquí van las reglas de negocio; para leer o guardar datos usa los puertos de salida.
+ */
 @Service
 @Transactional(readOnly = true)
 public class AdministrarSolucionService {
@@ -16,10 +20,12 @@ public class AdministrarSolucionService {
             IndexarConocimientoService indexador) {
         this.conocimientos = conocimientos; this.soluciones = soluciones; this.indexador = indexador;
     }
+    // Lista el conocimiento indicado.
     public List<Solucion> listar(Integer conocimientoId) {
         padre(conocimientoId);
         return soluciones.buscarPorConocimientoOrdenadas(conocimientoId);
     }
+    // Cambia estado.
     @Transactional
     public Solucion cambiarEstado(Integer conocimientoId, Integer solucionId, boolean activo) {
         conocimientos.bloquear(conocimientoId);
@@ -32,6 +38,7 @@ public class AdministrarSolucionService {
             throw new UltimaSolucionActivaException();
         return guardar(s, activo, s.autoservicio());
     }
+    // Cambia autoservicio.
     @Transactional
     public Solucion cambiarAutoservicio(Integer conocimientoId, Integer solucionId, boolean autoservicio) {
         conocimientos.bloquear(conocimientoId);
@@ -46,9 +53,11 @@ public class AdministrarSolucionService {
         indexador.indexar(s.conocimientoId());
         return guardada;
     }
+    // Devuelve padre.
     private Conocimiento padre(Integer id) {
         return conocimientos.buscarPorId(id).orElseThrow(() -> new ConocimientoNoEncontradoException(id));
     }
+    // Devuelve perteneciente.
     private Solucion perteneciente(List<Solucion> lista, Integer id) {
         return lista.stream().filter(s -> s.id().equals(id)).findFirst()
                 .orElseThrow(() -> new SolucionNoEncontradaException(id));

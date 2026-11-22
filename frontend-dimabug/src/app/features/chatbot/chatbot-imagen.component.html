@@ -1,0 +1,45 @@
+<button class="secundario" type="button" [disabled]="buscando" (click)="abrir()" aria-haspopup="dialog">Adjuntar imagen</button>
+<dialog #modal aria-labelledby="ocr-modal-titulo" (cancel)="$event.preventDefault(); cerrar()" (close)="limpiar()">
+  <header class="modal-cabecera"><h2 id="ocr-modal-titulo">Buscar desde una imagen</h2><p>Selecciona una captura, revisa el mensaje y busca soluciones.</p></header>
+<section class="adjunto" aria-label="Reconocer texto de una imagen" [attr.aria-busy]="ocupado">
+  <input #archivo class="sr-only" tabindex="-1" type="file" accept="image/png,image/jpeg,image/webp" aria-label="Seleccionar imagen del mensaje de error" (change)="seleccionar($event)" />
+  <div class="acciones">
+    <button class="secundario" type="button" (click)="archivo.click()" autofocus>{{nombre ? 'Cambiar imagen' : 'Seleccionar imagen'}}</button>
+    @if(nombre){<button class="discreto" type="button" (click)="limpiar()">{{ocupado?'Cancelar reconocimiento':'Quitar imagen'}}</button>}
+  </div>
+  @if(nombre){<p class="nombre">{{nombre}}</p>}
+  @if(ocupado){
+    <p role="status">{{estado==='seleccionada'?'Preparando imagen…':'Reconociendo texto…'}}</p>
+    <progress max="100" [value]="progreso" aria-label="Progreso del reconocimiento"></progress>
+  }
+  @if(estado==='error'){<p class="error" role="alert">{{error}}</p>}
+  @if(estado==='sin_texto'){<p role="status">No se detectó texto. Prueba con una captura más nítida o escribe el mensaje de error.</p>}
+  @if(estado==='reconocido'){
+    <p class="sr-only" role="status">Texto reconocido. Revísalo antes de buscar.</p>
+    @if(candidatos.length){
+      <fieldset><legend>Posibles mensajes de error</legend>
+        @for(candidato of candidatos;track candidato.id){
+          <label class="candidato"><input type="radio" name="error-ocr" [checked]="seleccionado===candidato.id" (change)="elegir(candidato)" /> <span>{{candidato.texto}}</span></label>
+        }
+      </fieldset>
+      @if(hayMas){<p>Hay más fragmentos en el original. Puedes escribir otro mensaje para buscar.</p>}
+    }@else{<p role="status">No se identificó un mensaje de error. Copia un fragmento del original o escríbelo para buscar.</p>}
+    <details><summary>Ver texto OCR original</summary><pre>{{original}}</pre></details>
+    @for(aviso of avisos;track aviso){<p>{{aviso}}</p>}
+  }
+  @if(!ocupado){
+    <label for="texto-reconocido">Mensaje para buscar · revísalo y corrígelo</label>
+    <textarea id="texto-reconocido" rows="3" [formControl]="texto" aria-describedby="limite-texto-ocr"></textarea>
+    <p id="limite-texto-ocr" [class.error]="texto.value.length>300">{{texto.value.length}}/300 caracteres. @if(texto.value.length>300){Selecciona solo el mensaje de error para buscar.}</p>
+    <p>Comprueba los códigos: el reconocimiento puede confundir 0/O y 1/l.</p>
+    @if(confianza<60){<p>El reconocimiento puede contener errores. Comprueba especialmente números y letras.</p>}
+
+  }
+  @if(estado==='inicial'){<p class="ayuda">PNG, JPEG o WebP · hasta 5 MB. La imagen se procesa en tu dispositivo.</p>}
+</section>
+
+<footer class="modal-acciones">
+  <button type="button" class="discreto" (click)="cerrar()">Cancelar</button>
+  <button type="button" class="principal" (click)="confirmar()" [disabled]="buscando||ocupado||!texto.value.trim()||texto.value.length>300">Buscar soluciones</button>
+</footer>
+</dialog>

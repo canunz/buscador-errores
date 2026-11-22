@@ -61,6 +61,7 @@ export type SolucionCatalogoItem = {
   tipo: 'PASOS' | 'DERIVACION';
 };
 
+/** Llamadas al backend de la base de conocimiento (conocimientos, síntomas, causas, soluciones y materiales). */
 @Injectable({ providedIn: 'root' })
 export class ConocimientoService {
   private readonly http = inject(HttpClient);
@@ -218,6 +219,7 @@ export class ConocimientoService {
     this.seguirColaGuia();
   }
 
+  /** Crea un conocimiento. */
   crear(request: ConocimientoRequest): Observable<Conocimiento> {
     return this.http.post<unknown>(this.base, request).pipe(
       map((res) => this.normalize(res)),
@@ -228,6 +230,7 @@ export class ConocimientoService {
     );
   }
 
+  /** Edita un conocimiento. */
   modificar(id: number, request: ConocimientoRequest): Observable<Conocimiento> {
     return this.http.put<unknown>(`${this.base}/${id}`, request).pipe(
       map((res) => this.normalize(res)),
@@ -250,6 +253,7 @@ export class ConocimientoService {
     );
   }
 
+  /** Publica o pasa a borrador. */
   cambiarEstado(id: number, estado: Exclude<ConocimientoEstado, 'ELIMINADO'>): Observable<Conocimiento> {
     return this.http.patch<unknown>(`${this.base}/${id}/estado`, { estado }).pipe(
       map((res) => this.normalize(res)),
@@ -390,6 +394,7 @@ export class ConocimientoService {
     return this.cambiarAdministracionSolucion(conocimientoId, solucionId, 'estado', { activo });
   }
 
+  /** Marca o desmarca una solución para el autoservicio público. */
   cambiarAutoservicioSolucion(conocimientoId: number, solucionId: number, autoservicio: boolean): Observable<Solucion> {
     return this.cambiarAdministracionSolucion(conocimientoId, solucionId, 'autoservicio', { autoservicio });
   }
@@ -414,6 +419,7 @@ export class ConocimientoService {
     return primera.length > 150 ? `${primera.slice(0, 147)}…` : primera;
   }
 
+  /** Agrega una solución al conocimiento. */
   crearSolucion(conocimientoId: number, request: SolucionRequest): Observable<Solucion> {
     return this.http.post<unknown>(`${this.base}/${conocimientoId}/soluciones`, request).pipe(
       map((res) => this.normalizeSolucion(res)),
@@ -557,6 +563,7 @@ export class ConocimientoService {
       catchError((e: HttpErrorResponse) => throwError(() => new Error(mensajeApiError(e, 'No fue posible reutilizar el material.')))));
   }
 
+  /** Sube material de apoyo (video, imagen, PDF o enlace). */
   crearMaterial(conocimientoId: number, request: MaterialRequest): Observable<MaterialApoyo> {
     return this.http.post<unknown>(`${this.base}/${conocimientoId}/materiales`, request).pipe(
       map((res) => this.normalizeMaterial(res)),

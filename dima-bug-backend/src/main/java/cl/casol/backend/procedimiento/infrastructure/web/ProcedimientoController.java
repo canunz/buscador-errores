@@ -12,6 +12,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
+/** API de procedimientos: listar, ver, crear, editar y publicar guías paso a paso. */
 @RestController
 @RequestMapping("/api/procedimientos")
 public class ProcedimientoController {
@@ -21,7 +22,9 @@ public class ProcedimientoController {
     public ProcedimientoController(MantenerProcedimientoService service,cl.casol.backend.procedimiento.application.service.EditarProcedimientoAdminService editar,cl.casol.backend.procedimiento.application.service.AuditoriaProcedimientoService auditoria){this.service=service;this.editar=editar;this.auditoria=auditoria;}
     @PostMapping("/{id}/edicion") public ProcedimientoResponse preparar(@PathVariable Integer id,Authentication a){return ProcedimientoResponse.from(editar.preparar(id,a.getName()));}
     @GetMapping("/{id}/historial") public java.util.List<cl.casol.backend.procedimiento.application.service.AuditoriaProcedimientoService.Evento> historial(@PathVariable Integer id,Authentication a){return auditoria.listar(id,a.getName());}
+    // Lista los procedimientos visibles según el rol
     @GetMapping public List<ProcedimientoResponse> listar(Authentication a){return service.listarVisibles(a.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ADMINISTRADOR"))).stream().map(ProcedimientoResponse::from).toList();}
+    // Detalle de un procedimiento
     @GetMapping("/{id}") public ProcedimientoResponse buscar(@PathVariable Integer id){return ProcedimientoResponse.from(service.buscar(id));}
     @PostMapping @ResponseStatus(HttpStatus.CREATED)
     public ProcedimientoResponse crear(@Valid @RequestBody GuardarProcedimientoRequest r,Authentication a){return ProcedimientoResponse.from(r.hardwareProporcionado()?editar.guardar(null,r.nombre(),r.descripcion(),r.sistemaId(),r.moduloId(),r.informacionComplementaria(),r.estado(),a.getName(),r.hardwareId()):editar.guardar(null,r.nombre(),r.descripcion(),r.sistemaId(),r.moduloId(),r.informacionComplementaria(),r.estado(),a.getName()));}
@@ -31,6 +34,7 @@ public class ProcedimientoController {
         var p=r.hardwareProporcionado()?editar.guardar(id,r.nombre(),r.descripcion(),legado?d.sistemaId():r.sistemaId(),legado?d.moduloId():r.moduloId(),legado?d.informacionComplementaria():r.informacionComplementaria(),r.estado(),a.getName(),r.hardwareId()):editar.guardar(id,r.nombre(),r.descripcion(),legado?d.sistemaId():r.sistemaId(),legado?d.moduloId():r.moduloId(),legado?d.informacionComplementaria():r.informacionComplementaria(),r.estado(),a.getName());
         return ProcedimientoResponse.from(p);
     }
+    // Publica el procedimiento para que se pueda ejecutar
     @PatchMapping("/{id}/estado") public ProcedimientoResponse publicar(@PathVariable Integer id,@Valid @RequestBody CambiarEstadoProcedimientoRequest r,Authentication a){
         if(!a.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ADMINISTRADOR"))) throw new AccessDeniedException("Solo un administrador puede publicar procedimientos");
         return ProcedimientoResponse.from(r.estado()==EstadoProcedimiento.PUBLICADO?editar.publicar(id,a.getName()):editar.preparar(id,a.getName()));

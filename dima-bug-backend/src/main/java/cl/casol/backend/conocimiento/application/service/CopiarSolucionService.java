@@ -6,6 +6,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.Objects;
 
+/**
+ * Servicio de copiar solución (módulo de conocimiento).
+ * Aquí van las reglas de negocio; para leer o guardar datos usa los puertos de salida.
+ */
 @Service
 public class CopiarSolucionService {
     private final ConocimientoRepository conocimientos;
@@ -15,6 +19,7 @@ public class CopiarSolucionService {
             IndexarConocimientoService indexador) {
         this.conocimientos=conocimientos; this.soluciones=soluciones; this.indexador=indexador;
     }
+    // Copia el origen indicado.
     @Transactional
     public Solucion copiar(Integer origenId, Integer solucionId, Integer destinoId, boolean confirmarAutoservicio) {
         if (Objects.equals(origenId,destinoId)) throw new CopiaSolucionInvalidaException("Origen y destino deben ser diferentes");

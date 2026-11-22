@@ -3,6 +3,10 @@ package cl.casol.backend.ejecucion.infrastructure.persistence.entity;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
+/**
+ * Entidad JPA de ejecución paso. Representa una fila de la tabla se_ejecucion_paso.
+ * Se usa solo en la capa de persistencia; el dominio trabaja con su propio modelo.
+ */
 @Entity
 @Table(name="se_ejecucion_paso",uniqueConstraints=@UniqueConstraint(columnNames={"ejecucion_id","paso_id"}))
 public class EjecucionPasoEntity {

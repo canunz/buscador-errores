@@ -19,6 +19,7 @@ public class ConocimientoAdapter implements ConocimientoPort {
         this.conocimiento = conocimiento;
     }
 
+    // Sugiere el texto.
     @Override
     public List<ConocimientoSugerido> sugerir(String texto, int limite) {
         return conocimiento.buscarPublicados(texto, limite).stream()
@@ -26,12 +27,14 @@ public class ConocimientoAdapter implements ConocimientoPort {
                 .toList();
     }
 
+    // Busca el conocimiento indicado.
     @Override
     public Optional<ConocimientoReferencia> buscar(Integer conocimientoId) {
         return conocimiento.buscarVigente(conocimientoId)
                 .map(c -> new ConocimientoReferencia(c.id(), c.titulo(), c.estado()));
     }
 
+    // Crea borrador.
     @Override
     public Integer crearBorrador(BorradorConocimiento datos, String emailAutor) {
         return conocimiento.crearBorrador(datos.titulo(), datos.descripcion(), datos.hardwareId(), datos.sistemaId(),

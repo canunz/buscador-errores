@@ -7,5 +7,6 @@ public interface CatalogoConsultaPort {
     /** Devuelve el motivo si la combinación no es válida; vacío si está correcta. */
     Optional<String> validarClasificacion(Integer hardwareId, Integer sistemaId, Integer moduloId);
 
+    // Devuelve nombres.
     ClasificacionTicket nombres(Integer hardwareId, Integer sistemaId, Integer moduloId);
 }

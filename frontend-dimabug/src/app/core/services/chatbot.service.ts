@@ -5,6 +5,7 @@ import { apiUrl } from '../config/api';
 import { plazoConsulta } from '../http/plazo-consulta';
 import { ChatbotResponse } from '../models/chatbot.model';
 
+/** Llama a la API pública del asistente (no necesita sesión). */
 @Injectable({ providedIn: 'root' })
 export class ChatbotService {
   private readonly http = inject(HttpClient);

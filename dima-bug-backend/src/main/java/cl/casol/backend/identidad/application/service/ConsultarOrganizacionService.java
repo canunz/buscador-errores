@@ -10,6 +10,10 @@ import cl.casol.backend.identidad.domain.exception.DepartamentoNoEncontradoExcep
 import org.springframework.stereotype.Service;
 import java.util.List;
 
+/**
+ * Servicio de consultar organización (módulo de usuarios y acceso).
+ * Aquí van las reglas de negocio; para leer o guardar datos usa los puertos de salida.
+ */
 @Service
 public class ConsultarOrganizacionService {
     private final DepartamentoRepository departamentos;
@@ -23,16 +27,19 @@ public class ConsultarOrganizacionService {
         this.contactos = contactos;
     }
 
+    // Lista departamentos.
     public List<Departamento> listarDepartamentos() {
         return departamentos.buscarActivosOrdenadosPorNombre();
     }
 
+    // Lista responsables.
     public List<Responsable> listarResponsables(Integer departamentoId) {
         departamentos.buscarActivoPorId(departamentoId)
                 .orElseThrow(() -> new DepartamentoNoEncontradoException(departamentoId));
         return responsables.buscarActivosPorDepartamentoOrdenadosPorNombre(departamentoId);
     }
 
+    // Lista contactos.
     public List<DepartamentoContacto> listarContactos(Integer departamentoId) {
         departamentos.buscarActivoPorId(departamentoId)
                 .orElseThrow(() -> new DepartamentoNoEncontradoException(departamentoId));

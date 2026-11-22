@@ -2,6 +2,10 @@ package cl.casol.backend.conocimiento.infrastructure.persistence.entity;
 
 import jakarta.persistence.*;
 
+/**
+ * Entidad JPA de síntoma. Representa una fila de la tabla co_sintoma.
+ * Se usa solo en la capa de persistencia; el dominio trabaja con su propio modelo.
+ */
 @Entity
 @Table(name = "co_sintoma")
 public class SintomaEntity {

@@ -3,6 +3,10 @@ package cl.casol.backend.conocimiento.infrastructure.persistence.entity;
 import cl.casol.backend.conocimiento.domain.TipoSolucion;
 import jakarta.persistence.*;
 
+/**
+ * Entidad JPA de solución. Representa una fila de la tabla co_solucion.
+ * Se usa solo en la capa de persistencia; el dominio trabaja con su propio modelo.
+ */
 @Entity
 @Table(name = "co_solucion")
 public class SolucionEntity {

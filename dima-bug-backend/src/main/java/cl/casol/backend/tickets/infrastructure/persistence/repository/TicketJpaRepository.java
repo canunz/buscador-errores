@@ -12,21 +12,29 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Repositorio Spring Data de ticket.
+ * Spring genera las consultas a partir del nombre de cada método.
+ */
 public interface TicketJpaRepository extends JpaRepository<TicketEntity, Long>, JpaSpecificationExecutor<TicketEntity> {
 
+    // Devuelve solicitante de.
     @Query("select t.solicitanteId from TicketEntity t where t.id = :id")
     Optional<Integer> solicitanteDe(@Param("id") Long id);
 
+    // Cuenta por estado.
     @Query("select t.estado, count(t) from TicketEntity t where (:sol is null or t.solicitanteId = :sol) group by t.estado")
     List<Object[]> contarPorEstado(@Param("sol") Integer solicitanteId);
 
     @Query("select count(t) from TicketEntity t where t.prioridad = :prioridad and t.estado in :estados"
             + " and (:sol is null or t.solicitanteId = :sol)")
+    // Cuenta prioridad en estados.
     long contarPrioridadEnEstados(@Param("prioridad") PrioridadTicket prioridad,
             @Param("estados") Collection<EstadoTicket> estados, @Param("sol") Integer solicitanteId);
 
     @Query("select count(t) from TicketEntity t where t.asignadoId is null and t.estado = :estado"
             + " and (:sol is null or t.solicitanteId = :sol)")
+    // Cuenta sin asignar.
     long contarSinAsignar(@Param("estado") EstadoTicket estado, @Param("sol") Integer solicitanteId);
 
     /** Mayor correlativo usado en el año (TK-2026-0001 → 1). */
@@ -35,5 +43,6 @@ public interface TicketJpaRepository extends JpaRepository<TicketEntity, Long>, 
               FROM ticket
              WHERE codigo LIKE CONCAT(:prefijo, '%')
             """, nativeQuery = true)
+    // Devuelve maximo correlativo.
     Number maximoCorrelativo(@Param("prefijo") String prefijo, @Param("inicio") int inicio);
 }

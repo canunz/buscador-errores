@@ -10,6 +10,7 @@ public final class FormatoArchivo {
     public static final String PREFIJO = "file:materiales/";
     private FormatoArchivo() { }
 
+    // Devuelve clave.
     public static String clave(String referencia) {
         if (referencia == null || !referencia.startsWith(PREFIJO))
             throw new ArchivoException(ArchivoException.Motivo.INVALIDO, "Referencia de archivo inválida");
@@ -19,6 +20,7 @@ public final class FormatoArchivo {
         return clave;
     }
 
+    // Devuelve mime.
     public static String mime(byte[] contenido) {
         if (empieza(contenido, new byte[]{37, 80, 68, 70, 45})) return "application/pdf";
         if (empieza(contenido, new byte[]{(byte)137, 80, 78, 71, 13, 10, 26, 10})) return "image/png";
@@ -29,9 +31,11 @@ public final class FormatoArchivo {
                     || texto(contenido, 12, 4).equals("VP8X"))) return "image/webp";
         throw new ArchivoException(ArchivoException.Motivo.INVALIDO, "El contenido del archivo no es un formato permitido");
     }
+    // Devuelve texto.
     private static String texto(byte[] b, int inicio, int longitud) {
         return new String(b, inicio, longitud, StandardCharsets.US_ASCII);
     }
+    // Indica si empieza.
     private static boolean empieza(byte[] b, byte[] firma) {
         if (b == null || b.length < firma.length) return false;
         for (int i = 0; i < firma.length; i++) if (b[i] != firma[i]) return false;

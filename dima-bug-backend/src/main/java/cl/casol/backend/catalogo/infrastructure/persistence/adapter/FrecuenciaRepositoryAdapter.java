@@ -8,6 +8,10 @@ import org.springframework.stereotype.Component;
 import java.util.Optional;
 import java.util.List;
 
+/**
+ * Adaptador de base de datos para frecuencia.
+ * Implementa el puerto de salida usando JPA y convierte entre entidades y objetos del dominio.
+ */
 @Component
 public class FrecuenciaRepositoryAdapter implements FrecuenciaRepository {
     private final FrecuenciaJpaRepository repository;
@@ -16,12 +20,14 @@ public class FrecuenciaRepositoryAdapter implements FrecuenciaRepository {
         this.repository = repository;
     }
 
+    // Busca activa por id.
     @Override
     public Optional<Frecuencia> buscarActivaPorId(Integer id) {
         return repository.findByIdAndActivaTrue(id)
                 .map(entity -> new Frecuencia(entity.getId(), entity.getNombre(), entity.isActiva()));
     }
 
+    // Busca activas ordenadas.
     @Override
     public List<Frecuencia> buscarActivasOrdenadas() {
         return repository.findByActivaTrueOrderByOrdenAsc().stream()

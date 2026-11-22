@@ -4,6 +4,9 @@ package cl.casol.backend.identidad.domain;
 // El dominio NO debería necesitar saber que existe: MySQL o PostgreSQL
 import java.time.LocalDateTime;
 
+/**
+ * Modelo de dominio de usuario (módulo de usuarios y acceso).
+ */
 public class Usuario {
 
     private Integer id;
@@ -14,6 +17,35 @@ public class Usuario {
     private boolean activo;
     private LocalDateTime fechaCreacion;
     private LocalDateTime fechaActualizacion;
+    private LocalDateTime ultimoIngreso;
+
+    private EstadoRegistro estadoRegistro = EstadoRegistro.ADMINISTRADO;
+
+    public Usuario(Integer id, Rol rol, String nombre, String email, String passwordHash,
+            boolean activo, LocalDateTime creada, LocalDateTime actualizada, EstadoRegistro estado) {
+        this(id, rol, nombre, email, passwordHash, activo, creada, actualizada);
+        this.estadoRegistro = java.util.Objects.requireNonNull(estado);
+    }
+    public EstadoRegistro getEstadoRegistro() { return estadoRegistro; }
+    public boolean isAccesoBasico() { return estadoRegistro != EstadoRegistro.ADMINISTRADO; }
+    // Indica si puede ingresar.
+    public boolean puedeIngresar() {
+        return activo && rol != null && rol.isActivo()
+            && (estadoRegistro == EstadoRegistro.ADMINISTRADO
+                || estadoRegistro == EstadoRegistro.AUTO_CONFIRMADO && "USUARIO".equals(rol.getNombre()));
+    }
+    // Indica si puede recibir código.
+    public boolean puedeRecibirCodigo() {
+        return puedeIngresar() || !activo && estadoRegistro == EstadoRegistro.AUTO_PENDIENTE
+            && rol != null && rol.isActivo() && "USUARIO".equals(rol.getNombre());
+    }
+    // Confirma registro.
+    public Usuario confirmarRegistro() {
+        if (estadoRegistro != EstadoRegistro.AUTO_PENDIENTE || !puedeRecibirCodigo())
+            throw new IllegalStateException("REGISTRO_NO_CONFIRMABLE");
+        return new Usuario(id, rol, nombre, email, passwordHash, true, fechaCreacion,
+            LocalDateTime.now(), EstadoRegistro.AUTO_CONFIRMADO).conUltimoIngreso(ultimoIngreso);
+    }
 
     public Usuario(
             Integer id,
@@ -65,6 +97,16 @@ public class Usuario {
 
     public LocalDateTime getFechaActualizacion() {
         return fechaActualizacion;
+    }
+
+    public LocalDateTime getUltimoIngreso() {
+        return ultimoIngreso;
+    }
+
+    // Devuelve con último ingreso.
+    public Usuario conUltimoIngreso(LocalDateTime cuando) {
+        this.ultimoIngreso = cuando;
+        return this;
     }
 }
 

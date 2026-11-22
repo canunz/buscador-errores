@@ -9,6 +9,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
+/**
+ * Controlador REST de material apoyo. Atiende las rutas que empiezan con /api/conocimientos/{conocimientoId}/materiales.
+ * Solo recibe la petición, valida los datos y llama al caso de uso que corresponde.
+ */
 @RestController
 @RequestMapping("/api/conocimientos/{conocimientoId}/materiales")
 public class MaterialApoyoController {
@@ -20,11 +24,13 @@ public class MaterialApoyoController {
         this.archivos = archivos;
     }
 
+    // GET /api/conocimientos/{conocimientoId}/materiales: listar.
     @GetMapping
     public List<MaterialApoyoResponse> listar(@PathVariable Integer conocimientoId) {
         return service.listar(conocimientoId).stream().map(MaterialApoyoResponse::from).toList();
     }
 
+    // POST /api/conocimientos/{conocimientoId}/materiales: crear.
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public MaterialApoyoResponse crear(@PathVariable Integer conocimientoId,
@@ -34,6 +40,7 @@ public class MaterialApoyoController {
                 service.crear(conocimientoId, request.nombre(), request.tipo(), request.url()));
     }
 
+    // PUT /api/conocimientos/{conocimientoId}/materiales/{materialId}: modificar.
     @PutMapping("/{materialId}")
     public MaterialApoyoResponse modificar(@PathVariable Integer conocimientoId, @PathVariable Integer materialId,
             @Valid @RequestBody GuardarMaterialApoyoRequest request) {
@@ -42,6 +49,7 @@ public class MaterialApoyoController {
                 service.modificar(conocimientoId, materialId, request.nombre(), request.tipo(), request.url()));
     }
 
+    // DELETE /api/conocimientos/{conocimientoId}/materiales/{materialId}: eliminar.
     @DeleteMapping("/{materialId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void eliminar(@PathVariable Integer conocimientoId, @PathVariable Integer materialId) {

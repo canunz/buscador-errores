@@ -9,6 +9,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
+/**
+ * Servicio de mantener causa (módulo de conocimiento).
+ * Aquí van las reglas de negocio; para leer o guardar datos usa los puertos de salida.
+ */
 @Service
 @Transactional(readOnly = true)
 public class MantenerCausaService {
@@ -23,11 +27,13 @@ public class MantenerCausaService {
         this.indexador = indexador;
     }
 
+    // Lista el conocimiento indicado.
     public List<Causa> listar(Integer conocimientoId) {
         verificarConocimiento(conocimientoId);
         return causas.buscarPorConocimientoOrdenadas(conocimientoId);
     }
 
+    // Crea el conocimiento indicado.
     @Transactional
     public Causa crear(Integer conocimientoId, String descripcion, Integer orden) {
         verificarConocimiento(conocimientoId);
@@ -36,6 +42,7 @@ public class MantenerCausaService {
         return guardada;
     }
 
+    // Modifica el conocimiento indicado.
     @Transactional
     public Causa modificar(Integer conocimientoId, Integer causaId, String descripcion, Integer orden) {
         verificarConocimiento(conocimientoId);
@@ -47,11 +54,13 @@ public class MantenerCausaService {
         return guardada;
     }
 
+    // Verifica conocimiento.
     private void verificarConocimiento(Integer conocimientoId) {
         conocimientos.buscarPorId(conocimientoId)
                 .orElseThrow(() -> new ConocimientoNoEncontradoException(conocimientoId));
     }
 
+    // Devuelve orden o valor inicial.
     private int ordenOValorInicial(Integer orden) {
         return orden == null ? 1 : orden;
     }

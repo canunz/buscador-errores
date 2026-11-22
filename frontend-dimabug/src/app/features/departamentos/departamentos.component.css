@@ -88,6 +88,20 @@
 .dep-page .btn-crear, .detalle-modal-card .btn-crear, .dep-form-modal button[type="submit"] {
   background: #163070; color: #fff; border-color: #163070;
 }
+.dep-page button.btn-desactivar,
+.detalle-modal-card button.btn-desactivar,
+.dep-confirm-modal button.btn-peligro {
+  background: #dc2626;
+  border-color: #dc2626;
+  color: #fff;
+}
+.dep-page button.btn-desactivar:hover:not(:disabled),
+.detalle-modal-card button.btn-desactivar:hover:not(:disabled),
+.dep-confirm-modal button.btn-peligro:hover:not(:disabled) {
+  background: #b91c1c;
+  border-color: #b91c1c;
+  color: #fff;
+}
 .dep-page button:disabled, .detalle-modal-card button:disabled, .dep-form-modal button:disabled,
 .dep-confirm-modal button:disabled { opacity: .55; cursor: not-allowed; }
 .dep-page button:focus-visible, .detalle-modal-card button:focus-visible, .dep-form-modal button:focus-visible,

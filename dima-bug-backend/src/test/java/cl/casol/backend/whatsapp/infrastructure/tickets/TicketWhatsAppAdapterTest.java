@@ -29,7 +29,7 @@ class TicketWhatsAppAdapterTest {
                 null, null, null, LocalDateTime.of(2026, 11, 18, 19, 0));
         return new TicketVista(t, List.of(), Map.of(), null, null, List.of(), List.of());
     };
-    final TicketWhatsAppAdapter adaptador = new TicketWhatsAppAdapter(caso, "bot.whatsapp@dimarsa.cl", reloj);
+    final TicketWhatsAppAdapter adaptador = new TicketWhatsAppAdapter(new cl.casol.backend.tickets.api.TicketsFachada(caso), "bot.whatsapp@dimarsa.cl", reloj);
 
     CrearTicketCanalPort.Solicitud solicitud(String id) {
         return new CrearTicketCanalPort.Solicitud(id, "qa-carolina", "Error POS-1043", "IMAGEN", List.of("Reiniciar el POS de venta"));

@@ -7,24 +7,32 @@ import cl.casol.backend.identidad.infrastructure.persistence.mapper.Organizacion
 import jakarta.persistence.*;
 import org.springframework.stereotype.Component;
 import java.util.*;
+/**
+ * Adaptador de base de datos para administración responsable.
+ * Implementa el puerto de salida usando JPA y convierte entre entidades y objetos del dominio.
+ */
 @Component
 public class AdministracionResponsableRepositoryAdapter implements AdministracionResponsableRepository {
     private final EntityManager em;
     public AdministracionResponsableRepositoryAdapter(EntityManager em) { this.em = em; }
+    // Lista el departamento indicado.
     public List<Responsable> listar(Integer departamentoId) {
         var q = em.createQuery("select r from ResponsableEntity r" +
                 (departamentoId == null ? "" : " where r.departamentoId=:departamento") + " order by r.nombre, r.id", ResponsableEntity.class);
         if (departamentoId != null) q.setParameter("departamento", departamentoId);
         return q.getResultList().stream().map(OrganizacionMapper::toDomain).toList();
     }
+    // Busca por id.
     public Optional<Responsable> buscar(Integer id) {
         return Optional.ofNullable(em.find(ResponsableEntity.class, id)).map(OrganizacionMapper::toDomain);
     }
+    // Bloquea por id.
     public Optional<Responsable> bloquear(Integer id) {
         var entity = em.find(ResponsableEntity.class, id, LockModeType.PESSIMISTIC_WRITE);
         if (entity != null) em.refresh(entity, LockModeType.PESSIMISTIC_WRITE);
         return Optional.ofNullable(entity).map(OrganizacionMapper::toDomain);
     }
+    // Guarda con los datos recibidos.
     public Responsable guardar(Responsable r) {
         ResponsableEntity entity;
         if (r.id() == null) {

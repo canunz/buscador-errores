@@ -105,7 +105,7 @@
             <th>Prioridad</th>
             <th>Estado</th>
             <th>Asignado</th>
-            <th>Actualizado</th>
+            <th>Tiempo</th>
           </tr>
         </thead>
         <tbody>
@@ -154,7 +154,9 @@
                     <span class="bs-sin">Sin asignar</span>
                   }
                 </td>
-                <td class="bs-fecha" [title]="larga(t.fechaActualizacion)">{{ relativa(t.fechaActualizacion) }}</td>
+                <td class="bs-fecha" [title]="larga(t.fechaActualizacion)" [class.bs-alerta]="tiempo(t)?.alerta">
+                  {{ tiempo(t)?.texto || relativa(t.fechaActualizacion) }}
+                </td>
               </tr>
             } @empty {
               <tr>

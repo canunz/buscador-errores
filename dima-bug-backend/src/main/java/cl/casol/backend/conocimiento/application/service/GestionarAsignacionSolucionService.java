@@ -13,6 +13,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
+/**
+ * Servicio de gestionar asignación solución (módulo de conocimiento).
+ * Aquí van las reglas de negocio; para leer o guardar datos usa los puertos de salida.
+ */
 @Service
 @Transactional(readOnly = true)
 public class GestionarAsignacionSolucionService {
@@ -34,11 +38,13 @@ public class GestionarAsignacionSolucionService {
         this.indexador = indexador;
     }
 
+    // Lista el conocimiento indicado.
     public List<SolucionAsignacion> listar(Integer conocimientoId, Integer solucionId) {
         validarPadres(conocimientoId, solucionId);
         return asignaciones.buscarPorSolucionOrdenadas(solucionId);
     }
 
+    // Crea el conocimiento indicado.
     @Transactional
     public SolucionAsignacion crear(Integer conocimientoId, Integer solucionId, Integer departamentoId,
             Integer responsableId, Boolean principal) {
@@ -50,6 +56,7 @@ public class GestionarAsignacionSolucionService {
         return guardada;
     }
 
+    // Modifica el conocimiento indicado.
     @Transactional
     public SolucionAsignacion modificar(Integer conocimientoId, Integer solucionId, Integer asignacionId,
             Integer departamentoId, Integer responsableId, Boolean principal) {
@@ -64,6 +71,7 @@ public class GestionarAsignacionSolucionService {
         return guardada;
     }
 
+    // Valida escritura.
     private void validarEscritura(Integer conocimientoId, Integer solucionId) {
         conocimientos.bloquear(conocimientoId);
         validarPadres(conocimientoId, solucionId);
@@ -73,6 +81,7 @@ public class GestionarAsignacionSolucionService {
         if (!s.activo()) throw new SolucionInactivaException();
     }
 
+    // Valida padres.
     private void validarPadres(Integer conocimientoId, Integer solucionId) {
         conocimientos.buscarPorId(conocimientoId)
                 .orElseThrow(() -> new ConocimientoNoEncontradoException(conocimientoId));
@@ -81,6 +90,7 @@ public class GestionarAsignacionSolucionService {
                 .orElseThrow(() -> new SolucionNoEncontradaException(solucionId));
     }
 
+    // Valida destinatarios.
     private Destinatarios validarDestinatarios(Integer departamentoId, Integer responsableId) {
         if (departamentoId == null && responsableId == null) {
             throw new AsignacionSolucionInvalidaException(
@@ -98,5 +108,6 @@ public class GestionarAsignacionSolucionService {
         return new Destinatarios(departamento, responsable);
     }
 
+    // Devuelve destinatarios.
     private record Destinatarios(Departamento departamento, Responsable responsable) { }
 }

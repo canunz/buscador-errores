@@ -1,49 +1,100 @@
 # DimaBug
 
-Aplicación de soporte técnico: conocimiento y soluciones, tickets, procedimientos guiados y autoservicio público. Proyecto APT / Capstone, Duoc UC.
+Plataforma web para la gestión del conocimiento, procedimientos y tickets del área de Soporte TI de Holding Dimarsa.
 
-**Estado consolidado: 2026-11-09.** [Documentación y matriz IMPLEMENTADO / VALIDADO / PENDIENTE](docs/README.md).
+Proyecto desarrollado para la asignatura Proceso de Portafolio de Título (APT), Escuela de Informática y Telecomunicaciones, Duoc UC.
 
-## Arquitectura
+---
 
-- Frontend Angular 19 standalone, TypeScript y RxJS; guards y rutas públicas separadas.
-- Backend Spring Boot 4.1.1 / Java 21, monolito modular con servicios, puertos y adaptadores, JPA/JDBC.
-- MySQL y almacenamiento privado de adjuntos. H2 se utiliza únicamente en pruebas aisladas.
-- JWT para funcionalidades privadas; OAuth 2.0 de Google autoriza una cuenta de correo y no reemplaza JWT.
+## Equipo
 
-## Funcionalidades
+| Integrante | Rol |
+|---|---|
+| Fanny Araujo | Jefa de proyecto |
+| Carolina Cheuquepil | Desarrollo backend |
+| Catalina Núñez | Desarrollo frontend |
 
-- Administración de conocimientos/soluciones, organización, catálogos y tickets.
-- Edición administrativa de procedimientos mediante revisiones; asociación opcional a hardware; ejecuciones con contrato de pasos, validación crítica e historial.
-- Solicitud y recepción manual de evidencias, revisión/aprobación y conservación de rondas.
-- Correo SIMULADO, SMTP y Gmail API. OAuth con gmail.send, PKCE/state y tokens cifrados; comunicaciones auditadas e idempotentes.
-- Materiales por paso y solución, descargas autorizadas y publicación individual de materiales públicos.
-- Portal `/autoservicio`, chatbot de búsqueda autorizado y enlaces individuales `/autoservicio/soluciones/:id` para futuro NFC/QR.
+---
 
-Los envíos reales están deshabilitados por defecto en la configuración versionada. No se publican ni reenvían automáticamente solicitudes simuladas. Los enlaces NFC aún no constituyen programación o escaneo físico de etiquetas.
+## Estructura del repositorio
 
-## Instalación y ejecución
+```
+buscador-errores/
+├── frontend-dimabug/      Aplicación web en Angular
+└── dima-bug-backend/      API REST en Spring Boot
+```
 
-Requisitos: Java 21, Node/npm compatibles con Angular 19, MySQL con esquema existente aprobado y directorios privados de adjuntos. Las migraciones son manuales; el repositorio no incluye un DDL base completo ni un runner que reconstruya una base desde cero.
+---
 
-1. Seguir [instalación local](docs/08_Despliegue/Instalacion_Local.md) y [variables de entorno](docs/08_Despliegue/Variables_Entorno.md). No guardar credenciales en el repositorio.
-2. Revisar [migraciones](docs/04_Base_Datos/Migraciones.md) con la cuenta administradora correspondiente. No aplicar todos los SQL en bloque.
-3. Backend, desde `dima-bug-backend`: `mvnw.cmd spring-boot:run`, con perfil y variables externas configurados.
-4. Frontend, desde `frontend-dimabug`: `npm ci` para instalar el lockfile y `npm start` para desarrollo.
+## Tecnologías
 
-Backend local: 9090. Frontend: 4200 con proxy `/api` al backend. [Gmail/OAuth](docs/implementacion/automatizacion/GUIA_GMAIL_API_OAUTH.md) · [Portal público](docs/implementacion/automatizacion/PORTAL_PUBLICO_AUTOSERVICIO.md) · [NFC/QR y base configurable](docs/implementacion/automatizacion/NFC_SOLUCIONES_PUBLICAS.md).
+| Capa | Tecnología |
+|---|---|
+| Frontend | Angular 19, TypeScript, Chart.js |
+| Backend | Java 21, Spring Boot 4, Spring Security, Spring Data JPA |
+| Autenticación | Código de acceso por correo y token JWT |
+| Base de datos | MySQL |
+| Correo | JavaMailSender (SMTP) |
+| Arquitectura | Hexagonal (puertos y adaptadores) |
 
-## Validación
+---
 
-- Backend: `mvnw.cmd package` (compilación, pruebas y empaquetado).
-- Frontend: `npm test -- --watch=false --browsers=ChromeHeadless` y `npm run build`.
+## Módulos principales
 
-[Resultados de consolidación](docs/07_Pruebas/Resultados_Pruebas.md). Las pruebas usan H2 y mocks/transportes de ensayo, sin enviar correos reales ni escribir en staging. No equivalen a UAT, pentest o certificación de producción.
+- **Base de conocimiento:** registro y búsqueda de errores con su solución.
+- **Procedimientos:** guías paso a paso con material adjunto.
+- **Tickets:** creación, seguimiento y cambio de prioridad. Si un ticket pasa a crítico, se avisa por correo a Soporte y Administrador.
+- **Usuarios:** administración de cuentas y roles, con correo de bienvenida.
+- **Inicio de sesión:** el usuario ingresa su correo y recibe un código de 6 dígitos.
 
-## Seguridad y límites
+---
 
-API pública con DTO mínimos, condiciones de publicación, protección de archivos y límites de tráfico por instancia. Administración protegida en backend, además de los guards. Gmail Client ID/Secret, tokens, claves AES/JWT, credenciales MySQL y configuraciones privadas se suministran externamente.
+## Acceso a la base de datos
 
-Pendientes: dominio y despliegue definitivo, etiquetas/escaneos NFC físicos, validación completa de producción y restauración, recuperación de contraseña backend, reportes operativos reales y sincronización de las funciones aún locales. El chatbot es búsqueda SQL, no una IA generativa externa. [Límites detallados](docs/README.md#estado-actual).
+La base de datos MySQL no está expuesta a internet. El equipo se conecta a ella mediante un túnel, por lo que el sistema no puede ejecutarse completo solo descargando el repositorio.
 
-`target/`, `dist/`, logs, uploads privados, credenciales y paquetes de entrega generados están excluidos de Git. La publicación remota requiere revisión y autorización independiente de `git push`.
+Para revisar el funcionamiento se adjuntan:
+
+- Capturas y video de la demostración del sistema.
+- Scripts de la base de datos en la carpeta `Base de datos` de las evidencias.
+
+---
+
+## Ejecución en el entorno del equipo
+
+### Requisitos
+
+- Java 21
+- Node.js 20 o superior
+- Angular CLI 19
+- Túnel hacia la base de datos activo
+
+### 1. Configurar el backend
+
+En `dima-bug-backend/src/main/resources`, copiar `application-example.properties` como `application.properties` y completar:
+
+- Conexión a la base de datos
+- `jwt.secret` (mínimo 32 caracteres)
+- Datos del correo SMTP
+- `dimabug.app.url`
+
+> El archivo `application.properties` no se sube al repositorio porque contiene credenciales.
+
+### 2. Levantar el backend
+
+```
+cd dima-bug-backend
+mvnw spring-boot:run
+```
+
+API disponible en `http://localhost:9090`
+
+### 3. Levantar el frontend
+
+```
+cd frontend-dimabug
+npm install
+npm start
+```
+
+Aplicación disponible en `http://localhost:4200`

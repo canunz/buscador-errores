@@ -5,6 +5,10 @@ import cl.casol.backend.conocimiento.infrastructure.persistence.entity.MaterialS
 import cl.casol.backend.conocimiento.infrastructure.persistence.repository.MaterialSolucionJpaRepository;
 import org.springframework.stereotype.Component;
 import java.util.*;
+/**
+ * Adaptador de base de datos para material solución.
+ * Implementa el puerto de salida usando JPA y convierte entre entidades y objetos del dominio.
+ */
 @Component
 public class MaterialSolucionRepositoryAdapter implements MaterialSolucionRepository {
  private final MaterialSolucionJpaRepository repo;

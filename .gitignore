@@ -55,3 +55,9 @@ tokens*.json
 *.backup
 *.sqlite
 *.mv.db
+
+# Entregas locales: nunca publicar artefactos, custodia ni respaldos generados
+/qa/artifacts/
+*.dpapi
+*.encrypted
+*.enc

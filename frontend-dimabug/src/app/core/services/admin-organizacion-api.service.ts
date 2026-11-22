@@ -5,6 +5,10 @@ import { apiUrl } from '../config/api';
 import { mensajeApiError } from '../http/api-error';
 import { OrganizacionService } from './organizacion.service';
 import { DepartamentoAdmin, ContactoDepartamentoAdmin, ResponsableAdmin } from '../models/organizacion-admin.model';
+/**
+ * Servicio de admin organización api.
+ * Hace las llamadas HTTP al backend y entrega los datos a los componentes.
+ */
 @Injectable({ providedIn: 'root' })
 export class AdminOrganizacionApiService {
   private readonly http = inject(HttpClient);

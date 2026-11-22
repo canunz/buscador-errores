@@ -4,5 +4,6 @@ package cl.casol.backend.procedimiento.domain;
 public record DatosEditorialesProcedimiento(Integer sistemaId,Integer moduloId,String informacionComplementaria,
         Integer origenId,int revision,boolean vigente) {
     public static DatosEditorialesProcedimiento inicial(){return new DatosEditorialesProcedimiento(null,null,null,null,1,true);}
+    // Devuelve vigencia.
     public DatosEditorialesProcedimiento vigencia(boolean valor){return new DatosEditorialesProcedimiento(sistemaId,moduloId,informacionComplementaria,origenId,revision,valor);}
 }

@@ -15,6 +15,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Adaptador de base de datos para búsqueda conocimiento jdbc.
+ * Implementa el puerto de salida usando JPA y convierte entre entidades y objetos del dominio.
+ */
 @Component
 public class BusquedaConocimientoJdbcAdapter
         implements DocumentoBusquedaConocimientoRepository, BusquedaConocimientoRepository {
@@ -30,6 +34,7 @@ public class BusquedaConocimientoJdbcAdapter
         this.entityManager = entityManager;
     }
 
+    // Obtiene el conocimiento indicado.
     @Override
     public Optional<DocumentoBusquedaConocimiento> obtener(Integer conocimientoId) {
         entityManager.flush();
@@ -75,6 +80,7 @@ public class BusquedaConocimientoJdbcAdapter
                         """, conocimientoId)));
     }
 
+    // Guarda el conocimiento indicado.
     @Override
     public void guardar(Integer conocimientoId, String contenido) {
         jdbc.update("""
@@ -84,11 +90,13 @@ public class BusquedaConocimientoJdbcAdapter
                 """, conocimientoId, contenido);
     }
 
+    // Elimina el conocimiento indicado.
     @Override
     public void eliminar(Integer conocimientoId) {
         jdbc.update("DELETE FROM co_conocimiento_busqueda WHERE conocimiento_id = ?", conocimientoId);
     }
 
+    // Busca el texto.
     @Override
     public List<ResultadoBusquedaConocimiento> buscar(String texto, Integer hardwareId, Integer sistemaId,
             Integer moduloId, Integer frecuenciaId) {
@@ -133,6 +141,7 @@ public class BusquedaConocimientoJdbcAdapter
                 rs.getObject("relevancia", Double.class)));
     }
 
+    // Agrega filtro.
     private void agregarFiltro(StringBuilder sql, MapSqlParameterSource params, String nombre,
             String columna, Integer valor) {
         if (valor != null) {
@@ -173,6 +182,7 @@ public class BusquedaConocimientoJdbcAdapter
                 + " ON so.conocimiento_id = c.conocimiento_id AND so.solucion_estado = 1 AND so.solucion_autoservicio = 1"
                 + " WHERE c.conocimiento_estado = 'PUBLICADO' AND (" + String.join(" OR ", condiciones) + ")"
                 + " ORDER BY prioridad DESC, c.conocimiento_id, so.solucion_orden, so.solucion_id LIMIT 250";
+        // Devuelve candidato.
         record Candidato(Integer id, String titulo, String solucion, String descripcion) { }
         List<Candidato> candidatos = namedJdbc.query(sql, params, (rs, row) -> new Candidato(
                 rs.getInt("conocimiento_id"), rs.getString("conocimiento_titulo"),
@@ -190,10 +200,12 @@ public class BusquedaConocimientoJdbcAdapter
                 .thenComparing(ResultadoBusquedaConocimiento::id)).limit(50).toList();
     }
 
+    // Escapa like.
     private static String escaparLike(String valor) {
         return valor.replace("!", "!!").replace("%", "!%").replace("_", "!_");
     }
 
+    // Normaliza sql.
     private static String normalizarSql(String columna) {
         String expresion = "LOWER(COALESCE(" + columna + ", ''))";
         String origen = "áéíóúüñ–—", destino = "aeiouun--";
@@ -202,15 +214,18 @@ public class BusquedaConocimientoJdbcAdapter
         return expresion;
     }
 
+    // Devuelve columna.
     private List<String> columna(String sql, Integer conocimientoId) {
         return jdbc.query(sql, (rs, row) -> rs.getString(1), conocimientoId);
     }
 
+    // Devuelve columnas.
     private List<String> columnas(String sql, int cantidad, Integer conocimientoId) {
         return jdbc.query(sql, (rs, row) -> valores(rs, cantidad), conocimientoId).stream()
                 .flatMap(List::stream).toList();
     }
 
+    // Devuelve valores.
     private List<String> valores(java.sql.ResultSet rs, int cantidad) throws java.sql.SQLException {
         List<String> valores = new ArrayList<>(cantidad);
         for (int i = 1; i <= cantidad; i++) valores.add(rs.getString(i));

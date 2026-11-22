@@ -28,12 +28,16 @@ import java.time.LocalDateTime;
 public class CambiarEstadoTicketService implements CambiarEstadoTicketUseCase {
     private final TicketRepositoryPort tickets;
     private final ContextoTicketService contexto;
+    private final PresentacionTecnicoTicket presentacion;
 
-    public CambiarEstadoTicketService(TicketRepositoryPort tickets, ContextoTicketService contexto) {
+    public CambiarEstadoTicketService(TicketRepositoryPort tickets, ContextoTicketService contexto,
+            PresentacionTecnicoTicket presentacion) {
         this.tickets = tickets;
         this.contexto = contexto;
+        this.presentacion = presentacion;
     }
 
+    // Cambia estado.
     @Override
     public TicketVista cambiarEstado(Long ticketId, EstadoTicket estadoNuevo, String motivo, String emailAutenticado) {
         if (estadoNuevo == null) throw new TicketInvalidoException("Debe indicar el estado nuevo");
@@ -42,6 +46,7 @@ public class CambiarEstadoTicketService implements CambiarEstadoTicketUseCase {
         LocalDateTime ahora = LocalDateTime.now();
         EstadoTicket actual = ticket.getEstado();
 
+        // Cada estado tiene dueño: quién puede pedirlo se valida antes de tocar el dominio.
         switch (estadoNuevo) {
             case EN_PROGRESO -> pasarAEnProgreso(ticket, actor, motivo, ahora);
             case EN_ESPERA -> {
@@ -63,14 +68,17 @@ public class CambiarEstadoTicketService implements CambiarEstadoTicketUseCase {
         return contexto.detalle(tickets.guardar(ticket), actor);
     }
 
+    /** EN_PROGRESO se llega por tres caminos distintos: tomar, retomar o reabrir. */
     private void pasarAEnProgreso(Ticket ticket, ActorTicket actor, String motivo, LocalDateTime ahora) {
         switch (ticket.getEstado()) {
             case ABIERTO -> {
                 contexto.exigirSoporte(actor, "tomar un ticket");
-                // Soporte inicia el ticket al asignárselo.
+                Integer anterior = ticket.getAsignadoId();
                 ticket.asignar(actor.id(), actor.id(), ahora);
+                presentacion.siCambioAsignado(ticket, anterior, actor.id(), ahora);
             }
             case EN_ESPERA -> {
+                // El usuario ya respondió: soporte retoma, sin nuevo saludo.
                 contexto.exigirSoporte(actor, "retomar un ticket");
                 ticket.iniciar(actor.id(), ahora);
             }

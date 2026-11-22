@@ -19,6 +19,11 @@ public class Ticket {
     public static final int MAX_TITULO = 150;
     private static final String PREFIJO_CODIGO = "TK-";
 
+    private DatosSolicitante datosSolicitante;
+    public DatosSolicitante getDatosSolicitante() { return datosSolicitante; }
+    // Registra datos solicitante.
+    public void registrarDatosSolicitante(DatosSolicitante datos) { this.datosSolicitante = datos; }
+
     private final Long id;
     private final String codigo;
     private final String titulo;
@@ -91,6 +96,7 @@ public class Ticket {
         return PREFIJO_CODIGO + anio + "-" + String.format("%04d", correlativo);
     }
 
+    // Devuelve prefijo código.
     public static String prefijoCodigo(int anio) {
         return PREFIJO_CODIGO + anio + "-";
     }
@@ -119,7 +125,7 @@ public class Ticket {
         this.fechaActualizacion = ahora;
     }
 
-    /** Asigna un técnico. Si el ticket estaba ABIERTO pasa a EN_PROGRESO. */
+    /** Asigna un técnico. Si estaba en la cola (ABIERTO) empieza a atenderse (EN_PROGRESO). */
     public void asignar(Integer tecnicoId, Integer actorId, LocalDateTime ahora) {
         if (tecnicoId == null) throw new TicketInvalidoException("Debe indicar el técnico asignado");
         if (estado != EstadoTicket.ABIERTO && estado != EstadoTicket.EN_PROGRESO && estado != EstadoTicket.EN_ESPERA) {
@@ -179,6 +185,7 @@ public class Ticket {
 
     // ----------------------------------------------------------------- otras acciones
 
+    /** Mensaje en la conversación. interno=true solo lo ve soporte; false lo ve también el usuario. */
     public ComentarioTicket comentar(Integer autorId, String texto, boolean interno, LocalDateTime ahora) {
         exigirAbierto("comentarios");
         String limpio = texto == null ? "" : texto.strip();
@@ -191,6 +198,7 @@ public class Ticket {
         return comentario;
     }
 
+    /** Reemplaza las etiquetas del ticket. */
     public void etiquetar(Set<Long> nuevasEtiquetas, LocalDateTime ahora) {
         exigirAbierto("cambios");
         etiquetaIds.clear();
@@ -198,6 +206,7 @@ public class Ticket {
         this.fechaActualizacion = ahora;
     }
 
+    /** Asocia el ticket a un conocimiento de la base. */
     public void vincularConocimiento(Integer conocimientoId, LocalDateTime ahora) {
         exigirAbierto("cambios");
         if (conocimientoId == null) throw new TicketInvalidoException("Debe indicar el conocimiento");
@@ -212,16 +221,19 @@ public class Ticket {
 
     // ----------------------------------------------------------------- consultas
 
+    /** Staff ve todos los tickets; el usuario solo los que él abrió. */
     public boolean puedeVer(ActorTicket actor) {
         return actor.esStaff() || Objects.equals(actor.id(), solicitanteId);
     }
 
+    /** El usuario no ve los comentarios internos de Soporte. */
     public List<ComentarioTicket> comentariosVisiblesPara(ActorTicket actor) {
         return comentarios.stream().filter(c -> c.visiblePara(actor)).toList();
     }
 
     // ----------------------------------------------------------------- internos
 
+    /** Revisa que el cambio de estado esté permitido; si no, lanza error 409. */
     private void exigirEstado(EstadoTicket destino, EstadoTicket... permitidos) {
         for (EstadoTicket permitido : permitidos) {
             if (estado == permitido) return;
@@ -229,12 +241,14 @@ public class Ticket {
         throw new TransicionEstadoInvalidaException(estado, destino);
     }
 
+    /** Impide cambios cuando el ticket está cerrado o cancelado. */
     private void exigirAbierto(String que) {
         if (estado.esFinal()) {
             throw new TransicionEstadoInvalidaException("El ticket está " + estado + " y no admite " + que);
         }
     }
 
+    /** Toda transición deja huella: quién, de qué estado a cuál, y por qué. */
     private void cambiarEstado(EstadoTicket nuevo, Integer actorId, String motivo, LocalDateTime ahora) {
         String motivoLimpio = motivo == null || motivo.isBlank() ? null : motivo.strip();
         historial.add(new HistorialEstadoTicket(null, estado, nuevo, actorId, motivoLimpio, ahora));

@@ -2,6 +2,10 @@ package cl.casol.backend.catalogo.infrastructure.persistence.entity;
 
 import jakarta.persistence.*;
 
+/**
+ * Entidad JPA de frecuencia. Representa una fila de la tabla cl_frecuencia.
+ * Se usa solo en la capa de persistencia; el dominio trabaja con su propio modelo.
+ */
 @Entity
 @Table(name = "cl_frecuencia")
 public class FrecuenciaEntity {

@@ -5,6 +5,10 @@ import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
 
+/**
+ * Entidad JPA de historial estado ticket. Representa una fila de la tabla ticket_historial_estado.
+ * Se usa solo en la capa de persistencia; el dominio trabaja con su propio modelo.
+ */
 @Entity
 @Table(name = "ticket_historial_estado")
 public class HistorialEstadoTicketEntity {

@@ -9,11 +9,17 @@ import cl.casol.backend.procedimiento.infrastructure.persistence.repository.Proc
 import org.springframework.stereotype.Component;
 import java.util.*;
 
+/**
+ * Adaptador de base de datos para procedimiento.
+ * Implementa el puerto de salida usando JPA y convierte entre entidades y objetos del dominio.
+ */
 @Component
 public class ProcedimientoRepositoryAdapter implements ProcedimientoRepository {
     @jakarta.persistence.PersistenceContext
     private jakarta.persistence.EntityManager entityManager;
+    // Indica si tiene ejecuciones.
     public boolean tieneEjecuciones(Integer id){return entityManager.createQuery("select count(e) from EjecucionEntity e where e.procedimientoId=:id",Long.class).setParameter("id",id).getSingleResult()>0;}
+    // Bloquea por id.
     public void bloquear(Integer id) {
         var p=entityManager.find(cl.casol.backend.procedimiento.infrastructure.persistence.entity.ProcedimientoEntity.class,id,jakarta.persistence.LockModeType.PESSIMISTIC_WRITE);if(p!=null)entityManager.refresh(p,jakarta.persistence.LockModeType.PESSIMISTIC_WRITE);
     }
@@ -22,9 +28,11 @@ public class ProcedimientoRepositoryAdapter implements ProcedimientoRepository {
     public ProcedimientoRepositoryAdapter(ProcedimientoJpaRepository repository, UsuarioJpaRepository usuarios) {
         this.repository=repository; this.usuarios=usuarios;
     }
+    // Busca todos.
     public List<Procedimiento> buscarTodos() {
         return repository.listarConRelaciones().stream().map(ProcedimientoMapper::toDomain).toList();
     }
+    // Busca por id.
     public Optional<Procedimiento> buscarPorId(Integer id) {
         return repository.findById(id).map(ProcedimientoMapper::toDomain);
     }

@@ -6,6 +6,10 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
+/**
+ * Datos que llegan en la petición para guardar material apoyo.
+ * Las anotaciones de validación revisan los campos antes de llegar al servicio.
+ */
 public record GuardarMaterialApoyoRequest(
         @NotBlank(message = "El nombre es obligatorio")
         @Size(max = 150, message = "El nombre no puede superar 150 caracteres") String nombre,

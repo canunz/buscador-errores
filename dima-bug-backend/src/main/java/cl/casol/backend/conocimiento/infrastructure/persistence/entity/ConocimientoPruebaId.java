@@ -5,6 +5,9 @@ import jakarta.persistence.Embeddable;
 import java.io.Serializable;
 import java.util.Objects;
 
+/**
+ * Conocimiento prueba id (módulo de conocimiento).
+ */
 @Embeddable
 public class ConocimientoPruebaId implements Serializable {
     @Column(name = "conocimiento_id", nullable = false)

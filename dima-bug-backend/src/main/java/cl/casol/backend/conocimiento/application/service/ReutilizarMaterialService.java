@@ -10,6 +10,10 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Objects;
 
+/**
+ * Servicio de reutilizar material (módulo de conocimiento).
+ * Aquí van las reglas de negocio; para leer o guardar datos usa los puertos de salida.
+ */
 @Service
 public class ReutilizarMaterialService {
     private final ConocimientoRepository conocimientos;
@@ -20,6 +24,7 @@ public class ReutilizarMaterialService {
             ArchivoMaterialService archivos,MantenerMaterialApoyoService mantener){
         this.conocimientos=conocimientos;this.materiales=materiales;this.archivos=archivos;this.mantener=mantener;
     }
+    // Reutiliza el origen indicado.
     @Transactional
     public MaterialApoyo reutilizar(Integer origenId,Integer materialId,Integer destinoId){
         if(Objects.equals(origenId,destinoId))throw new ClasificacionInvalidaException("Origen y destino deben ser diferentes");
@@ -41,7 +46,9 @@ public class ReutilizarMaterialService {
         if(actuales.stream().filter(m->!local(m)).anyMatch(m->enlace.equals(enlace(m.url()))))throw new MaterialDuplicadoException();
         return mantener.crear(destinoId,original.nombre(),original.tipo(),original.url());
     }
+    // Indica si local.
     private boolean local(MaterialApoyo m){return m.url()!=null&&m.url().startsWith(FormatoArchivo.PREFIJO);}
+    // Devuelve enlace.
     private URI enlace(String valor){
         try{
             URI u=URI.create(valor.strip()).normalize();
@@ -52,5 +59,6 @@ public class ReutilizarMaterialService {
             return u;
         }catch(IllegalArgumentException|NullPointerException ex){throw new ClasificacionInvalidaException("Solo se reutilizan enlaces HTTP(S) externos o archivos administrados; no referencias a descargas privadas");}
     }
+    // Devuelve huella.
     private byte[] huella(byte[] contenido){try{return MessageDigest.getInstance("SHA-256").digest(contenido);}catch(NoSuchAlgorithmException e){throw new IllegalStateException(e);}}
 }

@@ -5,17 +5,26 @@ import cl.casol.backend.ejecucion.infrastructure.persistence.mapper.EjecucionMap
 import cl.casol.backend.ejecucion.infrastructure.persistence.repository.EjecucionJpaRepository;
 import org.springframework.stereotype.Component;
 import java.util.*;
+/**
+ * Adaptador de base de datos para ejecución.
+ * Implementa el puerto de salida usando JPA y convierte entre entidades y objetos del dominio.
+ */
 @Component public class EjecucionRepositoryAdapter implements EjecucionRepository {
     private final EjecucionJpaRepository repository;
     @jakarta.persistence.PersistenceContext private jakarta.persistence.EntityManager entityManager;
     public EjecucionRepositoryAdapter(EjecucionJpaRepository repository){this.repository=repository;}
+    // Guarda con los datos recibidos.
     public Ejecucion guardar(Ejecucion e){return EjecucionMapper.toDomain(repository.save(EjecucionMapper.toEntity(e)));}
+    // Busca por id.
     public Optional<Ejecucion> buscarPorId(Integer id){return repository.findById(id).map(EjecucionMapper::toDomain);}
+    // Bloquea por id.
     public void bloquear(Integer id) {
         var entity = entityManager.find(cl.casol.backend.ejecucion.infrastructure.persistence.entity.EjecucionEntity.class,
                 id, jakarta.persistence.LockModeType.PESSIMISTIC_WRITE);
         if (entity != null) entityManager.refresh(entity, jakarta.persistence.LockModeType.PESSIMISTIC_WRITE);
     }
+    // Busca todas.
     public List<Ejecucion> buscarTodas(){return repository.findAllByOrderByFechaInicioDesc().stream().map(EjecucionMapper::toDomain).toList();}
+    // Busca por usuario.
     public List<Ejecucion> buscarPorUsuario(Integer id){return repository.findByUsuarioIdOrderByFechaInicioDesc(id).stream().map(EjecucionMapper::toDomain).toList();}
 }

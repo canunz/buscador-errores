@@ -8,6 +8,10 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Adaptador de base de datos para síntoma.
+ * Implementa el puerto de salida usando JPA y convierte entre entidades y objetos del dominio.
+ */
 @Component
 public class SintomaRepositoryAdapter implements SintomaRepository {
     private final SintomaJpaRepository repository;
@@ -16,17 +20,20 @@ public class SintomaRepositoryAdapter implements SintomaRepository {
         this.repository = repository;
     }
 
+    // Busca por conocimiento ordenados.
     @Override
     public List<Sintoma> buscarPorConocimientoOrdenados(Integer conocimientoId) {
         return repository.findByConocimientoIdOrderByOrdenAsc(conocimientoId).stream()
                 .map(SintomaMapper::toDomain).toList();
     }
 
+    // Busca por id.
     @Override
     public Optional<Sintoma> buscarPorId(Integer id) {
         return repository.findById(id).map(SintomaMapper::toDomain);
     }
 
+    // Guarda la síntoma.
     @Override
     public Sintoma guardar(Sintoma sintoma) {
         return SintomaMapper.toDomain(repository.save(SintomaMapper.toEntity(sintoma)));

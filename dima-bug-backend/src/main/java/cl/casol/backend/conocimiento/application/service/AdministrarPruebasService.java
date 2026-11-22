@@ -6,6 +6,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.context.ApplicationEventPublisher;
 import java.util.*;
+/**
+ * Servicio de administrar pruebas (módulo de conocimiento).
+ * Aquí van las reglas de negocio; para leer o guardar datos usa los puertos de salida.
+ */
 @Service @Transactional(readOnly=true)
 public class AdministrarPruebasService {
  private final PruebaAdministrativaRepository repo; private final ApplicationEventPublisher eventos;

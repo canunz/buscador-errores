@@ -6,6 +6,10 @@ import { plazoConsulta } from '../http/plazo-consulta';
 import { TipoMaterial } from '../models/conocimiento.model';
 import { crearFormDataMaterial,iniciarDescargaBlob } from '../material/material-archivo';
 import type { MaterialApoyoFormValue } from '../../shared/ui/material-apoyo-form.component';
+/**
+ * Servicio de autoservicio.
+ * Hace las llamadas HTTP al backend y entrega los datos a los componentes.
+ */
 export interface SolucionPublica{id:number;titulo:string;instrucciones:string;tipo:string;}
 export interface MaterialSolucion{id:number;nombre:string;tipo:TipoMaterial;url:string;publicado:boolean;}
 @Injectable({providedIn:'root'})

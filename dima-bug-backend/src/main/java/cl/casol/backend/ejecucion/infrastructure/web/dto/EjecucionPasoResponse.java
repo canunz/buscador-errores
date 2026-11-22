@@ -1,10 +1,15 @@
 package cl.casol.backend.ejecucion.infrastructure.web.dto;
 import cl.casol.backend.ejecucion.domain.*;
 import java.time.LocalDateTime;
+/**
+ * Datos que se devuelven al frontend con ejecución paso.
+ * Solo lleva lo que la pantalla necesita mostrar.
+ */
 public record EjecucionPasoResponse(Integer ejecucionPasoId,Integer pasoId,Integer orden,String instruccion,
         boolean esCritico,boolean cumplido,String observacion,LocalDateTime fecha,
         EstadoEjecucionPaso estado, long version, Integer contratoVersion,
         cl.casol.backend.procedimiento.domain.ModoEjecucionPaso modoEjecucion,cl.casol.backend.procedimiento.domain.ConfiguracionPaso configuracion) {
+    // Crea el objeto a partir de los datos recibidos.
     public static EjecucionPasoResponse from(DetalleEjecucionPaso d){EjecucionPaso p=d.ejecucionPaso();
         return new EjecucionPasoResponse(p.id(),p.pasoId(),d.orden(),d.instruccion(),d.esCritico(),
                 p.cumplido(),p.observacion(),p.fecha(),p.estado(),p.version(),

@@ -15,6 +15,10 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
+/**
+ * Servicio de adjuntar archivo ticket (módulo de tickets).
+ * Aquí van las reglas de negocio; para leer o guardar datos usa los puertos de salida.
+ */
 @Service
 @Transactional
 public class AdjuntarArchivoTicketService implements AdjuntarArchivoTicketUseCase {
@@ -29,6 +33,7 @@ public class AdjuntarArchivoTicketService implements AdjuntarArchivoTicketUseCas
         this.almacen = almacen;
     }
 
+    // Adjunta el ticket indicado.
     @Override
     public TicketVista adjuntar(Long ticketId, Long comentarioId, String nombre, byte[] contenido,
             String emailAutenticado) {
@@ -56,6 +61,7 @@ public class AdjuntarArchivoTicketService implements AdjuntarArchivoTicketUseCas
         return contexto.detalle(ticket, actor);
     }
 
+    // Descarga el ticket indicado.
     @Override
     @Transactional(readOnly = true)
     public ArchivoAdjunto descargar(Long ticketId, Long adjuntoId, String emailAutenticado) {
@@ -64,6 +70,8 @@ public class AdjuntarArchivoTicketService implements AdjuntarArchivoTicketUseCas
         AdjuntoTicket adjunto = adjuntos.buscar(ticketId, adjuntoId)
                 .filter(a -> !contexto.comentarioOculto(ticketId, a.comentarioId(), actor))
                 .orElseThrow(() -> new AdjuntoNoEncontradoException(adjuntoId));
+        if (actor.accesoBasico() && (adjunto.comentarioId()!=null || !Objects.equals(adjunto.autorId(),actor.id())
+                || !adjunto.mime().matches("image/(jpeg|png|webp)"))) throw new AdjuntoNoEncontradoException(adjuntoId);
         return new ArchivoAdjunto(adjunto.nombre(), adjunto.mime(), almacen.leer(adjunto.referencia()));
     }
 }

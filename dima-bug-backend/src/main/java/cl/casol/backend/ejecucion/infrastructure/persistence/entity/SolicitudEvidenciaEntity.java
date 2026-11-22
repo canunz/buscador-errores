@@ -4,6 +4,10 @@ import cl.casol.backend.ejecucion.domain.SolicitudEvidencia;
 import jakarta.persistence.*;
 import java.time.Instant;
 
+/**
+ * Entidad JPA de solicitud evidencia. Representa una fila de la tabla se_solicitud_evidencia.
+ * Se usa solo en la capa de persistencia; el dominio trabaja con su propio modelo.
+ */
 @Entity @Table(name="se_solicitud_evidencia",uniqueConstraints={
     @UniqueConstraint(name="uk_solicitud_ronda",columnNames={"ejecucion_paso_id","ronda"}),
     @UniqueConstraint(name="uk_solicitud_inicio",columnNames={"actor_id","clave_inicio"})})
@@ -45,6 +49,7 @@ public class SolicitudEvidenciaEntity {
         destinatariosJson=cl.casol.backend.procedimiento.infrastructure.persistence.mapper.ConfiguracionPasoJson.escribir(c.destinatarios());
         configuracionJson=cl.casol.backend.procedimiento.infrastructure.persistence.mapper.ConfiguracionPasoJson.escribir(s.politica().configuracion());
     }
+    // Convierte la entidad al modelo del dominio.
     public SolicitudEvidencia toDomain() {
         return new SolicitudEvidencia(id,ejecucionId,ejecucionPasoId,ronda,
             new SolicitudEvidencia.Contexto(sucursalId,sucursalCodigo,sucursalNombre,responsableNombre,responsableEmail,actorId,procedimientoId,claveInicio,destinatariosJson==null?java.util.List.of(new cl.casol.backend.shared.domain.DestinatarioPaso(responsableEmail,cl.casol.backend.shared.domain.DestinatarioPaso.Tipo.PRINCIPAL)):cl.casol.backend.procedimiento.infrastructure.persistence.mapper.ConfiguracionPasoJson.destinatarios(destinatariosJson)),

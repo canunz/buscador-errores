@@ -10,6 +10,10 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Adaptador de base de datos para solución asignación.
+ * Implementa el puerto de salida usando JPA y convierte entre entidades y objetos del dominio.
+ */
 @Component
 public class SolucionAsignacionRepositoryAdapter implements SolucionAsignacionRepository {
     private final SolucionAsignacionJpaRepository repository;
@@ -23,10 +27,12 @@ public class SolucionAsignacionRepositoryAdapter implements SolucionAsignacionRe
         this.repository = repository; this.soluciones = soluciones;
         this.responsables = responsables; this.departamentos = departamentos;
     }
+    // Busca por solución ordenadas.
     public List<SolucionAsignacion> buscarPorSolucionOrdenadas(Integer id) {
         return repository.findBySolucionIdOrderByPrincipalDescIdAsc(id).stream()
                 .map(SolucionMapper::toDomain).toList();
     }
+    // Busca por id.
     public Optional<SolucionAsignacion> buscarPorId(Integer id) {
         return repository.findById(id).map(SolucionMapper::toDomain);
     }

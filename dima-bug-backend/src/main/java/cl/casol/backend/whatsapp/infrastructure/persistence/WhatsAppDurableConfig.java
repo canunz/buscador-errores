@@ -5,7 +5,7 @@ import cl.casol.backend.whatsapp.application.port.out.*;
 import cl.casol.backend.whatsapp.application.service.ProcesarReservaWhatsAppService;
 import cl.casol.backend.whatsapp.infrastructure.busqueda.*;
 import cl.casol.backend.whatsapp.infrastructure.tickets.TicketWhatsAppAdapter;
-import cl.casol.backend.tickets.application.port.in.CrearTicketUseCase;
+import cl.casol.backend.tickets.api.TicketsFachada;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.*;
 import org.springframework.context.annotation.*;
@@ -22,7 +22,7 @@ public class WhatsAppDurableConfig {
             ConsultarChatbotService buscador,@Qualifier("ocrWebhookHttpLocal")ReconocerImagenPort ocr,
             @Value("${dimabug.whatsapp.autoatencion.habilitada:false}")boolean autoatencion,
             @Value("${dimabug.whatsapp.autoatencion.ticket-actor-email:}")String actor,
-            ObjectProvider<CrearTicketUseCase> tickets){
+            ObjectProvider<TicketsFachada> tickets){
         var busqueda=new BusquedaPublicaCanalAdapter(buscador);
         if(!autoatencion)return new ProcesarReservaWhatsAppService(almacen,busqueda,ocr);
         // Autoatención: Hola → ayuda; foto → OCR → solución → ¿se solucionó?; NO o sin solución → ticket DimaBug.

@@ -6,5 +6,6 @@ public interface BienvenidaUsuarioPort {
     /** Sin aviso (pruebas o cuando no hay correo configurado). */
     BienvenidaUsuarioPort NINGUNO = (email, nombre, rol) -> { };
 
+    // Envía el email.
     void enviar(String email, String nombre, String rol);
 }

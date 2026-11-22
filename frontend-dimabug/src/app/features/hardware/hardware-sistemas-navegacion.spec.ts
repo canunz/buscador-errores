@@ -46,12 +46,15 @@ describe('Navegación integrada Hardware → Sistemas → Módulos', () => {
       ]),
       { provide: AdminCatalogosApiService, useValue: api },
       { provide: ClasificacionService, useValue: clasificacion },
-      { provide: AuthService, useValue: { isAdmin: () => admin, isStaff: () => true, isAuthenticated: () => true } },
+      { provide: AuthService, useValue: { isAdmin: () => admin, isStaff: () => true, isAuthenticated: () => true, accesoBasico: () => false } },
     ] });
   });
   function link(h: RouterTestingHarness, text: string): HTMLAnchorElement {
-    const visible = h.routeNativeElement!.querySelector('.modal') ?? h.routeNativeElement!;
-    return Array.from(visible.querySelectorAll<HTMLAnchorElement>('a')).find(a => a.textContent!.includes(text))!;
+    // El modal de carga también usa .modal: buscar el formulario del catálogo por su título.
+    const visible = h.routeNativeElement!.querySelector('#catalogo-titulo')?.closest('.modal') ?? h.routeNativeElement!;
+    const enlace = Array.from(visible.querySelectorAll<HTMLAnchorElement>('a')).find(a => a.textContent!.includes(text));
+    expect(enlace).withContext('Enlace de navegación disponible: ' + text).toBeDefined();
+    return enlace!;
   }
   async function seguir(h: RouterTestingHarness, a: HTMLAnchorElement) {
     a.click(); await h.fixture.whenStable(); h.detectChanges();
@@ -74,7 +77,7 @@ describe('Navegación integrada Hardware → Sistemas → Módulos', () => {
     await seguir(h, link(h, 'Módulos de este Sistema'));
     const mods = h.routeDebugElement!.componentInstance as AdminCatalogoComponent;
     expect(mods.itemsVisibles.map(m => m.id)).toEqual([21]); expect(mods.hardwareOrigenId).toBe(10);
-    mods.abrir(); expect(mods.form.controls.sistemaId.value).toBe(4);
+    mods.abrir(); h.detectChanges(); expect(mods.form.controls.sistemaId.value).toBe(4);
     hardwares[0] = { ...hardwares[0], nombre: 'POS actualizado' };
     await seguir(h, link(h, 'Volver al Hardware'));
     const regreso = h.routeDebugElement!.componentInstance as HardwareComponent;

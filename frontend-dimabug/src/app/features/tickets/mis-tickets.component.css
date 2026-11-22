@@ -29,8 +29,6 @@
   font-weight: 800;
 }
 
-:host-context(.tema-oscuro) .mt-aviso { background: rgba(6, 95, 70, 0.22); border-color: #065f46; color: #a7f3d0; }
-
 .mt-panel { overflow: hidden; }
 
 .mt-barra {
@@ -83,30 +81,73 @@
 .mt-lista { display: flex; flex-direction: column; gap: 8px; margin: 0; padding: 14px 16px; list-style: none; }
 
 .mt-item {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 16px;
   width: 100%;
-  padding: 14px 16px;
-  border: 1px solid var(--tk-borde);
-  border-radius: 14px;
-  background: var(--tk-tarjeta);
+  padding: 16px 18px 16px 20px;
+  border: 1px solid #dce3f0;
+  border-radius: 16px;
+  background: linear-gradient(180deg, #fff 0%, #f8faff 100%);
   color: var(--tk-texto);
   font: inherit;
   text-align: left;
   cursor: pointer;
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.04);
   transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.12s ease;
 }
 
-.mt-item:hover { border-color: #c7d4fb; box-shadow: 0 10px 22px rgba(30, 79, 214, 0.08); transform: translateY(-1px); }
-.mt-destacado { border-left: 4px solid #16a34a; }
+.mt-item::before {
+  content: '';
+  position: absolute;
+  inset: 8px auto 8px 8px;
+  width: 4px;
+  border-radius: 999px;
+  background: #94a3b8;
+}
 
-.mt-principal { display: flex; flex-direction: column; gap: 6px; flex: 1; min-width: 0; }
-.mt-linea { display: flex; align-items: center; gap: 10px; }
-.mt-titulo { overflow: hidden; font-size: 15px; text-overflow: ellipsis; white-space: nowrap; }
+.mt-item[data-estado='ABIERTO']::before { background: #1e4fd6; }
+.mt-item[data-estado='EN_PROGRESO']::before { background: #7c3aed; }
+.mt-item[data-estado='EN_ESPERA']::before { background: #f59e0b; }
+.mt-item[data-estado='RESUELTO']::before { background: #16a34a; }
+.mt-item[data-estado='CERRADO']::before { background: #64748b; }
+.mt-item[data-estado='CANCELADO']::before { background: #dc2626; }
+
+.mt-item:hover { border-color: #c7d4fb; box-shadow: 0 12px 28px rgba(30, 79, 214, 0.12); transform: translateY(-2px); }
+.mt-destacado { border-color: #86efac; }
+
+.mt-principal { display: flex; flex-direction: column; gap: 8px; flex: 1; min-width: 0; }
+.mt-linea { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.mt-titulo { overflow: hidden; font-size: 16px; font-weight: 800; letter-spacing: -0.02em; text-overflow: ellipsis; white-space: nowrap; color: #0b1b4d; }
+
+.mt-atencion {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: #eef2f7;
+  color: #475569;
+  font-size: 12.5px;
+  font-weight: 700;
+}
+
+.mt-atencion.tomado {
+  background: #eaf0fe;
+  color: #1e4fd6;
+}
+
+.mt-espera {
+  color: #64748b;
+  font-size: 12.5px;
+  font-weight: 700;
+}
+
+.mt-espera.alerta { color: #b45309; }
 
 .mt-meta { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; flex-shrink: 0; }
-.mt-fecha, .mt-asignado { color: var(--tk-suave); font-size: 12.5px; }
+.mt-fecha { color: var(--tk-suave); font-size: 12.5px; font-weight: 600; }
 .mt-flecha { width: 18px; height: 18px; flex-shrink: 0; color: var(--tk-suave); }
 
 @media (max-width: 720px) {

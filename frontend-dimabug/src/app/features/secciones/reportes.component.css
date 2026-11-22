@@ -257,22 +257,3 @@
     height: 180px;
   }
 }
-
-:host-context(.tema-oscuro) .rep .card h2,
-:host-context(.tema-oscuro) .rep .kpis strong,
-:host-context(.tema-oscuro) .rep .facts b,
-:host-context(.tema-oscuro) .rep .rank strong,
-:host-context(.tema-oscuro) .rep .cats strong,
-:host-context(.tema-oscuro) .rep .donut-label strong {
-  color: #f8fafc;
-}
-
-:host-context(.tema-oscuro) .rep .kpis article,
-:host-context(.tema-oscuro) .rep .card {
-  background: #111827;
-  border-color: #1f2937;
-}
-
-:host-context(.tema-oscuro) .rep .par {
-  background: #1f2937;
-}

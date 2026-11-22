@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Comparator;
 
+/** Lógica del asistente DimaBug: busca soluciones de autoservicio para lo que escribió el usuario. */
 @Service
 @Transactional(readOnly = true)
 public class ConsultarChatbotService {
@@ -21,6 +22,7 @@ public class ConsultarChatbotService {
         this.soluciones = soluciones;
     }
 
+    /** Busca conocimientos parecidos, ordena sus soluciones por relevancia y devuelve hasta 5. */
     public List<SolucionChatbot> consultar(String consulta) {
         List<SolucionChatbot> resultado = new ArrayList<>(MAX_RESULTADOS);
         var normalizada = new ConsultaError(consulta);
@@ -38,5 +40,6 @@ public class ConsultarChatbotService {
         return List.copyOf(resultado);
     }
 
+    // Devuelve solución chatbot.
     public record SolucionChatbot(Integer id, String conocimiento, String titulo, String solucion) { }
 }

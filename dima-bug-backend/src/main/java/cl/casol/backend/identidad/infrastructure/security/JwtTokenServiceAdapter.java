@@ -32,6 +32,7 @@ public class JwtTokenServiceAdapter implements TokenServicePort {
             @Value("${jwt.secret}") String secret,
             @Value("${jwt.expiration}") long expiration
     ) {
+        // Sin una clave segura el backend no parte
         if (secret == null || secret.isBlank()) {
             throw new IllegalArgumentException("JWT_SECRET es obligatorio");
         }
@@ -47,6 +48,7 @@ public class JwtTokenServiceAdapter implements TokenServicePort {
         this.expiration = expiration;
     }
 
+    /** Crea el token: guarda el correo del usuario, la fecha y cuándo vence, y lo firma. */
     @Override
     public String generarToken(Usuario usuario) {
 
@@ -63,11 +65,13 @@ public class JwtTokenServiceAdapter implements TokenServicePort {
                 .compact();
     }
 
+    /** Saca el correo que va dentro del token. */
     @Override
     public String obtenerEmail(String token) {
         return obtenerClaims(token).getSubject();
     }
 
+    /** El token es válido si la firma calza, tiene correo y no ha vencido. */
     @Override
     public boolean esValido(String token) {
         try {
@@ -99,6 +103,7 @@ public class JwtTokenServiceAdapter implements TokenServicePort {
         }
     }
 
+    // Obtiene claims.
     private Claims obtenerClaims(String token) {
 
         return Jwts.parser()

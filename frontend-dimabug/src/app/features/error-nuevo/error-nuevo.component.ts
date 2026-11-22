@@ -7,10 +7,15 @@ import { ClasificacionService } from '../../core/services/clasificacion.service'
 import { CatalogoRef } from '../../core/models/conocimiento.model';
 import { ErrorItem } from '../../core/models/catalogo.model';
 import { AyudaFranjaComponent } from '../../shared/ui/ayuda-franja.component';
+import { LoadingModalComponent } from '../../shared/ui/loading-modal.component';
+/**
+ * Pantalla de error nuevo.
+ * Carga los datos con su servicio y maneja lo que el usuario hace en la vista.
+ */
 @Component({
   selector: 'app-error-nuevo',
   standalone: true,
-  imports: [ReactiveFormsModule, RouterLink, AyudaFranjaComponent],
+  imports: [ReactiveFormsModule, RouterLink, AyudaFranjaComponent, LoadingModalComponent],
   templateUrl: './error-nuevo.component.html',
   styleUrls: ['../../shared/ui/catalogo-page.css', './error-nuevo.component.css'],
 })

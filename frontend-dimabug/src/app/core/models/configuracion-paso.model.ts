@@ -1,3 +1,7 @@
+/**
+ * Tipos de datos de configuración paso que usa el frontend.
+ * Deben coincidir con lo que responde el backend.
+ */
 export type ModalidadPaso = 'INFORMATIVO' | 'MANUAL_GUIADO' | 'SOLICITAR_EVIDENCIA' | 'ENVIAR_CORREO' | 'AUTOMATICO' | 'MANUAL' | 'VALIDACION_EXTERNA';
 export interface DestinatarioPaso { correo: string; tipo: 'PRINCIPAL' | 'COPIA'; }
 export interface ConfiguracionPaso {

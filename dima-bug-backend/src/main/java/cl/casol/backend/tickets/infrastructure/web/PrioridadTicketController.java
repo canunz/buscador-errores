@@ -7,6 +7,10 @@ import jakarta.validation.Valid;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+/**
+ * Controlador REST de prioridad ticket. Atiende las rutas que empiezan con /api/tickets/{id}/prioridad.
+ * Solo recibe la petición, valida los datos y llama al caso de uso que corresponde.
+ */
 @RestController
 @RequestMapping("/api/tickets/{id}/prioridad")
 public class PrioridadTicketController {
@@ -16,6 +20,7 @@ public class PrioridadTicketController {
         this.cambiarPrioridad = cambiarPrioridad;
     }
 
+    // PATCH /api/tickets/{id}/prioridad: cambiar.
     @PatchMapping
     public TicketDetalleResponse cambiar(@PathVariable Long id, @Valid @RequestBody CambiarPrioridadRequest request,
             Authentication authentication) {

@@ -3,7 +3,12 @@ import { RouterLink } from '@angular/router';
 import { forkJoin } from 'rxjs';
 import { AdminCatalogosApiService, TIPOS_CATALOGO_ADMIN } from '../../core/services/admin-catalogos-api.service';
 import { AyudaFranjaComponent } from '../../shared/ui/ayuda-franja.component';
-@Component({ selector: 'app-admin', standalone: true, imports: [RouterLink, AyudaFranjaComponent],
+import { AvisoErrorComponent } from '../../shared/ui/aviso-error.component';
+/**
+ * Pantalla de admin.
+ * Carga los datos con su servicio y maneja lo que el usuario hace en la vista.
+ */
+@Component({ selector: 'app-admin', standalone: true, imports: [RouterLink, AyudaFranjaComponent, AvisoErrorComponent],
   templateUrl: './admin.component.html', styleUrl: './admin.component.css' })
 export class AdminComponent implements OnInit {
   private readonly api = inject(AdminCatalogosApiService);

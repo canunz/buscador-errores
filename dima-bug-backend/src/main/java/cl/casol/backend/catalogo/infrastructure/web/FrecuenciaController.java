@@ -7,6 +7,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
+/**
+ * Controlador REST de frecuencia. Atiende las rutas que empiezan con /api/frecuencias.
+ * Solo recibe la petición, valida los datos y llama al caso de uso que corresponde.
+ */
 @RestController
 @RequestMapping("/api/frecuencias")
 public class FrecuenciaController {
@@ -14,6 +18,7 @@ public class FrecuenciaController {
 
     public FrecuenciaController(ConsultarFrecuenciasService service) { this.service = service; }
 
+    // GET /api/frecuencias: listar.
     @GetMapping
     public List<FrecuenciaResponse> listar() {
         return service.listar().stream().map(FrecuenciaResponse::from).toList();

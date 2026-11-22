@@ -2,6 +2,9 @@ package cl.casol.backend.procedimiento.domain;
 import cl.casol.backend.shared.domain.DestinatarioPaso;
 import cl.casol.backend.procedimiento.domain.exception.EstadoProcedimientoInvalidoException;
 import java.util.*;
+/**
+ * Modelo de dominio de configuración paso. Es inmutable: cada cambio crea un objeto nuevo.
+ */
 public record ConfiguracionPaso(List<DestinatarioPaso> destinatarios,Boolean usarDestinatariosSucursal,String mensaje,
         List<String> evidenciasRequeridas,Boolean requiereAprobacion,List<Integer> recordatoriosHoras,
         Integer plazoRespuestaHoras,Condicion condicionFinalizacion,String accionAutomatica,String asunto) {
@@ -19,6 +22,7 @@ public record ConfiguracionPaso(List<DestinatarioPaso> destinatarios,Boolean usa
         if(recordatoriosHoras!=null && (recordatoriosHoras.size()>8 || recordatoriosHoras.stream().anyMatch(h->h==null || h<1 || (plazoRespuestaHoras!=null && h>=plazoRespuestaHoras))))throw invalida("Recordatorios positivos, distintos y anteriores al plazo");
         if(accionAutomatica!=null && !accionAutomatica.equals("VALIDAR_CONTEXTO_SUCURSAL"))throw invalida("Acción automática no autorizada");
     }
+    // Resuelve con los datos recibidos.
     public static ConfiguracionPaso resolver(ConfiguracionPaso c,ModoEjecucionPaso modo,boolean critico,String mensaje) {
         boolean evidencia=modo.esEvidencia();
         var condicion=c==null?null:c.condicionFinalizacion();
@@ -38,5 +42,6 @@ public record ConfiguracionPaso(List<DestinatarioPaso> destinatarios,Boolean usa
             c!=null && c.mensaje()!=null?c.mensaje():mensaje,evidencia?(c==null || c.evidenciasRequeridas()==null?List.of("MUEBLE","RED","ELECTRICIDAD"):c.evidenciasRequeridas()):List.of(),
             aprobacion,reglas,plazo,condicion,modo==ModoEjecucionPaso.AUTOMATICO?"VALIDAR_CONTEXTO_SUCURSAL":null,c!=null && c.asunto()!=null?c.asunto():evidencia?"Solicitud de fotografías":"Solicitud del procedimiento");
     }
+    // Devuelve inválida.
     private static EstadoProcedimientoInvalidoException invalida(String mensaje){return new EstadoProcedimientoInvalidoException(mensaje);}
 }

@@ -3,6 +3,9 @@ package cl.casol.backend.procedimiento.domain;
 import cl.casol.backend.identidad.domain.Usuario;
 import java.time.LocalDateTime;
 
+/**
+ * Modelo de dominio de procedimiento. Es inmutable: cada cambio crea un objeto nuevo.
+ */
 public record Procedimiento(Integer id, String nombre, String descripcion, EstadoProcedimiento estado,
         Usuario creadoPor, LocalDateTime fechaCreacion, Usuario modificadoPor,
         LocalDateTime fechaModificacion,DatosEditorialesProcedimiento datos,Integer hardwareId) {

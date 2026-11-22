@@ -1,4 +1,4 @@
-<app-loading-modal [visible]="loading" mensaje="Cargando catálogo" />
+<app-loading-modal [visible]="loading" mensaje="Preparando el catálogo" />
 <section class="cat-page cat-admin">
   <div class="franja">
     <app-ayuda-franja titulo="Administración de catálogos" detalle="Los cambios se guardan en el sistema. Desactivar conserva los registros y sus referencias históricas." />
@@ -15,21 +15,23 @@
   @if (hardwareOrigenId || tipo === 'modulos' || tipo === 'sistemas') {
     <nav class="catalogo-contexto" aria-label="Navegación de catálogos">
       @if (hardwareOrigenId) {
-        <a routerLink="/plataforma/hardware" [queryParams]="{ hardwareId: hardwareOrigenId }">Volver al Hardware de origen</a>
+        <a routerLink="/plataforma/hardware" [queryParams]="{ hardwareId: hardwareOrigenId }">Hardware</a>
       }
-      <a routerLink="/admin/catalogo/sistemas" [queryParams]="{ hardwareId: hardwareOrigenId }">Todos los Sistemas</a>
+      <a routerLink="/admin/catalogo/sistemas" [queryParams]="{ hardwareId: hardwareOrigenId }" [class.actual]="tipo === 'sistemas'">Todos los Sistemas</a>
       @if (tipo === 'modulos' && sistemaContextoId) {
         <a routerLink="/admin/catalogo/sistemas" [queryParams]="{ editarId: sistemaContextoId, hardwareId: hardwareOrigenId }">Volver al Sistema</a>
-        <a routerLink="/admin/catalogo/modulos">Todos los Módulos</a>
+        <a routerLink="/admin/catalogo/modulos" class="actual">Todos los Módulos</a>
       }
     </nav>
   }
 
-  @if (!disponible) { <p>Este catálogo queda pendiente para un Sprint posterior.</p> }
-  @if (error) { <p class="alert" role="alert">{{ error }} <button type="button" (click)="recargar()">Reintentar</button></p> }
+  @if (!disponible) { <p class="catalogo-pendiente">Este catálogo queda pendiente para un Sprint posterior.</p> }
+  @if (error) {
+    <app-aviso-error [mensaje]="error" [ocupado]="loading" (reintentar)="recargar()" />
+  }
   @if (mensaje) { <p class="catalogo-mensaje" role="status">{{ mensaje }}</p> }
 
-  @if (disponible && !loading) {
+  @if (disponible && !loading && !error) {
     @if (tipo === 'modulos') {
       <div class="modulos-filtros" [formGroup]="filtrosModulos" role="group" aria-label="Filtros de Módulos">
         <label>Sistema<select formControlName="sistemaId"><option [ngValue]="null">Todos los sistemas</option>
@@ -59,7 +61,7 @@
                   @if (tipo === 'sistemas') {
                     <a class="act" routerLink="/admin/catalogo/modulos" [queryParams]="{ sistemaId: item.id, hardwareId: hardwareOrigenId }">Módulos</a>
                   }
-                  <button class="act del" type="button" (click)="pendienteEstado = item" [disabled]="saving">{{ item.activo ? 'Desactivar' : 'Activar' }}</button>
+                  <button class="act" [class.del]="item.activo" type="button" (click)="pendienteEstado = item" [disabled]="saving">{{ item.activo ? 'Desactivar' : 'Activar' }}</button>
                 </div>
               </td>
               <td><strong>{{ item.nombre }}</strong></td>
@@ -77,7 +79,7 @@
               <td><span class="estado" [class.activo]="item.activo" [class.inactivo]="!item.activo">{{ item.activo ? 'Activo' : 'Inactivo' }}</span></td>
             </tr>
           } @empty {
-            <tr><td colspan="4" class="vacio">{{ error ? 'No se pudo cargar el catálogo.' : tipo === 'modulos' && items.length ? 'No hay módulos que coincidan con los filtros.' : 'No hay registros. Usa Añadir para crear el primero.' }}</td></tr>
+            <tr><td colspan="4" class="vacio">{{ tipo === 'modulos' && items.length ? 'No hay módulos que coincidan con los filtros.' : 'No hay registros. Usa Añadir para crear el primero.' }}</td></tr>
           }
         </tbody>
       </table>
@@ -92,7 +94,10 @@
     @if (tipo === 'sistemas' && pendienteEstado.activo && hardwareDelSistema(pendienteEstado.id).length > 1) {
       <p class="catalogo-advertencia" role="alert">Sistema compartido por {{ hardwareDelSistema(pendienteEstado.id).length }} Hardware. Desactivarlo también afecta sus selecciones en los otros equipos.</p>
     }
-    <div class="confirm-acciones"><button type="button" (click)="pendienteEstado = null" [disabled]="saving">Cancelar</button><button type="button" (click)="confirmarEstado()" [disabled]="saving">{{ saving ? 'Guardando…' : 'Confirmar' }}</button></div>
+    <div class="confirm-acciones">
+      <button type="button" class="btn-cancelar" (click)="pendienteEstado = null" [disabled]="saving">Cancelar</button>
+      <button type="button" [class.btn-crear]="!pendienteEstado.activo" [class.btn-peligro]="pendienteEstado.activo" (click)="confirmarEstado()" [disabled]="saving">{{ saving ? 'Guardando…' : 'Confirmar' }}</button>
+    </div>
   </div></div>
 }
 
@@ -112,7 +117,7 @@
       @if (crearYAsociar && editId === null && (sistemaCreado || creacionSinConfirmar)) {
         <div class="full recuperacion-sistema">
           <a routerLink="/admin/catalogo/sistemas" [queryParams]="{ hardwareId: hardwareOrigenId }">Recuperar desde Todos los Sistemas</a>
-          @if (sistemaCreado) { <button type="button" (click)="reintentarAsociacion()" [disabled]="saving">Reintentar solo la asociación del sistema {{ sistemaCreado.id }}</button> }
+          @if (sistemaCreado) { <button type="button" class="btn-crear" (click)="reintentarAsociacion()" [disabled]="saving">Reintentar asociación</button> }
         </div>
       }
       <label class="full">Nombre *<input formControlName="nombre" [readonly]="crearYAsociar && editId === null && (sistemaCreado !== null || creacionSinConfirmar)" [attr.maxlength]="tipo === 'frecuencias' ? 50 : tipo === 'modulos' ? 120 : 100" required /></label>

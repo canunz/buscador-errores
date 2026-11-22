@@ -1,6 +1,7 @@
 package cl.casol.backend.tickets.application.port.out;
 
 import cl.casol.backend.tickets.domain.ConteoTickets;
+import cl.casol.backend.tickets.domain.TicketsPorUsuario;
 import cl.casol.backend.tickets.domain.FiltroTickets;
 import cl.casol.backend.tickets.domain.PaginaTickets;
 import cl.casol.backend.tickets.domain.Ticket;
@@ -8,6 +9,7 @@ import cl.casol.backend.tickets.domain.Ticket;
 import java.util.List;
 import java.util.Optional;
 
+/** Puerto de salida: lo que el caso de uso necesita para guardar y leer tickets. Lo implementa TicketRepositoryAdapter. */
 public interface TicketRepositoryPort {
     /** Guarda el ticket, sus etiquetas y los comentarios/historial nuevos (los que aún no tienen id). */
     Ticket guardar(Ticket ticket);
@@ -29,6 +31,9 @@ public interface TicketRepositoryPort {
 
     /** Totales por estado, críticos activos y sin técnico. solicitanteId null = todos los tickets. */
     ConteoTickets contar(Integer solicitanteId);
+
+    /** Cuántos tickets creó cada persona, de la que tiene más a la que tiene menos. */
+    List<TicketsPorUsuario> contarPorSolicitante();
 
     /** Siguiente número para el código TK-año-NNNN. */
     int siguienteCorrelativo(int anio);

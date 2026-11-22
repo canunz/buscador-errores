@@ -26,4 +26,18 @@ class GoogleGmailHttpTest {
     @Test void revocaSinIncluirTokenEnLaUrl(){api.expect(requestTo(GoogleGmailHttp.REVOKE)).andExpect(method(HttpMethod.POST)).andExpect(content().string("token=refresh-qa")).andRespond(withSuccess());google.revocar("refresh-qa");}
     @Test void falloTemporalNoSeClasificaComoGrantRevocado(){oauth.expect(requestTo(GoogleGmailHttp.TOKEN)).andRespond(withBadRequest().body("{\"error\":\"temporarily_unavailable\"}").contentType(MediaType.APPLICATION_JSON));assertEquals(GmailException.Tipo.CONEXION,assertThrows(GmailException.class,()->google.renovar("refresh-qa")).tipo);}
     @Test void rechazoExplicitoSeDistingueDeUnResultadoIncierto(){api.expect(requestTo(GoogleGmailHttp.SEND)).andRespond(withStatus(HttpStatus.FORBIDDEN).body("RESPUESTA_NO_MOSTRAR"));var error=assertThrows(GmailException.class,()->google.enviar("acceso-qa","YWJj"));assertEquals(GmailException.Tipo.RECHAZO,error.tipo);assertFalse(error.getMessage().contains("RESPUESTA"));}
+    @Test void renovarNoDependeDeLasUrlsDelPanelOAuth() {
+        var a=RestClient.builder(); var o=RestClient.builder();
+        var localApi=MockRestServiceServer.bindTo(a).build();
+        var localOauth=MockRestServiceServer.bindTo(o).build();
+        var cfg=new GmailConfig(true,true,"id-qa","secreto-qa","url-panel-no-configurada","qa@example.invalid",CifradoGmailTest.clave(),"url-panel-no-configurada");
+        assertFalse(cfg.configurado()); assertTrue(cfg.configuradoParaEnvio());
+        var http=new GoogleGmailHttp(cfg,Clock.systemUTC(),a,o);
+        localOauth.expect(requestTo(GoogleGmailHttp.TOKEN))
+                .andExpect(content().string(org.hamcrest.Matchers.containsString("grant_type=refresh_token")))
+                .andRespond(withSuccess("{\"access_token\":\"renovado-qa\",\"token_type\":\"Bearer\",\"expires_in\":3600}",MediaType.APPLICATION_JSON));
+        assertEquals("renovado-qa",http.renovar("refresco-sintetico").acceso);
+        assertThrows(GmailException.class,()->http.autorizacion("estado-qa","verificador-qa"));
+        localApi.verify();localOauth.verify();
+    }
 }

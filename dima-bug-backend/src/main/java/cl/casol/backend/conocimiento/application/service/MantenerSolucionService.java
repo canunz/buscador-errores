@@ -12,6 +12,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
+/**
+ * Servicio de mantener solución (módulo de conocimiento).
+ * Aquí van las reglas de negocio; para leer o guardar datos usa los puertos de salida.
+ */
 @Service
 @Transactional(readOnly = true)
 public class MantenerSolucionService {
@@ -26,11 +30,13 @@ public class MantenerSolucionService {
         this.indexador = indexador;
     }
 
+    // Lista el conocimiento indicado.
     public List<Solucion> listar(Integer conocimientoId) {
         verificarConocimiento(conocimientoId);
         return soluciones.buscarActivasPorConocimiento(conocimientoId);
     }
 
+    // Crea el conocimiento indicado.
     @Transactional
     public Solucion crear(Integer conocimientoId, String descripcion, TipoSolucion tipo, Integer orden, String titulo) {
         conocimientos.bloquear(conocimientoId);
@@ -45,6 +51,7 @@ public class MantenerSolucionService {
         return guardada;
     }
 
+    // Modifica el conocimiento indicado.
     @Transactional
     public Solucion modificar(Integer conocimientoId, Integer solucionId, String descripcion,
             TipoSolucion tipo, Integer orden, String titulo) {
@@ -60,6 +67,7 @@ public class MantenerSolucionService {
         return guardada;
     }
 
+    // Devuelve orden disponible.
     private Integer ordenDisponible(List<Solucion> actuales, Integer solicitado) {
         int propuesto = solicitado == null ? 1 : solicitado;
         if (actuales.stream().noneMatch(s -> s.orden() == propuesto)) return propuesto;
@@ -68,16 +76,19 @@ public class MantenerSolucionService {
         return maximo + 1;
     }
 
+    // Valida título.
     private void validarTitulo(String titulo) {
         if (titulo == null || titulo.isBlank() || titulo.length() > 150) throw new TituloSolucionInvalidoException();
     }
 
+    // Busca perteneciente.
     public Solucion buscarPerteneciente(Integer conocimientoId, Integer solucionId) {
         return soluciones.buscarPorId(solucionId)
                 .filter(solucion -> conocimientoId.equals(solucion.conocimientoId()))
                 .orElseThrow(() -> new SolucionNoEncontradaException(solucionId));
     }
 
+    // Verifica conocimiento.
     private void verificarConocimiento(Integer conocimientoId) {
         conocimientos.buscarPorId(conocimientoId)
                 .orElseThrow(() -> new ConocimientoNoEncontradoException(conocimientoId));

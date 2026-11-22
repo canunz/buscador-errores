@@ -7,6 +7,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
+/**
+ * Servicio de mantener paso (módulo de procedimientos).
+ * Aquí van las reglas de negocio; para leer o guardar datos usa los puertos de salida.
+ */
 @Service
 @Transactional(readOnly = true)
 public class MantenerPasoService {
@@ -17,15 +21,18 @@ public class MantenerPasoService {
         this.procedimientos = procedimientos; this.pasos = pasos;
     }
 
+    // Lista el procedimiento indicado.
     public List<Paso> listar(Integer procedimientoId) {
         verificarProcedimiento(procedimientoId);
         return pasos.buscarPorProcedimientoOrdenados(procedimientoId);
     }
 
+    // Crea el procedimiento indicado.
     @Transactional
     public Paso crear(Integer procedimientoId, Integer orden, String instruccion, boolean esCritico) {
         return crear(procedimientoId,orden,instruccion,esCritico,cl.casol.backend.procedimiento.domain.ModoEjecucionPaso.MANUAL,null);
     }
+    // Crea el procedimiento indicado.
     @Transactional
     public Paso crear(Integer procedimientoId,Integer orden,String instruccion,boolean esCritico,
             cl.casol.backend.procedimiento.domain.ModoEjecucionPaso modo,String mensaje) {
@@ -41,11 +48,13 @@ public class MantenerPasoService {
         return pasos.guardar(new Paso(null, procedimientoId, orden, instruccion, esCritico,modo,mensaje,config));
     }
 
+    // Modifica el procedimiento indicado.
     @Transactional
     public Paso modificar(Integer procedimientoId, Integer pasoId, Integer orden,
             String instruccion, boolean esCritico) {
         return modificar(procedimientoId,pasoId,orden,instruccion,esCritico,null,null);
     }
+    // Modifica el procedimiento indicado.
     @Transactional
     public Paso modificar(Integer procedimientoId,Integer pasoId,Integer orden,String instruccion,boolean esCritico,
             cl.casol.backend.procedimiento.domain.ModoEjecucionPaso modo,String mensaje) {
@@ -81,6 +90,7 @@ public class MantenerPasoService {
         if(destino<0 || destino>=lista.size())return lista;
         java.util.Collections.swap(lista,indice,destino);pasos.reordenar(lista);return pasos.buscarPorProcedimientoOrdenados(id);
     }
+    // Verifica procedimiento.
     private void verificarProcedimiento(Integer id) {
         procedimientos.buscarPorId(id).orElseThrow(() -> new ProcedimientoNoEncontradoException(id));
     }

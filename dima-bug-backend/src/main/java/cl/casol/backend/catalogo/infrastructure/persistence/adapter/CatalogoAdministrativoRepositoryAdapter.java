@@ -8,6 +8,10 @@ import jakarta.persistence.*;
 import org.springframework.stereotype.Component;
 import java.util.*;
 
+/**
+ * Adaptador de base de datos para catálogo administrativo.
+ * Implementa el puerto de salida usando JPA y convierte entre entidades y objetos del dominio.
+ */
 @Component
 public class CatalogoAdministrativoRepositoryAdapter implements CatalogoAdministrativoRepository {
     private final EntityManager em;
@@ -21,22 +25,27 @@ public class CatalogoAdministrativoRepositoryAdapter implements CatalogoAdminist
             IndexarConocimientoService indexador) {
         this.em=em; this.hardware=hardware; this.sistemas=sistemas; this.modulos=modulos; this.frecuencias=frecuencias; this.indexador=indexador;
     }
+    // Devuelve entidad.
     private String entidad(TipoCatalogo tipo) { return switch(tipo) {
         case hardware -> "HardwareEntity"; case sistemas -> "SistemaEntity";
         case modulos -> "ModuloEntity"; case frecuencias -> "FrecuenciaEntity";
     }; }
+    // Bloquea el tipo.
     public void bloquear(TipoCatalogo tipo) {
         em.createQuery("select e from " + entidad(tipo) + " e order by e.id")
             .setLockMode(LockModeType.PESSIMISTIC_WRITE).getResultList();
     }
+    // Lista el tipo.
     public List<CatalogoAdministrativo> listar(TipoCatalogo tipo) {
         return em.createQuery("select e from " + entidad(tipo) + " e order by e.id",Object.class).getResultList().stream().map(this::mapear).toList();
     }
+    // Busca el tipo.
     public Optional<CatalogoAdministrativo> buscar(TipoCatalogo tipo,Integer id) {
         Class<?> clase = switch(tipo) { case hardware -> HardwareEntity.class; case sistemas -> SistemaEntity.class;
             case modulos -> ModuloEntity.class; case frecuencias -> FrecuenciaEntity.class; };
         return Optional.ofNullable(em.find(clase,id)).map(this::mapear);
     }
+    // Convierte el objeto.
     private CatalogoAdministrativo mapear(Object objeto) {
         if (objeto instanceof HardwareEntity h) return new CatalogoAdministrativo(h.getId(),h.getNombre(),h.isActivo(),h.getSistemaOperativo(),null,null,null,h.getSistemas().stream().map(SistemaEntity::getId).sorted().toList());
         if (objeto instanceof SistemaEntity s) return new CatalogoAdministrativo(s.getId(),s.getNombre(),s.isActivo(),null,s.getDescripcion(),null,null,List.of());
@@ -44,6 +53,7 @@ public class CatalogoAdministrativoRepositoryAdapter implements CatalogoAdminist
         FrecuenciaEntity f=(FrecuenciaEntity)objeto;
         return new CatalogoAdministrativo(f.getId(),f.getNombre(),f.isActiva(),null,null,null,f.getOrden(),List.of());
     }
+    // Guarda el tipo.
     public CatalogoAdministrativo guardar(TipoCatalogo tipo,CatalogoAdministrativo r) {
         Object guardado = switch(tipo) {
             case hardware -> {
@@ -57,9 +67,11 @@ public class CatalogoAdministrativoRepositoryAdapter implements CatalogoAdminist
         };
         return mapear(guardado);
     }
+    // Indica si módulo referenciado.
     public boolean moduloReferenciado(Integer id) {
         return em.createQuery("select count(c) from ConocimientoEntity c where c.modulo.id = :id",Long.class).setParameter("id",id).getSingleResult()>0;
     }
+    // Vuelve a indexar referencias.
     public void reindexarReferencias(TipoCatalogo tipo,Integer id) {
         String campo=switch(tipo) { case hardware -> "hardware"; case sistemas -> "sistema"; case modulos -> "modulo"; case frecuencias -> "frecuencia"; };
         em.createQuery("select c.id from ConocimientoEntity c where c."+campo+".id = :id and c.estado <> cl.casol.backend.conocimiento.domain.EstadoConocimiento.ELIMINADO",Integer.class)

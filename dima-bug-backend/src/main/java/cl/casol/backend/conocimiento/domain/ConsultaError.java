@@ -34,6 +34,7 @@ public final class ConsultaError {
         mensaje = ruta > 0 ? palabras(original.substring(0, ruta)).stream().distinct().filter(terminos::contains).toList() : List.of();
     }
 
+    // Devuelve plano.
     public static String plano(String valor) {
         return Normalizer.normalize(valor == null ? "" : valor, Normalizer.Form.NFD)
                 .replaceAll("\\p{M}+", "").toLowerCase(Locale.ROOT)
@@ -41,6 +42,7 @@ public final class ConsultaError {
                 .replaceAll("\\s+", " ").strip();
     }
 
+    // Devuelve palabras.
     private static List<String> palabras(String texto) {
         String normal = SUFIJO_ARCHIVO.matcher(FECHA.matcher(plano(texto)).replaceAll(" "))
                 .replaceAll(m -> PREFIJOS_CODIGO.contains(m.group(1)) ? m.group() : m.group(1) + m.group(3));
@@ -58,6 +60,7 @@ public final class ConsultaError {
     public String firma() { return firma; }
     public List<String> terminos() { return terminos; }
     public List<String> codigos() { return codigos; }
+    // Devuelve peso.
     public int peso(String termino) { return GENERICAS.contains(termino) ? 1 : codigos.contains(termino) ? 6 : 3; }
 
     /** Solo se puntúan los tres campos autorizados por el buscador público. */
@@ -93,6 +96,7 @@ public final class ConsultaError {
         return puntos + cobertura * 100;
     }
 
+    // Indica si contiene.
     private boolean contiene(String campo, String termino) {
         if (termino.length() >= 4 && !codigos.contains(termino)) return campo.contains(termino);
         return limites.get(termino).matcher(campo).find();

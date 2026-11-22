@@ -7,6 +7,9 @@ import java.util.Locale;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * Usuario autenticado cache (módulo de usuarios y acceso).
+ */
 @Component
 public class UsuarioAutenticadoCache {
 
@@ -14,6 +17,7 @@ public class UsuarioAutenticadoCache {
 
     private final ConcurrentHashMap<String, Entrada> entradas = new ConcurrentHashMap<>();
 
+    // Obtiene el email.
     public Optional<Usuario> obtener(String email) {
         String clave = clave(email);
         if (clave.isEmpty()) {
@@ -30,6 +34,7 @@ public class UsuarioAutenticadoCache {
         return Optional.of(entrada.usuario);
     }
 
+    // Guarda el email.
     public void guardar(String email, Usuario usuario) {
         String clave = clave(email);
         if (clave.isEmpty() || usuario == null) {
@@ -38,6 +43,7 @@ public class UsuarioAutenticadoCache {
         entradas.put(clave, new Entrada(usuario, System.currentTimeMillis() + VIGENCIA_MS));
     }
 
+    // Invalida el email.
     public void invalidar(String email) {
         String clave = clave(email);
         if (!clave.isEmpty()) {
@@ -45,10 +51,12 @@ public class UsuarioAutenticadoCache {
         }
     }
 
+    // Devuelve clave.
     private static String clave(String email) {
         return email == null ? "" : email.trim().toLowerCase(Locale.ROOT);
     }
 
+    // Devuelve entrada.
     private record Entrada(Usuario usuario, long expiraEn) {
     }
 }

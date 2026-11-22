@@ -9,6 +9,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
+/**
+ * Servicio de mantener síntoma (módulo de conocimiento).
+ * Aquí van las reglas de negocio; para leer o guardar datos usa los puertos de salida.
+ */
 @Service
 @Transactional(readOnly = true)
 public class MantenerSintomaService {
@@ -23,11 +27,13 @@ public class MantenerSintomaService {
         this.indexador = indexador;
     }
 
+    // Lista el conocimiento indicado.
     public List<Sintoma> listar(Integer conocimientoId) {
         verificarConocimiento(conocimientoId);
         return sintomas.buscarPorConocimientoOrdenados(conocimientoId);
     }
 
+    // Crea el conocimiento indicado.
     @Transactional
     public Sintoma crear(Integer conocimientoId, String descripcion, Integer orden) {
         verificarConocimiento(conocimientoId);
@@ -36,6 +42,7 @@ public class MantenerSintomaService {
         return guardado;
     }
 
+    // Modifica el conocimiento indicado.
     @Transactional
     public Sintoma modificar(Integer conocimientoId, Integer sintomaId, String descripcion, Integer orden) {
         verificarConocimiento(conocimientoId);
@@ -47,11 +54,13 @@ public class MantenerSintomaService {
         return guardado;
     }
 
+    // Verifica conocimiento.
     private void verificarConocimiento(Integer conocimientoId) {
         conocimientos.buscarPorId(conocimientoId)
                 .orElseThrow(() -> new ConocimientoNoEncontradoException(conocimientoId));
     }
 
+    // Devuelve orden o valor inicial.
     private int ordenOValorInicial(Integer orden) {
         return orden == null ? 1 : orden;
     }

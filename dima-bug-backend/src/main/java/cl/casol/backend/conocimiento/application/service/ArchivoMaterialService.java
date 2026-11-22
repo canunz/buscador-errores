@@ -15,6 +15,10 @@ import java.util.function.Consumer;
 import org.springframework.transaction.TransactionDefinition;
 import static cl.casol.backend.shared.application.archivo.ArchivoException.Motivo.*;
 
+/**
+ * Servicio de archivo material (módulo de conocimiento).
+ * Aquí van las reglas de negocio; para leer o guardar datos usa los puertos de salida.
+ */
 @Service
 public class ArchivoMaterialService {
     private static final Logger log = LoggerFactory.getLogger(ArchivoMaterialService.class);
@@ -47,10 +51,12 @@ public class ArchivoMaterialService {
         }
     }
 
+    // Indica si es referencia local.
     private boolean esReferenciaLocal(String referencia) {
         return referencia != null && referencia.startsWith("file:");
     }
 
+    // Crea el nombre.
     public MaterialApoyo crear(String nombre, TipoMaterial tipo, ArchivoSubido archivo,
                               Function<String, MaterialApoyo> persistir) {
         validar(nombre, tipo, archivo);
@@ -69,6 +75,7 @@ public class ArchivoMaterialService {
         });
     }
 
+    // Descarga el material.
     public ArchivoDescarga descargar(MaterialApoyo material) {
         if (material.url() == null || !material.url().startsWith(FormatoArchivo.PREFIJO))
             throw new ArchivoException(NO_ENCONTRADO, "El material no contiene un archivo administrado");
@@ -89,6 +96,7 @@ public class ArchivoMaterialService {
         return new ArchivoDescarga(nombre + extension, mime, contenido);
     }
 
+    // Valida el nombre.
     private void validar(String nombre, TipoMaterial tipo, ArchivoSubido archivo) {
         if (nombre == null || nombre.isBlank() || nombre.length() > 150)
             throw new ArchivoException(INVALIDO, "El nombre es obligatorio y no puede superar 150 caracteres");

@@ -100,18 +100,6 @@
   font-size: 13px;
 }
 
-:host-context(.tema-oscuro) .pr-page th {
-  background: #0b1220;
-}
-
-:host-context(.tema-oscuro) .pr-page tbody tr:hover td {
-  background: #0b1220;
-}
-
-:host-context(.tema-oscuro) .pr-page .nombre {
-  color: #f8fafc;
-}
-
 .pr-page .acciones { flex-wrap: nowrap; gap: 6px; white-space: nowrap; }
 .pr-page td:not(:first-child) { overflow-wrap: anywhere; }
 .pr-respaldo {

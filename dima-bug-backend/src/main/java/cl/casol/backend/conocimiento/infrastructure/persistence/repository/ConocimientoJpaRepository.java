@@ -9,7 +9,12 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Repositorio Spring Data de conocimiento.
+ * Spring genera las consultas a partir del nombre de cada método.
+ */
 public interface ConocimientoJpaRepository extends JpaRepository<ConocimientoEntity, Integer> {
+    // Bloquea por id.
     @org.springframework.data.jpa.repository.Lock(jakarta.persistence.LockModeType.PESSIMISTIC_WRITE)
     @Query("select c from ConocimientoEntity c where c.id = :id")
     java.util.Optional<ConocimientoEntity> bloquearPorId(@Param("id") Integer id);
@@ -28,6 +33,7 @@ public interface ConocimientoJpaRepository extends JpaRepository<ConocimientoEnt
             where c.estado <> :estado
             order by c.fechaCreacion desc
             """)
+    // Lista con relaciones.
     List<ConocimientoEntity> listarConRelaciones(@Param("estado") EstadoConocimiento estado);
 
     @Query("""
@@ -43,8 +49,10 @@ public interface ConocimientoJpaRepository extends JpaRepository<ConocimientoEnt
             left join fetch modificador.rol
             where c.id = :id
             """)
+    // Busca con relaciones por id.
     Optional<ConocimientoEntity> buscarConRelacionesPorId(@Param("id") Integer id);
 
+    // Devuelve resumen por id.
     @Query("select c.id, c.titulo, c.estado from ConocimientoEntity c where c.id = :id and c.estado <> :eliminado")
     java.util.List<Object[]> resumenPorId(@Param("id") Integer id, @Param("eliminado") EstadoConocimiento eliminado);
 }

@@ -93,5 +93,19 @@ describe('QA-009 administración de soluciones', () => {
     expect(toggle.getAttribute('aria-checked')).toBe('false');expect(f.componentInstance.error).toContain('Rechazado');expect(f.componentInstance.operando).toBeFalse();
   });
   it('no habilita autoservicio en una solución inactiva',()=>{const c=TestBed.createComponent(SolucionesComponent).componentInstance;c.cambiarAutoservicio({...item,activo:false,autoservicio:false});expect(api.cambiarAutoservicioSolucion).not.toHaveBeenCalled();});
+  it('filtra por solución, tipo y estado en casillas separadas', () => {
+    const c = TestBed.createComponent(SolucionesComponent).componentInstance;
+    const derivacion = { ...item, id: 9, nombre: 'Llamar a Soporte', titulo: 'Llamar a Soporte', descripcion: 'Escalar a mesa de ayuda', pasos: 'Escalar a mesa de ayuda', tipo: 'DERIVACION' as const, activo: false, conocimientoTitulo: 'Red' };
+    c.items = [item, derivacion];
+    c.q = 'título';
+    expect(c.filtrados.map((s) => s.id)).toEqual([8]);
+    c.limpiarFiltros();
+    c.tipo = 'DERIVACION';
+    expect(c.filtrados.map((s) => s.id)).toEqual([9]);
+    c.tipo = '';
+    c.estado = 'inactiva';
+    expect(c.filtrados.map((s) => s.id)).toEqual([9]);
+    expect(c.filtrosActivos).toBe(1);
+  });
 
 });

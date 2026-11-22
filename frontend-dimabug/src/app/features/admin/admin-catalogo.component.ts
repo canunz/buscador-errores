@@ -5,10 +5,11 @@ import { ActivatedRoute, RouterLink, convertToParamMap } from '@angular/router';
 import { combineLatest, forkJoin, of, switchMap, catchError, tap, Subject, takeUntil } from 'rxjs';
 import { AdminCatalogosApiService, CatalogoAdmin, TIPOS_CATALOGO_ADMIN, TipoCatalogoAdmin } from '../../core/services/admin-catalogos-api.service';
 import { AyudaFranjaComponent } from '../../shared/ui/ayuda-franja.component';
+import { AvisoErrorComponent } from '../../shared/ui/aviso-error.component';
 import { LoadingModalComponent } from '../../shared/ui/loading-modal.component';
 @Component({
   selector: 'app-admin-catalogo', standalone: true,
-  imports: [ReactiveFormsModule, RouterLink, AyudaFranjaComponent, LoadingModalComponent],
+  imports: [ReactiveFormsModule, RouterLink, AyudaFranjaComponent, AvisoErrorComponent, LoadingModalComponent],
   templateUrl: './admin-catalogo.component.html',
   styleUrls: ['../../shared/ui/catalogo-page.css', './admin-catalogo.component.css'],
 })

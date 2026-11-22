@@ -3,6 +3,10 @@ package cl.casol.backend.seguimiento.infrastructure.persistence.entity;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
+/**
+ * Entidad JPA de resultado solución. Representa una fila de la tabla se_resultado.
+ * Se usa solo en la capa de persistencia; el dominio trabaja con su propio modelo.
+ */
 @Entity
 @Table(name="se_resultado")
 public class ResultadoSolucionEntity {

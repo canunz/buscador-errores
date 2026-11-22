@@ -43,6 +43,7 @@ public class CatalogoFachada {
         return Optional.empty();
     }
 
+    // Devuelve nombres.
     public NombresClasificacion nombres(Integer hardwareId, Integer sistemaId, Integer moduloId) {
         String hw = hardwareId == null ? null : hardware.buscarActivoPorId(hardwareId).map(Hardware::nombre).orElse(null);
         String sis = sistemaId == null ? null : sistemas.buscarActivoPorId(sistemaId).map(Sistema::nombre).orElse(null);

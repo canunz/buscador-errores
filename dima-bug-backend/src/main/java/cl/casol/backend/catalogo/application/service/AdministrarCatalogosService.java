@@ -6,15 +6,19 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.*;
 
+/** Administración de catálogos (hardware, sistemas, módulos): crear, editar y activar o desactivar. */
 @Service
 @Transactional(readOnly = true)
 public class AdministrarCatalogosService {
     private final CatalogoAdministrativoRepository repository;
     public AdministrarCatalogosService(CatalogoAdministrativoRepository repository) { this.repository = repository; }
+    // Lista el tipo.
     public List<CatalogoAdministrativo> listar(TipoCatalogo tipo) { return repository.listar(tipo); }
+    // Busca el tipo.
     public CatalogoAdministrativo buscar(TipoCatalogo tipo, Integer id) {
         return repository.buscar(tipo,id).orElseThrow(() -> new CatalogoNoEncontradoException(tipo.name(),id));
     }
+    /** Crea o edita un elemento del catálogo. */
     @Transactional
     public CatalogoAdministrativo guardar(TipoCatalogo tipo, Integer id, CatalogoAdministrativo datos) {
         // Serialize writes using the existing rows; no new uniqueness constraints or tables.
@@ -56,6 +60,7 @@ public class AdministrarCatalogosService {
         repository.reindexarReferencias(tipo,guardado.id());
         return guardado;
     }
+    /** Activa o desactiva un elemento sin borrarlo. */
     @Transactional
     public CatalogoAdministrativo cambiarEstado(TipoCatalogo tipo, Integer id, boolean activo) {
         if (tipo == TipoCatalogo.modulos) repository.bloquear(TipoCatalogo.sistemas);

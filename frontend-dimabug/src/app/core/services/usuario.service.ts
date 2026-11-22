@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { Observable, catchError, concat, map, of, shareReplay, switchMap, tap, throwError } from 'rxjs';
+import { Observable, catchError, concat, map, of, shareReplay, tap, throwError } from 'rxjs';
 import { apiUrl } from '../config/api';
 import { mensajeApiError } from '../http/api-error';
 import { Rol, Usuario, UsuarioPayload } from '../models/usuario.model';
@@ -25,7 +25,7 @@ export class UsuarioService {
   private readonly http = inject(HttpClient);
   private readonly base = apiUrl('/usuarios');
   private readonly rolesUrl = apiUrl('/roles');
-  private readonly listaKey = 'dimabug.usuarios.lista.v1';
+  private readonly listaKey = 'dimabug.usuarios.lista.v2';
   private readonly rolesKey = 'dimabug.roles.lista.v1';
 
   private listaCache$: Observable<Usuario[]> | null = null;
@@ -81,26 +81,7 @@ export class UsuarioService {
     return this.http.put<unknown>(`${this.base}/${id}`, this.toApiBody(payload)).pipe(
       map((res) => this.normalizeUsuario(res)),
       tap((item) => this.upsertLocal(item)),
-      switchMap((item) => {
-        if (!payload.usuarioPassword) {
-          return of(item);
-        }
-        return this.cambiarPassword(id, payload.usuarioPassword).pipe(catchError(() => of(item)));
-      }),
     );
-  }
-
-  cambiarPassword(id: number, password: string): Observable<Usuario> {
-    return this.http
-      .patch<unknown>(`${this.base}/${id}/password`, {
-        password,
-        usuarioPassword: password,
-        newPassword: password,
-      })
-      .pipe(
-        map((res) => this.normalizeUsuario(res)),
-        tap((item) => this.upsertLocal(item)),
-      );
   }
 
   cambiarEstado(id: number, activo: boolean): Observable<Usuario> {
@@ -150,15 +131,11 @@ export class UsuarioService {
   }
 
   private toApiBody(payload: UsuarioPayload): Record<string, unknown> {
-    const body: Record<string, unknown> = {
+    return {
       nombre: payload.usuarioNombre,
       email: payload.usuarioEmail,
       rolId: payload.rolId,
     };
-    if (payload.usuarioPassword) {
-      body['password'] = payload.usuarioPassword;
-    }
-    return body;
   }
 
   private asUsuarioList(res: unknown): Usuario[] {
@@ -197,6 +174,7 @@ export class UsuarioService {
       usuarioEmail: String(u['usuarioEmail'] ?? u['email'] ?? ''),
       usuarioEstado: Boolean(u['usuarioEstado'] ?? u['activo'] ?? true),
       usuarioFechaCreacion: fechaApi(u['usuarioFechaCreacion'] ?? u['fechaCreacion']),
+      usuarioUltimoIngreso: fechaApi(u['usuarioUltimoIngreso'] ?? u['ultimoIngreso']),
       rolId: rol?.rolId ?? (u['rolId'] != null ? Number(u['rolId']) : undefined),
       rol,
       rolNombre: rol?.rolNombre ?? (u['rolNombre'] ? String(u['rolNombre']) : undefined),

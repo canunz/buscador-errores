@@ -11,6 +11,10 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+/**
+ * Controlador REST de etiqueta. Atiende las rutas que empiezan con /api/etiquetas.
+ * Solo recibe la petición, valida los datos y llama al caso de uso que corresponde.
+ */
 @RestController
 @RequestMapping("/api/etiquetas")
 public class EtiquetaController {
@@ -28,18 +32,21 @@ public class EtiquetaController {
                 .map(EtiquetaResponse::from).toList();
     }
 
+    // Crea con los datos recibidos.
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public EtiquetaResponse crear(@Valid @RequestBody GuardarEtiquetaRequest request, Authentication authentication) {
         return EtiquetaResponse.from(etiquetas.crear(request.nombre(), request.color(), request.nivel(), authentication.getName()));
     }
 
+    // Edita por id.
     @PutMapping("/{id}")
     public EtiquetaResponse editar(@PathVariable Long id, @Valid @RequestBody GuardarEtiquetaRequest request,
             Authentication authentication) {
         return EtiquetaResponse.from(etiquetas.editar(id, request.nombre(), request.color(), request.nivel(), authentication.getName()));
     }
 
+    // Cambia estado.
     @PatchMapping("/{id}/estado")
     public EtiquetaResponse cambiarEstado(@PathVariable Long id,
             @Valid @RequestBody CambiarEstadoEtiquetaRequest request, Authentication authentication) {

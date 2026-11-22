@@ -2,6 +2,10 @@ package cl.casol.backend.catalogo.infrastructure.persistence.entity;
 
 import jakarta.persistence.*;
 
+/**
+ * Entidad JPA de módulo. Representa una fila de la tabla cl_modulo.
+ * Se usa solo en la capa de persistencia; el dominio trabaja con su propio modelo.
+ */
 @Entity
 @Table(name = "cl_modulo")
 public class ModuloEntity {

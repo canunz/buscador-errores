@@ -13,14 +13,21 @@ import org.springframework.transaction.support.*;
 import java.time.LocalDateTime;
 import java.util.*;
 
+/**
+ * Servicio de editar procedimiento admin (módulo de procedimientos).
+ * Aquí van las reglas de negocio; para leer o guardar datos usa los puertos de salida.
+ */
 @Service @Transactional(isolation=org.springframework.transaction.annotation.Isolation.READ_COMMITTED)
 public class EditarProcedimientoAdminService {
     private final ProcedimientoRepository procedimientos;private final PasoRepository pasos;private final MaterialApoyoRepository materiales;
     private final HardwareRepository hardware;private final SistemaRepository sistemas;private final ModuloRepository modulos;private final AlmacenamientoArchivoPort archivos;
     private final MantenerProcedimientoService mantener;private final AuditoriaProcedimientoService auditoria;
     public EditarProcedimientoAdminService(ProcedimientoRepository p,PasoRepository pasos,MaterialApoyoRepository m,SistemaRepository s,ModuloRepository mod,AlmacenamientoArchivoPort a,MantenerProcedimientoService mantener,AuditoriaProcedimientoService audit,HardwareRepository hardware){this.procedimientos=p;this.pasos=pasos;this.materiales=m;this.sistemas=s;this.modulos=mod;this.archivos=a;this.mantener=mantener;this.auditoria=audit;this.hardware=hardware;}
+    // Busca por id.
     private Procedimiento buscar(Integer id){return procedimientos.buscarPorId(id).orElseThrow(()->new ProcedimientoNoEncontradoException(id));}
+    // Devuelve raíz.
     private Integer raiz(Procedimiento p){return p.datos().origenId()==null?p.id():p.datos().origenId();}
+    // Devuelve familia.
     private List<Procedimiento> familia(Integer id){return procedimientos.buscarTodos().stream().filter(p->p.id().equals(id)||Objects.equals(p.datos().origenId(),id)).toList();}
     /** El publicado nunca se vuelve editable: se trabaja sobre una revisión que no tiene ejecuciones. */
     public Procedimiento preparar(Integer id,String email){
@@ -45,8 +52,11 @@ public class EditarProcedimientoAdminService {
         }
         auditoria.registrar(nuevo.id(),"REVISION_CREADA",actor.getId(),AuditoriaProcedimientoService.datos(origen),AuditoriaProcedimientoService.datos(nuevo));return nuevo;
     }
+    // Guarda por id.
     public Procedimiento guardar(Integer id,String nombre,String descripcion,Integer sistemaId,Integer moduloId,String informacion,EstadoProcedimiento estado,String email){return guardarInterno(id,nombre,descripcion,sistemaId,moduloId,informacion,estado,email,null,false);}
+    // Guarda por id.
     public Procedimiento guardar(Integer id,String nombre,String descripcion,Integer sistemaId,Integer moduloId,String informacion,EstadoProcedimiento estado,String email,Integer hardwareId){return guardarInterno(id,nombre,descripcion,sistemaId,moduloId,informacion,estado,email,hardwareId,true);}
+    // Guarda interno.
     private Procedimiento guardarInterno(Integer id,String nombre,String descripcion,Integer sistemaId,Integer moduloId,String informacion,EstadoProcedimiento estado,String email,Integer hardwareId,boolean cambiarHardware){
         var actor=auditoria.administrador(email);Procedimiento antes=id==null?null:buscar(id);
         if(antes!=null){procedimientos.bloquear(raiz(antes));if(!raiz(antes).equals(antes.id()))procedimientos.bloquear(antes.id());antes=buscar(id);}
@@ -61,6 +71,7 @@ public class EditarProcedimientoAdminService {
         auditoria.registrar(guardado.id(),id==null?"PROCEDIMIENTO_CREADO":"DATOS_MODIFICADOS",actor.getId(),antes==null?null:AuditoriaProcedimientoService.datos(antes),AuditoriaProcedimientoService.datos(guardado));
         return estado==EstadoProcedimiento.PUBLICADO?publicar(guardado.id(),email):guardado;
     }
+    // Publica por id.
     public Procedimiento publicar(Integer id,String email){
         var actor=auditoria.administrador(email);Integer raiz=raiz(buscar(id));procedimientos.bloquear(raiz);if(!raiz.equals(id))procedimientos.bloquear(id);var actual=buscar(id);
         EdicionProcedimiento.exigirEditable(actual,procedimientos);

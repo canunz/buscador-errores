@@ -14,6 +14,10 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Adaptador de base de datos para conocimiento.
+ * Implementa el puerto de salida usando JPA y convierte entre entidades y objetos del dominio.
+ */
 @Component
 public class ConocimientoRepositoryAdapter implements ConocimientoRepository {
     private final ConocimientoJpaRepository repository;
@@ -30,18 +34,21 @@ public class ConocimientoRepositoryAdapter implements ConocimientoRepository {
         this.modulos = modulos; this.frecuencias = frecuencias; this.usuarios = usuarios;
     }
 
+    // Busca todos.
     @Override
     public List<Conocimiento> buscarTodos() {
         return repository.listarConRelaciones(EstadoConocimiento.ELIMINADO).stream()
                 .map(ConocimientoMapper::toDomain).toList();
     }
 
+    // Busca por id.
     @Override
     public Optional<Conocimiento> buscarPorId(Integer id) {
         return buscarPorIdIncluidoEliminado(id)
                 .filter(conocimiento -> conocimiento.getEstado() != EstadoConocimiento.ELIMINADO);
     }
 
+    // Busca por id incluido eliminado.
     @Override
     public Optional<Conocimiento> buscarPorIdIncluidoEliminado(Integer id) {
         return repository.buscarConRelacionesPorId(id).map(ConocimientoMapper::toDomain);
@@ -50,12 +57,14 @@ public class ConocimientoRepositoryAdapter implements ConocimientoRepository {
     @jakarta.persistence.PersistenceContext
     private jakarta.persistence.EntityManager entityManager;
 
+    // Bloquea por id.
     @Override
     public void bloquear(Integer id) {
         repository.bloquearPorId(id).ifPresent(c ->
                 entityManager.refresh(c, jakarta.persistence.LockModeType.PESSIMISTIC_WRITE));
     }
 
+    // Guarda con los datos recibidos.
     @Override
     public Conocimiento guardar(Conocimiento c) {
         HardwareEntity hw = c.getHardware() == null ? null : hardware.getReferenceById(c.getHardware().id());

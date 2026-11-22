@@ -7,6 +7,10 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
+/**
+ * Servicio de preparar versión evidencia (módulo de procedimientos).
+ * Aquí van las reglas de negocio; para leer o guardar datos usa los puertos de salida.
+ */
 @Service
 public class PrepararVersionEvidenciaService {
     private final ProcedimientoRepository procedimientos;private final PasoRepository pasos;private final UsuarioRepository usuarios;

@@ -30,8 +30,8 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
- * Apoyo común de los casos de uso: identifica a la persona autenticada, aplica la regla
- * "el usuario solo ve sus tickets" y arma la vista con nombres y etiquetas.
+ * Pieza compartida de tickets: quién está logueado, si puede ver este ticket
+ * (el usuario solo los suyos) y cómo armar la pantalla con nombres.
  */
 @Service
 public class ContextoTicketService {
@@ -53,11 +53,12 @@ public class ContextoTicketService {
         this.adjuntos = adjuntos;
     }
 
+    // Devuelve actor.
     public ActorTicket actor(String emailAutenticado) {
         UsuarioTicket usuario = usuarios.buscarPorEmail(emailAutenticado)
                 .filter(UsuarioTicket::activo)
                 .orElseThrow(() -> new AccesoTicketDenegadoException("Tu usuario no está activo"));
-        return new ActorTicket(usuario.id(), usuario.nombre(), usuario.rol());
+        return new ActorTicket(usuario.id(), usuario.nombre(), usuario.rol(), usuario.accesoBasico());
     }
 
     /** Autoriza ver el ticket con una sola columna, sin comentarios ni historial. */
@@ -82,6 +83,7 @@ public class ContextoTicketService {
         return ticket;
     }
 
+    // Exige staff.
     public void exigirStaff(ActorTicket actor, String accion) {
         if (!actor.esStaff()) throw new AccesoTicketDenegadoException("Solo soporte puede " + accion);
     }
@@ -94,6 +96,7 @@ public class ContextoTicketService {
         exigirStaff(actor, accion);
     }
 
+    // Exige solicitante.
     public void exigirSolicitante(ActorTicket actor, Ticket ticket, String accion) {
         if (!actor.esSolicitanteDe(ticket)) {
             throw new AccesoTicketDenegadoException("Solo quien creó el ticket puede " + accion);
@@ -107,12 +110,18 @@ public class ContextoTicketService {
         }
     }
 
+    // Exige administrador.
     public void exigirAdministrador(ActorTicket actor, String accion) {
         if (!actor.esAdministrador()) throw new AccesoTicketDenegadoException("Solo un administrador puede " + accion);
     }
 
 
+    // Devuelve detalle.
     public TicketVista detalle(Ticket ticket, ActorTicket actor) {
+        if (actor.accesoBasico()) return new TicketVista(ticket,List.of(),Map.of(),
+            ClasificacionTicket.VACIA,null,List.of(),ticket.getId()==null ? List.of() : adjuntos.listarPorTicket(ticket.getId()).stream()
+                .filter(a -> a.comentarioId()==null && Objects.equals(a.autorId(),actor.id()) && a.mime().matches("image/(jpeg|png|webp)"))
+                .toList()).paraBasico();
         List<ComentarioTicket> comentarios = ticket.comentariosVisiblesPara(actor);
         List<AdjuntoTicket> archivos = ticket.getId() == null ? List.of()
                 : adjuntos.listarPorTicket(ticket.getId()).stream().filter(a -> a.visiblePara(actor, ticket)).toList();
@@ -135,6 +144,7 @@ public class ContextoTicketService {
                 clasificacion, referencia, comentarios, archivos);
     }
 
+    // Devuelve resumenes.
     public List<TicketVista> resumenes(List<Ticket> lista) {
         Set<Integer> idsUsuarios = new HashSet<>();
         Set<Long> idsEtiquetas = new HashSet<>();
@@ -155,6 +165,7 @@ public class ContextoTicketService {
                 nombres, null, null, List.of())).toList();
     }
 
+    // Devuelve etiquetas ordenadas.
     private List<Etiqueta> etiquetasOrdenadas(Set<Long> ids) {
         if (ids.isEmpty()) return List.of();
         return etiquetas.buscarPorIds(ids).stream()

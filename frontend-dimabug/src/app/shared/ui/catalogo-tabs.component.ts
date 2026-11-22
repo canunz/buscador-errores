@@ -2,6 +2,10 @@ import { Component, inject } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
 
+/**
+ * Componente reutilizable de catálogo tabs.
+ * Se usa dentro de otras pantallas; recibe datos por @Input y avisa cambios por @Output.
+ */
 export interface CatalogoTab {
   label: string;
   ruta: string;
@@ -30,6 +34,7 @@ export interface CatalogoTab {
     </nav>
   `,
   styles: `
+
     .tabs {
       display: grid;
       gap: 8px;
@@ -81,17 +86,7 @@ export interface CatalogoTab {
         gap: 4px;
       }
     }
-
-    :host-context(.tema-oscuro) .tabs {
-      background: #111827;
-      border-color: #1f2937;
-    }
-
-    :host-context(.tema-oscuro) .etiqueta,
-    :host-context(.tema-oscuro) a {
-      color: #cbd5e1;
-    }
-  `,
+    `,
 })
 export class CatalogoTabsComponent {
   private readonly router = inject(Router);

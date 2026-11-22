@@ -6,6 +6,10 @@ import { mensajeApiError } from '../http/api-error';
 import { OrganizacionService } from './organizacion.service';
 import { PruebaItem } from '../models/catalogo.model';
 interface PruebaRespuesta { id: number; descripcion: string; resultadoEsperado: string | null; activa: boolean; }
+/**
+ * Servicio de admin pruebas api.
+ * Hace las llamadas HTTP al backend y entrega los datos a los componentes.
+ */
 @Injectable({ providedIn: 'root' })
 export class AdminPruebasApiService {
   private readonly http = inject(HttpClient);

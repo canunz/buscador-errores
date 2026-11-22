@@ -7,6 +7,10 @@ import cl.casol.backend.identidad.infrastructure.persistence.repository.Departam
 import org.springframework.stereotype.Component;
 import java.util.List;
 
+/**
+ * Adaptador de base de datos para departamento contacto.
+ * Implementa el puerto de salida usando JPA y convierte entre entidades y objetos del dominio.
+ */
 @Component
 public class DepartamentoContactoRepositoryAdapter implements DepartamentoContactoRepository {
     private final DepartamentoContactoJpaRepository repository;
@@ -15,6 +19,7 @@ public class DepartamentoContactoRepositoryAdapter implements DepartamentoContac
         this.repository = repository;
     }
 
+    // Busca activos por departamento ordenados por id.
     @Override
     public List<DepartamentoContacto> buscarActivosPorDepartamentoOrdenadosPorId(Integer departamentoId) {
         return repository.findByDepartamentoIdAndActivoTrueOrderByIdAsc(departamentoId).stream()

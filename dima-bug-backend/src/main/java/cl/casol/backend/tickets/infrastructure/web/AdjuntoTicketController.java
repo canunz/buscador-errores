@@ -16,6 +16,10 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
+/**
+ * Controlador REST de adjunto ticket. Atiende las rutas que empiezan con /api/tickets/{ticketId}/adjuntos.
+ * Solo recibe la petición, valida los datos y llama al caso de uso que corresponde.
+ */
 @RestController
 @RequestMapping("/api/tickets/{ticketId}/adjuntos")
 public class AdjuntoTicketController {
@@ -40,6 +44,7 @@ public class AdjuntoTicketController {
                 contenido, authentication.getName()));
     }
 
+    // Descarga el ticket indicado.
     @GetMapping("/{adjuntoId}")
     public ResponseEntity<byte[]> descargar(@PathVariable Long ticketId, @PathVariable Long adjuntoId,
             Authentication authentication) {
@@ -50,7 +55,7 @@ public class AdjuntoTicketController {
                 .header(HttpHeaders.CONTENT_DISPOSITION, ContentDisposition.inline()
                         .filename(archivo.nombre(), StandardCharsets.UTF_8).build().toString())
                 .header("X-Content-Type-Options", "nosniff")
-                .header(HttpHeaders.CACHE_CONTROL, "private, max-age=3600")
+                .header(HttpHeaders.CACHE_CONTROL, "private, no-store")
                 .body(archivo.contenido());
     }
 }

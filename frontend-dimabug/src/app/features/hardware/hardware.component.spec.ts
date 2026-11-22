@@ -22,6 +22,8 @@ describe('QA-010 acceso a administrar Hardware', () => {
     expect(enlace.getAttribute('href')).toBe('/admin/catalogo/hardware');
     expect(enlace.textContent).toContain('Administrar Hardware');
     expect(f.nativeElement.querySelector('.hw-admin-actions').textContent).toContain('Administrar Hardware');
+    expect(f.nativeElement.querySelector('.hw-admin-actions .btn-sec').textContent).toContain('Todos los Sistemas');
+    expect(f.nativeElement.querySelector('.hw-admin-nota').textContent).toContain('asocia sistemas');
   });
   it('técnico conserva consulta y no ve administración', () => {
     admin = false; const f = TestBed.createComponent(HardwareComponent); f.detectChanges();

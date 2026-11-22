@@ -9,6 +9,10 @@ import jakarta.persistence.Table;
 
 import java.time.LocalDateTime;
 
+/**
+ * Entidad JPA de código acceso. Representa una fila de la tabla u_codigo_acceso.
+ * Se usa solo en la capa de persistencia; el dominio trabaja con su propio modelo.
+ */
 @Entity
 @Table(name = "u_codigo_acceso")
 public class CodigoAccesoEntity {

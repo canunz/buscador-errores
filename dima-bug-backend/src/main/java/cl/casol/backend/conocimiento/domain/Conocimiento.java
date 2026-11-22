@@ -8,6 +8,9 @@ import cl.casol.backend.identidad.domain.Usuario;
 
 import java.time.LocalDateTime;
 
+/**
+ * Modelo de dominio de conocimiento (módulo de conocimiento).
+ */
 public class Conocimiento {
     private final Integer id;
     private final String titulo;

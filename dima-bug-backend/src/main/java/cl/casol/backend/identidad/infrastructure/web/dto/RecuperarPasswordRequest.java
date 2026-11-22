@@ -5,6 +5,10 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
+/**
+ * Datos que llegan en la petición para recuperar password.
+ * Las anotaciones de validación revisan los campos antes de llegar al servicio.
+ */
 public record RecuperarPasswordRequest(
         @NotBlank(message = "El correo es obligatorio")
         @Email(message = "Ingrese un correo válido")

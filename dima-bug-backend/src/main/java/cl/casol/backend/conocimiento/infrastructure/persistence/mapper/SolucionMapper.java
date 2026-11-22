@@ -6,14 +6,20 @@ import cl.casol.backend.conocimiento.infrastructure.persistence.entity.SolucionA
 import cl.casol.backend.conocimiento.infrastructure.persistence.entity.SolucionEntity;
 import cl.casol.backend.identidad.infrastructure.persistence.mapper.OrganizacionMapper;
 
+/**
+ * Convierte los datos de solución entre la base de datos o la API y el dominio.
+ */
 public final class SolucionMapper {
     private SolucionMapper() { }
+    // Convierte la entidad al modelo del dominio.
     public static Solucion toDomain(SolucionEntity e) {
         return new Solucion(e.getId(), e.getConocimientoId(), e.getDescripcion(), e.getTipo(), e.getOrden(), e.getTitulo(), e.isActivo(), e.isAutoservicio());
     }
+    // Convierte el modelo del dominio a la entidad de base de datos.
     public static SolucionEntity toEntity(Solucion s) {
         return new SolucionEntity(s.id(), s.conocimientoId(), s.descripcion(), s.tipo(), s.orden(), s.titulo(), s.activo(), s.autoservicio());
     }
+    // Convierte la entidad al modelo del dominio.
     public static SolucionAsignacion toDomain(SolucionAsignacionEntity e) {
         return new SolucionAsignacion(e.getId(), e.getSolucion().getId(),
                 e.getResponsable() == null ? null : OrganizacionMapper.toDomain(e.getResponsable()),

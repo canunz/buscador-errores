@@ -7,8 +7,13 @@ import { RespaldoPruebasLocalService } from '../../core/services/respaldo-prueba
 import { AuthService } from '../../core/services/auth.service';
 import { PruebaItem } from '../../core/models/catalogo.model';
 import { AyudaFranjaComponent } from '../../shared/ui/ayuda-franja.component';
+import { AvisoErrorComponent } from '../../shared/ui/aviso-error.component';
 import { LoadingModalComponent } from '../../shared/ui/loading-modal.component';
-@Component({ selector: 'app-pruebas', standalone: true, imports: [ReactiveFormsModule, LoadingModalComponent, AyudaFranjaComponent],
+/**
+ * Pantalla de pruebas.
+ * Carga los datos con su servicio y maneja lo que el usuario hace en la vista.
+ */
+@Component({ selector: 'app-pruebas', standalone: true, imports: [ReactiveFormsModule, LoadingModalComponent, AyudaFranjaComponent, AvisoErrorComponent],
  templateUrl: './pruebas.component.html', styleUrls: ['../../shared/ui/catalogo-page.css', './pruebas.component.css'] })
 export class PruebasComponent implements OnInit {
  private readonly organizacion = inject(OrganizacionService);

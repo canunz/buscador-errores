@@ -3,6 +3,9 @@ import { HttpClient, HttpResponse } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
 import { TipoMaterial } from '../models/conocimiento.model';
 
+/**
+ * Funciones de apoyo para material archivo.
+ */
 export const MAX_MATERIAL_BYTES = 10 * 1024 * 1024;
 export const MIME_PDF = 'application/pdf';
 export const MIME_IMAGEN = ['image/png', 'image/jpeg', 'image/webp'] as const;

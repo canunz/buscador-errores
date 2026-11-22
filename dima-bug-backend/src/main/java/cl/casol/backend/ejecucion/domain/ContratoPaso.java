@@ -15,6 +15,7 @@ public record ContratoPaso(int version, int orden, String instruccion,
     }
     public ContratoPaso(int version,int orden,String instruccion,boolean critico,ModoEjecucionPaso modo){this(version,orden,instruccion,critico,modo,null);}
 
+    // Captura el paso.
     public static ContratoPaso capturar(Paso paso) {
         return new ContratoPaso(1, paso.orden(), paso.instruccion(), paso.esCritico(), paso.modoEjecucion(),paso.configuracion());
     }

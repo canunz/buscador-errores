@@ -35,7 +35,8 @@
     }
   </div>
 
-  @if (!cargando && !sinServicio) {
+  <!-- El usuario solo ve sus indicadores; la lista de pendientes es para Soporte y el administrador. -->
+  @if (!cargando && !sinServicio && vista !== 'usuario') {
     <div class="rt-columnas" [class.rt-dos]="vista === 'admin'">
       <div class="tk-card rt-lista">
         <h3>{{ textos[vista].lista }}</h3>
@@ -46,24 +47,23 @@
                 <button type="button" (click)="abrir(t)" [class.rt-critico]="t.prioridad === 'CRITICA'">
                   <span class="tk-codigo">{{ t.codigo }}</span>
                   <span class="rt-titulo">{{ t.titulo }}</span>
-                  @if (vista === 'usuario') {
-                    <span [class]="'tk-badge ' + estadoInfo[t.estado].clase">{{ estadoUsuario(t.estado) }}</span>
-                  } @else {
-                    <span [class]="'tk-badge ' + prioridadInfo[t.prioridad].clase">{{ prioridadInfo[t.prioridad].label }}</span>
-                  }
+                  <span [class]="'tk-badge ' + prioridadInfo[t.prioridad].clase">{{ prioridadInfo[t.prioridad].label }}</span>
                   <span class="rt-meta" [title]="larga(t.fechaCreacion)">
                     @if (vista === 'admin') {
-                      {{ t.solicitante?.nombre || '—' }} · {{ relativa(t.fechaCreacion) }}
-                    } @else if (vista === 'soporte') {
-                      {{ estadoInfo[t.estado].label }}
+                      {{ t.solicitante?.nombre || '—' }} · {{ tiempo(t)?.texto || relativa(t.fechaCreacion) }}
                     } @else {
-                      {{ textoUsuario(t) }}
+                      {{ tiempo(t)?.texto || estadoInfo[t.estado].label }}
                     }
                   </span>
                 </button>
               </li>
             }
           </ul>
+          @if (verMasCola) {
+            <a class="rt-ver-mas" [routerLink]="rutaLista" [queryParams]="{ asignadoId: miId }">
+              Ver más ({{ listaTotal - lista.length }})
+            </a>
+          }
         } @else {
           <p class="rt-vacio">{{ textos[vista].vacio }}</p>
         }

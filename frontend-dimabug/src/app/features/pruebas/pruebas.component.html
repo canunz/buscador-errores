@@ -12,7 +12,7 @@
     }
   </div>
 
-  @if (error) { <p role="alert" class="alert">{{ error }} <button type="button" (click)="cargar()">Reintentar</button></p> }
+  @if (error) { <app-aviso-error [mensaje]="error" [ocupado]="loading" (reintentar)="cargar()" /> }
   @if (mensaje) { <p role="status" class="catalogo-ok">{{ mensaje }}</p> }
 
   <div class="tabla-wrap">
@@ -33,7 +33,7 @@
                 <button type="button" class="act ver" (click)="ver(p)">Ver</button>
                 @if (esAdministrador()) {
                   <button type="button" class="act edit" (click)="abrirFormulario(p)" [disabled]="saving || loading">Editar</button>
-                  <button type="button" class="act del" (click)="pedirCambioEstado(p)" [disabled]="saving || loading">{{ p.activo ? 'Desactivar' : 'Reactivar' }}</button>
+                  <button type="button" class="act" [class.del]="p.activo" (click)="pedirCambioEstado(p)" [disabled]="saving || loading">{{ p.activo ? 'Desactivar' : 'Reactivar' }}</button>
                 }
               </div>
             </td>
@@ -107,7 +107,7 @@
       @if (formError) { <p role="alert" class="alert">{{ formError }}</p> }
       <div class="confirm-acciones">
         <button type="button" (click)="cancelarEstado()" [disabled]="saving">Cancelar</button>
-        <button type="button" (click)="confirmarEstado()" [disabled]="saving">{{ saving ? 'Guardando…' : 'Confirmar' }}</button>
+        <button type="button" [class.btn-peligro]="pendienteEstado.activo" (click)="confirmarEstado()" [disabled]="saving">{{ saving ? 'Guardando…' : 'Confirmar' }}</button>
       </div>
     </div>
   </div>

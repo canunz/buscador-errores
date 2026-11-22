@@ -124,6 +124,10 @@
 
   <app-resumen-tickets />
 
+  @if (rolVista() === 'admin') {
+    <app-tickets-por-usuario />
+  }
+
   @if (!isStaff()) {
     <section class="como" aria-labelledby="como-title">
       <div class="seccion-titulo">
@@ -453,19 +457,6 @@
           @if (favoritosCount() > 0) {
             <span class="contador" aria-hidden="true">{{ favoritosCount() }}</span>
           }
-          <span class="flecha-wrap" aria-hidden="true"><svg class="flecha" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6" /></svg></span>
-        </button>
-        <button type="button" class="card-acceso" data-color="verde" (click)="ir('/reportes')">
-          <span class="icono-cuadrado" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M4 19V5M4 19h16" />
-              <path d="M8 16v-5M12 16V8M16 16v-3" />
-            </svg>
-          </span>
-          <span class="card-acceso-texto">
-            <h3>Reportes</h3>
-            <p>Revisa el uso de la base de conocimiento.</p>
-          </span>
           <span class="flecha-wrap" aria-hidden="true"><svg class="flecha" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6" /></svg></span>
         </button>
       }

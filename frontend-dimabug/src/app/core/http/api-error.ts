@@ -1,5 +1,8 @@
 import { HttpErrorResponse } from '@angular/common/http';
 
+/**
+ * Funciones de apoyo para api error.
+ */
 export function mensajeApiError(err: HttpErrorResponse, fallback: string): string {
   if (err.status === 400) {
     return mensajeSeguro(err, 'Los datos o la clasificación no son válidos.');

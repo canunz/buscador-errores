@@ -25,6 +25,21 @@ public record TicketVista(Ticket ticket, List<Etiqueta> etiquetas, Map<Integer, 
         this(ticket, etiquetas, usuarios, clasificacion, conocimiento, comentarios, List.of());
     }
 
+    // Devuelve para básico.
+    public TicketVista paraBasico() {
+        Ticket t=ticket;
+        Ticket seguro=new Ticket(t.getId(),t.getCodigo(),t.getTitulo(),t.getDescripcion(),t.getEstado(),t.getPrioridad(),
+            t.getSolicitanteId(),null,null,null,null,null,null,t.getFechaCreacion(),t.getFechaActualizacion(),
+            t.getFechaResolucion(),t.getFechaCierre(),java.util.Set.of(),List.of(),List.of());
+        seguro.registrarDatosSolicitante(t.getDatosSolicitante());
+        UsuarioTicket propio=usuarios.get(t.getSolicitanteId());
+        return new TicketVista(seguro,List.of(),propio==null?Map.of():Map.of(t.getSolicitanteId(),propio),
+            ClasificacionTicket.VACIA,null,List.of(),adjuntos.stream()
+                .filter(a -> a.comentarioId()==null && java.util.Objects.equals(a.autorId(),t.getSolicitanteId()))
+                .map(a -> new AdjuntoTicket(a.id(),a.ticketId(),null,a.nombre(),a.mime(),a.tamano(),null,null,a.fecha())).toList());
+    }
+
+    // Devuelve usuario.
     public UsuarioTicket usuario(Integer id) {
         return id == null ? null : usuarios.get(id);
     }

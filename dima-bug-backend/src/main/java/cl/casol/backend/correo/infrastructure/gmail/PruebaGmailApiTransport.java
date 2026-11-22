@@ -6,10 +6,14 @@ import cl.casol.backend.ejecucion.infrastructure.automatizacion.MensajeCorreoMim
 import org.springframework.stereotype.Component;
 import java.util.*;
 import java.io.ByteArrayOutputStream;
+/**
+ * Prueba gmail api transport (módulo de correo).
+ */
 @Component
 public class PruebaGmailApiTransport implements PruebaGmailTransport {
     private final GmailOAuthService gmail;private final GmailConfig config;
     public PruebaGmailApiTransport(GmailOAuthService gmail,GmailConfig config){this.gmail=gmail;this.config=config;}
+    // Envía el destinatario.
     public String enviar(String destinatario,String referencia){
         try{var mime=MensajeCorreoMime.crear(config.remitente,List.of(new DestinatarioPaso(destinatario,null)),"[DimaBug] Prueba controlada Gmail API","Mensaje de prueba controlada de DimaBug. Confirma manualmente su recepción. Este envío no modifica procedimientos ni acredita recepción de evidencias.","DIMABUG-PRUEBA-"+referencia);var bytes=new ByteArrayOutputStream();mime.writeTo(bytes);return gmail.enviar(Base64.getUrlEncoder().withoutPadding().encodeToString(bytes.toByteArray()));}
         catch(GmailException ex){throw ex;}catch(Exception ex){throw new GmailException(GmailException.Tipo.CONFIGURACION);}

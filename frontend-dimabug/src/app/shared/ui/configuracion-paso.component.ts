@@ -2,6 +2,10 @@ import { Component, EventEmitter, Input, OnChanges, Output } from '@angular/core
 import { FormsModule } from '@angular/forms';
 import { ConfiguracionPaso, ModalidadPaso, configuracionInicial, modalidadVisible } from '../../core/models/configuracion-paso.model';
 import { DestinatariosEditorComponent } from './destinatarios-editor.component';
+/**
+ * Componente reutilizable de configuración paso.
+ * Se usa dentro de otras pantallas; recibe datos por @Input y avisa cambios por @Output.
+ */
 @Component({selector:'app-configuracion-paso',standalone:true,imports:[FormsModule,DestinatariosEditorComponent],templateUrl:'./configuracion-paso.component.html',styleUrl:'./configuracion-paso.component.css'})
 export class ConfiguracionPasoComponent implements OnChanges {
   @Input() modo:ModalidadPaso='MANUAL_GUIADO';@Output() modoChange=new EventEmitter<ModalidadPaso>();

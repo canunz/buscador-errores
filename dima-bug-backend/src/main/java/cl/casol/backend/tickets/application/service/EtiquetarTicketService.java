@@ -20,6 +20,10 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+/**
+ * Servicio de etiquetar ticket (módulo de tickets).
+ * Aquí van las reglas de negocio; para leer o guardar datos usa los puertos de salida.
+ */
 @Service
 @Transactional
 public class EtiquetarTicketService implements EtiquetarTicketUseCase {
@@ -34,6 +38,7 @@ public class EtiquetarTicketService implements EtiquetarTicketUseCase {
         this.contexto = contexto;
     }
 
+    // Etiqueta el ticket indicado.
     @Override
     public TicketVista etiquetar(Long ticketId, Set<Long> etiquetaIds, String emailAutenticado) {
         ActorTicket actor = contexto.actor(emailAutenticado);

@@ -1,14 +1,15 @@
 import { TestBed } from '@angular/core/testing';
 import { ActivatedRouteSnapshot, Router, RouterStateSnapshot, provideRouter } from '@angular/router';
-import { adminGuard, staffGuard } from './auth.guard';
+import { adminGuard, staffGuard, alcanceBasicoGuard } from './auth.guard';
 import { AuthService } from '../services/auth.service';
 import { esAdministrador } from '../models/usuario.model';
 describe('Acceso administrativo y operacional', () => {
-  const estado = { autenticado: true, admin: false, staff: true };
+  const estado = { autenticado: true, admin: false, staff: true, basico: false };
   beforeEach(() => {
-    estado.autenticado = true; estado.admin = false; estado.staff = true;
+    estado.autenticado = true; estado.admin = false; estado.staff = true; estado.basico = false;
     TestBed.configureTestingModule({ providers: [provideRouter([]), { provide: AuthService, useValue: {
       isAuthenticated: () => estado.autenticado, isAdmin: () => estado.admin, isStaff: () => estado.staff,
+      accesoBasico: () => estado.basico,
     } }] });
   });
   const ejecutar = (guard: typeof adminGuard) => TestBed.runInInjectionContext(() => guard({} as ActivatedRouteSnapshot, {} as RouterStateSnapshot));
@@ -21,5 +22,12 @@ describe('Acceso administrativo y operacional', () => {
   it('solo el nombre canónico concede administración', () => {
     expect(esAdministrador({ rolNombre: 'ADMINISTRADOR' } as any)).toBeTrue();
     expect(esAdministrador({ rolNombre: 'ADMIN' } as any)).toBeFalse();
+  });
+  it('el alcance básico solo permite el portal propio', () => {
+    estado.basico = true;
+    const probar = (url: string) => TestBed.runInInjectionContext(() => alcanceBasicoGuard({} as ActivatedRouteSnapshot, {url} as RouterStateSnapshot));
+    expect(probar('/solicitudes')).toBeTrue();
+    for (const ruta of ['/inicio','/conocimiento','/procedimientos','/usuarios','/tickets/bandeja'])
+      expect(TestBed.inject(Router).serializeUrl(probar(ruta) as any)).toBe('/solicitudes');
   });
 });

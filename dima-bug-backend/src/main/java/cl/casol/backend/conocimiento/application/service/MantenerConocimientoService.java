@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 
+/** Casos de uso del conocimiento: crear, editar, publicar y eliminar, con sus reglas. */
 @Service
 @Transactional(readOnly = true)
 public class MantenerConocimientoService {
@@ -43,10 +44,12 @@ public class MantenerConocimientoService {
 
     public List<Conocimiento> listar() { return conocimientos.buscarTodos(); }
 
+    // Busca por id.
     public Conocimiento buscar(Integer id) {
         return conocimientos.buscarPorId(id).orElseThrow(() -> new ConocimientoNoEncontradoException(id));
     }
 
+    /** Crea el conocimiento revisando que la clasificación sea válida. */
     @Transactional
     public Conocimiento crear(String titulo, String descripcion, Integer hardwareId, Integer sistemaId,
             Integer moduloId, Integer frecuenciaId, String comentario, String emailAutenticado) {
@@ -62,6 +65,7 @@ public class MantenerConocimientoService {
         return guardado;
     }
 
+    /** Modifica los datos del conocimiento. */
     @Transactional
     public Conocimiento modificar(Integer id, String titulo, String descripcion, Integer hardwareId,
             Integer sistemaId, Integer moduloId, Integer frecuenciaId, String comentario,
@@ -86,6 +90,7 @@ public class MantenerConocimientoService {
         return guardado;
     }
 
+    /** Publica o vuelve a borrador; solo lo publicado se ve en búsquedas y autoservicio. */
     @Transactional
     public Conocimiento cambiarEstado(Integer id, EstadoConocimiento estado, String emailAutenticado) {
         conocimientos.bloquear(id);
@@ -103,6 +108,7 @@ public class MantenerConocimientoService {
         return guardado;
     }
 
+    /** Elimina el conocimiento. */
     @Transactional
     public void eliminar(Integer id, String emailAutenticado) {
         conocimientos.bloquear(id);
@@ -119,20 +125,24 @@ public class MantenerConocimientoService {
         indexador.eliminar(id);
     }
 
+    // Valida comentario.
     private void validarComentario(String comentario) {
         if (comentario != null && comentario.length() > 500)
             throw new ClasificacionInvalidaException("Comentario: máximo 500 caracteres");
     }
 
+    // Valida título.
     private void validarTitulo(String titulo) {
         if (titulo == null || titulo.isBlank() || titulo.length() > 150)
             throw new ClasificacionInvalidaException("Título obligatorio; máximo 150 caracteres");
     }
 
+    // Obtiene usuario.
     private Usuario obtenerUsuario(String email) {
         return usuarios.buscarPorEmail(email).orElseThrow(UsuarioNoEncontradoException::new);
     }
 
+    // Valida clasificación.
     private Clasificacion validarClasificacion(Integer hardwareId, Integer sistemaId,
             Integer moduloId, Integer frecuenciaId) {
         Hardware hardwareEncontrado = hardwareId == null ? null : hardware.buscarActivoPorId(hardwareId)
@@ -156,9 +166,11 @@ public class MantenerConocimientoService {
         return new Clasificacion(hardwareEncontrado, sistemaEncontrado, moduloEncontrado, frecuenciaEncontrada);
     }
 
+    // Devuelve inválida.
     private ClasificacionInvalidaException invalida(String mensaje) {
         return new ClasificacionInvalidaException(mensaje);
     }
 
+    // Devuelve clasificación.
     private record Clasificacion(Hardware hardware, Sistema sistema, Modulo modulo, Frecuencia frecuencia) { }
 }

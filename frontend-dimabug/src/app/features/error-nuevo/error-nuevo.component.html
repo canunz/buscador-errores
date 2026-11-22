@@ -1,4 +1,4 @@
-<p role="status">{{ catalogoLoading ? "Cargando catálogos…" : "" }}</p>
+<app-loading-modal [visible]="catalogoLoading" mensaje="Preparando los catálogos" />
 @if (catalogoError) { <p class="alert" role="alert">{{ catalogoError }}</p> }
 @if (!puedeGestionar()) {
   <section class="aviso-page">

@@ -26,22 +26,26 @@ public class UsuarioConsultaAdapter implements UsuarioConsultaPort {
         this.identidad = identidad;
     }
 
+    // Busca por email.
     @Override
     public Optional<UsuarioTicket> buscarPorEmail(String email) {
         return identidad.buscarPorEmail(email).map(UsuarioConsultaAdapter::traducir);
     }
 
+    // Busca por id.
     @Override
     public Optional<UsuarioTicket> buscarPorId(Integer id) {
         return identidad.buscarPorId(id).map(UsuarioConsultaAdapter::traducir);
     }
 
+    // Busca por ids.
     @Override
     public Map<Integer, UsuarioTicket> buscarPorIds(Collection<Integer> ids) {
         return identidad.buscarPorIds(ids).stream().map(UsuarioConsultaAdapter::traducir)
                 .collect(Collectors.toMap(UsuarioTicket::id, Function.identity(), (a, b) -> a));
     }
 
+    // Devuelve rol.
     public static RolTicket rol(String nombreRol) {
         String rol = nombreRol == null ? "" : nombreRol.trim().toUpperCase(Locale.ROOT);
         if (rol.equals("ADMINISTRADOR")) return RolTicket.ADMINISTRADOR;
@@ -49,7 +53,8 @@ public class UsuarioConsultaAdapter implements UsuarioConsultaPort {
         return RolTicket.USUARIO;
     }
 
+    // Traduce el usuario.
     private static UsuarioTicket traducir(UsuarioPublico usuario) {
-        return new UsuarioTicket(usuario.id(), usuario.nombre(), usuario.email(), rol(usuario.rol()), usuario.activo());
+        return new UsuarioTicket(usuario.id(), usuario.nombre(), usuario.email(), rol(usuario.rol()), usuario.activo(), usuario.accesoBasico());
     }
 }

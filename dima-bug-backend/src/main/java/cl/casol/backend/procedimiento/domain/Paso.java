@@ -1,5 +1,8 @@
 package cl.casol.backend.procedimiento.domain;
 
+/**
+ * Modelo de dominio de paso. Es inmutable: cada cambio crea un objeto nuevo.
+ */
 public record Paso(Integer id, Integer procedimientoId, Integer orden, String instruccion,
         boolean esCritico, ModoEjecucionPaso modoEjecucion, String mensajeEvidencia,ConfiguracionPaso configuracion) {
     public Paso {
@@ -10,6 +13,7 @@ public record Paso(Integer id, Integer procedimientoId, Integer orden, String in
         if(modoEjecucion.esEvidencia() && configuracion.evidenciasRequeridas().isEmpty())throw new cl.casol.backend.procedimiento.domain.exception.EstadoProcedimientoInvalidoException("Selecciona al menos una categoría de evidencia");
     }
     public Paso(Integer id,Integer procedimientoId,Integer orden,String instruccion,boolean critico,ModoEjecucionPaso modo,String mensaje){this(id,procedimientoId,orden,instruccion,critico,modo,mensaje,null);}
+    // Devuelve revisión configuración.
     public String revisionConfiguracion(){try{return java.util.HexFormat.of().formatHex(java.security.MessageDigest.getInstance("SHA-256").digest((modoEjecucion+"|"+esCritico+"|"+configuracion).getBytes(java.nio.charset.StandardCharsets.UTF_8)));}catch(Exception e){throw new IllegalStateException(e);}}
     public Paso(Integer id,Integer procedimientoId,Integer orden,String instruccion,boolean esCritico) {
         this(id,procedimientoId,orden,instruccion,esCritico,ModoEjecucionPaso.MANUAL,null,null);

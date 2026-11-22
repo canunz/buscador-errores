@@ -2,6 +2,10 @@ package cl.casol.backend.procedimiento.infrastructure.persistence.entity;
 
 import jakarta.persistence.*;
 
+/**
+ * Entidad JPA de paso. Representa una fila de la tabla pr_paso.
+ * Se usa solo en la capa de persistencia; el dominio trabaja con su propio modelo.
+ */
 @Entity
 @Table(name = "pr_paso", uniqueConstraints = @UniqueConstraint(columnNames = {"procedimiento_id", "paso_orden"}))
 public class PasoEntity {
@@ -30,6 +34,7 @@ public class PasoEntity {
     }
     public cl.casol.backend.procedimiento.domain.ModoEjecucionPaso getModoEjecucion(){return modoEjecucion;}
     public String getMensajeEvidencia(){return mensajeEvidencia;}
+    // Configura con los datos recibidos.
     public void configurar(cl.casol.backend.procedimiento.domain.ConfiguracionPaso c){configuracionJson=cl.casol.backend.procedimiento.infrastructure.persistence.mapper.ConfiguracionPasoJson.escribir(c);}
     public cl.casol.backend.procedimiento.domain.ConfiguracionPaso getConfiguracion(){return cl.casol.backend.procedimiento.infrastructure.persistence.mapper.ConfiguracionPasoJson.leer(configuracionJson);}
     public String getHistorial(){return historial;}

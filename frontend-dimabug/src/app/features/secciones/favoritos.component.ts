@@ -9,6 +9,10 @@ interface FavoritoVista extends FavoritoItem {
   estado?: ConocimientoEstado;
 }
 
+/**
+ * Pantalla de favoritos.
+ * Carga los datos con su servicio y maneja lo que el usuario hace en la vista.
+ */
 @Component({
   selector: 'app-favoritos',
   standalone: true,

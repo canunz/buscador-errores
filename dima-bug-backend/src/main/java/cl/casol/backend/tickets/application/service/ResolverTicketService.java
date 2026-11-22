@@ -14,6 +14,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
+/**
+ * Servicio de resolver ticket (módulo de tickets).
+ * Aquí van las reglas de negocio; para leer o guardar datos usa los puertos de salida.
+ */
 @Service
 @Transactional
 public class ResolverTicketService implements ResolverTicketUseCase {
@@ -28,6 +32,7 @@ public class ResolverTicketService implements ResolverTicketUseCase {
         this.contexto = contexto;
     }
 
+    // Resuelve el ticket indicado.
     @Override
     public TicketVista resolver(Long ticketId, String solucion, Integer conocimientoId, String emailAutenticado) {
         ActorTicket actor = contexto.actor(emailAutenticado);
@@ -40,6 +45,7 @@ public class ResolverTicketService implements ResolverTicketUseCase {
         return contexto.detalle(tickets.guardar(ticket), actor);
     }
 
+    // Crea conocimiento desde ticket.
     @Override
     public TicketVista crearConocimientoDesdeTicket(Long ticketId, String emailAutenticado) {
         ActorTicket actor = contexto.actor(emailAutenticado);

@@ -13,13 +13,16 @@ import static org.mockito.Mockito.*;
 
 class AsignarTicketServiceTest {
     private final EscenarioTickets e = new EscenarioTickets();
-    private final AsignarTicketService service = new AsignarTicketService(e.tickets, e.usuarios, e.contexto);
+    private final PresentacionTecnicoTicket presentacion = new PresentacionTecnicoTicket(e.usuarios);
+    private final AsignarTicketService service = new AsignarTicketService(e.tickets, e.usuarios, e.contexto, presentacion);
 
     @Test void soporteSeAsignaASiMismoYElTicketPasaAEnProgreso() {
         var ticket = e.ticket(EstadoTicket.ABIERTO, null);
         service.asignar(100L, SOPORTE.id(), EMAIL_SOPORTE);
         assertEquals(SOPORTE.id(), ticket.getAsignadoId());
         assertEquals(EstadoTicket.EN_PROGRESO, ticket.getEstado());
+        assertEquals(1, ticket.getComentarios().size());
+        assertEquals("Hola, soy Tito. Yo te ayudaré con tu problema.", ticket.getComentarios().get(0).texto());
         verify(e.tickets).guardar(ticket);
     }
 
@@ -33,6 +36,7 @@ class AsignarTicketServiceTest {
         var ticket = e.ticket(EstadoTicket.EN_PROGRESO, SOPORTE.id());
         service.asignar(100L, SOPORTE_2.id(), "s2@dimarsa.cl");
         assertEquals(SOPORTE_2.id(), ticket.getAsignadoId());
+        assertTrue(ticket.getComentarios().stream().anyMatch(c -> c.texto().contains("soy Otra")));
     }
 
     @Test void adminAsignaUnTicketSinTecnico() {

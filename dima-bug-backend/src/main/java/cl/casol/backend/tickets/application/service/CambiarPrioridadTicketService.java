@@ -11,6 +11,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
+/**
+ * Servicio de cambiar prioridad ticket (módulo de tickets).
+ * Aquí van las reglas de negocio; para leer o guardar datos usa los puertos de salida.
+ */
 @Service
 @Transactional
 public class CambiarPrioridadTicketService implements CambiarPrioridadTicketUseCase {
@@ -22,6 +26,7 @@ public class CambiarPrioridadTicketService implements CambiarPrioridadTicketUseC
         this.contexto = contexto;
     }
 
+    // Cambia prioridad.
     @Override
     public TicketVista cambiarPrioridad(Long ticketId, PrioridadTicket prioridad, String motivo, String emailAutenticado) {
         ActorTicket actor = contexto.actor(emailAutenticado);

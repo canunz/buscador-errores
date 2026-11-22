@@ -8,6 +8,7 @@ import { AuthSession, Usuario, esAdministrador, esSoporte, esStaff } from '../mo
 const STORAGE_KEY = 'dimabug.auth';
 
 interface LoginResponse {
+  accesoBasico?: boolean;
   token: string;
   usuarioId: number;
   nombre: string;
@@ -19,7 +20,7 @@ export interface SolicitudCodigoAcceso {
   message: string;
   segundosVigencia: number;
   segundosReenvio: number;
-  modo?: 'CODIGO' | 'PASSWORD' | string;
+  modo?: 'CODIGO' | string;
 }
 
 /** Error del ingreso con código; en un reenvío anticipado indica cuántos segundos faltan. */
@@ -28,21 +29,30 @@ export type CodigoAccesoError = Error & { segundosRestantes?: number };
 interface AuthMeResponse {
   email: string;
   estado: string;
+  accesoBasico?: boolean;
 }
 
+/**
+ * Servicio de sesión: login con código, guardar la sesión en el navegador,
+ * saber el rol del usuario y cerrar sesión.
+ */
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private readonly http = inject(HttpClient);
   private readonly router = inject(Router);
 
+  // Sesión actual; al abrir la página se lee la que quedó guardada
   private readonly sessionSignal = signal<AuthSession | null>(this.readSession());
 
   readonly session = this.sessionSignal.asReadonly();
   readonly usuario = computed(() => this.sessionSignal()?.usuario ?? null);
+  // Hay sesión si existe token y usuario
   readonly isAuthenticated = computed(() => {
     const session = this.sessionSignal();
     return !!session?.token && !!session.usuario;
   });
+  readonly accesoBasico = computed(() => this.usuario()?.accesoBasico === true);
+  // Roles del usuario, para mostrar u ocultar opciones
   readonly isAdmin = computed(() => esAdministrador(this.sessionSignal()?.usuario));
   readonly isSoporte = computed(() => esSoporte(this.sessionSignal()?.usuario));
   readonly isStaff = computed(() => esStaff(this.sessionSignal()?.usuario));
@@ -56,28 +66,6 @@ export class AuthService {
     return this.http
       .post<SolicitudCodigoAcceso>(apiUrl('/auth/codigo'), { email: valor })
       .pipe(catchError((err: HttpErrorResponse) => throwError(() => this.codigoError(err, 'solicitar'))));
-  }
-
-  /** Administrador y Soporte: correo y contraseña. */
-  login(email: string, password: string): Observable<AuthSession> {
-    return this.http
-      .post<LoginResponse>(apiUrl('/auth/login'), {
-        email: email.trim(),
-        password,
-      })
-      .pipe(
-        map((res) => this.sessionFromLogin(res)),
-        tap((session) => this.persist(session)),
-        catchError((err: HttpErrorResponse) => {
-          if (err.status === 401) {
-            return throwError(() => new Error('Correo o contraseña incorrectos.'));
-          }
-          if (err.status === 403) {
-            return throwError(() => new Error('Su cuenta no tiene autorización o está inactiva.'));
-          }
-          return throwError(() => new Error(this.httpError(err, 'No fue posible iniciar sesión. Intente nuevamente.')));
-        }),
-      );
   }
 
   /** Paso 2 del ingreso: valida el código recibido y abre la sesión. */
@@ -94,6 +82,7 @@ export class AuthService {
       );
   }
 
+  /** Pregunta al backend si la sesión sigue válida. */
   me(): Observable<AuthMeResponse> {
     return this.http.get<AuthMeResponse>(apiUrl('/auth/me')).pipe(
       catchError((err: HttpErrorResponse) =>
@@ -102,6 +91,7 @@ export class AuthService {
     );
   }
 
+  /** Cierra sesión: borra el token y vuelve al login. */
   logout(): void {
     localStorage.removeItem(STORAGE_KEY);
     this.sessionSignal.set(null);
@@ -120,44 +110,9 @@ export class AuthService {
     });
   }
 
+  /** Devuelve el token para que el interceptor lo agregue. */
   token(): string | undefined {
     return this.sessionSignal()?.token;
-  }
-
-  solicitarCodigo(email: string): Observable<{ message: string; debugCode?: string }> {
-    return this.http
-      .post<{ message?: string; debugCode?: string; codigo?: string }>(apiUrl('/auth/recuperar/email'), {
-        email,
-      })
-      .pipe(
-        map((res) => ({
-          message: res.message || 'Enviamos un código de 6 dígitos a su correo.',
-          debugCode: res.debugCode || res.codigo,
-        })),
-        catchError((err: HttpErrorResponse) => throwError(() => new Error(this.recuperarMensaje(err, 'enviar')))),
-      );
-  }
-
-  validarCodigo(email: string, code: string): Observable<void> {
-    return this.http.post<unknown>(apiUrl('/auth/recuperar/codigo'), { email, code, codigo: code }).pipe(
-      map(() => void 0),
-      catchError((err: HttpErrorResponse) => throwError(() => new Error(this.recuperarMensaje(err, 'validar')))),
-    );
-  }
-
-  cambiarPassword(email: string, newPassword: string, code: string): Observable<void> {
-    return this.http
-      .post<unknown>(apiUrl('/auth/recuperar/password'), {
-        email,
-        password: newPassword,
-        newPassword,
-        codigo: code,
-        code,
-      })
-      .pipe(
-        map(() => void 0),
-        catchError((err: HttpErrorResponse) => throwError(() => new Error(this.recuperarMensaje(err, 'guardar')))),
-      );
   }
 
   private sessionFromLogin(res: LoginResponse): AuthSession {
@@ -166,6 +121,7 @@ export class AuthService {
     }
 
     const usuario: Usuario = {
+      accesoBasico: res.accesoBasico === true,
       usuarioId: Number(res.usuarioId),
       usuarioNombre: res.nombre,
       usuarioEmail: res.email,
@@ -295,11 +251,13 @@ export class AuthService {
     return msg;
   }
 
+  /** Guarda la sesión en el navegador. */
   private persist(session: AuthSession): void {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(session));
     this.sessionSignal.set(session);
   }
 
+  /** Lee la sesión guardada; si está incompleta, la descarta. */
   private readSession(): AuthSession | null {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);

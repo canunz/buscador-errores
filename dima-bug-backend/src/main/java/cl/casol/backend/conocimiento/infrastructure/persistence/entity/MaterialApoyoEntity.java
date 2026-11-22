@@ -3,6 +3,10 @@ package cl.casol.backend.conocimiento.infrastructure.persistence.entity;
 import cl.casol.backend.conocimiento.domain.TipoMaterial;
 import jakarta.persistence.*;
 
+/**
+ * Entidad JPA de material apoyo. Representa una fila de la tabla co_material_apoyo.
+ * Se usa solo en la capa de persistencia; el dominio trabaja con su propio modelo.
+ */
 @Entity
 @Table(name = "co_material_apoyo")
 public class MaterialApoyoEntity {

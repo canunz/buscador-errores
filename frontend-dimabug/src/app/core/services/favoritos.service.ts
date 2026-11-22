@@ -3,6 +3,10 @@ import { Injectable, computed, signal } from '@angular/core';
 const KEY = 'dimabug.favoritos.v1';
 const META = 'dimabug.favoritos.meta.v1';
 
+/**
+ * Servicio de favoritos.
+ * Hace las llamadas HTTP al backend y entrega los datos a los componentes.
+ */
 export interface FavoritoItem {
   id: number;
   titulo: string;

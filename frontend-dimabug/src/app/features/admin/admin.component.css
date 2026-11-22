@@ -191,6 +191,12 @@ strong {
   padding: 28px !important;
 }
 
+.admin-nota {
+  margin: 16px 0 0;
+  color: #64748b;
+  font-size: 13.5px;
+}
+
 @media (max-width: 720px) {
   .col-acciones {
     width: auto;
@@ -199,37 +205,4 @@ strong {
   .hero {
     padding: 22px 20px;
   }
-}
-
-:host-context(.tema-oscuro) .panel,
-:host-context(.tema-oscuro) .tabs,
-:host-context(.tema-oscuro) .tabla-wrap {
-  background: #111827;
-  border-color: #1f2937;
-}
-
-:host-context(.tema-oscuro) .tabs {
-  background: #0b1220;
-}
-
-:host-context(.tema-oscuro) .tabs button {
-  color: #cbd5e1;
-}
-
-:host-context(.tema-oscuro) th {
-  background: #0b1220;
-  color: #94a3b8;
-}
-
-:host-context(.tema-oscuro) th,
-:host-context(.tema-oscuro) td {
-  border-color: #1f2937;
-}
-
-:host-context(.tema-oscuro) tbody tr:hover td {
-  background: #0b1220;
-}
-
-:host-context(.tema-oscuro) strong {
-  color: #f8fafc;
 }

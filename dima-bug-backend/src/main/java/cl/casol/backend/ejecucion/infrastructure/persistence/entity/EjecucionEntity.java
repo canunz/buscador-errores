@@ -5,6 +5,10 @@ import cl.casol.backend.identidad.infrastructure.persistence.entity.UsuarioEntit
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
+/**
+ * Entidad JPA de ejecución. Representa una fila de la tabla se_ejecucion.
+ * Se usa solo en la capa de persistencia; el dominio trabaja con su propio modelo.
+ */
 @Entity
 @Table(name="se_ejecucion")
 public class EjecucionEntity {

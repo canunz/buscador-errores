@@ -15,6 +15,7 @@ import { LoadingModalComponent } from '../../shared/ui/loading-modal.component';
   templateUrl: './procedimiento-lista.component.html',
   styleUrl: './procedimiento-lista.component.css',
 })
+/** Lista de procedimientos (guías paso a paso). */
 export class ProcedimientoListaComponent implements OnInit {
   private readonly procedimientos = inject(ProcedimientoService);
   private readonly auth = inject(AuthService);
@@ -60,6 +61,7 @@ export class ProcedimientoListaComponent implements OnInit {
     void this.router.navigate(['/procedimientos', item.id]);
   }
 
+  /** Publica un procedimiento para que se pueda ejecutar. */
   publicar(item: Procedimiento, event: Event): void {
     event.stopPropagation();
     if (!this.esAdministrador() || item.estado !== 'BORRADOR' || this.publicandoId != null) return;

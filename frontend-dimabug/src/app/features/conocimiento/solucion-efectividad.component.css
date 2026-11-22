@@ -259,25 +259,3 @@
     grid-template-columns: 1fr 1fr;
   }
 }
-
-:host-context(.tema-oscuro) .efectividad {
-  background: #111827;
-  border-color: #1f2937;
-  box-shadow: none;
-}
-
-:host-context(.tema-oscuro) .voto-head h3,
-:host-context(.tema-oscuro) .cifras dd {
-  color: #f8fafc;
-}
-
-:host-context(.tema-oscuro) .voto.no,
-:host-context(.tema-oscuro) .secundario,
-:host-context(.tema-oscuro) .comentario textarea {
-  background: #0f172a;
-}
-
-:host-context(.tema-oscuro) .cifras div,
-:host-context(.tema-oscuro) .historial li {
-  background: #0f172a;
-}

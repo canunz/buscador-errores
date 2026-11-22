@@ -5,6 +5,7 @@ import java.util.Optional;
 
 /** Sugerir, validar y crear conocimiento. Nunca se toca el repositorio de conocimientos directamente. */
 public interface ConocimientoPort {
+    // Sugiere el texto.
     List<ConocimientoSugerido> sugerir(String texto, int limite);
 
     /** Conocimiento existente y no eliminado. */

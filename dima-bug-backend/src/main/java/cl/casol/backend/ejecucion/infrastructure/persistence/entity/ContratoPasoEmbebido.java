@@ -4,6 +4,9 @@ import cl.casol.backend.ejecucion.domain.ContratoPaso;
 import cl.casol.backend.procedimiento.domain.ModoEjecucionPaso;
 import jakarta.persistence.*;
 
+/**
+ * Contrato paso embebido (módulo de ejecución de procedimientos).
+ */
 @Embeddable
 public class ContratoPasoEmbebido {
     @Column(name="contrato_version") private Integer version;
@@ -16,6 +19,7 @@ public class ContratoPasoEmbebido {
     public ContratoPasoEmbebido(ContratoPaso c) {
         version=c.version(); orden=c.orden(); instruccion=c.instruccion(); critico=c.esCritico(); modo=c.modo();configuracionJson=cl.casol.backend.procedimiento.infrastructure.persistence.mapper.ConfiguracionPasoJson.escribir(c.configuracion());
     }
+    // Convierte la entidad al modelo del dominio.
     public ContratoPaso toDomain() {
         return version == null ? null : new ContratoPaso(version, orden, instruccion, critico, modo,cl.casol.backend.procedimiento.infrastructure.persistence.mapper.ConfiguracionPasoJson.leer(configuracionJson));
     }

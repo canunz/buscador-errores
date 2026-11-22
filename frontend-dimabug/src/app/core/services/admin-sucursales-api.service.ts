@@ -5,6 +5,10 @@ import { catchError, Observable, throwError } from 'rxjs';
 import { apiUrl } from '../config/api';
 import { mensajeApiError } from '../http/api-error';
 
+/**
+ * Servicio de admin sucursales api.
+ * Hace las llamadas HTTP al backend y entrega los datos a los componentes.
+ */
 export interface SucursalAdmin {
   id: number; codigo: string; nombre: string; responsableNombre: string; responsableEmail: string;
   ciudad?: string | null; responsableCargo?: string | null; activa: boolean; version: number; destinatarios?: DestinatarioPaso[];

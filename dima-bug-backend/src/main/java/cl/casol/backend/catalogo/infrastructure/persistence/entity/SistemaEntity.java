@@ -4,6 +4,10 @@ import jakarta.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * Entidad JPA de sistema. Representa una fila de la tabla cl_sistema.
+ * Se usa solo en la capa de persistencia; el dominio trabaja con su propio modelo.
+ */
 @Entity
 @Table(name = "cl_sistema")
 public class SistemaEntity {

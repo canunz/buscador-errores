@@ -4,6 +4,9 @@ import cl.casol.backend.tickets.domain.exception.TicketInvalidoException;
 
 import java.util.regex.Pattern;
 
+/**
+ * Modelo de dominio de etiqueta (módulo de tickets).
+ */
 public class Etiqueta {
     private static final Pattern COLOR = Pattern.compile("^#[0-9A-Fa-f]{6}$");
     public static final int MAX_NOMBRE = 40;
@@ -26,21 +29,25 @@ public class Etiqueta {
         this.nivel = nivel == null ? NivelEtiqueta.NORMAL : nivel;
     }
 
+    // Devuelve nueva.
     public static Etiqueta nueva(String nombre, String color) {
         return nueva(nombre, color, NivelEtiqueta.NORMAL);
     }
 
+    // Devuelve nueva.
     public static Etiqueta nueva(String nombre, String color, NivelEtiqueta nivel) {
         Etiqueta etiqueta = new Etiqueta(null, null, null, true, nivel);
         etiqueta.editar(nombre, color, nivel);
         return etiqueta;
     }
 
+    // Edita el nombre.
     public void editar(String nombre, String color, NivelEtiqueta nivel) {
         editar(nombre, color);
         this.nivel = nivel == null ? NivelEtiqueta.NORMAL : nivel;
     }
 
+    // Edita el nombre.
     public void editar(String nombre, String color) {
         String limpio = nombre == null ? "" : nombre.strip();
         if (limpio.isEmpty()) throw new TicketInvalidoException("El nombre de la etiqueta es obligatorio");
@@ -52,6 +59,7 @@ public class Etiqueta {
         this.color = color.strip().toUpperCase();
     }
 
+    // Cambia estado.
     public void cambiarEstado(boolean activa) { this.activa = activa; }
 
     public Long getId() { return id; }

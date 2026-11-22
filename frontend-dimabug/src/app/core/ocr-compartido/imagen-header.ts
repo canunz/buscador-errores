@@ -42,3 +42,4 @@ export function dimensionesImagenOcr(bytes: Uint8Array, mime: string): { ancho: 
   if (ancho * alto > LIMITES_OCR.pixeles) throw new Error('La imagen supera 12 megapíxeles. Recorta el mensaje de error y vuelve a intentarlo.');
   return { ancho, alto };
 }
+

@@ -11,6 +11,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
+/**
+ * Servicio de comentar ticket (módulo de tickets).
+ * Aquí van las reglas de negocio; para leer o guardar datos usa los puertos de salida.
+ */
 @Service
 @Transactional
 public class ComentarTicketService implements ComentarTicketUseCase {
@@ -22,6 +26,7 @@ public class ComentarTicketService implements ComentarTicketUseCase {
         this.contexto = contexto;
     }
 
+    // Comenta el ticket indicado.
     @Override
     public TicketVista comentar(Long ticketId, String texto, boolean interno, String emailAutenticado) {
         ActorTicket actor = contexto.actor(emailAutenticado);

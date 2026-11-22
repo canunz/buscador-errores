@@ -2,6 +2,10 @@ package cl.casol.backend.procedimiento.infrastructure.web.dto;
 
 import jakarta.validation.constraints.*;
 
+/**
+ * Datos que llegan en la petición para guardar paso.
+ * Las anotaciones de validación revisan los campos antes de llegar al servicio.
+ */
 public record GuardarPasoRequest(
         @NotNull(message="El orden es obligatorio") @Positive(message="El orden debe ser mayor que cero") Integer orden,
         @NotBlank(message="La instrucción es obligatoria") String instruccion,

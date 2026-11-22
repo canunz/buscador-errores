@@ -8,6 +8,7 @@ import {
   EstadoTicket,
   PRIORIDAD_INFO,
   TicketResumen,
+  avisoTiempoTicket,
   colorTextoEtiqueta,
   fechaCorta,
   fechaRelativa,
@@ -38,6 +39,7 @@ export class MisTicketsComponent implements OnInit {
   readonly colorTexto = colorTextoEtiqueta;
   readonly relativa = fechaRelativa;
   readonly corta = fechaCorta;
+  readonly tiempo = avisoTiempoTicket;
   readonly pestanas: PestanaEstado[] = [
     { estado: null, label: 'Todos' },
     { estado: 'ABIERTO', label: 'Abiertos' },

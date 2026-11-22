@@ -124,7 +124,6 @@
   box-shadow: 0 8px 18px rgba(8, 16, 48, 0.18);
 }
 
-
 .main {
   flex: 1;
   min-width: 0;
@@ -408,65 +407,6 @@
   animation: page-fade 0.35s ease-out;
 }
 
-.app-shell.tema-oscuro {
-  background: #0b1220;
-  color: #e5e7eb;
-}
-
-.app-shell.tema-oscuro .main > header {
-  background: #111827;
-  border-color: #1f2937;
-}
-
-.app-shell.tema-oscuro .usuario-nombre {
-  color: #f9fafb;
-}
-
-.app-shell.tema-oscuro .tema-toggle {
-  background: #1f2937;
-  border-color: #374151;
-  color: #fbbf24;
-}
-
-.app-shell.tema-oscuro .avisos-panel,
-.app-shell.tema-oscuro .avisos-panel li button.nueva {
-  background: #111827;
-  border-color: #1f2937;
-  color: #e5e7eb;
-}
-
-.app-shell.tema-oscuro .avisos-panel header strong,
-.app-shell.tema-oscuro .avisos-panel li strong {
-  color: #f8fafc;
-}
-
-.app-shell.tema-oscuro .tema-toggle:hover {
-  background: #243044;
-  border-color: #4b5563;
-}
-
-.app-shell.tema-oscuro .usuario {
-  background: #1f2937;
-  border-color: #374151;
-  color: #e5e7eb;
-}
-
-.app-shell.tema-oscuro .usuario:hover,
-.app-shell.tema-oscuro .usuario-wrap.abierto .usuario {
-  background: #1f2937;
-  border-color: #4b5563;
-}
-
-.app-shell.tema-oscuro .usuario-menu {
-  background: #111827;
-  border-color: #1f2937;
-}
-
-.app-shell.tema-oscuro .logout-item {
-  background: rgba(248, 113, 113, 0.12);
-  color: #fecaca;
-}
-
 @media (max-width: 900px) {
   .sidebar {
     display: none;
@@ -497,5 +437,3 @@
 }
 
 .avisos-todas:hover { background: #f4f7ff; }
-.app-shell.tema-oscuro .avisos-todas { border-color: #1f2a3d; color: #93c5fd; }
-.app-shell.tema-oscuro .avisos-todas:hover { background: #16264d; }

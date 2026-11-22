@@ -1,6 +1,10 @@
 package cl.casol.backend.correo.infrastructure.persistence;
 import jakarta.persistence.*;
 import java.time.Instant;
+/**
+ * Entidad JPA de gmail intento. Representa una fila de la tabla gm_estado_oauth.
+ * Se usa solo en la capa de persistencia; el dominio trabaja con su propio modelo.
+ */
 @Entity @Table(name="gm_estado_oauth")
 public class GmailIntentoEntity {
     @Id @Column(name="estado_hash",length=64) String estado;

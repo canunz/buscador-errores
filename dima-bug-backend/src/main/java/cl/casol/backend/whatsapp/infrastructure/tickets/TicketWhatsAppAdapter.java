@@ -1,8 +1,6 @@
 package cl.casol.backend.whatsapp.infrastructure.tickets;
 
-import cl.casol.backend.tickets.application.port.in.CrearTicketUseCase;
-import cl.casol.backend.tickets.domain.PrioridadTicket;
-import cl.casol.backend.tickets.domain.Ticket;
+import cl.casol.backend.tickets.api.TicketsFachada;
 import cl.casol.backend.whatsapp.application.port.out.CrearTicketCanalPort;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -23,12 +21,12 @@ public final class TicketWhatsAppAdapter implements CrearTicketCanalPort {
     static final Duration VIGENCIA = Duration.ofHours(24);
     static final int MAX_CREADOS = 10_000;
     private record Creado(String codigo, Instant vence) { }
-    private final CrearTicketUseCase crear;
+    private final TicketsFachada crear;
     private final String actorEmail;
     private final Clock reloj;
     private final ConcurrentHashMap<String, Creado> creados = new ConcurrentHashMap<>();
-    public TicketWhatsAppAdapter(CrearTicketUseCase crear, String actorEmail) { this(crear, actorEmail, Clock.systemUTC()); }
-    TicketWhatsAppAdapter(CrearTicketUseCase crear, String actorEmail, Clock reloj) {
+    public TicketWhatsAppAdapter(TicketsFachada crear, String actorEmail) { this(crear, actorEmail, Clock.systemUTC()); }
+    TicketWhatsAppAdapter(TicketsFachada crear, String actorEmail, Clock reloj) {
         if (actorEmail == null || !actorEmail.matches("[^@\\s]{1,64}@[^@\\s]{1,190}"))
             throw new IllegalArgumentException("Configura dimabug.whatsapp.autoatencion.ticket-actor-email");
         this.crear = crear; this.actorEmail = actorEmail; this.reloj = reloj;
@@ -52,7 +50,7 @@ public final class TicketWhatsAppAdapter implements CrearTicketCanalPort {
     private String registrar(Solicitud s, String referencia) {
         String consulta = s.consulta() == null ? "" : s.consulta().strip();
         String titulo = "WhatsApp: " + (consulta.isEmpty() ? "consulta sin texto" : consulta);
-        if (titulo.length() > Ticket.MAX_TITULO) titulo = titulo.substring(0, Ticket.MAX_TITULO - 1).strip() + "…";
+        if (titulo.length() > TicketsFachada.MAX_TITULO) titulo = titulo.substring(0, TicketsFachada.MAX_TITULO - 1).strip() + "…";
         var d = new StringBuilder("Ticket creado automáticamente por la autoatención de WhatsApp.\n\n")
                 .append("Participante (alias QA): ").append(s.participante()).append('\n')
                 .append("Referencia WhatsApp: ").append(referencia).append('\n')
@@ -65,9 +63,7 @@ public final class TicketWhatsAppAdapter implements CrearTicketCanalPort {
             s.solucionesOfrecidas().forEach(t -> d.append("- ").append(t).append('\n'));
         }
         try {
-            var vista = crear.crear(new CrearTicketUseCase.Comando(titulo, d.toString().strip(), PrioridadTicket.MEDIA,
-                    null, null, null), actorEmail);
-            return vista.ticket().getCodigo();
+            return crear.crear(new TicketsFachada.Solicitud(titulo, d.toString().strip()), actorEmail);
         } catch (RuntimeException e) { throw new FalloTicket(); }
     }
 }

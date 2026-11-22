@@ -6,6 +6,7 @@ import cl.casol.backend.catalogo.infrastructure.web.dto.SistemaResponse;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
+/** API del catálogo de hardware y sus sistemas (para clasificar y filtrar). */
 @RestController
 @RequestMapping("/api/hardware")
 public class HardwareController {
@@ -18,9 +19,11 @@ public class HardwareController {
         return service.listar().stream().map(HardwareResponse::from).toList();
     }
 
+    // Busca por id.
     @GetMapping("/{id}")
     public HardwareResponse buscar(@PathVariable Integer id) { return HardwareResponse.from(service.buscar(id)); }
 
+    // Lista sistemas.
     @GetMapping("/{id}/sistemas")
     public List<SistemaResponse> listarSistemas(@PathVariable Integer id) {
         return service.listarSistemas(id).stream().map(SistemaResponse::from).toList();
