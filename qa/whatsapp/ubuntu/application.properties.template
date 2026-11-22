@@ -1,0 +1,47 @@
+# PROPUESTO, sin secretos ni herencia de staging. Requiere artefacto QA aislado.
+server.address=127.0.0.1
+server.port=8082
+server.forward-headers-strategy=none
+server.shutdown=graceful
+spring.lifecycle.timeout-per-shutdown-phase=30s
+spring.datasource.url=jdbc:mysql://127.0.0.1:13328/wa_durable_ab32c001?connectionTimeZone=UTC&forceConnectionTimeZoneToSession=true&sslMode=VERIFY_IDENTITY&trustCertificateKeyStoreUrl=file:/etc/dimabug-wa-qa/mysql-truststore.p12&connectTimeout=3000&socketTimeout=5000
+spring.datasource.username=wa_qa_app
+spring.datasource.hikari.maximum-pool-size=2
+spring.datasource.hikari.minimum-idle=0
+spring.datasource.hikari.connection-timeout=3000
+spring.datasource.hikari.validation-timeout=1000
+spring.jpa.hibernate.ddl-auto=validate
+spring.jpa.mapping-resources=META-INF/whatsapp.orm.xml
+spring.jpa.properties.hibernate.jdbc.time_zone=UTC
+spring.sql.init.mode=never
+spring.flyway.enabled=false
+spring.liquibase.enabled=false
+spring.h2.console.enabled=false
+spring.jpa.show-sql=false
+server.tomcat.accesslog.enabled=false
+spring.mvc.log-request-details=false
+logging.level.org.hibernate.orm.jdbc.bind=OFF
+logging.level.org.hibernate.orm.jdbc.extract=OFF
+# Evitar que el inventario INFO de Hibernate escriba la URL JDBC completa.
+# Mantener WARN/ERROR para diagnosticar fallos SQL.
+logging.level.org.hibernate.orm.connections.pooling=WARN
+dimabug.whatsapp.meta-qa.recepcion=false
+dimabug.whatsapp.meta-qa.procesamiento=false
+dimabug.whatsapp.meta-qa.medios=false
+dimabug.whatsapp.meta-qa.envio=false
+dimabug.whatsapp.meta-qa.envio-real=false
+dimabug.whatsapp.meta-qa.conexion-meta=false
+# Completar con activos/autorizaciones aprobados; sin IDs reales en esta plantilla.
+dimabug.whatsapp.meta-qa.waba=__WABA_QA__
+dimabug.whatsapp.meta-qa.numero=__PHONE_NUMBER_ID_QA__
+dimabug.whatsapp.meta-qa.participantes=__ALIAS_QA_APROBADOS__
+# OCR Linux no habilitado: ruta Node Windows actual no es portable; no invocarlo.
+dimabug.whatsapp.qa.raiz=/opt/dimabug-wa-qa
+# El bootstrap QA debe excluir los módulos no necesarios, no solo apagar sus flags.
+dimabug.gmail.oauth-habilitado=false
+dimabug.gmail.envio-real-habilitado=false
+dimabug.auth.correo.habilitado=false
+dimabug.automatizacion.seguimiento-habilitado=false
+dimabug.automatizacion.modo=DESHABILITADO
+
+server.tomcat.threads.max=8

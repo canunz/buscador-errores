@@ -1,0 +1,7 @@
+{
+  "targets": [
+    {"name": "staging", "url": "https://staging.dimabug.casol.cl/__RUTA_GET_INOCUA_PENDIENTE__"},
+    {"name": "avanza", "url": "https://avanza.casol.cl/__RUTA_GET_INOCUA_PENDIENTE__"},
+    {"name": "buscador", "url": "https://buscadorerrores.casol.cl/__RUTA_GET_INOCUA_PENDIENTE__"}
+  ]
+}

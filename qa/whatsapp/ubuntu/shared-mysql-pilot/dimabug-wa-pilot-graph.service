@@ -1,0 +1,36 @@
+[Unit]
+Description=DimaBug QA restricted Graph HTTPS gateway - no credentials
+After=network.target
+StartLimitIntervalSec=600
+StartLimitBurst=3
+ConditionPathExists=/etc/dimabug-wa-pilot/PILOT_APPROVED
+
+[Service]
+Type=simple
+User=dimabug-wa-pilot-graph
+Group=dimabug-wa-pilot-graph
+ExecStart=/usr/bin/java -Xms16m -Xmx32m -XX:MaxMetaspaceSize=32m -XX:ReservedCodeCacheSize=16m -cp /opt/dimabug-wa-pilot/proxy GraphHttpsProxy --bind=127.0.0.1
+Restart=on-failure
+RestartSec=15s
+MemoryHigh=80M
+MemoryMax=96M
+MemorySwapMax=0
+CPUQuota=25%
+CPUWeight=25
+TasksMax=48
+UMask=0077
+PrivateTmp=yes
+PrivateDevices=yes
+ProtectSystem=strict
+ProtectHome=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+NoNewPrivileges=yes
+RestrictSUIDSGID=yes
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

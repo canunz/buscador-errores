@@ -43,4 +43,13 @@ class ConsultarChatbotServiceTest {
         assertTrue(servicio.consultar("inexistente").isEmpty());
         verifyNoInteractions(soluciones);
     }
+
+    @Test void coincidenciaDirectaSeMuestraAntesQueAlternativaDeMenorOrden() {
+        when(busqueda.buscarAutoservicio("Transbank")).thenReturn(List.of(conocimiento(1)));
+        when(soluciones.buscarActivasAutoservicioPorConocimiento(1)).thenReturn(List.of(
+                new Solucion(7,1,"Pasos generales",TipoSolucion.PASOS,1,"Alternativa",true,true),
+                new Solucion(8,1,"Pasos publicados",TipoSolucion.PASOS,2,"Configurar Transbank",true,true)));
+        var resultado = servicio.consultar("Transbank");
+        assertEquals(List.of(8,7),resultado.stream().map(ConsultarChatbotService.SolucionChatbot::id).toList());
+    }
 }

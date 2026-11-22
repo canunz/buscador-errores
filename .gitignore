@@ -47,6 +47,7 @@ __pycache__/
 credentials*.json
 client_secret*.json
 tokens*.json
+.dimabug-private/
 *.sql.gz
 *.sql.zip
 *dump*.sql

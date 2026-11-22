@@ -1,10 +1,13 @@
 package cl.casol.backend.conocimiento.application.service;
 
 import cl.casol.backend.conocimiento.application.port.out.SolucionRepository;
+import cl.casol.backend.conocimiento.domain.ConsultaError;
+import cl.casol.backend.conocimiento.domain.Solucion;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Comparator;
 
 @Service
 @Transactional(readOnly = true)
@@ -20,8 +23,14 @@ public class ConsultarChatbotService {
 
     public List<SolucionChatbot> consultar(String consulta) {
         List<SolucionChatbot> resultado = new ArrayList<>(MAX_RESULTADOS);
+        var normalizada = new ConsultaError(consulta);
         for (var conocimiento : buscador.buscarAutoservicio(consulta)) {
-            for (var solucion : soluciones.buscarActivasAutoservicioPorConocimiento(conocimiento.id())) {
+            var asociadas = soluciones.buscarActivasAutoservicioPorConocimiento(conocimiento.id()).stream()
+                    .sorted(Comparator.comparingDouble((Solucion s) -> normalizada.puntuar(conocimiento.titulo(), s.titulo(), s.descripcion()))
+                            .reversed().thenComparing(Solucion::orden, Comparator.nullsLast(Comparator.naturalOrder()))
+                            .thenComparing(Solucion::id, Comparator.nullsLast(Comparator.naturalOrder())))
+                    .toList();
+            for (var solucion : asociadas) {
                 resultado.add(new SolucionChatbot(solucion.id(), conocimiento.titulo(), solucion.titulo(), solucion.descripcion()));
                 if (resultado.size() == MAX_RESULTADOS) return List.copyOf(resultado);
             }

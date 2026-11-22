@@ -1,0 +1,59 @@
+# PROPUESTO: no instalar/activar antes de aprobar el artefacto aislado y preflight.
+[Unit]
+Description=DimaBug WhatsApp QA - recepcion aislada
+After=network.target dimabug-wa-qa-mysql.service
+Wants=dimabug-wa-qa-mysql.service
+StartLimitIntervalSec=300
+StartLimitBurst=3
+ConditionPathExists=/opt/dimabug-wa-qa/releases/current/whatsapp-qa.jar
+ConditionPathExists=/etc/dimabug-wa-qa/APPROVED
+
+[Service]
+Type=simple
+User=dimabug-wa-qa
+Group=dimabug-wa-qa
+WorkingDirectory=/var/lib/dimabug-wa-qa
+Environment=SPRING_PROFILES_ACTIVE=qa-whatsapp-meta
+LoadCredential=spring.datasource.password:/etc/dimabug-wa-qa/secrets/spring.datasource.password
+LoadCredential=dimabug.whatsapp.meta-qa.verify-token:/etc/dimabug-wa-qa/secrets/verify-token
+LoadCredential=dimabug.whatsapp.meta-qa.app-secret:/etc/dimabug-wa-qa/secrets/app-secret
+LoadCredential=dimabug.whatsapp.durable.clave-cifrado:/etc/dimabug-wa-qa/secrets/clave-cifrado
+LoadCredential=dimabug.whatsapp.durable.clave-hmac:/etc/dimabug-wa-qa/secrets/clave-hmac
+ExecStart=/usr/bin/java -Xms64m -Xmx192m -XX:MaxDirectMemorySize=48m -XX:MaxMetaspaceSize=96m -XX:ReservedCodeCacheSize=48m -XX:+ExitOnOutOfMemoryError -jar /opt/dimabug-wa-qa/releases/current/whatsapp-qa.jar --spring.config.additional-location=file:/etc/dimabug-wa-qa/application.properties --spring.config.import=configtree:%d/
+Restart=on-failure
+RestartSec=15s
+TimeoutStartSec=90s
+TimeoutStopSec=45s
+KillSignal=SIGTERM
+KillMode=control-group
+CPUQuota=50%
+CPUWeight=25
+IOWeight=25
+MemoryHigh=384M
+MemoryMax=512M
+TasksMax=96
+LimitNOFILE=4096
+UMask=0077
+StateDirectory=dimabug-wa-qa
+StateDirectoryMode=0700
+RuntimeDirectory=dimabug-wa-qa
+RuntimeDirectoryMode=0700
+PrivateTmp=yes
+PrivateDevices=yes
+ProtectSystem=strict
+ProtectHome=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+NoNewPrivileges=yes
+RestrictSUIDSGID=yes
+LockPersonality=yes
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+IPAddressDeny=any
+IPAddressAllow=localhost
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=dimabug-wa-qa
+
+[Install]
+WantedBy=multi-user.target

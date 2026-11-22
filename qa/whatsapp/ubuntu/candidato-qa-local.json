@@ -1,0 +1,82 @@
+{
+  "estado": "PREPARADO_LOCAL_NO_APLICADO",
+  "autorizacion": "Solo preparacion local; sin medicion ni cambios remotos",
+  "red": {
+    "bind": "127.0.0.1",
+    "spring_port": 8082,
+    "mysql_port": 13328,
+    "nginx_local_port": 18443,
+    "dominio": "wa-qa.dimabug.casol.cl"
+  },
+  "recursos_recepcion_sola": {
+    "spring": {
+      "memory_high_mib": 384,
+      "memory_max_mib": 512,
+      "cpu_quota_porcentaje_de_un_cpu": 50,
+      "cpu_weight": 25,
+      "io_weight": 25,
+      "tasks_max": 96,
+      "jvm_heap_initial_mib": 64,
+      "jvm_heap_max_mib": 192,
+      "jvm_direct_max_mib": 48,
+      "jvm_metaspace_max_mib": 96,
+      "jvm_code_cache_max_mib": 48,
+      "tomcat_threads_max": 8,
+      "jdbc_pool_max": 2
+    },
+    "mysql_exclusivo": {
+      "memory_high_mib": 384,
+      "memory_max_mib": 512,
+      "cpu_quota_porcentaje_de_un_cpu": 50,
+      "cpu_weight": 25,
+      "io_weight": 25,
+      "tasks_max": 96,
+      "innodb_buffer_pool_mib": 128,
+      "max_connections": 8,
+      "datadir_presupuesto_mib": 2048,
+      "performance_schema": false,
+      "table_open_cache": 128,
+      "table_definition_cache": 400,
+      "thread_cache_size": 4,
+      "tmp_table_size_mib": 16,
+      "max_heap_table_size_mib": 16,
+      "temptable_max_ram_mib": 32,
+      "innodb_redo_log_capacity_mib": 128,
+      "innodb_flush_log_at_trx_commit": 1,
+      "innodb_doublewrite": true,
+      "sync_binlog": 1
+    },
+    "host": {
+      "memoria_qa_hard_total_mib": 1024,
+      "reserva_minima_objetivo_mib": 1024,
+      "min_memavailable_baseline_para_admitir_qa_mib": 2048,
+      "baseline_minimo_horas": 24,
+      "disco_libre_reserva_gib": 5,
+      "usar_swap_como_capacidad": false
+    },
+    "nginx_piloto": {
+      "max_conexiones_qa": 8,
+      "rate_solicitudes_por_segundo": 2,
+      "burst": 4
+    },
+    "procesamiento": false,
+    "medios": false,
+    "envio": false,
+    "envio_real": false,
+    "recepcion_real": false
+  },
+  "medicion": {
+    "duracion_segundos": 86400,
+    "intervalo_segundos": 60,
+    "sondas_intervalo_segundos": 300,
+    "http_por_defecto": false
+  },
+  "pendientes": [
+    "capacidad Ubuntu",
+    "TLS MySQL",
+    "readiness efectivo",
+    "restriccion de salida por puertos",
+    "Certbot unico",
+    "aprobacion de menor diagnostico performance_schema"
+  ]
+}

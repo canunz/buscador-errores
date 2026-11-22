@@ -1,0 +1,69 @@
+{
+  "etapa": "3.2-C.1",
+  "estado": "PROPUESTO_NO_APLICADO",
+  "autorizacion_actual": "Inspeccion de lectura y diseno; ningun cambio remoto",
+  "certbot": {
+    "gestor_exclusivo_demostrado": false,
+    "programadores_observados": ["certbot.timer", "snap.certbot.renew.timer"],
+    "candidato_para_validar": "Snap; no seleccionado ni autorizado hasta comprobar las tres lineages",
+    "desinstalar_paquetes_en_primera_fase": false,
+    "editar_lineages_o_reemitir_certificados_en_primera_fase": false,
+    "renovacion_efectiva_por_lineage": "PENDIENTE_LECTURA_PRIVILEGIADA_ACOTADA",
+    "validacion_acme": "PENDIENTE_AUTORIZACION_SEPARADA"
+  },
+  "recursos_recepcion_sola": {
+    "spring": {
+      "memory_high_mib": 384,
+      "memory_max_mib": 512,
+      "cpu_quota_porcentaje_de_un_cpu": 50,
+      "cpu_weight": 25,
+      "io_weight": 25,
+      "tasks_max": 96,
+      "jvm_heap_initial_mib": 64,
+      "jvm_heap_max_mib": 192,
+      "jvm_direct_max_mib": 48,
+      "jvm_metaspace_max_mib": 96,
+      "jvm_code_cache_max_mib": 48,
+      "tomcat_threads_max": 8,
+      "jdbc_pool_max": 2
+    },
+    "mysql_exclusivo": {
+      "memory_high_mib": 384,
+      "memory_max_mib": 512,
+      "cpu_quota_porcentaje_de_un_cpu": 50,
+      "cpu_weight": 25,
+      "io_weight": 25,
+      "tasks_max": 96,
+      "innodb_buffer_pool_mib": 128,
+      "max_connections": 8,
+      "datadir_presupuesto_mib": 2048
+    },
+    "host": {
+      "memoria_qa_hard_total_mib": 1024,
+      "reserva_minima_objetivo_mib": 1024,
+      "min_memavailable_baseline_para_admitir_qa_mib": 2048,
+      "baseline_minimo_horas": 24,
+      "disco_libre_reserva_gib": 5,
+      "usar_swap_como_capacidad": false
+    },
+    "nginx_piloto": {"max_conexiones_qa": 8, "rate_solicitudes_por_segundo": 2, "burst": 4},
+    "procesamiento": false,
+    "medios": false,
+    "envio": false,
+    "envio_real": false,
+    "recepcion_real": false
+  },
+  "gates": [
+    "C1_inventario_certbot_y_programadores_completo",
+    "C2_renovacion_efectiva_correlacionada_por_lineage",
+    "C3_candidato_compatible_y_plugins_hooks_revisados",
+    "C4_respaldo_privado_y_reversion_comprobables",
+    "C5_unico_programador_activo_tras_cambio_autorizado",
+    "R1_artefacto_QA_aislado_identificado",
+    "R2_baseline_host_con_picos_y_renovacion",
+    "R3_carga_arranque_y_recuperacion_sin_OOM",
+    "R4_TTL_retencion_disco_y_monitoreo_operables",
+    "H1_integracion_Nginx_local_y_privacidad_aprobadas",
+    "A1_autorizacion_especifica_de_cada_cambio"
+  ]
+}

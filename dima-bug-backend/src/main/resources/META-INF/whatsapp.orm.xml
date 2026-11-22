@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<entity-mappings xmlns="https://jakarta.ee/xml/ns/persistence/orm" version="3.1">
+  <entity class="cl.casol.backend.whatsapp.infrastructure.persistence.ConversacionWhatsAppEntity" access="FIELD"/>
+  <entity class="cl.casol.backend.whatsapp.infrastructure.persistence.EventoWhatsAppEntity" access="FIELD"/>
+  <entity class="cl.casol.backend.whatsapp.infrastructure.persistence.RespuestaWhatsAppEntity" access="FIELD"/>
+</entity-mappings>

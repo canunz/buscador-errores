@@ -27,11 +27,21 @@ class BusquedaAutoservicioTest {
         assertTrue(query.contains("so.solucion_estado = 1"));
         assertTrue(query.contains("so.solucion_autoservicio = 1"));
         assertTrue(query.contains("LIKE :termino0") && query.contains("LIKE :termino1"));
+        assertTrue(query.contains(" OR "));
+        assertTrue(query.contains("ESCAPE '!'") && query.contains("LIMIT 250"));
+        assertFalse(query.contains("COUNT(DISTINCT so.solucion_id)"));
         for (String interno : List.of("co_sintoma", "co_causa", "co_prueba", "conocimiento_comentario", "contenido_busqueda")) {
             assertFalse(query.contains(interno));
         }
         assertEquals("%impresora%", params.getValue().getValue("termino0"));
         assertEquals("%papel%", params.getValue().getValue("termino1"));
+    }
+
+    @Test void consultaSinTerminosUtilesNoConsultaElCatalogo() {
+        var named = mock(NamedParameterJdbcTemplate.class);
+        var adapter = new BusquedaConocimientoJdbcAdapter(mock(JdbcTemplate.class), named, mock(EntityManager.class));
+        assertTrue(adapter.buscarAutoservicio("% _ al el").isEmpty());
+        verifyNoInteractions(named);
     }
 
     @Test void lecturaDeSolucionesExigeAmbosIndicadores() {
