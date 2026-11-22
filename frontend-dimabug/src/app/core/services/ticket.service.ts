@@ -15,6 +15,7 @@ import {
   PrioridadTicket,
   TicketDetalle,
   TicketResumen,
+  TicketsPorUsuario,
 } from '../models/ticket.model';
 
 /** Convierte LocalDateTime (texto ISO o arreglo [a,m,d,h,mi,s]) a texto ISO. */
@@ -141,6 +142,16 @@ export class TicketService {
   }
 
   private readonly conteos = new Map<string, ConteoTickets>();
+
+  /** Cuántos tickets creó cada persona. Solo responde al administrador. */
+  porUsuario(): Observable<TicketsPorUsuario[]> {
+    return this.http.get<TicketsPorUsuario[]>(`${this.base}/por-usuario`).pipe(
+      map((filas) => filas ?? []),
+      catchError((err: HttpErrorResponse) =>
+        throwError(() => new Error(mensajeTicketError(err, 'No fue posible cargar los tickets por usuario.'))),
+      ),
+    );
+  }
 
   private readonly listas = new Map<string, TicketResumen[]>();
 

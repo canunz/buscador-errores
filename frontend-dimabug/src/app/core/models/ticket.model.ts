@@ -86,6 +86,16 @@ export interface AdjuntoTicket {
 export const ADJUNTO_MAX_BYTES = 25 * 1024 * 1024;
 export const ADJUNTO_ACEPTA = 'image/png,image/jpeg,image/gif,image/webp,video/mp4,video/quicktime,video/webm,application/pdf';
 
+/** Cuántos tickets creó una persona (panel del administrador). */
+export interface TicketsPorUsuario {
+  usuarioId: number;
+  nombre: string;
+  email: string;
+  total: number;
+  activos: number;
+  resueltos: number;
+}
+
 export interface ConteoTickets {
   porEstado: Record<EstadoTicket, number>;
   total: number;

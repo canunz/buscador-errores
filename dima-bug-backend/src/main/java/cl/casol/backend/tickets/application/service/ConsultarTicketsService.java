@@ -19,6 +19,8 @@ import cl.casol.backend.tickets.domain.FiltroTickets;
 import cl.casol.backend.tickets.domain.PaginaTickets;
 import cl.casol.backend.tickets.domain.RolTicket;
 import cl.casol.backend.tickets.domain.Ticket;
+import cl.casol.backend.tickets.domain.TicketsPorUsuario;
+import cl.casol.backend.tickets.domain.exception.AccesoTicketDenegadoException;
 import cl.casol.backend.tickets.domain.exception.TicketNoEncontradoException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -99,6 +101,16 @@ public class ConsultarTicketsService implements ConsultarTicketsUseCase {
     public ConteoTickets conteo(String emailAutenticado) {
         ActorTicket actor = contexto.actor(emailAutenticado);
         return tickets.contar(actor.esStaff() ? null : actor.id());
+    }
+
+    // Lista cuántos tickets creó cada persona. Si quien consulta no es administrador, se rechaza.
+    @Override
+    public List<TicketsPorUsuario> ticketsPorUsuario(String emailAutenticado) {
+        ActorTicket actor = contexto.actor(emailAutenticado);
+        if (!actor.esAdministrador()) {
+            throw new AccesoTicketDenegadoException("Solo el administrador puede ver los tickets por usuario.");
+        }
+        return tickets.contarPorSolicitante();
     }
 
     // Devuelve detalle.

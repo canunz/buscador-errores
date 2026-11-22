@@ -4,6 +4,7 @@ import cl.casol.backend.tickets.application.port.out.ConocimientoSugerido;
 import cl.casol.backend.tickets.domain.ConteoTickets;
 import cl.casol.backend.tickets.domain.FiltroTickets;
 import cl.casol.backend.tickets.domain.PaginaTickets;
+import cl.casol.backend.tickets.domain.TicketsPorUsuario;
 
 import java.util.List;
 
@@ -17,6 +18,9 @@ public interface ConsultarTicketsUseCase {
 
     /** Contadores en una sola consulta. El rol USUARIO solo cuenta sus tickets. */
     ConteoTickets conteo(String emailAutenticado);
+
+    /** Cuántos tickets creó cada persona. Solo lo puede ver el administrador. */
+    List<TicketsPorUsuario> ticketsPorUsuario(String emailAutenticado);
 
     // Devuelve detalle.
     TicketVista detalle(Long ticketId, String emailAutenticado);

@@ -124,6 +124,10 @@
 
   <app-resumen-tickets />
 
+  @if (rolVista() === 'admin') {
+    <app-tickets-por-usuario />
+  }
+
   @if (!isStaff()) {
     <section class="como" aria-labelledby="como-title">
       <div class="seccion-titulo">

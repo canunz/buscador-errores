@@ -3,6 +3,7 @@ package cl.casol.backend.tickets.infrastructure.persistence.adapter;
 import cl.casol.backend.tickets.application.port.out.TicketRepositoryPort;
 import cl.casol.backend.tickets.application.port.out.ResumenTicketFila;
 import cl.casol.backend.tickets.domain.ConteoTickets;
+import cl.casol.backend.tickets.domain.TicketsPorUsuario;
 import cl.casol.backend.tickets.domain.EstadoTicket;
 import cl.casol.backend.tickets.domain.Etiqueta;
 import cl.casol.backend.tickets.domain.FiltroTickets;
@@ -207,6 +208,39 @@ public class TicketRepositoryAdapter implements TicketRepositoryPort {
                 List.of(EstadoTicket.ABIERTO, EstadoTicket.EN_PROGRESO, EstadoTicket.EN_ESPERA), solicitanteId);
         long sinTecnico = tickets.contarSinAsignar(EstadoTicket.ABIERTO, solicitanteId);
         return new ConteoTickets(porEstado, criticos, sinTecnico);
+    }
+
+    /**
+     * Agrupa los tickets por la persona que los creó.
+     * Se cuentan todos, los que siguen activos y los que ya se resolvieron o cerraron.
+     */
+    @Override
+    public List<TicketsPorUsuario> contarPorSolicitante() {
+        @SuppressWarnings("unchecked")
+        List<Object[]> filas = entityManager.createNativeQuery("""
+                SELECT u.usuario_id, u.usuario_nombre, u.usuario_email,
+                       COUNT(t.id),
+                       SUM(CASE WHEN t.estado IN ('ABIERTO', 'EN_PROGRESO', 'EN_ESPERA') THEN 1 ELSE 0 END),
+                       SUM(CASE WHEN t.estado IN ('RESUELTO', 'CERRADO') THEN 1 ELSE 0 END)
+                FROM ticket t
+                JOIN u_usuario u ON u.usuario_id = t.solicitante_id
+                GROUP BY u.usuario_id, u.usuario_nombre, u.usuario_email
+                ORDER BY COUNT(t.id) DESC, u.usuario_nombre ASC
+                """).getResultList();
+        return filas.stream()
+                .map(fila -> new TicketsPorUsuario(
+                        ((Number) fila[0]).intValue(),
+                        (String) fila[1],
+                        (String) fila[2],
+                        cantidad(fila[3]),
+                        cantidad(fila[4]),
+                        cantidad(fila[5])))
+                .toList();
+    }
+
+    // Convierte el valor de la consulta a número; si viene vacío cuenta como 0.
+    private static long cantidad(Object valor) {
+        return valor == null ? 0L : ((Number) valor).longValue();
     }
 
     /** Siguiente número del año para el código del ticket. */

@@ -74,6 +74,14 @@ public class TicketController {
         return ConteoTicketsResponse.from(consultar.conteo(authentication.getName()));
     }
 
+    /** GET /api/tickets/por-usuario: cuántos tickets creó cada persona (solo administrador). */
+    @GetMapping("/por-usuario")
+    public List<TicketsPorUsuarioResponse> porUsuario(Authentication authentication) {
+        return consultar.ticketsPorUsuario(authentication.getName()).stream()
+                .map(TicketsPorUsuarioResponse::from)
+                .toList();
+    }
+
     /** GET /api/tickets/sugerencias: soluciones parecidas al texto escrito. */
     @GetMapping("/sugerencias")
     public List<ConocimientoSugeridoResponse> sugerencias(@RequestParam(required = false) String texto) {
