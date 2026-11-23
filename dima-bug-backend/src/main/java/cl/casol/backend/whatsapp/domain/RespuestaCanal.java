@@ -9,7 +9,11 @@ public record RespuestaCanal(Estado estado, String mensaje, String referencia,
     public enum Estado { RESULTADOS, SIN_RESULTADOS, CONFIRMACION, CANCELADO, INVALIDO,
         NO_COMPATIBLE, DUPLICADO, EXPIRADO, ERROR_OCR, ERROR_BUSCADOR, TIEMPO_AGOTADO, SATURADO,
         SALUDO, SOLUCIONADO, TICKET_CREADO, ERROR_TICKET }
-    public record Solucion(Integer id, String titulo, String instrucciones) { }
+    /** Procedencia persistida dentro del plan cifrado; null identifica planes históricos locales. */
+    public record Solucion(Integer id, String titulo, String instrucciones, String catalogo) {
+        public static final String LOCAL = "qa-local-v1";
+        public Solucion(Integer id, String titulo, String instrucciones) { this(id,titulo,instrucciones,null); }
+    }
     public record Candidato(String texto, List<String> avisos) {
         public Candidato { avisos = List.copyOf(avisos); }
     }

@@ -2,6 +2,7 @@ package cl.casol.backend.whatsapp.application.port.out;
 
 import cl.casol.backend.whatsapp.domain.*;
 import java.time.Instant;
+import java.time.Duration;
 import java.util.List;
 
 /** Operaciones atómicas del agregado, no CRUD independientes de sus tres tablas. */
@@ -26,10 +27,12 @@ public interface AlmacenWhatsAppPort {
     boolean renovar(Reserva reserva);
     boolean finalizar(Reserva reserva,EstadoConversacion estado,RespuestaCanal respuesta);
     void reintentar(Reserva reserva,String codigo,int maximo);
+    default void reintentar(Reserva reserva,String codigo,int maximo,Duration esperaMinima){reintentar(reserva,codigo,maximo);}
     void recuperar();
     Salida reservarSalida();
     boolean simular(Salida salida,RespuestaCanal publica);
     void reintentarSalida(Salida salida);
+    default void reintentarSalida(Salida salida,int maximo,Duration esperaMinima){reintentarSalida(salida);}
     /** Registra que el proveedor aceptó el mensaje real. Solo guarda la huella de su identificador. */
     default boolean aceptar(Salida salida,RespuestaCanal publica,String idProveedor){
         throw new UnsupportedOperationException("El almacén no admite envío real");

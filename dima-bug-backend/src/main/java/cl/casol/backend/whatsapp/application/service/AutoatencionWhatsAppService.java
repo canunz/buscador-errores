@@ -109,6 +109,7 @@ public final class AutoatencionWhatsAppService implements ConversacionCanal {
     private RespuestaCanal resolver(MensajeCanal m, String consulta, String origen) {
         List<RespuestaCanal.Solucion> soluciones;
         try { soluciones = List.copyOf(buscador.buscar(consulta)); }
+        catch (FalloCatalogoPublico e) { throw e; }
         catch (RuntimeException e) { return simple(ERROR_BUSCADOR, "No fue posible consultar la base de conocimiento. Intenta nuevamente en unos minutos."); }
         if (soluciones.isEmpty()) return ticket(m, consulta, origen, List.of());
         var titulos = soluciones.stream().limit(2).map(s -> s.titulo() == null ? "" : s.titulo()).toList();

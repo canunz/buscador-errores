@@ -189,11 +189,17 @@ public class AlmacenWhatsAppJpaAdapter implements AlmacenWhatsAppPort {
     private void liberar(ConversacionWhatsAppEntity c){c.reservaToken=null;c.reservaHasta=null;}
     private void terminar(EventoWhatsAppEntity e,String estado,Instant now){e.estado=estado;e.reservaToken=null;e.reservaHasta=null;e.terminadoEn=now;e.actualizadoEn=now;e.contenidoCifrado=null;}
     private long demora(int intento){return Math.min(300,5L*(long)Math.pow(3,Math.min(intento-1,4)))+java.util.concurrent.ThreadLocalRandom.current().nextLong(4);}
-    public void reintentar(Reserva r,String codigo,int maximo){atomico(()->{
+    private long esperaMinima(Duration espera){
+        if(espera==null||espera.isNegative()||espera.compareTo(Duration.ofDays(1))>0)throw new IllegalArgumentException("Espera de catálogo inválida");
+        return espera.getSeconds();
+    }
+    public void reintentar(Reserva r,String codigo,int maximo){reintentar(r,codigo,maximo,Duration.ZERO);}
+    @Override public void reintentar(Reserva r,String codigo,int maximo,Duration espera){
+        long minima=esperaMinima(espera);atomico(()->{
         Instant now=ahora();var c=conversacion(r);var e=vigente(r,now);if(e==null||!r.token().equals(c.reservaToken))return null;
         e.ultimoErrorCodigo=Set.of("ERROR_BUSCADOR","ERROR_OCR","TIEMPO_AGOTADO").contains(codigo)?codigo:"PROCESAMIENTO";
         if(e.intentos>=maximo||!e.venceEn.isAfter(now))terminar(e,e.intentos>=maximo?"ERROR_PERMANENTE":"EXPIRADO",now);
-        else{e.estado="REINTENTO";e.proximoIntento=now.plusSeconds(demora(e.intentos));e.reservaToken=null;e.reservaHasta=null;e.actualizadoEn=now;}
+        else{e.estado="REINTENTO";e.proximoIntento=now.plusSeconds(Math.max(demora(e.intentos),minima));e.reservaToken=null;e.reservaHasta=null;e.actualizadoEn=now;}
         liberar(c);return null;
     });}
     public Salida reservarSalida(){return atomico(()->{
@@ -249,11 +255,13 @@ public class AlmacenWhatsAppJpaAdapter implements AlmacenWhatsAppPort {
         return null;
     });}
     private void cerrarSalida(RespuestaWhatsAppEntity s,String estado,Instant now){s.estado=estado;s.reservaToken=null;s.reservaHasta=null;s.faseReintento=null;s.actualizadoEn=now;s.planCifrado=null;s.preparadoCifrado=null;}
-    public void reintentarSalida(Salida r){atomico(()->{
+    public void reintentarSalida(Salida r){reintentarSalida(r,5,Duration.ZERO);}
+    @Override public void reintentarSalida(Salida r,int maximo,Duration espera){
+        long minima=esperaMinima(espera);atomico(()->{
         Instant now=ahora();var s=em.find(RespuestaWhatsAppEntity.class,r.id(),LockModeType.PESSIMISTIC_WRITE);
         if(!salidaVigente(s,r,now))return null;s.ultimoErrorCodigo="PREPARACION";
-        if(s.intentosPreparacion>=5||!s.venceEn.isAfter(now))cerrarSalida(s,"ERROR_PERMANENTE",now);
-        else{s.estado="REINTENTO";s.faseReintento="PREPARACION";s.reservaToken=null;s.reservaHasta=null;s.proximoIntento=now.plusSeconds(demora(s.intentosPreparacion));}
+        if(s.intentosPreparacion>=maximo||!s.venceEn.isAfter(now))cerrarSalida(s,"ERROR_PERMANENTE",now);
+        else{s.estado="REINTENTO";s.faseReintento="PREPARACION";s.reservaToken=null;s.reservaHasta=null;s.proximoIntento=now.plusSeconds(Math.max(demora(s.intentosPreparacion),minima));}
         return null;
     });}
     public void recuperar(){atomico(()->{

@@ -36,6 +36,7 @@ public final class ProcesarReservaWhatsAppService {
             if(Set.of("ERROR_BUSCADOR","ERROR_OCR","TIEMPO_AGOTADO","ERROR_TICKET").contains(respuesta.estado().name())) {
                 almacen.reintentar(r,respuesta.estado().name(),respuesta.estado().name().equals("TIEMPO_AGOTADO")?2:5);
             } else almacen.finalizar(r,procesador.instantanea(r.mensaje()),respuesta);
-        } catch(RuntimeException e) { almacen.reintentar(r,"PROCESAMIENTO",5); }
+        } catch(FalloCatalogoPublico e) { almacen.reintentar(r,"ERROR_BUSCADOR",e.reintentable()?5:1,e.esperaMinima()); }
+          catch(RuntimeException e) { almacen.reintentar(r,"PROCESAMIENTO",5); }
     }
 }

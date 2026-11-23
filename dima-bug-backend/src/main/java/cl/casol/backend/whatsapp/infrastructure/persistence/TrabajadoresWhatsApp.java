@@ -75,7 +75,8 @@ public class TrabajadoresWhatsApp {
             publica=preparador.preparar(s.respuesta());
             if(controles!=null&&!controles.envio())return; // Se recuperará la reserva sin despacharla.
             if(envio==null){if(almacen.simular(s,publica))sumar(ObservabilidadMetaQa.Codigo.SIMULADAS);return;}
-        }catch(RuntimeException e){registrar(ObservabilidadMetaQa.Codigo.SALIDA);almacen.reintentarSalida(s);return;}
+        }catch(FalloCatalogoPublico e){registrar(ObservabilidadMetaQa.Codigo.SALIDA);almacen.reintentarSalida(s,e.reintentable()?5:1,e.esperaMinima());return;}
+         catch(RuntimeException e){registrar(ObservabilidadMetaQa.Codigo.SALIDA);almacen.reintentarSalida(s);return;}
         String idProveedor;
         try{idProveedor=envio.enviar(s.respuesta().destinatario(),FormatoWhatsApp.texto(publica));}
         catch(EnviarMensajeCanalPort.FalloEnvio e){registrar(ObservabilidadMetaQa.Codigo.SALIDA);almacen.reintentarEnvio(s,e.reintentable());return;}

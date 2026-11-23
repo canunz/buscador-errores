@@ -95,7 +95,8 @@ public final class ProcesarMensajeService implements ConversacionCanal {
             return new RespuestaCanal(soluciones.isEmpty()?SIN_RESULTADOS:RESULTADOS,
                     soluciones.isEmpty()?"No encontré una solución de autoservicio. Contacta a Soporte.":"Encontré estas soluciones de autoservicio.",
                     null,soluciones,List.of(),List.of());
-        } catch (RuntimeException e) { return simple(ERROR_BUSCADOR,"No fue posible consultar. Reintenta con un nuevo mensaje; tu propuesta sigue disponible si no ha vencido."); }
+        } catch (cl.casol.backend.whatsapp.application.port.out.FalloCatalogoPublico e) { throw e; }
+          catch (RuntimeException e) { return simple(ERROR_BUSCADOR,"No fue posible consultar. Reintenta con un nuevo mensaje; tu propuesta sigue disponible si no ha vencido."); }
     }
     private RespuestaCanal propuesta(Pendiente p) {
         var avisos = new ArrayList<String>();

@@ -12,10 +12,12 @@ public final class PrepararRespuestaPublicaAdapter implements PrepararRespuestaP
     public PrepararRespuestaPublicaAdapter(AutoservicioPublicoService s){servicio=s;}
     public RespuestaCanal preparar(RespuestaCanal r){
         if(r.estado()!=RespuestaCanal.Estado.RESULTADOS)return r;
+        if(r.conocimientos().stream().anyMatch(s -> s.catalogo()!=null && !RespuestaCanal.Solucion.LOCAL.equals(s.catalogo())))
+            return ProteccionCatalogo.consultaNueva(r);
         var publicas=new ArrayList<RespuestaCanal.Solucion>();
         for(var original:r.conocimientos())try{
             var s=servicio.publica(original.id());
-            publicas.add(new RespuestaCanal.Solucion(s.id(),s.titulo(),s.descripcion()));
+            publicas.add(new RespuestaCanal.Solucion(s.id(),s.titulo(),s.descripcion(),RespuestaCanal.Solucion.LOCAL));
         }catch(SolucionNoEncontradaException e){ /* Revocada: se omite. Fallos técnicos se reintentan. */ }
         return new RespuestaCanal(publicas.isEmpty()?RespuestaCanal.Estado.SIN_RESULTADOS:RespuestaCanal.Estado.RESULTADOS,
             publicas.isEmpty()?"No hay soluciones de autoservicio disponibles. Contacta a Soporte.":r.mensaje(),

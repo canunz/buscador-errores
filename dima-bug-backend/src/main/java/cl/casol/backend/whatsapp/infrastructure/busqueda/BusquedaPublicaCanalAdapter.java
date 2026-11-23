@@ -9,6 +9,6 @@ public final class BusquedaPublicaCanalAdapter implements BuscarSolucionesCanalP
     public BusquedaPublicaCanalAdapter(ConsultarChatbotService servicio) { this.servicio=servicio; }
     public List<Solucion> buscar(String consulta) {
         if (consulta==null || consulta.isBlank() || consulta.length()>300) throw new IllegalArgumentException("Consulta inválida");
-        return servicio.consultar(consulta.strip()).stream().map(s -> new Solucion(s.id(),s.titulo(),s.solucion())).toList();
+        return servicio.consultar(consulta.strip()).stream().map(s -> new Solucion(s.id(),s.titulo(),s.solucion(),Solucion.LOCAL)).toList();
     }
 }

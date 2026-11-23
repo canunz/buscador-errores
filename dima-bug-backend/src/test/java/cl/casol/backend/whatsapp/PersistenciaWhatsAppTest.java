@@ -212,4 +212,44 @@ class PersistenciaWhatsAppTest {
   assertNotNull(r);assertEquals(2,r.cercado());procesador().ejecutar(r);assertEquals(1,contar("wa_respuesta"));
   var s=almacen.reservarSalida();assertNotNull(s);assertEquals(RespuestaCanal.Estado.CONFIRMACION,s.respuesta().estado());assertTrue(almacen.simular(s,s.respuesta()));
  }
+
+ @Test void catalogoHttpConservaDurabilidadCifradoYDeduplicacion()throws Exception{
+  var servidor=com.sun.net.httpserver.HttpServer.create(new java.net.InetSocketAddress("127.0.0.1",0),0);
+  servidor.createContext("/",e->{String cuerpo=e.getRequestMethod().equals("POST")?
+   "{\"soluciones\":[{\"id\":81,\"titulo\":\"POS principal\",\"solucion\":\"Pasos principales\"}]}":
+   "{\"id\":81,\"titulo\":\"POS principal\",\"instrucciones\":\"Pasos vigentes\"}";
+   byte[] bytes=cuerpo.getBytes(java.nio.charset.StandardCharsets.UTF_8);e.getResponseHeaders().set("Content-Type","application/json");e.sendResponseHeaders(200,bytes.length);e.getResponseBody().write(bytes);e.close();});servidor.start();
+  try{
+   var cliente=new cl.casol.backend.whatsapp.infrastructure.busqueda.CatalogoPublicoHttpClient("http://127.0.0.1:"+servidor.getAddress().getPort(),Duration.ofSeconds(1),Duration.ofSeconds(3));
+   var m=mensaje("http-durable","qa-sintetico",MensajeCanal.Tipo.TEXTO,"Error POS");
+   var entrada=new AlmacenWhatsAppPort.Entrada(m,Instant.now());assertEquals(1,almacen.recibir(List.of(entrada)).aceptados());assertEquals(1,almacen.recibir(List.of(entrada)).duplicados());
+   new ProcesarReservaWhatsAppService(almacen,new cl.casol.backend.whatsapp.infrastructure.busqueda.BusquedaPublicaHttpAdapter(cliente),ref->List.of()).ejecutar(almacen.reservar(false));
+   var salida=almacen.reservarSalida();assertNotNull(salida);assertEquals(cliente.catalogo(),salida.respuesta().conocimientos().getFirst().catalogo());
+   assertNotNull(jdbc.queryForObject("select plan_cifrado from wa_respuesta",byte[].class));
+   var publica=new cl.casol.backend.whatsapp.infrastructure.busqueda.PrepararRespuestaPublicaHttpAdapter(cliente).preparar(salida.respuesta());
+   assertEquals("Pasos vigentes",publica.conocimientos().getFirst().instrucciones());assertTrue(almacen.simular(salida,publica));
+   assertEquals(1,contar("wa_evento"));assertEquals(1,contar("wa_respuesta"));assertEquals("SIMULADA",jdbc.queryForObject("select estado from wa_respuesta",String.class));
+  }finally{servidor.stop(0);}
+ }
+ @Test void falloCatalogoProgramaRetryAfterSinFinalizarNiCrearTicket(){
+  recibir(mensaje("fallo-http","qa-sintetico",MensajeCanal.Tipo.TEXTO,"Error POS"));
+  CrearTicketCanalPort tickets=org.mockito.Mockito.mock(CrearTicketCanalPort.class);
+  new ProcesarReservaWhatsAppService(almacen,q->{throw new FalloCatalogoPublico(true,Duration.ofSeconds(60));},ref->List.of(),tickets).ejecutar(almacen.reservar(false));
+  assertEquals("REINTENTO",jdbc.queryForObject("select estado from wa_evento",String.class));
+  assertTrue(jdbc.queryForObject("select proximo_intento from wa_evento",java.sql.Timestamp.class).toInstant().isAfter(Instant.now().plusSeconds(55)));
+  assertEquals(0,contar("wa_respuesta"));org.mockito.Mockito.verifyNoInteractions(tickets);
+ }
+ @Test void falloPermanenteCatalogoCierraEventoSinTicket(){
+  recibir(mensaje("fallo-permanente","qa-sintetico",MensajeCanal.Tipo.TEXTO,"Error POS"));
+  new ProcesarReservaWhatsAppService(almacen,q->{throw new FalloCatalogoPublico(false,Duration.ZERO);},ref->List.of()).ejecutar(almacen.reservar(false));
+  assertEquals("ERROR_PERMANENTE",jdbc.queryForObject("select estado from wa_evento",String.class));assertEquals(0,contar("wa_respuesta"));
+ }
+ @Test void preparacionHttpRespetaRetryAfterYCierrePermanente(){
+  recibir(mensaje("salida-http","qa-sintetico",MensajeCanal.Tipo.TEXTO,"Error POS"));procesador().ejecutar(almacen.reservar(false));
+  var salida=almacen.reservarSalida();almacen.reintentarSalida(salida,5,Duration.ofSeconds(60));
+  assertEquals("REINTENTO",jdbc.queryForObject("select estado from wa_respuesta",String.class));
+  assertTrue(jdbc.queryForObject("select proximo_intento from wa_respuesta",java.sql.Timestamp.class).toInstant().isAfter(Instant.now().plusSeconds(55)));
+  jdbc.update("update wa_respuesta set proximo_intento=CURRENT_TIMESTAMP");salida=almacen.reservarSalida();assertNotNull(salida);
+  almacen.reintentarSalida(salida,1,Duration.ZERO);assertEquals("ERROR_PERMANENTE",jdbc.queryForObject("select estado from wa_respuesta",String.class));
+ }
 }
