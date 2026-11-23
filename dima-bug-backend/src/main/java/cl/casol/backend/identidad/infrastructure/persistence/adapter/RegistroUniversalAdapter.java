@@ -16,14 +16,14 @@ import java.util.*;
 @Component
 public class RegistroUniversalAdapter implements RegistroUniversalPort {
     private final JdbcTemplate jdbc;
-    private final boolean habilitado;
+    private final String dominios;
     private final int hora, dia, pendientes;
     public RegistroUniversalAdapter(JdbcTemplate jdbc,
-            @Value("${dimabug.auth.registro-universal.habilitado:false}") boolean habilitado,
+            @Value("${dimabug.auth.autorregistro.dominios:dimarsa.cl}") String dominios,
             @Value("${dimabug.auth.registro-universal.maximo-hora:20}") int hora,
             @Value("${dimabug.auth.registro-universal.maximo-dia:100}") int dia,
             @Value("${dimabug.auth.registro-universal.maximo-pendientes:200}") int pendientes) {
-        this.jdbc=jdbc; this.habilitado=habilitado; this.hora=hora; this.dia=dia; this.pendientes=pendientes;
+        this.jdbc=jdbc; this.dominios=dominios; this.hora=hora; this.dia=dia; this.pendientes=pendientes;
     }
     // Resuelve el email.
     @Override
@@ -32,7 +32,8 @@ public class RegistroUniversalAdapter implements RegistroUniversalPort {
         String e=email==null ? "" : email.strip().toLowerCase(Locale.ROOT);
         if (e.length()>120 || !correoValido(e)) return Optional.empty();
         Optional<Usuario> actual=buscar(e);
-        if (actual.isPresent() || !crear || !habilitado) return actual;
+        // Solo los correos de la empresa pueden crear su cuenta; el resto la pide al administrador.
+        if (actual.isPresent() || !crear || !DominioAutorregistro.permitido(e, dominios)) return actual;
         // A database lock serializes unknown-email admissions across JVMs. Never accept a client role.
         List<Integer> roles=jdbc.queryForList("SELECT rol_id FROM u_rol WHERE rol_nombre='USUARIO' AND rol_estado=1 FOR UPDATE", Integer.class);
         if (roles.size()!=1) return Optional.empty();

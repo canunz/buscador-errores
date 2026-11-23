@@ -54,6 +54,13 @@ class AutenticarUsuarioServiceTest {
         assertThrows(CorreoNoRegistradoException.class,()->service.solicitarCodigo("nadie@example.com"));
         verifyNoInteractions(envio); verify(codigos,never()).guardar(any());
     }
+    @Test void correoGmailSinCuentaNoPuedeRegistrarseSolo() {
+        assertThrows(CorreoNoRegistradoException.class,()->service.solicitarCodigo("persona@gmail.com"));
+        verifyNoInteractions(envio); verify(codigos,never()).guardar(any());
+    }
+    @Test void correoDeLaEmpresaSinCuentaNoEsRechazado() {
+        assertDoesNotThrow(()->service.solicitarCodigo("persona@dimarsa.cl"));
+    }
     @Test void inactivoYExistenteTienenRespuestaIgual() {
         when(usuarios.buscarPorEmail("inactivo@example.com")).thenReturn(Optional.of(usuario("inactivo@example.com","USUARIO",false)));
         when(usuarios.buscarPorEmail("activo@example.com")).thenReturn(Optional.of(usuario("activo@example.com","USUARIO",true)));

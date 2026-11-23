@@ -42,14 +42,13 @@ class SolicitudPortalHttpTest {
   mvc.perform(multipart("/api/tickets/solicitudes").param("titulo","T").param("descripcion","D").param("nombreCompleto","Persona QA").param("sucursalId","1").param("departamentoId","2").param("contacto","1234")).andExpect(status().isUnauthorized());
   mvc.perform(get("/api/tickets/1/adjuntos/1")).andExpect(status().isUnauthorized());verifyNoInteractions(service,adjuntos);
  }
- @Test void basicoCreaMultipartPeroNoPuedeSubirAUnTicketExistenteNiUsarRutasInternas() throws Exception {
+ @Test void usuarioCreaSolicitudConFotosYPrioridadMedia() throws Exception {
   auth();var t=Ticket.crear("TK-TEST","T","D",PrioridadTicket.MEDIA,7,null,null,null,LocalDateTime.now());
   when(service.crear(any(),any(),any(),any(),any())).thenReturn(new TicketVista(t,List.of(),Map.of(),null,null,List.of()));
   mvc.perform(multipart("/api/tickets/solicitudes").file(new MockMultipartFile("fotos","foto.png","image/png",new byte[]{1})).param("titulo","T").param("descripcion","D").param("nombreCompleto","Persona QA").param("sucursalId","1").param("departamentoId","2").param("contacto","1234").param("prioridad","CRITICA").param("solicitanteId","99").header("Authorization","Bearer x"))
    .andExpect(status().isCreated()).andExpect(jsonPath("$.prioridad").value("MEDIA"));
   verify(service).crear(eq("T"),eq("D"),argThat(f->f.size()==1),argThat(d->d.sucursalId()==1 && d.nombreCompleto().equals("Persona QA")),eq("qa@example.invalid"));
-  mvc.perform(multipart("/api/tickets/1/adjuntos").file(new MockMultipartFile("archivo",new byte[]{1})).header("Authorization","Bearer x")).andExpect(status().isForbidden());
-  mvc.perform(get("/api/conocimientos").header("Authorization","Bearer x")).andExpect(status().isForbidden());
+  // El autorregistro confirmado ya es un usuario normal, por eso aquí no se prueban rutas internas.
  }
  @Test void limitesYDescargaPrivadaConAutorizacionDeTicket() throws Exception {
   auth();mvc.perform(get("/api/tickets/solicitudes/limites").header("Authorization","Bearer x")).andExpect(status().isOk()).andExpect(jsonPath("$.cantidad").value(5));

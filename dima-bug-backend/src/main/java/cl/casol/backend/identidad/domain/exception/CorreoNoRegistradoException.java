@@ -7,6 +7,6 @@ package cl.casol.backend.identidad.domain.exception;
 public class CorreoNoRegistradoException extends RuntimeException {
 
     public CorreoNoRegistradoException() {
-        super("Ese correo no existe en DimaBug. Intente nuevamente con otro correo.");
+        super("Ese correo no tiene cuenta en DimaBug. Solo los correos @dimarsa.cl pueden registrarse solos; con otro correo, pida al administrador que le cree la cuenta.");
     }
 }

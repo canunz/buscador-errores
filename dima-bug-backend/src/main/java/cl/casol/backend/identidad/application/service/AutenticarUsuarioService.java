@@ -5,6 +5,7 @@ import cl.casol.backend.identidad.application.port.out.EnvioCodigoAccesoPort;
 import cl.casol.backend.identidad.application.port.out.PasswordEncoderPort;
 import cl.casol.backend.identidad.application.port.out.UsuarioRepository;
 import cl.casol.backend.identidad.domain.CodigoAcceso;
+import cl.casol.backend.identidad.domain.DominioAutorregistro;
 import cl.casol.backend.identidad.domain.Usuario;
 import cl.casol.backend.identidad.domain.exception.CodigoAccesoInvalidoException;
 import cl.casol.backend.identidad.domain.exception.CorreoNoRegistradoException;
@@ -45,11 +46,11 @@ public class AutenticarUsuarioService {
     private cl.casol.backend.identidad.application.port.out.RegistroUniversalPort registroUniversal;
 
     /**
-     * Indica si se aceptan correos nuevos (registro abierto). Viene apagado por defecto:
-     * en ese caso solo pueden pedir código los correos que ya existen en la base de datos.
+     * Dominios de correo que pueden crear su propia cuenta (por defecto solo dimarsa.cl).
+     * Cualquier otro correo, como uno de Gmail, solo entra si el administrador le creó la cuenta.
      */
-    @Value("${dimabug.auth.registro-universal.habilitado:false}")
-    private boolean registroAbierto = false;
+    @Value("${dimabug.auth.autorregistro.dominios:dimarsa.cl}")
+    private String dominiosAutorregistro = "dimarsa.cl";
     private final SecureRandom random = new SecureRandom();
 
     /** Controla los bloqueos por códigos mal ingresados (3 intentos, luego segundos y después minutos). */
@@ -97,9 +98,10 @@ public class AutenticarUsuarioService {
         Optional<Usuario> cuenta = registroUniversal == null ? buscar(correo)
             : registroUniversal.resolver(correo, true, encoder.codificar(java.util.UUID.randomUUID().toString()));
 
-        // Si el correo no está en la base de datos (y no hay registro abierto), se avisa
-        // que no existe y no se genera ningún código.
-        if (cuenta.isEmpty() && !registroAbierto) throw new CorreoNoRegistradoException();
+        // Si el correo no tiene cuenta y no es de la empresa, se rechaza: no se crea cuenta ni se envía código.
+        if (cuenta.isEmpty() && !DominioAutorregistro.permitido(correo, dominiosAutorregistro)) {
+            throw new CorreoNoRegistradoException();
+        }
 
         Optional<Usuario> encontrado = cuenta.filter(Usuario::puedeRecibirCodigo);
         if (encontrado.isEmpty()) return respuesta;

@@ -26,7 +26,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
  "spring.datasource.username=sa","spring.datasource.password=","spring.datasource.driver-class-name=org.h2.Driver",
  "spring.jpa.hibernate.ddl-auto=create-drop","spring.sql.init.mode=never",
  "jwt.secret=clave-sintetica-exclusiva-de-pruebas-12345678901234567890","jwt.expiration=3600000",
- "dimabug.auth.registro-universal.habilitado=true","dimabug.auth.registro-universal.maximo-hora=3",
+ "dimabug.auth.autorregistro.dominios=dimarsa.cl,gmail.com,hotmail.com,outlook.com,otro.example","dimabug.auth.registro-universal.maximo-hora=3",
  "dimabug.auth.limite-ip-minuto=1000","dimabug.auth.correo.habilitado=false",
  "dimabug.automatizacion.modo=DESHABILITADO","dimabug.automatizacion.seguimiento.habilitado=false",
  "dimabug.gmail.envio-real-habilitado=false","dimabug.gmail.oauth-habilitado=false",
@@ -77,14 +77,14 @@ class RegistroUniversalIntegrationTest {
   assertEquals("AUTO_PENDIENTE",estado(e));assertFalse(usuarios.buscarFresco(e).orElseThrow().puedeIngresar());
   assertThrows(CodigoAccesoInvalidoException.class,()->auth.verificarCodigo(e,"no-valido"));
   assertEquals("AUTO_PENDIENTE",estado(e));
-  Usuario u=auth.verificarCodigo(e,codigos.get(e));assertTrue(u.puedeIngresar());assertTrue(u.isAccesoBasico());
+  Usuario u=auth.verificarCodigo(e,codigos.get(e));assertTrue(u.puedeIngresar());assertFalse(u.isAccesoBasico());
   assertEquals("USUARIO",u.getRol().getNombre());assertEquals("AUTO_CONFIRMADO",estado(e));
   assertThrows(CodigoAccesoInvalidoException.class,()->auth.verificarCodigo(e,codigos.get(e)));
   verifyNoInteractions(gmail);
  }
  @Test void aceptaDominiosPersonalesCorporativosYOtrosSinPrivilegios() {
   for(String e:List.of("uno@dimarsa.cl","dos@hotmail.com","tres@otro.example")) {
-   Usuario u=confirmar(e);assertEquals("USUARIO",u.getRol().getNombre());assertTrue(u.isAccesoBasico());
+   Usuario u=confirmar(e);assertEquals("USUARIO",u.getRol().getNombre());assertFalse(u.isAccesoBasico());
   }
  }
  @Test void bloqueadoAdministradoNoRecibeNiSeReactiva() {
@@ -154,13 +154,12 @@ class RegistroUniversalIntegrationTest {
   }
   assertEquals("AUTO_CONFIRMADO",estado(e));
  }
- @Test void jwtSoloPermiteTicketsPropiosYDeniegaRecursosInternos() throws Exception {
+ // Quien confirma su autorregistro entra como usuario normal: ve sus tickets, pero no lo que es del administrador.
+ @Test void autorregistroConfirmadoEntraComoUsuarioNormal() throws Exception {
   String token=jwt("portal@gmail.com");
   assertEquals(200,mvc.perform(get("/api/auth/me").header("Authorization","Bearer "+token)).andReturn().getResponse().getStatus());
-  for(String p:List.of("/api/conocimientos","/api/procedimientos","/api/sucursales","/api/hardware","/api/usuarios","/api/tickets/sugerencias?texto=incidencia","/api/publico/soluciones"))
-   assertEquals(403,mvc.perform(get(p).header("Authorization","Bearer "+token)).andReturn().getResponse().getStatus(),p);
-  assertEquals(403,mvc.perform(post("/api/tickets/1/comentarios").header("Authorization","Bearer "+token).contentType("application/json").content("{\"texto\":\"mensaje\"}")).andReturn().getResponse().getStatus());
-  assertEquals(403,mvc.perform(get("/api/tickets?texto=interno").header("Authorization","Bearer "+token)).andReturn().getResponse().getStatus());
+  assertEquals(200,mvc.perform(get("/api/tickets").header("Authorization","Bearer "+token)).andReturn().getResponse().getStatus());
+  assertEquals(403,mvc.perform(get("/api/usuarios").header("Authorization","Bearer "+token)).andReturn().getResponse().getStatus());
  }
  @Test void bloqueoRevocaAccesoSinEsperarCaducidadDeCacheOJwt() throws Exception {
   String e="revocar@gmail.com",token=jwt(e);
@@ -171,9 +170,6 @@ class RegistroUniversalIntegrationTest {
  @Test void crearConsultarPropioYResponder404EnTicketAjeno() throws Exception {
   String token=jwt("propietario@gmail.com");
   String nombreAntes=jdbc.queryForObject("SELECT usuario_nombre FROM u_usuario WHERE usuario_email='propietario@gmail.com'",String.class);
-  assertEquals(400,mvc.perform(post("/api/tickets").header("Authorization","Bearer "+token).contentType("application/json")
-    .content("{\"titulo\":\"Problema sintético\",\"descripcion\":\"Solo datos de prueba\"}"))
-    .andReturn().getResponse().getStatus());
   var response=mvc.perform(multipart("/api/tickets/solicitudes").header("Authorization","Bearer "+token)
     .param("titulo","Problema sintético").param("descripcion","Solo datos de prueba")
     .param("nombreCompleto","Persona declarada QA").param("sucursalId","101").param("departamentoId","102")

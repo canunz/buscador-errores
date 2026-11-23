@@ -27,7 +27,13 @@ public class Usuario {
         this.estadoRegistro = java.util.Objects.requireNonNull(estado);
     }
     public EstadoRegistro getEstadoRegistro() { return estadoRegistro; }
-    public boolean isAccesoBasico() { return estadoRegistro != EstadoRegistro.ADMINISTRADO; }
+    /**
+     * Acceso limitado solo mientras el autorregistro no está confirmado (pendiente o cancelado).
+     * Quien se registró con su correo de la empresa y confirmó el código queda como usuario normal.
+     */
+    public boolean isAccesoBasico() {
+        return estadoRegistro == EstadoRegistro.AUTO_PENDIENTE || estadoRegistro == EstadoRegistro.AUTO_CANCELADO;
+    }
     // Indica si puede ingresar.
     public boolean puedeIngresar() {
         return activo && rol != null && rol.isActivo()

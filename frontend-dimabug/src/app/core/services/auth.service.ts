@@ -152,7 +152,7 @@ export class AuthService {
         : this.safeApiMessage(this.extractApiMessage(err), 'Revise los datos ingresados.');
     }
     if (paso === 'solicitar' && err.status === 404) {
-      return this.safeApiMessage(this.extractApiMessage(err), 'Ese correo no existe en DimaBug. Intente nuevamente con otro correo.');
+      return this.safeApiMessage(this.extractApiMessage(err), 'Ese correo no tiene cuenta en DimaBug. Solo los correos @dimarsa.cl pueden registrarse solos; con otro correo, pida al administrador que le cree la cuenta.');
     }
     if (paso === 'solicitar' && err.status === 401) {
       // El endpoint no responde: el backend sigue corriendo con la versión anterior.
