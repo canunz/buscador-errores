@@ -1065,3 +1065,16 @@ td strong {
     animation: none;
   }
 }
+
+.acciones-consulta { display:flex; flex-wrap:wrap; gap:8px; }
+.soluciones-modal { box-sizing:border-box; width:min(560px,calc(100vw - 24px)); max-height:calc(100dvh - 32px); margin:auto; padding:24px; border:1px solid #dce5f3; border-radius:20px; background:#fff; color:#24324a; box-shadow:0 24px 80px #0f172a40; overflow:auto; }
+.soluciones-modal::backdrop { background:#0f172a99; }
+.soluciones-modal h2 { margin:0; font-size:20px; overflow-wrap:anywhere; }
+.soluciones-modal header p { color:#667085; }
+.soluciones-listado { list-style:none; margin:16px 0; padding:0; display:grid; gap:8px; }
+.soluciones-listado button { width:100%; min-height:44px; padding:12px; text-align:left; font:inherit; color:#1e4fd6; background:#f4f7ff; border:1px solid #dce5f3; border-radius:10px; cursor:pointer; overflow-wrap:anywhere; }
+.soluciones-listado button:hover { background:#eaf0ff; }
+.soluciones-modal footer { display:flex; justify-content:flex-end; margin-top:18px; }
+.soluciones-modal button:focus-visible,.acciones-consulta button:focus-visible { outline:3px solid #8db7ff; outline-offset:2px; }
+.soluciones-vacio { color:#667085; }
+@media(max-width:600px) { .soluciones-modal { padding:18px; } .lado { flex-wrap:wrap; gap:12px; } .acciones-consulta { width:100%; } .acciones-consulta button { flex:1; justify-content:center; } }

@@ -22,10 +22,23 @@
         </svg>
         Conocimiento
       </a>
-      <a routerLink="/chatbot" routerLinkActive="activo" (click)="closeMenu()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 4h16v12H9l-5 4V4z"/></svg>
-        Asistente DimaBug
+      <a routerLink="/procedimientos" routerLinkActive="activo" (click)="closeMenu()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/>
+          <rect x="9" y="3" width="6" height="4" rx="1"/>
+          <path d="M9 12h6M9 16h4"/>
+        </svg>
+        Procedimientos
       </a>
+      @if (isStaff()) {
+        <a routerLink="/ejecuciones" routerLinkActive="activo" (click)="closeMenu()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="9"/>
+            <path d="M10 8.8l6 3.2-6 3.2V8.8z"/>
+          </svg>
+          Mis ejecuciones
+        </a>
+      }
       @if (isStaff()) {
         <a routerLink="/tickets/bandeja" routerLinkActive="activo" (click)="closeMenu()">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
@@ -49,14 +62,6 @@
         </svg>
         Favoritos
       </a>
-      <a routerLink="/procedimientos" routerLinkActive="activo" (click)="closeMenu()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/>
-          <rect x="9" y="3" width="6" height="4" rx="1"/>
-          <path d="M9 12h6M9 16h4"/>
-        </svg>
-        Procedimientos
-      </a>
       @if (isStaff()) {
       <!-- Reportes es de soporte/admin; el usuario no lo ve en el menú. -->
       <a routerLink="/reportes" routerLinkActive="activo" (click)="closeMenu()">
@@ -75,14 +80,13 @@
           </svg>
           Nuevo error
         </a>
-        <a routerLink="/ejecuciones" routerLinkActive="activo" (click)="closeMenu()">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="9"/>
-            <path d="M10 8.8l6 3.2-6 3.2V8.8z"/>
-          </svg>
-          Mis ejecuciones
-        </a>
 
+      }
+      <a routerLink="/chatbot" routerLinkActive="activo" (click)="closeMenu()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 4h16v12H9l-5 4V4z"/></svg>
+        Asistente DimaBug
+      </a>
+      @if (isStaff()) {
         <p class="nav-label">Catálogos</p>
         @if (isAdmin()) {
           <a routerLink="/admin/catalogo/sistemas" routerLinkActive="activo" (click)="closeMenu()">

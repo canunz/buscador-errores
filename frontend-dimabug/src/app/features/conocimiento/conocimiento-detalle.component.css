@@ -1730,3 +1730,15 @@
 .flujo-material-modal label, .flujo-material-modal input { display: block; width: 100%; }
 
 .flujo-campos { display: contents; }
+
+/* Botones del flujo de pruebas: mismos secundarios y foco que el resto de DimaBug. */
+.prueba-modal .flujo-acciones,
+.prueba-modal .editor-actions { align-items: stretch; }
+.prueba-modal button { min-height: 42px; font-family: inherit; font-size: 13px; line-height: 1.4; white-space: normal; }
+.prueba-modal .ghost-mini:not(:disabled):hover { background: #dce6ff; border-color: #9fb8f5; }
+.prueba-modal button:focus-visible { outline: 3px solid #6794ff; outline-offset: 3px; }
+.prueba-modal button:disabled { opacity: .6; cursor: wait; }
+@media (max-width: 480px) {
+  .prueba-modal .flujo-acciones > button,
+  .prueba-modal .editor-actions > button { flex: 1 1 140px; }
+}

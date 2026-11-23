@@ -5,7 +5,8 @@ import { apiUrl } from '../../core/config/api';
 import { AdminPruebasApiService } from '../../core/services/admin-pruebas-api.service';
 import { PruebaItem } from '../../core/models/catalogo.model';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { combineLatest, of } from 'rxjs';
+import { ActivatedRoute, Router, RouterLink, convertToParamMap } from '@angular/router';
 import {
   AsignacionSolucion,
   CatalogoRef,
@@ -73,6 +74,11 @@ export class ConocimientoDetalleComponent implements OnInit {
   causas: ItemOrdenado[] = [];
   pruebas: PruebaAsociada[] = [];
   soluciones: Solucion[] = [];
+  solucionConsultaId: number | null = null;
+  get soloSolucion(): boolean { return this.solucionConsultaId !== null; }
+  get solucionesVisibles(): Solucion[] {
+    return this.soloSolucion ? this.soluciones.filter(s => s.id === this.solucionConsultaId) : this.soluciones;
+  }
   materiales: MaterialApoyo[] = [];
   asignacionesPorSolucion: Record<number, AsignacionSolucion[]> = {};
 
@@ -392,7 +398,13 @@ export class ConocimientoDetalleComponent implements OnInit {
       }
     });
 
-    this.route.paramMap.subscribe((params) => {
+    combineLatest([this.route.paramMap, this.route.queryParamMap ?? of(convertToParamMap({}))])
+      .pipe(takeUntilDestroyed(this.destroyRef)).subscribe(([params, query]) => {
+      const valor = query.get('solucion');
+      const idSolucion = Number(valor);
+      // Un parámetro inválido nunca debe ampliar la vista a todas las soluciones.
+      this.solucionConsultaId = valor === null ? null
+        : /^\d+$/.test(valor) && Number.isSafeInteger(idSolucion) && idSolucion > 0 ? idSolucion : -1;
       const id = Number(params.get('id'));
       if (id) {
         this.cargar(id);
@@ -401,6 +413,8 @@ export class ConocimientoDetalleComponent implements OnInit {
   }
 
   cargar(id: number): void {
+    this.paso = this.soloSolucion ? 4 : 1;
+    this.soluciones = [];
     this.reutilizarAbierto = false;
     this.materialBusquedaAbierta = false;
     this.currentId = id;
@@ -514,7 +528,7 @@ export class ConocimientoDetalleComponent implements OnInit {
       },
     });
 
-    this.loadingSoluciones = this.conocimientosApi.leerSeccion(`soluciones:${id}`) == null;
+    this.loadingSoluciones = this.soloSolucion || this.conocimientosApi.leerSeccion(`soluciones:${id}`) == null;
     this.conocimientosApi.listarSoluciones(id).subscribe({
       next: (items) => {
         if (this.currentId !== id) return;
@@ -551,7 +565,7 @@ export class ConocimientoDetalleComponent implements OnInit {
   }
 
   irPaso(paso: number): void {
-    if (paso < 1 || paso > this.pasosGuia.length) {
+    if (this.soloSolucion || paso < 1 || paso > this.pasosGuia.length) {
       return;
     }
     this.paso = paso;

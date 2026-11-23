@@ -257,10 +257,13 @@
                   </svg>
                 </button>
               </div>
+              <div class="acciones-consulta">
+              <button type="button" class="btn-ver" (click)="abrirSoluciones(item)">Ver soluciones</button>
               <button type="button" class="btn-ver" (click)="abrir(item)">
-                Ver solución
+                Ver detalle
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M9 6l6 6-6 6" /></svg>
               </button>
+              </div>
             </div>
           </li>
         } @empty {
@@ -366,3 +369,27 @@
     </div>
   </div>
 }
+
+<dialog #solucionesModal class="soluciones-modal" aria-labelledby="soluciones-modal-titulo" (close)="limpiarSolucionesModal()">
+  <header>
+    <h2 id="soluciones-modal-titulo">{{ conocimientoSoluciones?.titulo }}</h2>
+    <p>Soluciones</p>
+  </header>
+  @if (cargandoSolucionesModal) {
+    <p role="status">Cargando soluciones…</p>
+  } @else if (errorSolucionesModal) {
+    <p role="alert">{{ errorSolucionesModal }}</p>
+    @if (conocimientoSoluciones; as conocimiento) {
+      <button type="button" class="btn-ver" (click)="abrirSoluciones(conocimiento)">Reintentar</button>
+    }
+  } @else {
+    <ul class="soluciones-listado">
+      @for (solucion of solucionesModalItems; track solucion.id) {
+        <li><button type="button" (click)="verSolucion(solucion)">{{ solucion.titulo?.trim() || 'Solución sin título' }}</button></li>
+      } @empty {
+        <li class="soluciones-vacio">Este conocimiento no tiene soluciones disponibles.</li>
+      }
+    </ul>
+  }
+  <footer><button type="button" class="btn-ver" (click)="cerrarSoluciones()" autofocus>Cerrar</button></footer>
+</dialog>
