@@ -1,0 +1,366 @@
+{
+  "format": "dimabug-qa-encoding-repair-plan-v1",
+  "from_version": "mvp-qa-v1",
+  "to_version": "mvp-qa-v2",
+  "source_fixture_sha256": "f3241d198eb9dfcae868dd1ecc59637625fdfa885c05bf63f233f2e059ab4e41",
+  "target_fixture_sha256": "d8a64935ee2f580288d8725643f6c890e16bc58f3e615d7fe933aa7d133f5b38",
+  "database": "dima_bug_qa_mvp",
+  "host": "127.0.0.1",
+  "port": 13318,
+  "expected_total_rows": 67,
+  "expected_updated_cells": 35,
+  "expected_tables": 15,
+  "execution_authorized": false,
+  "changes": [
+    {
+      "table": "u_rol",
+      "primary_key": "rol_id",
+      "id": 1001,
+      "column": "rol_descripcion",
+      "expected_before_utf8_hex": "526F6C2073696E74C383C2A97469636F205141",
+      "replacement_utf8_hex": "526F6C2073696E74C3A97469636F205141",
+      "statement": "UPDATE `dima_bug_qa_mvp`.`u_rol` SET `rol_descripcion`=CONVERT(UNHEX(%s) USING utf8mb4) WHERE `rol_id`=%s AND HEX(`rol_descripcion`)=%s",
+      "expected_affected_rows": 1
+    },
+    {
+      "table": "u_rol",
+      "primary_key": "rol_id",
+      "id": 1002,
+      "column": "rol_descripcion",
+      "expected_before_utf8_hex": "526F6C2073696E74C383C2A97469636F205141",
+      "replacement_utf8_hex": "526F6C2073696E74C3A97469636F205141",
+      "statement": "UPDATE `dima_bug_qa_mvp`.`u_rol` SET `rol_descripcion`=CONVERT(UNHEX(%s) USING utf8mb4) WHERE `rol_id`=%s AND HEX(`rol_descripcion`)=%s",
+      "expected_affected_rows": 1
+    },
+    {
+      "table": "u_rol",
+      "primary_key": "rol_id",
+      "id": 1003,
+      "column": "rol_descripcion",
+      "expected_before_utf8_hex": "526F6C2073696E74C383C2A97469636F205141",
+      "replacement_utf8_hex": "526F6C2073696E74C3A97469636F205141",
+      "statement": "UPDATE `dima_bug_qa_mvp`.`u_rol` SET `rol_descripcion`=CONVERT(UNHEX(%s) USING utf8mb4) WHERE `rol_id`=%s AND HEX(`rol_descripcion`)=%s",
+      "expected_affected_rows": 1
+    },
+    {
+      "table": "u_rol",
+      "primary_key": "rol_id",
+      "id": 1004,
+      "column": "rol_descripcion",
+      "expected_before_utf8_hex": "526F6C2073696E74C383C2A97469636F205141",
+      "replacement_utf8_hex": "526F6C2073696E74C3A97469636F205141",
+      "statement": "UPDATE `dima_bug_qa_mvp`.`u_rol` SET `rol_descripcion`=CONVERT(UNHEX(%s) USING utf8mb4) WHERE `rol_id`=%s AND HEX(`rol_descripcion`)=%s",
+      "expected_affected_rows": 1
+    },
+    {
+      "table": "u_departamento",
+      "primary_key": "departamento_id",
+      "id": 1001,
+      "column": "departamento_nombre",
+      "expected_before_utf8_hex": "5141204174656E6369C383C2B36E",
+      "replacement_utf8_hex": "5141204174656E6369C3B36E",
+      "statement": "UPDATE `dima_bug_qa_mvp`.`u_departamento` SET `departamento_nombre`=CONVERT(UNHEX(%s) USING utf8mb4) WHERE `departamento_id`=%s AND HEX(`departamento_nombre`)=%s",
+      "expected_affected_rows": 1
+    },
+    {
+      "table": "u_departamento_contacto",
+      "primary_key": "contacto_id",
+      "id": 1001,
+      "column": "contacto_valor",
+      "expected_before_utf8_hex": "514120657874656E7369C383C2B36E2031303031",
+      "replacement_utf8_hex": "514120657874656E7369C3B36E2031303031",
+      "statement": "UPDATE `dima_bug_qa_mvp`.`u_departamento_contacto` SET `contacto_valor`=CONVERT(UNHEX(%s) USING utf8mb4) WHERE `contacto_id`=%s AND HEX(`contacto_valor`)=%s",
+      "expected_affected_rows": 1
+    },
+    {
+      "table": "u_departamento_contacto",
+      "primary_key": "contacto_id",
+      "id": 1002,
+      "column": "contacto_valor",
+      "expected_before_utf8_hex": "514120657874656E7369C383C2B36E2031303032",
+      "replacement_utf8_hex": "514120657874656E7369C3B36E2031303032",
+      "statement": "UPDATE `dima_bug_qa_mvp`.`u_departamento_contacto` SET `contacto_valor`=CONVERT(UNHEX(%s) USING utf8mb4) WHERE `contacto_id`=%s AND HEX(`contacto_valor`)=%s",
+      "expected_affected_rows": 1
+    },
+    {
+      "table": "u_responsable",
+      "primary_key": "responsable_id",
+      "id": 1001,
+      "column": "responsable_contacto",
+      "expected_before_utf8_hex": "457874656E7369C383C2B36E2051412031303031",
+      "replacement_utf8_hex": "457874656E7369C3B36E2051412031303031",
+      "statement": "UPDATE `dima_bug_qa_mvp`.`u_responsable` SET `responsable_contacto`=CONVERT(UNHEX(%s) USING utf8mb4) WHERE `responsable_id`=%s AND HEX(`responsable_contacto`)=%s",
+      "expected_affected_rows": 1
+    },
+    {
+      "table": "u_responsable",
+      "primary_key": "responsable_id",
+      "id": 1002,
+      "column": "responsable_contacto",
+      "expected_before_utf8_hex": "457874656E7369C383C2B36E2051412031303032",
+      "replacement_utf8_hex": "457874656E7369C3B36E2051412031303032",
+      "statement": "UPDATE `dima_bug_qa_mvp`.`u_responsable` SET `responsable_contacto`=CONVERT(UNHEX(%s) USING utf8mb4) WHERE `responsable_id`=%s AND HEX(`responsable_contacto`)=%s",
+      "expected_affected_rows": 1
+    },
+    {
+      "table": "cl_hardware",
+      "primary_key": "hardware_id",
+      "id": 1001,
+      "column": "hardware_sistema_operativo",
+      "expected_before_utf8_hex": "51412073696E74C383C2A97469636F",
+      "replacement_utf8_hex": "51412073696E74C3A97469636F",
+      "statement": "UPDATE `dima_bug_qa_mvp`.`cl_hardware` SET `hardware_sistema_operativo`=CONVERT(UNHEX(%s) USING utf8mb4) WHERE `hardware_id`=%s AND HEX(`hardware_sistema_operativo`)=%s",
+      "expected_affected_rows": 1
+    },
+    {
+      "table": "cl_hardware",
+      "primary_key": "hardware_id",
+      "id": 1002,
+      "column": "hardware_sistema_operativo",
+      "expected_before_utf8_hex": "51412073696E74C383C2A97469636F",
+      "replacement_utf8_hex": "51412073696E74C3A97469636F",
+      "statement": "UPDATE `dima_bug_qa_mvp`.`cl_hardware` SET `hardware_sistema_operativo`=CONVERT(UNHEX(%s) USING utf8mb4) WHERE `hardware_id`=%s AND HEX(`hardware_sistema_operativo`)=%s",
+      "expected_affected_rows": 1
+    },
+    {
+      "table": "cl_modulo",
+      "primary_key": "modulo_id",
+      "id": 1001,
+      "column": "modulo_nombre",
+      "expected_before_utf8_hex": "5141204DC383C2B364756C6F2031303031",
+      "replacement_utf8_hex": "5141204DC3B364756C6F2031303031",
+      "statement": "UPDATE `dima_bug_qa_mvp`.`cl_modulo` SET `modulo_nombre`=CONVERT(UNHEX(%s) USING utf8mb4) WHERE `modulo_id`=%s AND HEX(`modulo_nombre`)=%s",
+      "expected_affected_rows": 1
+    },
+    {
+      "table": "cl_modulo",
+      "primary_key": "modulo_id",
+      "id": 1002,
+      "column": "modulo_nombre",
+      "expected_before_utf8_hex": "5141204DC383C2B364756C6F2031303032",
+      "replacement_utf8_hex": "5141204DC3B364756C6F2031303032",
+      "statement": "UPDATE `dima_bug_qa_mvp`.`cl_modulo` SET `modulo_nombre`=CONVERT(UNHEX(%s) USING utf8mb4) WHERE `modulo_id`=%s AND HEX(`modulo_nombre`)=%s",
+      "expected_affected_rows": 1
+    },
+    {
+      "table": "co_conocimiento",
+      "primary_key": "conocimiento_id",
+      "id": 1001,
+      "column": "conocimiento_descripcion",
+      "expected_before_utf8_hex": "446961676EC383C2B3737469636F2073696E74C383C2A97469636F206465207465726D696E616C2073696E20636F6E657869C383C2B36E",
+      "replacement_utf8_hex": "446961676EC3B3737469636F2073696E74C3A97469636F206465207465726D696E616C2073696E20636F6E657869C3B36E",
+      "statement": "UPDATE `dima_bug_qa_mvp`.`co_conocimiento` SET `conocimiento_descripcion`=CONVERT(UNHEX(%s) USING utf8mb4) WHERE `conocimiento_id`=%s AND HEX(`conocimiento_descripcion`)=%s",
+      "expected_affected_rows": 1
+    },
+    {
+      "table": "co_conocimiento",
+      "primary_key": "conocimiento_id",
+      "id": 1002,
+      "column": "conocimiento_descripcion",
+      "expected_before_utf8_hex": "446961676EC383C2B3737469636F2073696E74C383C2A97469636F206465207465726D696E616C2073696E20636F6E657869C383C2B36E",
+      "replacement_utf8_hex": "446961676EC3B3737469636F2073696E74C3A97469636F206465207465726D696E616C2073696E20636F6E657869C3B36E",
+      "statement": "UPDATE `dima_bug_qa_mvp`.`co_conocimiento` SET `conocimiento_descripcion`=CONVERT(UNHEX(%s) USING utf8mb4) WHERE `conocimiento_id`=%s AND HEX(`conocimiento_descripcion`)=%s",
+      "expected_affected_rows": 1
+    },
+    {
+      "table": "co_conocimiento",
+      "primary_key": "conocimiento_id",
+      "id": 1003,
+      "column": "conocimiento_descripcion",
+      "expected_before_utf8_hex": "446961676EC383C2B3737469636F2073696E74C383C2A97469636F206465207465726D696E616C2073696E20636F6E657869C383C2B36E",
+      "replacement_utf8_hex": "446961676EC3B3737469636F2073696E74C3A97469636F206465207465726D696E616C2073696E20636F6E657869C3B36E",
+      "statement": "UPDATE `dima_bug_qa_mvp`.`co_conocimiento` SET `conocimiento_descripcion`=CONVERT(UNHEX(%s) USING utf8mb4) WHERE `conocimiento_id`=%s AND HEX(`conocimiento_descripcion`)=%s",
+      "expected_affected_rows": 1
+    },
+    {
+      "table": "co_sintoma",
+      "primary_key": "sintoma_id",
+      "id": 1001,
+      "column": "sintoma_descripcion",
+      "expected_before_utf8_hex": "5141207465726D696E616C206D75657374726120646573636F6E657869C383C2B36E",
+      "replacement_utf8_hex": "5141207465726D696E616C206D75657374726120646573636F6E657869C3B36E",
+      "statement": "UPDATE `dima_bug_qa_mvp`.`co_sintoma` SET `sintoma_descripcion`=CONVERT(UNHEX(%s) USING utf8mb4) WHERE `sintoma_id`=%s AND HEX(`sintoma_descripcion`)=%s",
+      "expected_affected_rows": 1
+    },
+    {
+      "table": "co_sintoma",
+      "primary_key": "sintoma_id",
+      "id": 1002,
+      "column": "sintoma_descripcion",
+      "expected_before_utf8_hex": "5141207465726D696E616C206D75657374726120646573636F6E657869C383C2B36E",
+      "replacement_utf8_hex": "5141207465726D696E616C206D75657374726120646573636F6E657869C3B36E",
+      "statement": "UPDATE `dima_bug_qa_mvp`.`co_sintoma` SET `sintoma_descripcion`=CONVERT(UNHEX(%s) USING utf8mb4) WHERE `sintoma_id`=%s AND HEX(`sintoma_descripcion`)=%s",
+      "expected_affected_rows": 1
+    },
+    {
+      "table": "co_sintoma",
+      "primary_key": "sintoma_id",
+      "id": 1003,
+      "column": "sintoma_descripcion",
+      "expected_before_utf8_hex": "5141207465726D696E616C206D75657374726120646573636F6E657869C383C2B36E",
+      "replacement_utf8_hex": "5141207465726D696E616C206D75657374726120646573636F6E657869C3B36E",
+      "statement": "UPDATE `dima_bug_qa_mvp`.`co_sintoma` SET `sintoma_descripcion`=CONVERT(UNHEX(%s) USING utf8mb4) WHERE `sintoma_id`=%s AND HEX(`sintoma_descripcion`)=%s",
+      "expected_affected_rows": 1
+    },
+    {
+      "table": "co_causa",
+      "primary_key": "causa_id",
+      "id": 1001,
+      "column": "causa_descripcion",
+      "expected_before_utf8_hex": "514120636F6E657869C383C2B36E2073696D756C616461",
+      "replacement_utf8_hex": "514120636F6E657869C3B36E2073696D756C616461",
+      "statement": "UPDATE `dima_bug_qa_mvp`.`co_causa` SET `causa_descripcion`=CONVERT(UNHEX(%s) USING utf8mb4) WHERE `causa_id`=%s AND HEX(`causa_descripcion`)=%s",
+      "expected_affected_rows": 1
+    },
+    {
+      "table": "co_causa",
+      "primary_key": "causa_id",
+      "id": 1002,
+      "column": "causa_descripcion",
+      "expected_before_utf8_hex": "514120636F6E657869C383C2B36E2073696D756C616461",
+      "replacement_utf8_hex": "514120636F6E657869C3B36E2073696D756C616461",
+      "statement": "UPDATE `dima_bug_qa_mvp`.`co_causa` SET `causa_descripcion`=CONVERT(UNHEX(%s) USING utf8mb4) WHERE `causa_id`=%s AND HEX(`causa_descripcion`)=%s",
+      "expected_affected_rows": 1
+    },
+    {
+      "table": "co_causa",
+      "primary_key": "causa_id",
+      "id": 1003,
+      "column": "causa_descripcion",
+      "expected_before_utf8_hex": "514120636F6E657869C383C2B36E2073696D756C616461",
+      "replacement_utf8_hex": "514120636F6E657869C3B36E2073696D756C616461",
+      "statement": "UPDATE `dima_bug_qa_mvp`.`co_causa` SET `causa_descripcion`=CONVERT(UNHEX(%s) USING utf8mb4) WHERE `causa_id`=%s AND HEX(`causa_descripcion`)=%s",
+      "expected_affected_rows": 1
+    },
+    {
+      "table": "co_solucion",
+      "primary_key": "solucion_id",
+      "id": 1001,
+      "column": "solucion_descripcion",
+      "expected_before_utf8_hex": "5141207265766973617220636F6E657869C383C2B36E206669637469636961207920636F6E6669726D617220696E64696361646F72",
+      "replacement_utf8_hex": "5141207265766973617220636F6E657869C3B36E206669637469636961207920636F6E6669726D617220696E64696361646F72",
+      "statement": "UPDATE `dima_bug_qa_mvp`.`co_solucion` SET `solucion_descripcion`=CONVERT(UNHEX(%s) USING utf8mb4) WHERE `solucion_id`=%s AND HEX(`solucion_descripcion`)=%s",
+      "expected_affected_rows": 1
+    },
+    {
+      "table": "co_solucion",
+      "primary_key": "solucion_id",
+      "id": 1001,
+      "column": "solucion_titulo",
+      "expected_before_utf8_hex": "514120726576697369C383C2B36E",
+      "replacement_utf8_hex": "514120726576697369C3B36E",
+      "statement": "UPDATE `dima_bug_qa_mvp`.`co_solucion` SET `solucion_titulo`=CONVERT(UNHEX(%s) USING utf8mb4) WHERE `solucion_id`=%s AND HEX(`solucion_titulo`)=%s",
+      "expected_affected_rows": 1
+    },
+    {
+      "table": "co_solucion",
+      "primary_key": "solucion_id",
+      "id": 1002,
+      "column": "solucion_titulo",
+      "expected_before_utf8_hex": "5141206465726976616369C383C2B36E",
+      "replacement_utf8_hex": "5141206465726976616369C3B36E",
+      "statement": "UPDATE `dima_bug_qa_mvp`.`co_solucion` SET `solucion_titulo`=CONVERT(UNHEX(%s) USING utf8mb4) WHERE `solucion_id`=%s AND HEX(`solucion_titulo`)=%s",
+      "expected_affected_rows": 1
+    },
+    {
+      "table": "pr_procedimiento",
+      "primary_key": "procedimiento_id",
+      "id": 1001,
+      "column": "procedimiento_descripcion",
+      "expected_before_utf8_hex": "50726F636564696D69656E746F20636F6D706C6574616D656E7465206D616E75616C20792073696E74C383C2A97469636F",
+      "replacement_utf8_hex": "50726F636564696D69656E746F20636F6D706C6574616D656E7465206D616E75616C20792073696E74C3A97469636F",
+      "statement": "UPDATE `dima_bug_qa_mvp`.`pr_procedimiento` SET `procedimiento_descripcion`=CONVERT(UNHEX(%s) USING utf8mb4) WHERE `procedimiento_id`=%s AND HEX(`procedimiento_descripcion`)=%s",
+      "expected_affected_rows": 1
+    },
+    {
+      "table": "pr_procedimiento",
+      "primary_key": "procedimiento_id",
+      "id": 1002,
+      "column": "procedimiento_descripcion",
+      "expected_before_utf8_hex": "50726F636564696D69656E746F20636F6D706C6574616D656E7465206D616E75616C20792073696E74C383C2A97469636F",
+      "replacement_utf8_hex": "50726F636564696D69656E746F20636F6D706C6574616D656E7465206D616E75616C20792073696E74C3A97469636F",
+      "statement": "UPDATE `dima_bug_qa_mvp`.`pr_procedimiento` SET `procedimiento_descripcion`=CONVERT(UNHEX(%s) USING utf8mb4) WHERE `procedimiento_id`=%s AND HEX(`procedimiento_descripcion`)=%s",
+      "expected_affected_rows": 1
+    },
+    {
+      "table": "co_conocimiento_busqueda",
+      "primary_key": "conocimiento_id",
+      "id": 1001,
+      "column": "contenido_busqueda",
+      "expected_before_utf8_hex": "5141207465726D696E616C20646573636F6E657869C383C2B36E20636F6E657869C383C2B36E2073696E74C383C2A974696361205055424C494341444F",
+      "replacement_utf8_hex": "5141207465726D696E616C20646573636F6E657869C3B36E20636F6E657869C3B36E2073696E74C3A974696361205055424C494341444F",
+      "statement": "UPDATE `dima_bug_qa_mvp`.`co_conocimiento_busqueda` SET `contenido_busqueda`=CONVERT(UNHEX(%s) USING utf8mb4) WHERE `conocimiento_id`=%s AND HEX(`contenido_busqueda`)=%s",
+      "expected_affected_rows": 1
+    },
+    {
+      "table": "co_conocimiento_busqueda",
+      "primary_key": "conocimiento_id",
+      "id": 1002,
+      "column": "contenido_busqueda",
+      "expected_before_utf8_hex": "5141207465726D696E616C20646573636F6E657869C383C2B36E20636F6E657869C383C2B36E2073696E74C383C2A97469636120424F525241444F52",
+      "replacement_utf8_hex": "5141207465726D696E616C20646573636F6E657869C3B36E20636F6E657869C3B36E2073696E74C3A97469636120424F525241444F52",
+      "statement": "UPDATE `dima_bug_qa_mvp`.`co_conocimiento_busqueda` SET `contenido_busqueda`=CONVERT(UNHEX(%s) USING utf8mb4) WHERE `conocimiento_id`=%s AND HEX(`contenido_busqueda`)=%s",
+      "expected_affected_rows": 1
+    },
+    {
+      "table": "co_conocimiento_busqueda",
+      "primary_key": "conocimiento_id",
+      "id": 1003,
+      "column": "contenido_busqueda",
+      "expected_before_utf8_hex": "5141207465726D696E616C20646573636F6E657869C383C2B36E20636F6E657869C383C2B36E2073696E74C383C2A97469636120454C494D494E41444F",
+      "replacement_utf8_hex": "5141207465726D696E616C20646573636F6E657869C3B36E20636F6E657869C3B36E2073696E74C3A97469636120454C494D494E41444F",
+      "statement": "UPDATE `dima_bug_qa_mvp`.`co_conocimiento_busqueda` SET `contenido_busqueda`=CONVERT(UNHEX(%s) USING utf8mb4) WHERE `conocimiento_id`=%s AND HEX(`contenido_busqueda`)=%s",
+      "expected_affected_rows": 1
+    },
+    {
+      "table": "ticket",
+      "primary_key": "id",
+      "id": 1001,
+      "column": "descripcion",
+      "expected_before_utf8_hex": "496E636964656E746520636F6D706C6574616D656E74652073696E74C383C2A97469636F",
+      "replacement_utf8_hex": "496E636964656E746520636F6D706C6574616D656E74652073696E74C3A97469636F",
+      "statement": "UPDATE `dima_bug_qa_mvp`.`ticket` SET `descripcion`=CONVERT(UNHEX(%s) USING utf8mb4) WHERE `id`=%s AND HEX(`descripcion`)=%s",
+      "expected_affected_rows": 1
+    },
+    {
+      "table": "ticket",
+      "primary_key": "id",
+      "id": 1002,
+      "column": "descripcion",
+      "expected_before_utf8_hex": "496E636964656E746520636F6D706C6574616D656E74652073696E74C383C2A97469636F",
+      "replacement_utf8_hex": "496E636964656E746520636F6D706C6574616D656E74652073696E74C3A97469636F",
+      "statement": "UPDATE `dima_bug_qa_mvp`.`ticket` SET `descripcion`=CONVERT(UNHEX(%s) USING utf8mb4) WHERE `id`=%s AND HEX(`descripcion`)=%s",
+      "expected_affected_rows": 1
+    },
+    {
+      "table": "ticket",
+      "primary_key": "id",
+      "id": 1003,
+      "column": "descripcion",
+      "expected_before_utf8_hex": "496E636964656E746520636F6D706C6574616D656E74652073696E74C383C2A97469636F",
+      "replacement_utf8_hex": "496E636964656E746520636F6D706C6574616D656E74652073696E74C3A97469636F",
+      "statement": "UPDATE `dima_bug_qa_mvp`.`ticket` SET `descripcion`=CONVERT(UNHEX(%s) USING utf8mb4) WHERE `id`=%s AND HEX(`descripcion`)=%s",
+      "expected_affected_rows": 1
+    },
+    {
+      "table": "ticket_etiqueta",
+      "primary_key": "id",
+      "id": 1001,
+      "column": "nombre",
+      "expected_before_utf8_hex": "514120636F6E657869C383C2B36E",
+      "replacement_utf8_hex": "514120636F6E657869C3B36E",
+      "statement": "UPDATE `dima_bug_qa_mvp`.`ticket_etiqueta` SET `nombre`=CONVERT(UNHEX(%s) USING utf8mb4) WHERE `id`=%s AND HEX(`nombre`)=%s",
+      "expected_affected_rows": 1
+    },
+    {
+      "table": "ticket_comentario",
+      "primary_key": "id",
+      "id": 1001,
+      "column": "texto",
+      "expected_before_utf8_hex": "514120636F6D656E746172696F2070C383C2BA626C69636F",
+      "replacement_utf8_hex": "514120636F6D656E746172696F2070C3BA626C69636F",
+      "statement": "UPDATE `dima_bug_qa_mvp`.`ticket_comentario` SET `texto`=CONVERT(UNHEX(%s) USING utf8mb4) WHERE `id`=%s AND HEX(`texto`)=%s",
+      "expected_affected_rows": 1
+    }
+  ]
+}

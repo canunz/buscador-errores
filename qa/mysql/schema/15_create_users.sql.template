@@ -1,0 +1,14 @@
+-- PLANTILLA NO EJECUTABLE SIN RENDERIZADO EN MEMORIA; NO GUARDAR VERSION CON SECRETOS.
+-- Bootstrap root por socket local QA; usuarios deben estar ausentes en TODOS los hosts.
+-- QA_SCHEMA_PASSWORD_SQL_LITERAL y QA_APP_PASSWORD_SQL_LITERAL provendran de custodia QA,
+-- nunca argv, chat, variables persistentes, archivos SQL, manifests ni logs.
+-- QA_PROXY_HOST_SQL_LITERAL: IP interna EXACTA del proxy, revalidada inmediatamente antes.
+-- Observacion actual 172.21.0.3; no localhost, no IP Windows, no IP access 172.22.0.2, no %.
+CREATE USER 'dimabug_qa_schema'@'localhost'
+ IDENTIFIED WITH caching_sha2_password BY {{QA_SCHEMA_PASSWORD_SQL_LITERAL}}
+ WITH MAX_USER_CONNECTIONS 2 ACCOUNT LOCK;
+CREATE USER 'dimabug_qa_app'@{{QA_PROXY_HOST_SQL_LITERAL}}
+ IDENTIFIED WITH caching_sha2_password BY {{QA_APP_PASSWORD_SQL_LITERAL}}
+ REQUIRE SSL WITH MAX_USER_CONNECTIONS 4 ACCOUNT LOCK;
+-- LOCK deliberado: desbloqueo separado tras revisar grants y estado QA.
+-- Sin IF NOT EXISTS, ALTER USER, contrasenas ficticias ni generacion de contrasenas.

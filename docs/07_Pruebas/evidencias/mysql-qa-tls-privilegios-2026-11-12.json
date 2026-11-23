@@ -1,0 +1,183 @@
+{
+  "estado": "PRUEBAS_COMPLETADAS",
+  "casos": [
+    {
+      "id": "SELECT",
+      "resultado": "OK"
+    },
+    {
+      "id": "INSERT",
+      "resultado": "OK",
+      "filas": 1
+    },
+    {
+      "id": "UPDATE",
+      "resultado": "OK",
+      "filas": 1
+    },
+    {
+      "id": "DELETE",
+      "resultado": "OK",
+      "filas": 1
+    },
+    {
+      "id": "gm_cuenta_oauth_UPDATE",
+      "resultado": "DENEGADO",
+      "errno": 1142,
+      "sqlstate": null,
+      "sqlstate_note": "PyMySQL does not expose SQLSTATE; authorization classification uses numeric errno only"
+    },
+    {
+      "id": "gm_cuenta_oauth_DELETE",
+      "resultado": "DENEGADO",
+      "errno": 1142,
+      "sqlstate": null,
+      "sqlstate_note": "PyMySQL does not expose SQLSTATE; authorization classification uses numeric errno only"
+    },
+    {
+      "id": "gm_estado_oauth_UPDATE",
+      "resultado": "DENEGADO",
+      "errno": 1142,
+      "sqlstate": null,
+      "sqlstate_note": "PyMySQL does not expose SQLSTATE; authorization classification uses numeric errno only"
+    },
+    {
+      "id": "gm_estado_oauth_DELETE",
+      "resultado": "DENEGADO",
+      "errno": 1142,
+      "sqlstate": null,
+      "sqlstate_note": "PyMySQL does not expose SQLSTATE; authorization classification uses numeric errno only"
+    },
+    {
+      "id": "gm_auditoria_oauth_UPDATE",
+      "resultado": "DENEGADO",
+      "errno": 1142,
+      "sqlstate": null,
+      "sqlstate_note": "PyMySQL does not expose SQLSTATE; authorization classification uses numeric errno only"
+    },
+    {
+      "id": "gm_auditoria_oauth_DELETE",
+      "resultado": "DENEGADO",
+      "errno": 1142,
+      "sqlstate": null,
+      "sqlstate_note": "PyMySQL does not expose SQLSTATE; authorization classification uses numeric errno only"
+    },
+    {
+      "id": "gm_prueba_correo_UPDATE",
+      "resultado": "DENEGADO",
+      "errno": 1142,
+      "sqlstate": null,
+      "sqlstate_note": "PyMySQL does not expose SQLSTATE; authorization classification uses numeric errno only"
+    },
+    {
+      "id": "gm_prueba_correo_DELETE",
+      "resultado": "DENEGADO",
+      "errno": 1142,
+      "sqlstate": null,
+      "sqlstate_note": "PyMySQL does not expose SQLSTATE; authorization classification uses numeric errno only"
+    },
+    {
+      "id": "gm_prueba_evento_UPDATE",
+      "resultado": "DENEGADO",
+      "errno": 1142,
+      "sqlstate": null,
+      "sqlstate_note": "PyMySQL does not expose SQLSTATE; authorization classification uses numeric errno only"
+    },
+    {
+      "id": "gm_prueba_evento_DELETE",
+      "resultado": "DENEGADO",
+      "errno": 1142,
+      "sqlstate": null,
+      "sqlstate_note": "PyMySQL does not expose SQLSTATE; authorization classification uses numeric errno only"
+    },
+    {
+      "id": "GMAIL_INSERT",
+      "resultado": "DENEGADO",
+      "errno": 1142,
+      "sqlstate": null,
+      "sqlstate_note": "PyMySQL does not expose SQLSTATE; authorization classification uses numeric errno only"
+    },
+    {
+      "id": "OTHER_DATABASE",
+      "resultado": "DENEGADO",
+      "errno": 1142,
+      "sqlstate": null,
+      "sqlstate_note": "PyMySQL does not expose SQLSTATE; authorization classification uses numeric errno only"
+    },
+    {
+      "id": "DDL_CREATE",
+      "resultado": "DENEGADO",
+      "errno": 1142,
+      "sqlstate": null,
+      "sqlstate_note": "PyMySQL does not expose SQLSTATE; authorization classification uses numeric errno only"
+    },
+    {
+      "id": "DDL_ALTER",
+      "resultado": "DENEGADO",
+      "errno": 1142,
+      "sqlstate": null,
+      "sqlstate_note": "PyMySQL does not expose SQLSTATE; authorization classification uses numeric errno only"
+    },
+    {
+      "id": "DDL_DROP",
+      "resultado": "DENEGADO",
+      "errno": 1142,
+      "sqlstate": null,
+      "sqlstate_note": "PyMySQL does not expose SQLSTATE; authorization classification uses numeric errno only"
+    },
+    {
+      "id": "GLOBAL_CREATE_USER",
+      "resultado": "DENEGADO",
+      "errno": 1227,
+      "sqlstate": null,
+      "sqlstate_note": "PyMySQL does not expose SQLSTATE; authorization classification uses numeric errno only"
+    },
+    {
+      "id": "GRANT_OPTION",
+      "resultado": "DENEGADO",
+      "errno": 1142,
+      "sqlstate": null,
+      "sqlstate_note": "PyMySQL does not expose SQLSTATE; authorization classification uses numeric errno only"
+    }
+  ],
+  "sql_secrets_logged": false,
+  "preflight": "OK",
+  "baseline_sha256": {
+    "tables": "174f0a2ce242c23c645378a126e64fff131044988d0cfddc9173d558883b1831",
+    "columns": "a552b873dacec08bd46af04642aeb18fa771df094d62d5c9c436fcfb76b2e869",
+    "indexes": "acc13b26eaf8857dafd173e9da5fe75ef897397a8d9ca69423a6280d0610b77e",
+    "foreign": "2d9da3d35fda3a0479a91691ac92dc3c5fa2da12c2d4e9a0ddad43008b15819b",
+    "accounts": "0d1355c60987a147a89b42d8b013673d6ae0fdb66f3dd5308596621be8b41a9b",
+    "roles": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "grants": "2cfbf28caf9268e200af7c2e94c31e1c560df6e0ab465cf838b630c63d6af042",
+    "counts": "7b799a47aefa5b6227e5c39aa6743441f5362cda4ecbcb37cc396da9958fd533"
+  },
+  "ca_sha256": "933710be1fb6b68b8fd005110ffd59a5049bdd35a7b94f28fc25fa4bccb98499",
+  "client": "PyMySQL 1.2.4 (isolated, hash-pinned wheel)",
+  "run_id": "20261112T232943969837Z",
+  "started_utc": "2026-11-12T23:29:43.969837+00:00",
+  "tls": {
+    "version": "TLSv1.3",
+    "cipher": "TLS_AES_256_GCM_SHA384",
+    "pin_verified_before_auth": true,
+    "leaf_sha256": "afee3b9f5f0b8ad162198bfe96b3b5f5be45499afa7f69acb1d89a9a812d7b9e"
+  },
+  "rollback_verified": true,
+  "final_baseline_unchanged": true,
+  "locked_login_rejected": true,
+  "guard_close_verified": true,
+  "both_accounts_locked_and_no_app_sessions": true,
+  "elapsed_seconds": 7.563,
+  "source_sha256": {
+    "run_privilege_test.py": "94dc0daca4b10a5ca9886e7dfe9046cce42e4896b10517c632a8287c8093146a",
+    "tls_support.py": "67c1735f4bbe61c85a050d34faf2f77282c0e232648256c04f4f6564979dfdd6",
+    "watchdog.py": "524161b879ba24a0876724bbefdceb95734d34600f1533a296025b36ac11e970",
+    "requirements-client.txt": "3e0811a97bf4c38ff45359dc4dc02349ebb2aad7c98ad26c2bd0eb0f1caf5c02"
+  },
+  "guardian": {
+    "estado": "CIERRE_VERIFICADO",
+    "closed": true,
+    "trigger": "disarm"
+  },
+  "source_report_sha256": "00d77dfae9056240c63d1f7d9f853482c956dfcfc36b265e0faade79bbb57804"
+}

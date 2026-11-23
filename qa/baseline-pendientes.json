@@ -1,0 +1,971 @@
+{
+  "format": "dimabug-qa-baseline-v1",
+  "branch": "integracion-final-uat",
+  "head": "f823d616e0150925d29d4d01e99d6510b9643f13",
+  "total": 120,
+  "tracked_modificados": 55,
+  "nuevos": 65,
+  "advertencia": "Clasificación no altera ni excluye automáticamente archivos del build. Todo cambio de alcance funcional requiere revisión.",
+  "archivos": [
+    {
+      "ruta": ".gitignore",
+      "estado_git": " M",
+      "categoria": "funcionalidades_mvp",
+      "alcance": "mvp",
+      "motivo": "Código, configuración, esquema o dependencia del candidato",
+      "sha256_preparacion_inicial": "83cfe7bbd866b9f753834fdcdb1993d512cec1073a4f853f5b99c754407893c8"
+    },
+    {
+      "ruta": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/application/service/ConsultarChatbotService.java",
+      "estado_git": " M",
+      "categoria": "funcionalidades_mvp",
+      "alcance": "mvp",
+      "motivo": "Código, configuración, esquema o dependencia del candidato",
+      "sha256_preparacion_inicial": "b9efcd32bb24b2f398a0565c12480e00373f01764983c411b17549624276aa5a"
+    },
+    {
+      "ruta": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/infrastructure/persistence/adapter/BusquedaConocimientoJdbcAdapter.java",
+      "estado_git": " M",
+      "categoria": "funcionalidades_mvp",
+      "alcance": "mvp",
+      "motivo": "Código, configuración, esquema o dependencia del candidato",
+      "sha256_preparacion_inicial": "345c827eb24685737dea7bd28b77ca2a5fc9c1f60102988b86ba1f14c4cb8d52"
+    },
+    {
+      "ruta": "dima-bug-backend/src/main/java/cl/casol/backend/correo/application/port/out/GmailSettings.java",
+      "estado_git": " M",
+      "categoria": "funcionalidades_mvp",
+      "alcance": "mvp",
+      "motivo": "Código, configuración, esquema o dependencia del candidato",
+      "sha256_preparacion_inicial": "3ce85eceea59d4894202630afd32dd77ef7e013a34af8eccbc6232ec3659c3df"
+    },
+    {
+      "ruta": "dima-bug-backend/src/main/java/cl/casol/backend/correo/application/service/GmailOAuthService.java",
+      "estado_git": " M",
+      "categoria": "funcionalidades_mvp",
+      "alcance": "mvp",
+      "motivo": "Código, configuración, esquema o dependencia del candidato",
+      "sha256_preparacion_inicial": "8e2a6be95142603be91b4eed784a8bdf098c4a81380cb885b4989652b3ef154a"
+    },
+    {
+      "ruta": "dima-bug-backend/src/main/java/cl/casol/backend/correo/infrastructure/gmail/GmailConfig.java",
+      "estado_git": " M",
+      "categoria": "funcionalidades_mvp",
+      "alcance": "mvp",
+      "motivo": "Código, configuración, esquema o dependencia del candidato",
+      "sha256_preparacion_inicial": "c4fdc8ad16ed54c082d229e2fbc072c7790b02bdea5bd0f6adf6328f4c85afc8"
+    },
+    {
+      "ruta": "dima-bug-backend/src/main/java/cl/casol/backend/correo/infrastructure/gmail/GoogleGmailHttp.java",
+      "estado_git": " M",
+      "categoria": "funcionalidades_mvp",
+      "alcance": "mvp",
+      "motivo": "Código, configuración, esquema o dependencia del candidato",
+      "sha256_preparacion_inicial": "3c0e73696e5dabb0bf45edf049660ac55f81ac5b0d08e35f959cab8cdfb3cabd"
+    },
+    {
+      "ruta": "dima-bug-backend/src/main/java/cl/casol/backend/ejecucion/infrastructure/automatizacion/CorreoGmailApiAdapter.java",
+      "estado_git": " M",
+      "categoria": "funcionalidades_mvp",
+      "alcance": "mvp",
+      "motivo": "Código, configuración, esquema o dependencia del candidato",
+      "sha256_preparacion_inicial": "6808a34baf285f9077abdd370673027041e5a0e39fdc1c0e6f75b2705a6a4c19"
+    },
+    {
+      "ruta": "dima-bug-backend/src/main/java/cl/casol/backend/ejecucion/infrastructure/automatizacion/SeguimientoEvidenciaWorker.java",
+      "estado_git": " M",
+      "categoria": "funcionalidades_mvp",
+      "alcance": "mvp",
+      "motivo": "Código, configuración, esquema o dependencia del candidato",
+      "sha256_preparacion_inicial": "ec74f09d636754653e5731888190098fd5140c970bf40b9e66311ef5f8e401d6"
+    },
+    {
+      "ruta": "dima-bug-backend/src/main/java/cl/casol/backend/identidad/application/port/out/CodigoAccesoRepository.java",
+      "estado_git": " M",
+      "categoria": "funcionalidades_mvp",
+      "alcance": "mvp",
+      "motivo": "Código, configuración, esquema o dependencia del candidato",
+      "sha256_preparacion_inicial": "d70bec13376b4f60cd36f05e19966485948d2f2793ad951eb0b68f8a36ec0fc3"
+    },
+    {
+      "ruta": "dima-bug-backend/src/main/java/cl/casol/backend/identidad/application/port/out/EnvioCodigoAccesoPort.java",
+      "estado_git": " M",
+      "categoria": "funcionalidades_mvp",
+      "alcance": "mvp",
+      "motivo": "Código, configuración, esquema o dependencia del candidato",
+      "sha256_preparacion_inicial": "65e7c01618671790b33d76d225a5ad52cfb068478476f9be06bb6be3fc5cc45d"
+    },
+    {
+      "ruta": "dima-bug-backend/src/main/java/cl/casol/backend/identidad/application/service/AdministrarUsuariosService.java",
+      "estado_git": " M",
+      "categoria": "funcionalidades_mvp",
+      "alcance": "mvp",
+      "motivo": "Código, configuración, esquema o dependencia del candidato",
+      "sha256_preparacion_inicial": "a96e737af537cf114b442b998dd1c7e7150603e8706873d43fe8e08f500d5874"
+    },
+    {
+      "ruta": "dima-bug-backend/src/main/java/cl/casol/backend/identidad/application/service/AutenticarUsuarioService.java",
+      "estado_git": " M",
+      "categoria": "funcionalidades_mvp",
+      "alcance": "mvp",
+      "motivo": "Código, configuración, esquema o dependencia del candidato",
+      "sha256_preparacion_inicial": "f4e63e394a922ddfbcd6e4b7632b098c851fcbe1ab6082f573beb6ca38623dfd"
+    },
+    {
+      "ruta": "dima-bug-backend/src/main/java/cl/casol/backend/identidad/infrastructure/correo/EnvioBienvenidaCorreoAdapter.java",
+      "estado_git": " M",
+      "categoria": "funcionalidades_mvp",
+      "alcance": "mvp",
+      "motivo": "Código, configuración, esquema o dependencia del candidato",
+      "sha256_preparacion_inicial": "72926df799984165a07fc9d91f3aa0aa1249d96cea5ba75d95166f7d8ec9f8e9"
+    },
+    {
+      "ruta": "dima-bug-backend/src/main/java/cl/casol/backend/identidad/infrastructure/correo/EnvioCodigoAccesoCorreoAdapter.java",
+      "estado_git": " M",
+      "categoria": "funcionalidades_mvp",
+      "alcance": "mvp",
+      "motivo": "Código, configuración, esquema o dependencia del candidato",
+      "sha256_preparacion_inicial": "9364aa2d70e0a91f0e1f39f42c5ca800538adda84b234009c87b3173632feb38"
+    },
+    {
+      "ruta": "dima-bug-backend/src/main/java/cl/casol/backend/identidad/infrastructure/persistence/adapter/CodigoAccesoRepositoryAdapter.java",
+      "estado_git": " M",
+      "categoria": "funcionalidades_mvp",
+      "alcance": "mvp",
+      "motivo": "Código, configuración, esquema o dependencia del candidato",
+      "sha256_preparacion_inicial": "a95844503dea8edcf5096bbccaa950ee11b03e6103cb8859f034f73f2c486842"
+    },
+    {
+      "ruta": "dima-bug-backend/src/main/java/cl/casol/backend/identidad/infrastructure/persistence/repository/CodigoAccesoJpaRepository.java",
+      "estado_git": " M",
+      "categoria": "funcionalidades_mvp",
+      "alcance": "mvp",
+      "motivo": "Código, configuración, esquema o dependencia del candidato",
+      "sha256_preparacion_inicial": "4270ca133591c10c2b381ec2a4b70b8f32aeb9e566895703d06676fe606a373b"
+    },
+    {
+      "ruta": "dima-bug-backend/src/main/java/cl/casol/backend/identidad/infrastructure/security/BCryptPasswordEncoderAdapter.java",
+      "estado_git": " M",
+      "categoria": "funcionalidades_mvp",
+      "alcance": "mvp",
+      "motivo": "Código, configuración, esquema o dependencia del candidato",
+      "sha256_preparacion_inicial": "d69a87d177f53a640d4d80f549f006b384962cffd65559e0fd8bc64712d454c6"
+    },
+    {
+      "ruta": "dima-bug-backend/src/main/java/cl/casol/backend/identidad/infrastructure/web/AuthController.java",
+      "estado_git": " M",
+      "categoria": "funcionalidades_mvp",
+      "alcance": "mvp",
+      "motivo": "Código, configuración, esquema o dependencia del candidato",
+      "sha256_preparacion_inicial": "1e5089f66dc5e81390ff07d82f82d330f3a6d6e1779b1f0d1c71a7ac883339ea"
+    },
+    {
+      "ruta": "dima-bug-backend/src/main/java/cl/casol/backend/identidad/infrastructure/web/dto/CrearUsuarioRequest.java",
+      "estado_git": " M",
+      "categoria": "funcionalidades_mvp",
+      "alcance": "mvp",
+      "motivo": "Código, configuración, esquema o dependencia del candidato",
+      "sha256_preparacion_inicial": "4579fc10dd222e44f23764dedd5228823f4849c68f25907237dd45042e229ecc"
+    },
+    {
+      "ruta": "dima-bug-backend/src/main/java/cl/casol/backend/identidad/infrastructure/web/dto/SolicitarCodigoRequest.java",
+      "estado_git": " M",
+      "categoria": "funcionalidades_mvp",
+      "alcance": "mvp",
+      "motivo": "Código, configuración, esquema o dependencia del candidato",
+      "sha256_preparacion_inicial": "dd551facc4737030729e8ac9e086eeb63d630501bf079b9291ff38ebdadd3529"
+    },
+    {
+      "ruta": "dima-bug-backend/src/main/java/cl/casol/backend/identidad/infrastructure/web/dto/VerificarCodigoRequest.java",
+      "estado_git": " M",
+      "categoria": "funcionalidades_mvp",
+      "alcance": "mvp",
+      "motivo": "Código, configuración, esquema o dependencia del candidato",
+      "sha256_preparacion_inicial": "5303d108776c3aa8534df85815fd47fdd52d8d06992c3ac0dff351d88a1993b8"
+    },
+    {
+      "ruta": "dima-bug-backend/src/main/java/cl/casol/backend/tickets/infrastructure/integracion/AvisoTicketCriticoCorreoAdapter.java",
+      "estado_git": " M",
+      "categoria": "funcionalidades_mvp",
+      "alcance": "mvp",
+      "motivo": "Código, configuración, esquema o dependencia del candidato",
+      "sha256_preparacion_inicial": "1dc637c75b337352ed89057819960c743e1221872892cffde4e17580ffebd723"
+    },
+    {
+      "ruta": "dima-bug-backend/src/main/resources/application-example.properties",
+      "estado_git": " M",
+      "categoria": "funcionalidades_mvp",
+      "alcance": "mvp",
+      "motivo": "Código, configuración, esquema o dependencia del candidato",
+      "sha256_preparacion_inicial": "9b54df0568ff3a42b62e711c023938bcdc31d9a003e65a817b974c7b28e24e72"
+    },
+    {
+      "ruta": "dima-bug-backend/src/main/resources/application-staging.properties",
+      "estado_git": " M",
+      "categoria": "funcionalidades_mvp",
+      "alcance": "mvp",
+      "motivo": "Código, configuración, esquema o dependencia del candidato",
+      "sha256_preparacion_inicial": "798927a203574ca5ab3d1fba85f51705dd87ec40c80eeb68ac357fb966999868"
+    },
+    {
+      "ruta": "dima-bug-backend/src/test/java/cl/casol/backend/AutomatizacionHttpPersistenciaTest.java",
+      "estado_git": " M",
+      "categoria": "pruebas",
+      "alcance": "mvp",
+      "motivo": "Prueba automatizada o fixture sintético",
+      "sha256_preparacion_inicial": "ecf4ff2de358ffffa1a67052397b805fb8dd9ccaf68a7ecbae177048e72d4b95"
+    },
+    {
+      "ruta": "dima-bug-backend/src/test/java/cl/casol/backend/CorreoSinSucursalHttpTest.java",
+      "estado_git": " M",
+      "categoria": "pruebas",
+      "alcance": "mvp",
+      "motivo": "Prueba automatizada o fixture sintético",
+      "sha256_preparacion_inicial": "4ebcc8c6529e89e2d4227e5e2a91d4c5cfedd4d11bdb10b1e685e9b6b666b790"
+    },
+    {
+      "ruta": "dima-bug-backend/src/test/java/cl/casol/backend/EdicionProcedimientoAdminHttpTest.java",
+      "estado_git": " M",
+      "categoria": "pruebas",
+      "alcance": "mvp",
+      "motivo": "Prueba automatizada o fixture sintético",
+      "sha256_preparacion_inicial": "1d09feed7e2694d7b8a52ea57cb99e0ae6445f7b51cc66229c0d4f95b7557f45"
+    },
+    {
+      "ruta": "dima-bug-backend/src/test/java/cl/casol/backend/GmailOAuthHttpTest.java",
+      "estado_git": " M",
+      "categoria": "pruebas",
+      "alcance": "mvp",
+      "motivo": "Prueba automatizada o fixture sintético",
+      "sha256_preparacion_inicial": "65a4503fa03a7b4918d56af9bcb05b45beb37b3de9c6dda01ac498f55cbff862"
+    },
+    {
+      "ruta": "dima-bug-backend/src/test/java/cl/casol/backend/HardwareProcedimientoHttpTest.java",
+      "estado_git": " M",
+      "categoria": "pruebas",
+      "alcance": "mvp",
+      "motivo": "Prueba automatizada o fixture sintético",
+      "sha256_preparacion_inicial": "07387093c404735d76adee2d2e7df4fc0142aca9dfc13558a81e10f6cf1308f2"
+    },
+    {
+      "ruta": "dima-bug-backend/src/test/java/cl/casol/backend/Hu01SecurityIntegrationTest.java",
+      "estado_git": " M",
+      "categoria": "pruebas",
+      "alcance": "mvp",
+      "motivo": "Prueba automatizada o fixture sintético",
+      "sha256_preparacion_inicial": "4f05ca613222ff603517ce203eeb59dc603a68a527adf01a00d9e6adc8328a46"
+    },
+    {
+      "ruta": "dima-bug-backend/src/test/java/cl/casol/backend/LoginCodigoTestSupport.java",
+      "estado_git": " M",
+      "categoria": "pruebas",
+      "alcance": "mvp",
+      "motivo": "Prueba automatizada o fixture sintético",
+      "sha256_preparacion_inicial": "9a252c4aa39d831b65b9477becd23671d0565237ac50d0c66cea4b6c14dabb94"
+    },
+    {
+      "ruta": "dima-bug-backend/src/test/java/cl/casol/backend/conocimiento/application/service/ConsultarChatbotServiceTest.java",
+      "estado_git": " M",
+      "categoria": "pruebas",
+      "alcance": "mvp",
+      "motivo": "Prueba automatizada o fixture sintético",
+      "sha256_preparacion_inicial": "a7df1e1c97e542913ebee524a27117371f6ec82e32143342e9b70c25a3b11df7"
+    },
+    {
+      "ruta": "dima-bug-backend/src/test/java/cl/casol/backend/conocimiento/infrastructure/persistence/adapter/BusquedaAutoservicioTest.java",
+      "estado_git": " M",
+      "categoria": "pruebas",
+      "alcance": "mvp",
+      "motivo": "Prueba automatizada o fixture sintético",
+      "sha256_preparacion_inicial": "97ee1493e51b52e4f8b94757084b12104e10a7df1ec910f7e91967f5257c1974"
+    },
+    {
+      "ruta": "dima-bug-backend/src/test/java/cl/casol/backend/correo/GoogleGmailHttpTest.java",
+      "estado_git": " M",
+      "categoria": "pruebas",
+      "alcance": "mvp",
+      "motivo": "Prueba automatizada o fixture sintético",
+      "sha256_preparacion_inicial": "029062becd38a5d1586ec180fc7ab0481af08072e0958afced314cbe44b58ef6"
+    },
+    {
+      "ruta": "dima-bug-backend/src/test/java/cl/casol/backend/identidad/application/service/AdministrarUsuariosServiceTest.java",
+      "estado_git": " M",
+      "categoria": "pruebas",
+      "alcance": "mvp",
+      "motivo": "Prueba automatizada o fixture sintético",
+      "sha256_preparacion_inicial": "72c6ba3053a5fc2bcd2582f2be64fbe631753522d47af658dd599c14b1ab0fe2"
+    },
+    {
+      "ruta": "dima-bug-backend/src/test/java/cl/casol/backend/identidad/application/service/AutenticarUsuarioServiceTest.java",
+      "estado_git": " M",
+      "categoria": "pruebas",
+      "alcance": "mvp",
+      "motivo": "Prueba automatizada o fixture sintético",
+      "sha256_preparacion_inicial": "b2913259c246ec2522b5f6f25dc279a38a166f9c168e5570b3ece845165d6654"
+    },
+    {
+      "ruta": "dima-bug-backend/src/test/java/cl/casol/backend/identidad/infrastructure/security/BCryptPasswordEncoderAdapterTest.java",
+      "estado_git": " M",
+      "categoria": "pruebas",
+      "alcance": "mvp",
+      "motivo": "Prueba automatizada o fixture sintético",
+      "sha256_preparacion_inicial": "eb642352898a88e71d3d9395b219b50728b5eb5b034a46dd2f7427bb9f278a5a"
+    },
+    {
+      "ruta": "frontend-dimabug/angular.json",
+      "estado_git": " M",
+      "categoria": "funcionalidades_mvp",
+      "alcance": "mvp",
+      "motivo": "Código, configuración, esquema o dependencia del candidato",
+      "sha256_preparacion_inicial": "1e84156f262a60492d3bcd67aa3bc308e268588645776c2d2a1531bba61c27d4"
+    },
+    {
+      "ruta": "frontend-dimabug/package-lock.json",
+      "estado_git": " M",
+      "categoria": "funcionalidades_mvp",
+      "alcance": "mvp",
+      "motivo": "Código, configuración, esquema o dependencia del candidato",
+      "sha256_preparacion_inicial": "5ac46df3d88b370099e2d3f54df5d4818b38a8028f53c0609bb52fbd8a69e6b7"
+    },
+    {
+      "ruta": "frontend-dimabug/package.json",
+      "estado_git": " M",
+      "categoria": "funcionalidades_mvp",
+      "alcance": "mvp",
+      "motivo": "Código, configuración, esquema o dependencia del candidato",
+      "sha256_preparacion_inicial": "ab6e66595881d7057b287f2bfc024f7b71cd41694d53a5a0c5da52d8bdcd717e"
+    },
+    {
+      "ruta": "frontend-dimabug/src/app/app.routes.ts",
+      "estado_git": " M",
+      "categoria": "funcionalidades_mvp",
+      "alcance": "mvp",
+      "motivo": "Código, configuración, esquema o dependencia del candidato",
+      "sha256_preparacion_inicial": "afdef108fce9246c1c2337866333a97d72da9a65f9b7c4f6e1a45049c1ce67d9"
+    },
+    {
+      "ruta": "frontend-dimabug/src/app/core/services/auth.service.ts",
+      "estado_git": " M",
+      "categoria": "funcionalidades_mvp",
+      "alcance": "mvp",
+      "motivo": "Código, configuración, esquema o dependencia del candidato",
+      "sha256_preparacion_inicial": "99bde13e449215ed8d98c46fc1d2e40c5dfc010cc732a927454e7ab1d1fea351"
+    },
+    {
+      "ruta": "frontend-dimabug/src/app/features/auth/login/login.component.html",
+      "estado_git": " M",
+      "categoria": "funcionalidades_mvp",
+      "alcance": "mvp",
+      "motivo": "Código, configuración, esquema o dependencia del candidato",
+      "sha256_preparacion_inicial": "5fe786dd3251af3e54757eb829e9b03e90cc2be49f5ff25d9ed4499b908a66ab"
+    },
+    {
+      "ruta": "frontend-dimabug/src/app/features/auth/login/login.component.spec.ts",
+      "estado_git": " M",
+      "categoria": "pruebas",
+      "alcance": "mvp",
+      "motivo": "Prueba automatizada o fixture sintético",
+      "sha256_preparacion_inicial": "d6b9832c26f0166a023b057102a7519079a5b443650d8ef6731808549b061f98"
+    },
+    {
+      "ruta": "frontend-dimabug/src/app/features/auth/login/login.component.ts",
+      "estado_git": " M",
+      "categoria": "funcionalidades_mvp",
+      "alcance": "mvp",
+      "motivo": "Código, configuración, esquema o dependencia del candidato",
+      "sha256_preparacion_inicial": "7ee68f30991d7d9acbae4cb4f8134df78bf80941364f3b09a82c2e87231f9cdd"
+    },
+    {
+      "ruta": "frontend-dimabug/src/app/features/auth/recuperar/recuperar.component.html",
+      "estado_git": " M",
+      "categoria": "funcionalidades_mvp",
+      "alcance": "mvp",
+      "motivo": "Código, configuración, esquema o dependencia del candidato",
+      "sha256_preparacion_inicial": "9e94212cd0dcf3b205aa1116a26ed8b04b71ec438997ef4887e0191f42392b60"
+    },
+    {
+      "ruta": "frontend-dimabug/src/app/features/auth/recuperar/recuperar.component.ts",
+      "estado_git": " M",
+      "categoria": "funcionalidades_mvp",
+      "alcance": "mvp",
+      "motivo": "Código, configuración, esquema o dependencia del candidato",
+      "sha256_preparacion_inicial": "7f5c3ad27ccc913649ed88d66c9cb46404ce593ef1bf913fdeb597b2fc4dd42f"
+    },
+    {
+      "ruta": "frontend-dimabug/src/app/features/chatbot/chatbot.component.css",
+      "estado_git": " M",
+      "categoria": "funcionalidades_mvp",
+      "alcance": "mvp",
+      "motivo": "Código, configuración, esquema o dependencia del candidato",
+      "sha256_preparacion_inicial": "b6bfa878f6a492d634d19d409e4f439d6e448871659373b7ff7303dba4088508"
+    },
+    {
+      "ruta": "frontend-dimabug/src/app/features/chatbot/chatbot.component.html",
+      "estado_git": " M",
+      "categoria": "funcionalidades_mvp",
+      "alcance": "mvp",
+      "motivo": "Código, configuración, esquema o dependencia del candidato",
+      "sha256_preparacion_inicial": "a2b5a9c17f3d8c1c4a48fa189d2231ade8f8ca73c6bbbecef8c9d09fb6e7505e"
+    },
+    {
+      "ruta": "frontend-dimabug/src/app/features/chatbot/chatbot.component.spec.ts",
+      "estado_git": " M",
+      "categoria": "pruebas",
+      "alcance": "mvp",
+      "motivo": "Prueba automatizada o fixture sintético",
+      "sha256_preparacion_inicial": "b61e9b09d93d33b1e22b219dc8cbced553c53aa706919119435f1823c39f1b98"
+    },
+    {
+      "ruta": "frontend-dimabug/src/app/features/chatbot/chatbot.component.ts",
+      "estado_git": " M",
+      "categoria": "funcionalidades_mvp",
+      "alcance": "mvp",
+      "motivo": "Código, configuración, esquema o dependencia del candidato",
+      "sha256_preparacion_inicial": "99a80290c917aa71928287165d594e49db14a8b48686e69fc61db6f9419d04bc"
+    },
+    {
+      "ruta": "frontend-dimabug/src/app/features/usuarios/usuarios.component.html",
+      "estado_git": " M",
+      "categoria": "funcionalidades_mvp",
+      "alcance": "mvp",
+      "motivo": "Código, configuración, esquema o dependencia del candidato",
+      "sha256_preparacion_inicial": "7fe4a193a7954a39d4df3bfcc97a292cc00af5bacf58d5474121f8ba143e6b45"
+    },
+    {
+      "ruta": "frontend-dimabug/src/app/features/usuarios/usuarios.component.spec.ts",
+      "estado_git": " M",
+      "categoria": "pruebas",
+      "alcance": "mvp",
+      "motivo": "Prueba automatizada o fixture sintético",
+      "sha256_preparacion_inicial": "9995f28c43cf3c5f11166243439c8591c242ae16f8b585204ad5451fd9fa7982"
+    },
+    {
+      "ruta": "frontend-dimabug/src/app/features/usuarios/usuarios.component.ts",
+      "estado_git": " M",
+      "categoria": "funcionalidades_mvp",
+      "alcance": "mvp",
+      "motivo": "Código, configuración, esquema o dependencia del candidato",
+      "sha256_preparacion_inicial": "33cb73ea01044e04152985f9253da34147762eb1f9ebe363a8c2d7f06c8ae268"
+    },
+    {
+      "ruta": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/domain/ConsultaError.java",
+      "estado_git": "??",
+      "categoria": "funcionalidades_mvp",
+      "alcance": "mvp",
+      "motivo": "Código, configuración, esquema o dependencia del candidato",
+      "sha256_preparacion_inicial": "92648626f1b4b932f89711f701e6e7dbde155acaaf435ec27cff7f6ec916ae78"
+    },
+    {
+      "ruta": "dima-bug-backend/src/main/java/cl/casol/backend/correo/application/port/out/CorreoTransportePort.java",
+      "estado_git": "??",
+      "categoria": "funcionalidades_mvp",
+      "alcance": "mvp",
+      "motivo": "Código, configuración, esquema o dependencia del candidato",
+      "sha256_preparacion_inicial": "a781a02a55a33fddda396ecd8d2cb51641d4d1956fe59968f68254c6bd5fb725"
+    },
+    {
+      "ruta": "dima-bug-backend/src/main/java/cl/casol/backend/correo/infrastructure/gmail/CorreoGmailTransporte.java",
+      "estado_git": "??",
+      "categoria": "funcionalidades_mvp",
+      "alcance": "mvp",
+      "motivo": "Código, configuración, esquema o dependencia del candidato",
+      "sha256_preparacion_inicial": "e42ac4343977c2502cd72371ecedab83ed8b3fc1546190ae3e136764513ebfcb"
+    },
+    {
+      "ruta": "dima-bug-backend/src/main/java/cl/casol/backend/correo/maintenance/RecuperarGmail.java",
+      "estado_git": "??",
+      "categoria": "herramientas_operativas",
+      "alcance": "recuperacion",
+      "motivo": "Utilidad o pruebas de recuperación administrativa; no cambiar empaquetado existente sin revisión",
+      "sha256_preparacion_inicial": "de5ac3ab900cdb68d73266a49046f3d24f1eb4ab4d141b536b1f363e5f981168"
+    },
+    {
+      "ruta": "dima-bug-backend/src/main/java/cl/casol/backend/identidad/application/port/out/CorreoCodigoStore.java",
+      "estado_git": "??",
+      "categoria": "funcionalidades_mvp",
+      "alcance": "mvp",
+      "motivo": "Código, configuración, esquema o dependencia del candidato",
+      "sha256_preparacion_inicial": "f3623530a4c28b45f2913ea8432c92b8a7e5e8cbab2e73f0a1fdb49756dfa2b1"
+    },
+    {
+      "ruta": "dima-bug-backend/src/main/java/cl/casol/backend/identidad/application/service/DespacharCodigosService.java",
+      "estado_git": "??",
+      "categoria": "funcionalidades_mvp",
+      "alcance": "mvp",
+      "motivo": "Código, configuración, esquema o dependencia del candidato",
+      "sha256_preparacion_inicial": "926647396bf2706c2e04087d0437960555b70d52cdc79c558f5468fe9182c784"
+    },
+    {
+      "ruta": "dima-bug-backend/src/main/java/cl/casol/backend/identidad/infrastructure/correo/CorreoCodigoSchedulingConfig.java",
+      "estado_git": "??",
+      "categoria": "funcionalidades_mvp",
+      "alcance": "mvp",
+      "motivo": "Código, configuración, esquema o dependencia del candidato",
+      "sha256_preparacion_inicial": "1ddfd03b386ba2ca217096a49f150dcba6e501e437a8763eed69415e0ecc1e7a"
+    },
+    {
+      "ruta": "dima-bug-backend/src/main/java/cl/casol/backend/identidad/infrastructure/persistence/adapter/CorreoCodigoStoreJpa.java",
+      "estado_git": "??",
+      "categoria": "funcionalidades_mvp",
+      "alcance": "mvp",
+      "motivo": "Código, configuración, esquema o dependencia del candidato",
+      "sha256_preparacion_inicial": "27f992d0fe70840c135fa4ea256f55e19b0a997b831cd734786d2427acbb093d"
+    },
+    {
+      "ruta": "dima-bug-backend/src/main/java/cl/casol/backend/identidad/infrastructure/persistence/entity/CorreoCodigoEntity.java",
+      "estado_git": "??",
+      "categoria": "funcionalidades_mvp",
+      "alcance": "mvp",
+      "motivo": "Código, configuración, esquema o dependencia del candidato",
+      "sha256_preparacion_inicial": "f06dbeaf6ad6c679136c45f14a74b414abec0a7455bcb554a976a7dd57d90c26"
+    },
+    {
+      "ruta": "dima-bug-backend/src/main/java/cl/casol/backend/shared/infrastructure/security/LimiteAutenticacionFilter.java",
+      "estado_git": "??",
+      "categoria": "funcionalidades_mvp",
+      "alcance": "mvp",
+      "motivo": "Código, configuración, esquema o dependencia del candidato",
+      "sha256_preparacion_inicial": "5cc89ad18807eb30c4e87fe2c3730149357f739a88e2ead81e171447306687e8"
+    },
+    {
+      "ruta": "dima-bug-backend/src/test/java/cl/casol/backend/ChatbotBusquedaErroresHttpTest.java",
+      "estado_git": "??",
+      "categoria": "pruebas",
+      "alcance": "mvp",
+      "motivo": "Prueba automatizada o fixture sintético",
+      "sha256_preparacion_inicial": "570cbfdadad6b0dc67b6cf7f52cac993a7cf2f479316ce8a681d9830a28c6b1c"
+    },
+    {
+      "ruta": "dima-bug-backend/src/test/java/cl/casol/backend/CorreoCodigoIntegracionTest.java",
+      "estado_git": "??",
+      "categoria": "pruebas",
+      "alcance": "mvp",
+      "motivo": "Prueba automatizada o fixture sintético",
+      "sha256_preparacion_inicial": "619a019f9b99a96ce008d7d111284b79aa91bcddb2be28839e945ccdf8a98f07"
+    },
+    {
+      "ruta": "dima-bug-backend/src/test/java/cl/casol/backend/LimiteAutenticacionFilterTest.java",
+      "estado_git": "??",
+      "categoria": "pruebas",
+      "alcance": "mvp",
+      "motivo": "Prueba automatizada o fixture sintético",
+      "sha256_preparacion_inicial": "62c686c92d6f5297542de09e2697c7e77701c09d4b300fc813a76bb2e5fa4be3"
+    },
+    {
+      "ruta": "dima-bug-backend/src/test/java/cl/casol/backend/NotificacionesCorreoCentralTest.java",
+      "estado_git": "??",
+      "categoria": "pruebas",
+      "alcance": "mvp",
+      "motivo": "Prueba automatizada o fixture sintético",
+      "sha256_preparacion_inicial": "2be81d320422b6e5308fbe241bf19f48691a485f80b4a3b9505bdd95ef886feb"
+    },
+    {
+      "ruta": "dima-bug-backend/src/test/java/cl/casol/backend/conocimiento/domain/ConsultaErrorTest.java",
+      "estado_git": "??",
+      "categoria": "pruebas",
+      "alcance": "mvp",
+      "motivo": "Prueba automatizada o fixture sintético",
+      "sha256_preparacion_inicial": "a895072f0793dfd68db37d78b039eba5f601dbe636250f9f5d0ae3859c0ce3b2"
+    },
+    {
+      "ruta": "dima-bug-backend/src/test/java/cl/casol/backend/correo/AislamientoCorreoAutenticacionTest.java",
+      "estado_git": "??",
+      "categoria": "pruebas",
+      "alcance": "mvp",
+      "motivo": "Prueba automatizada o fixture sintético",
+      "sha256_preparacion_inicial": "3b3556a72486311e562c95da133fe4306661bfdc2a1e720d16b32054698afc74"
+    },
+    {
+      "ruta": "dima-bug-backend/src/test/java/cl/casol/backend/correo/maintenance/MantenimientoCorreoTest.java",
+      "estado_git": "??",
+      "categoria": "herramientas_operativas",
+      "alcance": "recuperacion",
+      "motivo": "Utilidad o pruebas de recuperación administrativa; no cambiar empaquetado existente sin revisión",
+      "sha256_preparacion_inicial": "a569d3323f93409e21065226859b01b5aef9031dad77bd3dee9ef532bcb8edfe"
+    },
+    {
+      "ruta": "dima-bug-backend/src/test/java/cl/casol/backend/correo/maintenance/RecuperarGmailTest.java",
+      "estado_git": "??",
+      "categoria": "herramientas_operativas",
+      "alcance": "recuperacion",
+      "motivo": "Utilidad o pruebas de recuperación administrativa; no cambiar empaquetado existente sin revisión",
+      "sha256_preparacion_inicial": "edb7c95b54319bb43e7d379e1052b4f765c419fd5d0b97b8affdbb51a1415012"
+    },
+    {
+      "ruta": "docs/04_Base_Datos/V20261110_01__correo_codigo.sql",
+      "estado_git": "??",
+      "categoria": "funcionalidades_mvp",
+      "alcance": "mvp",
+      "motivo": "Código, configuración, esquema o dependencia del candidato",
+      "sha256_preparacion_inicial": "d970417c17979506804ef6e08a8f45abff90a5a8d04d0c111fcf9d9cd55defa9"
+    },
+    {
+      "ruta": "docs/07_Pruebas/Cambios_correo_central_2026-11-10.txt",
+      "estado_git": "??",
+      "categoria": "documentacion",
+      "alcance": "evidencia",
+      "motivo": "Diagnóstico, plan o evidencia histórica",
+      "sha256_preparacion_inicial": "454b9c95b5207b2f197e9781af3f6fc9831824be9bd08fea0a6fa60f9259d82b"
+    },
+    {
+      "ruta": "docs/07_Pruebas/Comparacion_staging_staging7_2026-11-11.md",
+      "estado_git": "??",
+      "categoria": "documentacion",
+      "alcance": "evidencia",
+      "motivo": "Diagnóstico, plan o evidencia histórica",
+      "sha256_preparacion_inicial": "744f0cf5f50d031eb058351dcf08d91f1e69d9152b834e3eebe810d3dc62e97b"
+    },
+    {
+      "ruta": "docs/07_Pruebas/Plan_aislamiento_staging_2026-11-11.md",
+      "estado_git": "??",
+      "categoria": "documentacion",
+      "alcance": "evidencia",
+      "motivo": "Diagnóstico, plan o evidencia histórica",
+      "sha256_preparacion_inicial": "f15212d09678a48631ceeefe5242d50ffd2f0cdd83bd03ca6995446280e01800"
+    },
+    {
+      "ruta": "docs/07_Pruebas/Plan_primera_prueba_codigo_Gmail_2026-11-11.md",
+      "estado_git": "??",
+      "categoria": "documentacion",
+      "alcance": "evidencia",
+      "motivo": "Diagnóstico, plan o evidencia histórica",
+      "sha256_preparacion_inicial": "da5e941f3bf9e1d86887411b2096a791ccfa0743d22324db98acf92bb1240310"
+    },
+    {
+      "ruta": "docs/07_Pruebas/QA_correo_central_2026-11-10.md",
+      "estado_git": "??",
+      "categoria": "documentacion",
+      "alcance": "evidencia",
+      "motivo": "Diagnóstico, plan o evidencia histórica",
+      "sha256_preparacion_inicial": "5e8019e7b92637ab3ea42a641cd3aa19cd9bf34ad4ecc40c315b4954f0dc5435"
+    },
+    {
+      "ruta": "docs/07_Pruebas/Recuperacion_Gmail_2026-11-11.md",
+      "estado_git": "??",
+      "categoria": "documentacion",
+      "alcance": "evidencia",
+      "motivo": "Diagnóstico, plan o evidencia histórica",
+      "sha256_preparacion_inicial": "b1fbb5e7a5a76880df935e40835c776771003a26e5d227494a2b1c3b68c5b603"
+    },
+    {
+      "ruta": "docs/07_Pruebas/evidencias/busqueda_chatbot/resultado.json",
+      "estado_git": "??",
+      "categoria": "documentacion",
+      "alcance": "evidencia",
+      "motivo": "Diagnóstico, plan o evidencia histórica",
+      "sha256_preparacion_inicial": "14caf167b1cb2c73cbd534a285c4e036ac487ffdc0f017bf69329846ac29988f"
+    },
+    {
+      "ruta": "docs/07_Pruebas/evidencias/ocr/chatbot-ocr-escritorio.png",
+      "estado_git": "??",
+      "categoria": "documentacion",
+      "alcance": "evidencia",
+      "motivo": "Diagnóstico, plan o evidencia histórica",
+      "sha256_preparacion_inicial": "2df2bc00e7a61c76576e945831e6c3046d7f11f3dad93a1fd294041add98e998"
+    },
+    {
+      "ruta": "docs/07_Pruebas/evidencias/ocr/chatbot-ocr-movil.png",
+      "estado_git": "??",
+      "categoria": "documentacion",
+      "alcance": "evidencia",
+      "motivo": "Diagnóstico, plan o evidencia histórica",
+      "sha256_preparacion_inicial": "47ea9585a3d8f5154824e90e1d0b4ae8431d64138e7023e7df38f1106762b260"
+    },
+    {
+      "ruta": "docs/07_Pruebas/evidencias/ocr/resultado.json",
+      "estado_git": "??",
+      "categoria": "documentacion",
+      "alcance": "evidencia",
+      "motivo": "Diagnóstico, plan o evidencia histórica",
+      "sha256_preparacion_inicial": "9a2c56f54f2b579f15db53775d59d2151cb4a935457d678cd54b59f89b049c36"
+    },
+    {
+      "ruta": "docs/implementacion/Busqueda_chatbot_errores.md",
+      "estado_git": "??",
+      "categoria": "documentacion",
+      "alcance": "evidencia",
+      "motivo": "Diagnóstico, plan o evidencia histórica",
+      "sha256_preparacion_inicial": "7cbc0ec2a698e584fb197e68571084a90e6fb50956beab8ee341f2a934fc93cd"
+    },
+    {
+      "ruta": "docs/implementacion/Correo_central_y_login_codigo.md",
+      "estado_git": "??",
+      "categoria": "documentacion",
+      "alcance": "evidencia",
+      "motivo": "Diagnóstico, plan o evidencia histórica",
+      "sha256_preparacion_inicial": "d0a4ec8a4ce9529cac55c27e4cf1dbb9e6641f8a1fc88d64762513a2cfbd7b31"
+    },
+    {
+      "ruta": "docs/implementacion/Extraccion_errores_OCR.md",
+      "estado_git": "??",
+      "categoria": "documentacion",
+      "alcance": "evidencia",
+      "motivo": "Diagnóstico, plan o evidencia histórica",
+      "sha256_preparacion_inicial": "2488a288b774d9de66362ae763036b8b5ac9f82c40bbc37cf7dd6344673b18ca"
+    },
+    {
+      "ruta": "docs/implementacion/OCR_chatbot.md",
+      "estado_git": "??",
+      "categoria": "documentacion",
+      "alcance": "evidencia",
+      "motivo": "Diagnóstico, plan o evidencia histórica",
+      "sha256_preparacion_inicial": "c7a249f469ddf81996e46bddb1fe09ce7601663c51a6856015316904549b5f53"
+    },
+    {
+      "ruta": "docs/implementacion/automatizacion/herramientas/Enviar-CustodiaStaging.ps1",
+      "estado_git": "??",
+      "categoria": "herramientas_operativas",
+      "alcance": "operacion",
+      "motivo": "Inspección, custodia, aislamiento o pruebas operativas; no ejecutar como lanzador QA",
+      "sha256_preparacion_inicial": "4ab0dc883905c53f2c38d57ae1dfb85648bf1c0695893e2e54302deb8af673e5"
+    },
+    {
+      "ruta": "docs/implementacion/automatizacion/herramientas/Inicializar-GmailCustodia.ps1",
+      "estado_git": "??",
+      "categoria": "herramientas_operativas",
+      "alcance": "operacion",
+      "motivo": "Inspección, custodia, aislamiento o pruebas operativas; no ejecutar como lanzador QA",
+      "sha256_preparacion_inicial": "1b935af0ac064c857d79078130dafd34648f6475ba197ac4488d712e5891519e"
+    },
+    {
+      "ruta": "docs/implementacion/automatizacion/herramientas/Invoke-GmailRecuperacion.ps1",
+      "estado_git": "??",
+      "categoria": "herramientas_operativas",
+      "alcance": "operacion",
+      "motivo": "Inspección, custodia, aislamiento o pruebas operativas; no ejecutar como lanzador QA",
+      "sha256_preparacion_inicial": "3b5769ccd816aaa828dc764990595b27dbee6af8e4fb929c41f89829fb886196"
+    },
+    {
+      "ruta": "docs/implementacion/automatizacion/herramientas/Restaurar-GmailBackend.ps1",
+      "estado_git": "??",
+      "categoria": "herramientas_operativas",
+      "alcance": "operacion",
+      "motivo": "Inspección, custodia, aislamiento o pruebas operativas; no ejecutar como lanzador QA",
+      "sha256_preparacion_inicial": "b6764e29d2aef9820a54b012fe340bc13fd5db73a1104467cbd84e9caf744976"
+    },
+    {
+      "ruta": "docs/implementacion/automatizacion/herramientas/VerificarDestinatarioPrueba.java",
+      "estado_git": "??",
+      "categoria": "herramientas_operativas",
+      "alcance": "operacion",
+      "motivo": "Inspección, custodia, aislamiento o pruebas operativas; no ejecutar como lanzador QA",
+      "sha256_preparacion_inicial": "03017c7435922316ce82874bb8262b7c9a871ec186c9ea1ec03d3b07b79b64d6"
+    },
+    {
+      "ruta": "docs/implementacion/automatizacion/herramientas/aislar_staging.py",
+      "estado_git": "??",
+      "categoria": "herramientas_operativas",
+      "alcance": "operacion",
+      "motivo": "Inspección, custodia, aislamiento o pruebas operativas; no ejecutar como lanzador QA",
+      "sha256_preparacion_inicial": "a6235950b31bdc72e158ea52df09d96d336e0cf8e45da96450abfbb441dfbc53"
+    },
+    {
+      "ruta": "docs/implementacion/automatizacion/herramientas/auditar_prearranque_staging.py",
+      "estado_git": "??",
+      "categoria": "herramientas_operativas",
+      "alcance": "operacion",
+      "motivo": "Inspección, custodia, aislamiento o pruebas operativas; no ejecutar como lanzador QA",
+      "sha256_preparacion_inicial": "6af05ad2e1de385ea4c9d3fe5e9437b507dc9f74d139801f2e5a22ea06572db1"
+    },
+    {
+      "ruta": "docs/implementacion/automatizacion/herramientas/comparar_staging_lectura.py",
+      "estado_git": "??",
+      "categoria": "herramientas_operativas",
+      "alcance": "operacion",
+      "motivo": "Inspección, custodia, aislamiento o pruebas operativas; no ejecutar como lanzador QA",
+      "sha256_preparacion_inicial": "da9610039bb2402ed1caae9af01fb1a0daca641548d523945e11e904d4058306"
+    },
+    {
+      "ruta": "docs/implementacion/automatizacion/herramientas/instalar_custodia_staging.py",
+      "estado_git": "??",
+      "categoria": "herramientas_operativas",
+      "alcance": "operacion",
+      "motivo": "Inspección, custodia, aislamiento o pruebas operativas; no ejecutar como lanzador QA",
+      "sha256_preparacion_inicial": "a5f932aed2df96668d5548b1714b8dffc3ce43e7b7e14a316522472581514371"
+    },
+    {
+      "ruta": "docs/implementacion/automatizacion/herramientas/prueba_unica_codigo_staging.py",
+      "estado_git": "??",
+      "categoria": "herramientas_operativas",
+      "alcance": "operacion",
+      "motivo": "Inspección, custodia, aislamiento o pruebas operativas; no ejecutar como lanzador QA",
+      "sha256_preparacion_inicial": "86fc30b3c30897f72d8e81f34d640dec7ea719928404d6ed04718b3fb9f32802"
+    },
+    {
+      "ruta": "docs/implementacion/automatizacion/herramientas/verificar_arranque_staging.py",
+      "estado_git": "??",
+      "categoria": "herramientas_operativas",
+      "alcance": "operacion",
+      "motivo": "Inspección, custodia, aislamiento o pruebas operativas; no ejecutar como lanzador QA",
+      "sha256_preparacion_inicial": "1ac6fa35ff031266fd659978c321acc438fb6bd0e7cee2fe714fe649309f3f7c"
+    },
+    {
+      "ruta": "docs/implementacion/automatizacion/herramientas/verificar_flujo_codigo_jar.py",
+      "estado_git": "??",
+      "categoria": "herramientas_operativas",
+      "alcance": "operacion",
+      "motivo": "Inspección, custodia, aislamiento o pruebas operativas; no ejecutar como lanzador QA",
+      "sha256_preparacion_inicial": "f610f180114bb35791a8db46748a3cbc94b7ae0e2126aac05f424d8c7f0a435d"
+    },
+    {
+      "ruta": "docs/implementacion/automatizacion/herramientas/verificar_staging_custodia.py",
+      "estado_git": "??",
+      "categoria": "herramientas_operativas",
+      "alcance": "operacion",
+      "motivo": "Inspección, custodia, aislamiento o pruebas operativas; no ejecutar como lanzador QA",
+      "sha256_preparacion_inicial": "95ba0e22db4f987976cb0ecbbe229c0b2c0d69817f400fb2d140ad42110a826a"
+    },
+    {
+      "ruta": "frontend-dimabug/src/app/core/material/imagen-ocr.spec.ts",
+      "estado_git": "??",
+      "categoria": "pruebas",
+      "alcance": "mvp",
+      "motivo": "Prueba automatizada o fixture sintético",
+      "sha256_preparacion_inicial": "2b8acc6380aae2a7b9d0ed1a47a3abdbda84384add264b477073bec8ae6008ef"
+    },
+    {
+      "ruta": "frontend-dimabug/src/app/core/material/imagen-ocr.ts",
+      "estado_git": "??",
+      "categoria": "funcionalidades_mvp",
+      "alcance": "mvp",
+      "motivo": "Código, configuración, esquema o dependencia del candidato",
+      "sha256_preparacion_inicial": "5a9bd5c4d2ff5d428d9a911faeb39f422c1b728122e080de166572245382f804"
+    },
+    {
+      "ruta": "frontend-dimabug/src/app/core/models/extraccion-error-ocr.model.ts",
+      "estado_git": "??",
+      "categoria": "funcionalidades_mvp",
+      "alcance": "mvp",
+      "motivo": "Código, configuración, esquema o dependencia del candidato",
+      "sha256_preparacion_inicial": "60d6c03e0e315c796334910bed543c67bea318baa99af1a30324f53aa4d7032e"
+    },
+    {
+      "ruta": "frontend-dimabug/src/app/core/models/ocr.model.ts",
+      "estado_git": "??",
+      "categoria": "funcionalidades_mvp",
+      "alcance": "mvp",
+      "motivo": "Código, configuración, esquema o dependencia del candidato",
+      "sha256_preparacion_inicial": "e48fa70592cd754ab94966be4c82a2dccbb56465983bb452fffc42232b037bfb"
+    },
+    {
+      "ruta": "frontend-dimabug/src/app/core/services/extractor-error-ocr.service.spec.ts",
+      "estado_git": "??",
+      "categoria": "pruebas",
+      "alcance": "mvp",
+      "motivo": "Prueba automatizada o fixture sintético",
+      "sha256_preparacion_inicial": "531a625348c74841d38424fdfdc8bbd40d911d16f52bfd36b4bac60b2b2c8732"
+    },
+    {
+      "ruta": "frontend-dimabug/src/app/core/services/extractor-error-ocr.service.ts",
+      "estado_git": "??",
+      "categoria": "funcionalidades_mvp",
+      "alcance": "mvp",
+      "motivo": "Código, configuración, esquema o dependencia del candidato",
+      "sha256_preparacion_inicial": "943119b64d896832142a5baf49918cfe5bf9de42572ef371d71c44b38062ed53"
+    },
+    {
+      "ruta": "frontend-dimabug/src/app/core/services/ocr-real.spec.ts",
+      "estado_git": "??",
+      "categoria": "pruebas",
+      "alcance": "mvp",
+      "motivo": "Prueba automatizada o fixture sintético",
+      "sha256_preparacion_inicial": "1a2cef2b5ca1549395a7d04095e1277943b8baf48636be4d38ac3db26f664c9e"
+    },
+    {
+      "ruta": "frontend-dimabug/src/app/core/services/ocr.service.spec.ts",
+      "estado_git": "??",
+      "categoria": "pruebas",
+      "alcance": "mvp",
+      "motivo": "Prueba automatizada o fixture sintético",
+      "sha256_preparacion_inicial": "1053b04eb5f3493ef7e7082ef7266f6acdb2350a1cf50a315a20272a0b208064"
+    },
+    {
+      "ruta": "frontend-dimabug/src/app/core/services/ocr.service.ts",
+      "estado_git": "??",
+      "categoria": "funcionalidades_mvp",
+      "alcance": "mvp",
+      "motivo": "Código, configuración, esquema o dependencia del candidato",
+      "sha256_preparacion_inicial": "6e00216842e69fedd25722bd716f4ce719ea262a44be5e3c5ea7fbcc6b2c8dc3"
+    },
+    {
+      "ruta": "frontend-dimabug/src/app/core/services/ocr.worker.ts",
+      "estado_git": "??",
+      "categoria": "funcionalidades_mvp",
+      "alcance": "mvp",
+      "motivo": "Código, configuración, esquema o dependencia del candidato",
+      "sha256_preparacion_inicial": "8daf3ad34e10f3a44caf47f97c3bdc0282b934c89542b72d9aac21e16d5a93f5"
+    },
+    {
+      "ruta": "frontend-dimabug/src/app/features/chatbot/chatbot-imagen.component.css",
+      "estado_git": "??",
+      "categoria": "funcionalidades_mvp",
+      "alcance": "mvp",
+      "motivo": "Código, configuración, esquema o dependencia del candidato",
+      "sha256_preparacion_inicial": "7992355ba4ba8de2f5ff3190f527bc8d0f03e1254189284ced8c7aa20071aafa"
+    },
+    {
+      "ruta": "frontend-dimabug/src/app/features/chatbot/chatbot-imagen.component.html",
+      "estado_git": "??",
+      "categoria": "funcionalidades_mvp",
+      "alcance": "mvp",
+      "motivo": "Código, configuración, esquema o dependencia del candidato",
+      "sha256_preparacion_inicial": "0820b38965f7be300981d8241cf6e64b6c28c6134fdbac2f7a0a49038f1f695b"
+    },
+    {
+      "ruta": "frontend-dimabug/src/app/features/chatbot/chatbot-imagen.component.spec.ts",
+      "estado_git": "??",
+      "categoria": "pruebas",
+      "alcance": "mvp",
+      "motivo": "Prueba automatizada o fixture sintético",
+      "sha256_preparacion_inicial": "be0507811b7e228789c44411ebf9be67e3afc83e94614f665650a8901140371f"
+    },
+    {
+      "ruta": "frontend-dimabug/src/app/features/chatbot/chatbot-imagen.component.ts",
+      "estado_git": "??",
+      "categoria": "funcionalidades_mvp",
+      "alcance": "mvp",
+      "motivo": "Código, configuración, esquema o dependencia del candidato",
+      "sha256_preparacion_inicial": "d1306b164151a36621b676960fd3807e7a36fae15109209dfedaa0a2a48c1309"
+    },
+    {
+      "ruta": "frontend-dimabug/src/test-assets/ocr/error-ambiguo.png",
+      "estado_git": "??",
+      "categoria": "pruebas",
+      "alcance": "mvp",
+      "motivo": "Prueba automatizada o fixture sintético",
+      "sha256_preparacion_inicial": "fb1a5fd2c3e01caeea50309ab2074457ab04b34abb4d1e28cde989ed1d05fb82"
+    },
+    {
+      "ruta": "frontend-dimabug/src/test-assets/ocr/error-borroso.png",
+      "estado_git": "??",
+      "categoria": "pruebas",
+      "alcance": "mvp",
+      "motivo": "Prueba automatizada o fixture sintético",
+      "sha256_preparacion_inicial": "9baf0895b111cdf2b1d0dbd2f8ef2308b68f5437acbc70e170fb46e1b5225603"
+    },
+    {
+      "ruta": "frontend-dimabug/src/test-assets/ocr/error-legible.png",
+      "estado_git": "??",
+      "categoria": "pruebas",
+      "alcance": "mvp",
+      "motivo": "Prueba automatizada o fixture sintético",
+      "sha256_preparacion_inicial": "d0fb7750f4412f83b88cb30603eebc07b15587993035ed4f43ec93e1c70897f7"
+    },
+    {
+      "ruta": "frontend-dimabug/src/test-assets/ocr/sin-texto.png",
+      "estado_git": "??",
+      "categoria": "pruebas",
+      "alcance": "mvp",
+      "motivo": "Prueba automatizada o fixture sintético",
+      "sha256_preparacion_inicial": "1eb635692cee045e49f3fb045bbe448d1b3f9fe6ffb91ac98db08297c6930f68"
+    },
+    {
+      "ruta": "frontend-dimabug/tsconfig.worker.json",
+      "estado_git": "??",
+      "categoria": "funcionalidades_mvp",
+      "alcance": "mvp",
+      "motivo": "Código, configuración, esquema o dependencia del candidato",
+      "sha256_preparacion_inicial": "20a0343b0de1c4eda1a85e9e6fe6b477085cf788ebcad83a895a18b3cdf31bc7"
+    }
+  ]
+}

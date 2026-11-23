@@ -1,0 +1,7 @@
+-- PROPUESTA OPCIONAL, NO EJECUTADA. Solo root local tras verificar grants exactos.
+-- Desbloquear primero admin para preparar DDL. App unicamente cuando las 44 tablas existan,
+-- fixtures/gates hayan aprobado y el cliente use TLS. No arrancar Spring automaticamente.
+ALTER USER 'dimabug_qa_schema'@'localhost' ACCOUNT UNLOCK;
+-- Ejecutar el siguiente comando por separado al finalizar la fase de esquema:
+-- ALTER USER 'dimabug_qa_app'@{{QA_PROXY_HOST_SQL_LITERAL}} ACCOUNT UNLOCK;
+-- Fuera de la ventana de mantenimiento, root vuelve a bloquear admin (otra operacion aprobada).

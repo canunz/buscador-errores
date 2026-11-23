@@ -1,0 +1,297 @@
+{
+  "status": "PROPOSED_NOT_EXECUTED",
+  "entity_tables": [
+    {
+      "table": "cl_frecuencia",
+      "entity": "dima-bug-backend/src/main/java/cl/casol/backend/catalogo/infrastructure/persistence/entity/FrecuenciaEntity.java",
+      "sha256": "9fd2574d2503fd96993193b1b8c3b3c8e79bdaad1928ff592a93c9c43b5a1a3a"
+    },
+    {
+      "table": "cl_hardware",
+      "entity": "dima-bug-backend/src/main/java/cl/casol/backend/catalogo/infrastructure/persistence/entity/HardwareEntity.java",
+      "sha256": "ae5d10a21e5060737a3326ba1ff542f0d4ec5ca583d6ed1370521570c31a7860"
+    },
+    {
+      "table": "cl_modulo",
+      "entity": "dima-bug-backend/src/main/java/cl/casol/backend/catalogo/infrastructure/persistence/entity/ModuloEntity.java",
+      "sha256": "6d71e38c277cc89a1d0d6575061b97c8495e8e94f8d4097f0b68228d878ab5ab"
+    },
+    {
+      "table": "cl_sistema",
+      "entity": "dima-bug-backend/src/main/java/cl/casol/backend/catalogo/infrastructure/persistence/entity/SistemaEntity.java",
+      "sha256": "52003835f6aa488799290cf197818d7b644dd92a7cd8a1cd779aa927cfd72412"
+    },
+    {
+      "table": "co_causa",
+      "entity": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/infrastructure/persistence/entity/CausaEntity.java",
+      "sha256": "9dafcea2f26b410d2b2347ce9d1b5cef258985b425de804e6bb4b0343f201031"
+    },
+    {
+      "table": "co_conocimiento",
+      "entity": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/infrastructure/persistence/entity/ConocimientoEntity.java",
+      "sha256": "e1bb2fa386fd239baf4a4e44737821a659a0080fa71e9f775ca587e5ad1af1e4"
+    },
+    {
+      "table": "co_conocimiento_prueba",
+      "entity": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/infrastructure/persistence/entity/ConocimientoPruebaEntity.java",
+      "sha256": "22ce476edccbc47c66645a5297bf00751fe5faec40a3533d521a00eefc95f179"
+    },
+    {
+      "table": "co_material_apoyo",
+      "entity": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/infrastructure/persistence/entity/MaterialApoyoEntity.java",
+      "sha256": "bc3f4fed0d342935dc1b521e14df6f4d64996728ce404d7a98d2aabfbd7fd229"
+    },
+    {
+      "table": "co_material_solucion",
+      "entity": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/infrastructure/persistence/entity/MaterialSolucionEntity.java",
+      "sha256": "aa1118bc3b7917d3f66cb73f08f5a8b25d19c718da2fb1f21b166c7064fd16d7"
+    },
+    {
+      "table": "co_prueba",
+      "entity": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/infrastructure/persistence/entity/PruebaEntity.java",
+      "sha256": "759304b0a202f5349603be3e456c5fe4879aca7d13d6825402a66eb2a43107d3"
+    },
+    {
+      "table": "co_sintoma",
+      "entity": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/infrastructure/persistence/entity/SintomaEntity.java",
+      "sha256": "f56ea993deacbebc0631a310136e3148f57dc24e7a19105b0b71e02210807c36"
+    },
+    {
+      "table": "co_solucion_asignacion",
+      "entity": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/infrastructure/persistence/entity/SolucionAsignacionEntity.java",
+      "sha256": "b1514ef9df1d6d4d9d02e9bb877f40f7711944b3ea4b5cf5a1da4c897c8948b6"
+    },
+    {
+      "table": "co_solucion",
+      "entity": "dima-bug-backend/src/main/java/cl/casol/backend/conocimiento/infrastructure/persistence/entity/SolucionEntity.java",
+      "sha256": "3f680f10915b2576d7e234563fd4e431d17eee5f6edf9ae0e216d61bf8a5d8ba"
+    },
+    {
+      "table": "gm_auditoria_oauth",
+      "entity": "dima-bug-backend/src/main/java/cl/casol/backend/correo/infrastructure/persistence/GmailAuditoriaEntity.java",
+      "sha256": "82853fb08d251b22c1b42b9834820357027ae5641a964d03f053843196f38e84"
+    },
+    {
+      "table": "gm_cuenta_oauth",
+      "entity": "dima-bug-backend/src/main/java/cl/casol/backend/correo/infrastructure/persistence/GmailCuentaEntity.java",
+      "sha256": "615e8790f270a4fbfcbf9395b8e145d104dcb5ac24f52b6b0ae5bc003290c925"
+    },
+    {
+      "table": "gm_estado_oauth",
+      "entity": "dima-bug-backend/src/main/java/cl/casol/backend/correo/infrastructure/persistence/GmailIntentoEntity.java",
+      "sha256": "e53fa32402fd8896fefdcab582cdc4fb5e34eb3ca29db35c55a735783bdaaa9d"
+    },
+    {
+      "table": "gm_prueba_correo",
+      "entity": "dima-bug-backend/src/main/java/cl/casol/backend/correo/infrastructure/persistence/PruebaGmailEntity.java",
+      "sha256": "39732c8150bb33e7f09881de32015760fd359a181d26fb99d392a4cf0e8eea59"
+    },
+    {
+      "table": "gm_prueba_evento",
+      "entity": "dima-bug-backend/src/main/java/cl/casol/backend/correo/infrastructure/persistence/PruebaGmailEventoEntity.java",
+      "sha256": "2e8850cd5d1ee05a03d2908b8873006a017b49d3e420773b883e6569ce455208"
+    },
+    {
+      "table": "se_ejecucion",
+      "entity": "dima-bug-backend/src/main/java/cl/casol/backend/ejecucion/infrastructure/persistence/entity/EjecucionEntity.java",
+      "sha256": "87b5da90fe1d44d6c07b225c3df4b31a79aa7225b2c99972acd6b5380e382292"
+    },
+    {
+      "table": "se_ejecucion_paso",
+      "entity": "dima-bug-backend/src/main/java/cl/casol/backend/ejecucion/infrastructure/persistence/entity/EjecucionPasoEntity.java",
+      "sha256": "7842836f16db6aca2ea26d8d2017bdf27f2feb12625cfd37713ed9cb4e4d67a5"
+    },
+    {
+      "table": "se_evento_ejecucion",
+      "entity": "dima-bug-backend/src/main/java/cl/casol/backend/ejecucion/infrastructure/persistence/entity/EventoAutomatizacionEntity.java",
+      "sha256": "0e2c9b1704163a68a4f1e6fa91bab8afe9672723f1f76c2e0bde7c00ef6d2be7"
+    },
+    {
+      "table": "se_evidencia",
+      "entity": "dima-bug-backend/src/main/java/cl/casol/backend/ejecucion/infrastructure/persistence/entity/EvidenciaFotograficaEntity.java",
+      "sha256": "fd624ad151a34bee009a0a86487dd37caf788b451207bf729091e5d8b97a275a"
+    },
+    {
+      "table": "se_solicitud_evidencia",
+      "entity": "dima-bug-backend/src/main/java/cl/casol/backend/ejecucion/infrastructure/persistence/entity/SolicitudEvidenciaEntity.java",
+      "sha256": "71311a7cfb32afdb2a94c855d7cbf5a097795abef693f4899375bb61275dc08c"
+    },
+    {
+      "table": "u_codigo_acceso",
+      "entity": "dima-bug-backend/src/main/java/cl/casol/backend/identidad/infrastructure/persistence/entity/CodigoAccesoEntity.java",
+      "sha256": "cdeb2b86b0af6a9d1d105ab9e519ca43054015ae663d57848f0ad64bee9d49f7"
+    },
+    {
+      "table": "u_correo_codigo",
+      "entity": "dima-bug-backend/src/main/java/cl/casol/backend/identidad/infrastructure/persistence/entity/CorreoCodigoEntity.java",
+      "sha256": "f06dbeaf6ad6c679136c45f14a74b414abec0a7455bcb554a976a7dd57d90c26"
+    },
+    {
+      "table": "u_departamento_contacto",
+      "entity": "dima-bug-backend/src/main/java/cl/casol/backend/identidad/infrastructure/persistence/entity/DepartamentoContactoEntity.java",
+      "sha256": "8e784f0d1b72c911176a954f484de7acbc10461d0aeae9f49021349462a17c2e"
+    },
+    {
+      "table": "u_departamento",
+      "entity": "dima-bug-backend/src/main/java/cl/casol/backend/identidad/infrastructure/persistence/entity/DepartamentoEntity.java",
+      "sha256": "437667c67086ace7b5a3817db0888da5c4ed473accee80d4814dbe4f4fac6c8b"
+    },
+    {
+      "table": "u_organizacion_control",
+      "entity": "dima-bug-backend/src/main/java/cl/casol/backend/identidad/infrastructure/persistence/entity/OrganizacionControlEntity.java",
+      "sha256": "8c08ebb2b2d831d3bb65e5acf9631fa98412cd1ce86a5f1989c1f81a1822d208"
+    },
+    {
+      "table": "u_responsable",
+      "entity": "dima-bug-backend/src/main/java/cl/casol/backend/identidad/infrastructure/persistence/entity/ResponsableEntity.java",
+      "sha256": "cdcf5ae7e7b4557637d35ee6cc54f827931049b4014806837468997768733141"
+    },
+    {
+      "table": "u_rol",
+      "entity": "dima-bug-backend/src/main/java/cl/casol/backend/identidad/infrastructure/persistence/entity/RolEntity.java",
+      "sha256": "b1b01001ddbc134c8de880824ef7df78f2db63b4f613d22125b4cda24e9b9221"
+    },
+    {
+      "table": "u_sucursal",
+      "entity": "dima-bug-backend/src/main/java/cl/casol/backend/identidad/infrastructure/persistence/entity/SucursalEntity.java",
+      "sha256": "13c1575851bf4986a56f4997d8b2112ef95b2b1ff9d658b8cd29992ba016cd3b"
+    },
+    {
+      "table": "u_usuario",
+      "entity": "dima-bug-backend/src/main/java/cl/casol/backend/identidad/infrastructure/persistence/entity/UsuarioEntity.java",
+      "sha256": "c4af050a822f855c31b6b99ad83ded2da3d0ca41154445cc5a27ed5ded54edb6"
+    },
+    {
+      "table": "pr_auditoria_procedimiento",
+      "entity": "dima-bug-backend/src/main/java/cl/casol/backend/procedimiento/infrastructure/persistence/entity/AuditoriaProcedimientoEntity.java",
+      "sha256": "709b9e1e85cc2c837709eda31e23851c642a4fabf4d0524ba6da86ba9564f0ef"
+    },
+    {
+      "table": "pr_paso",
+      "entity": "dima-bug-backend/src/main/java/cl/casol/backend/procedimiento/infrastructure/persistence/entity/PasoEntity.java",
+      "sha256": "34b9c9d92bf1cf02d286d11624c57e84648f45d42c48da2da54170563332ff43"
+    },
+    {
+      "table": "pr_procedimiento",
+      "entity": "dima-bug-backend/src/main/java/cl/casol/backend/procedimiento/infrastructure/persistence/entity/ProcedimientoEntity.java",
+      "sha256": "5cb93d7f4c7eed32a0bb4319ae71b51b63e0d3b9a6bcb5aac2c65f8de0b272d3"
+    },
+    {
+      "table": "se_resultado",
+      "entity": "dima-bug-backend/src/main/java/cl/casol/backend/seguimiento/infrastructure/persistence/entity/ResultadoSolucionEntity.java",
+      "sha256": "7dc6f1cbc9c53b2b844c929f61408ea62b3b610b0946a50243c97c9b4cfcb024"
+    },
+    {
+      "table": "ticket_adjunto",
+      "entity": "dima-bug-backend/src/main/java/cl/casol/backend/tickets/infrastructure/persistence/entity/AdjuntoTicketEntity.java",
+      "sha256": "3bcf3250054c963defe9f7c6939288a00ea7f0a4a8c35641e1014e58cc75e3c6"
+    },
+    {
+      "table": "ticket_comentario",
+      "entity": "dima-bug-backend/src/main/java/cl/casol/backend/tickets/infrastructure/persistence/entity/ComentarioTicketEntity.java",
+      "sha256": "46e685301c80c46938b9b2350b6832c3da9b465ed4e6e90bc99fd49e85412c1a"
+    },
+    {
+      "table": "ticket_etiqueta",
+      "entity": "dima-bug-backend/src/main/java/cl/casol/backend/tickets/infrastructure/persistence/entity/EtiquetaEntity.java",
+      "sha256": "1f67642d078924541582cbc8f8c4c23cf2ee2a6b675e3004dd3981d11f75b076"
+    },
+    {
+      "table": "ticket_historial_estado",
+      "entity": "dima-bug-backend/src/main/java/cl/casol/backend/tickets/infrastructure/persistence/entity/HistorialEstadoTicketEntity.java",
+      "sha256": "23dba82b3e8d807efc202effacaa122b3ed0ab11e0458d5417f262aa00fa79de"
+    },
+    {
+      "table": "ticket",
+      "entity": "dima-bug-backend/src/main/java/cl/casol/backend/tickets/infrastructure/persistence/entity/TicketEntity.java",
+      "sha256": "776f12d8a5700721afe66c71e2a58232c55c9d6ef78b88b707beb6332976970e"
+    }
+  ],
+  "additional_tables": [
+    "cl_hardware_sistema",
+    "ticket_ticket_etiqueta",
+    "co_conocimiento_busqueda"
+  ],
+  "ddl_sources": [
+    {
+      "path": "docs/implementacion/automatizacion/02_sucursales_mysql.sql",
+      "sha256": "b4a9b1a6a7f8e259cbd30051e502edbf3fb716676b7419d97e0756a4fa043816",
+      "tables": [
+        "u_sucursal"
+      ]
+    },
+    {
+      "path": "docs/implementacion/automatizacion/03_flujo_evidencias_desarrollo.sql",
+      "sha256": "fbd0587732be4bc87f02d84a05212287cb181676603f4c4a04f2607b4f4f9709",
+      "tables": [
+        "se_solicitud_evidencia",
+        "se_evidencia",
+        "se_evento_ejecucion"
+      ]
+    },
+    {
+      "path": "docs/implementacion/automatizacion/06_edicion_administrativa_procedimientos.sql",
+      "sha256": "ddd46dc7fe2926631d3f4e19458dc574b68dd8780268d4f10cffd5b982e8f54a",
+      "tables": [
+        "pr_auditoria_procedimiento"
+      ]
+    },
+    {
+      "path": "docs/implementacion/automatizacion/09_gmail_oauth_cifrado.sql",
+      "sha256": "85a2568b880d0b740eb2d4c7b440564244b1e978fc3a58b424d68a2a3174dcf8",
+      "tables": [
+        "gm_cuenta_oauth",
+        "gm_estado_oauth",
+        "gm_auditoria_oauth"
+      ]
+    },
+    {
+      "path": "docs/implementacion/automatizacion/10_prueba_gmail_administrativa.sql",
+      "sha256": "70f0955fadadd2200858f384b679594d6477a28059e87ef0854e887edc8dd3f1",
+      "tables": [
+        "gm_prueba_correo",
+        "gm_prueba_evento"
+      ]
+    },
+    {
+      "path": "docs/implementacion/automatizacion/11_materiales_soluciones_autoservicio.sql",
+      "sha256": "46686d0f3e623673c4d76f1af153b55c0dcf5ea015c26c5f94ca46f1f10996b3",
+      "tables": [
+        "co_material_solucion"
+      ]
+    },
+    {
+      "path": "dima-bug-backend/src/main/resources/db/migration/V20261017_01__modulo_tickets.sql",
+      "sha256": "65d06c7db3a56be10410a402413a9ad946f6c6b2237a897281bdb44c1a5240da",
+      "tables": [
+        "ticket",
+        "ticket_etiqueta",
+        "ticket_ticket_etiqueta",
+        "ticket_comentario",
+        "ticket_historial_estado"
+      ]
+    },
+    {
+      "path": "dima-bug-backend/src/main/resources/db/migration/V20261017_02__tickets_adjuntos_y_nivel_etiqueta.sql",
+      "sha256": "9aa9f9e55fa42126a63f07f78146bb9da1d23844eabe67e95260f1e42b5733a8",
+      "tables": [
+        "ticket_adjunto"
+      ]
+    },
+    {
+      "path": "dima-bug-backend/src/main/resources/db/migration/V20261031_01__login_codigo_acceso.sql",
+      "sha256": "d110851e92888ea746eb1a86bfeb99869d90ea5ec1b7d4552454ee499c4b8f3a",
+      "tables": [
+        "u_codigo_acceso"
+      ]
+    },
+    {
+      "path": "docs/04_Base_Datos/V20261110_01__correo_codigo.sql",
+      "sha256": "d970417c17979506804ef6e08a8f45abff90a5a8d04d0c111fcf9d9cd55defa9",
+      "tables": [
+        "u_correo_codigo"
+      ]
+    }
+  ],
+  "table_count": 44
+}

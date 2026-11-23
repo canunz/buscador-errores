@@ -1,0 +1,13 @@
+{
+  "tipo": "QA local con imagen sintética; compilación de producción",
+  "textoReconocido": "Error 0x0000011b",
+  "peticionesExternas": 0,
+  "peticionesApiAntesDeConfirmar": 0,
+  "sinDesbordamientoMovil": true,
+  "recursosOcr": [
+    "/ocr/v7/worker.min.js",
+    "/ocr/v7/core/tesseract-core-relaxedsimd-lstm.wasm.js",
+    "/ocr/v7/idiomas/eng.traineddata.gz",
+    "/ocr/v7/idiomas/spa.traineddata.gz"
+  ]
+}

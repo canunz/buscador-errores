@@ -1,0 +1,113 @@
+{
+  "name": "dimabug-qa-local-13318",
+  "services": {
+    "mysql": {
+      "image": "mysql:8.0.46@sha256:62fb722c78b24245ddff1796a0fcee4a49cc5b87e0aaaf20c92d1da9e0a2497b",
+      "platform": "linux/amd64",
+      "pull_policy": "never",
+      "container_name": "dimabug-qa-mvp-13318-mysql",
+      "restart": "no",
+      "cpus": 2.0,
+      "mem_limit": "4g",
+      "environment": {
+        "MYSQL_ROOT_PASSWORD_FILE": "/run/secrets/mysql_root_password",
+        "MYSQL_ROOT_HOST": "localhost"
+      },
+      "secrets": [
+        "mysql_root_password"
+      ],
+      "volumes": [
+        "mysql-data:/var/lib/mysql"
+      ],
+      "networks": [
+        "qa-internal"
+      ],
+      "security_opt": [
+        "no-new-privileges:true"
+      ],
+      "command": [
+        "--character-set-server=utf8mb4",
+        "--collation-server=utf8mb4_unicode_ci",
+        "--default-time-zone=+00:00",
+        "--event-scheduler=OFF",
+        "--local-infile=OFF",
+        "--secure-file-priv=NULL",
+        "--skip-log-bin",
+        "--max-connections=40",
+        "--innodb-buffer-pool-size=512M"
+      ]
+    },
+    "mysql-proxy": {
+      "image": "haproxy:3.2.26-alpine3.24@sha256:5378234d19457d645ed6d5a0ac994ef196614f9a2cabda8f6ccd6ac8815f9098",
+      "platform": "linux/amd64",
+      "pull_policy": "never",
+      "container_name": "dimabug-qa-mvp-13318-proxy",
+      "restart": "no",
+      "cpus": 0.5,
+      "mem_limit": "128m",
+      "pids_limit": 64,
+      "user": "65534:65534",
+      "read_only": true,
+      "cap_drop": [
+        "ALL"
+      ],
+      "security_opt": [
+        "no-new-privileges:true"
+      ],
+      "sysctls": {
+        "net.ipv4.ip_forward": "0"
+      },
+      "ports": [
+        "127.0.0.1:13318:13318"
+      ],
+      "networks": [
+        "qa-internal",
+        "qa-access"
+      ],
+      "volumes": [
+        "./haproxy.qa-local.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro"
+      ],
+      "entrypoint": [
+        "haproxy"
+      ],
+      "command": [
+        "-db",
+        "-f",
+        "/usr/local/etc/haproxy/haproxy.cfg"
+      ],
+      "depends_on": {
+        "mysql": {
+          "condition": "service_started"
+        }
+      },
+      "logging": {
+        "driver": "local",
+        "options": {
+          "max-size": "5m",
+          "max-file": "2"
+        }
+      }
+    }
+  },
+  "secrets": {
+    "mysql_root_password": {
+      "file": "../runtime/secrets/mysql-root.txt"
+    }
+  },
+  "volumes": {
+    "mysql-data": {
+      "name": "dimabug-qa-mvp-13318-mysql-data",
+      "external": true
+    }
+  },
+  "networks": {
+    "qa-internal": {
+      "name": "dimabug-qa-mvp-13318-net",
+      "external": true
+    },
+    "qa-access": {
+      "name": "dimabug-qa-mvp-13318-access",
+      "internal": false
+    }
+  }
+}

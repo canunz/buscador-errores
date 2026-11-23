@@ -1,0 +1,180 @@
+{
+  "scope": "OCR_SHARED_STAGE_1_ONLY",
+  "date_local": "2026-11-12",
+  "timezone": "America/Santiago",
+  "branch": "integracion-final-uat",
+  "runtime": {
+    "node": "22.23.5",
+    "node_zip_sha256": "4a191082e9706866830379d577d2cc8a50c776fcd9436a8d061b063ed0d9a0e3",
+    "angular": "19.2.25",
+    "cli": "19.2.27",
+    "typescript": "5.7.3",
+    "tesseract": "7.0.0",
+    "core": "7.0.0",
+    "sharp": "0.35.5",
+    "node_wasm_feature_detect": "1.8.0"
+  },
+  "results": {
+    "angular_baseline": {
+      "passed": 36,
+      "failed": 0
+    },
+    "angular_after": {
+      "passed": 55,
+      "failed": 0
+    },
+    "node_after": {
+      "passed": 31,
+      "failed": 0,
+      "skipped": 0
+    },
+    "angular_qa_build": "passed",
+    "shared_core_without_dom_node_or_angular_types": "passed",
+    "golden_text_cases": 18,
+    "real_synthetic_image_comparisons_equal": 4,
+    "cli_metadata_only": "passed"
+  },
+  "logs": {
+    "angular-baseline.log": {
+      "path": "qa/runtime/ocr-etapa1-baseline/angular-baseline.log",
+      "sha256": "3f54e313faa8678381f799a8c753b2b8f4eec8c1543d6b3d1e5051ad837f0402",
+      "bytes": 4872
+    },
+    "angular-after.log": {
+      "path": "qa/runtime/ocr-etapa1-baseline/angular-after.log",
+      "sha256": "9cd3a267e13788c02fba87b53e3b5983a41e4c911a8529e85d0523d2c922a75d",
+      "bytes": 6889
+    },
+    "angular-build.log": {
+      "path": "qa/runtime/ocr-etapa1-baseline/angular-build.log",
+      "sha256": "e30d452c3aeadb8f35cf18f85366f384730984b079c0e4131b404737750bdc46",
+      "bytes": 3603
+    },
+    "node-after.log": {
+      "path": "qa/runtime/ocr-etapa1-baseline/node-after.log",
+      "sha256": "345cfe5c375ccddefb36115973ae820c3c91f43db1e779eca4987e3b7fcf5341",
+      "bytes": 5502
+    }
+  },
+  "modified_existing_files": [
+    {
+      "path": "frontend-dimabug/src/app/core/material/imagen-ocr.ts",
+      "before_sha256": "5a9bd5c4d2ff5d428d9a911faeb39f422c1b728122e080de166572245382f804",
+      "after_sha256": "20f44c42f060a7f2e9bf38b3cdd3cb68daab794d30746a29eec01a75312be2c6"
+    },
+    {
+      "path": "frontend-dimabug/src/app/core/models/extraccion-error-ocr.model.ts",
+      "before_sha256": "60d6c03e0e315c796334910bed543c67bea318baa99af1a30324f53aa4d7032e",
+      "after_sha256": "855d019699e20bcf2ad27656e91a5d1bf1219e41883a969d75bc2da9713fe22f"
+    },
+    {
+      "path": "frontend-dimabug/src/app/core/models/ocr.model.ts",
+      "before_sha256": "e48fa70592cd754ab94966be4c82a2dccbb56465983bb452fffc42232b037bfb",
+      "after_sha256": "47afba01279f57f7e62b2cfd443aa2174ed36268f06dbc175e288e16e01f203a"
+    },
+    {
+      "path": "frontend-dimabug/src/app/core/services/extractor-error-ocr.service.ts",
+      "before_sha256": "943119b64d896832142a5baf49918cfe5bf9de42572ef371d71c44b38062ed53",
+      "after_sha256": "67b12b5e3383586b83f828e023ccc20304ff6e3a59bee1bb1d6a9458a0dfb2e1"
+    },
+    {
+      "path": "frontend-dimabug/src/app/core/services/ocr.service.ts",
+      "before_sha256": "6e00216842e69fedd25722bd716f4ce719ea262a44be5e3c5ea7fbcc6b2c8dc3",
+      "after_sha256": "d35317acbe5e72065d4425aa95b9cf76a134bb4f4214964f96d17d57991c3cc5"
+    }
+  ],
+  "created_frontend_files": [
+    {
+      "path": "frontend-dimabug/src/app/core/ocr-compartido/equivalencia.spec.ts",
+      "sha256": "fe684384dfcea4b2e03f46b2dfc44377bc920f999cd007bd5167744c935fcf65"
+    },
+    {
+      "path": "frontend-dimabug/src/app/core/ocr-compartido/extraccion-error.model.ts",
+      "sha256": "60d6c03e0e315c796334910bed543c67bea318baa99af1a30324f53aa4d7032e"
+    },
+    {
+      "path": "frontend-dimabug/src/app/core/ocr-compartido/extractor-error.ts",
+      "sha256": "3ccfe37f15df3b2b558f449c091b31db5a3a47ff2f8ba5312f81c46bb303dcfd"
+    },
+    {
+      "path": "frontend-dimabug/src/app/core/ocr-compartido/imagen-header.ts",
+      "sha256": "58ad5af08985811fd996c20a75c999d9decd1bcc4408524a6143368c40f97287"
+    },
+    {
+      "path": "frontend-dimabug/src/app/core/ocr-compartido/limites.ts",
+      "sha256": "2c8c2cc00c128bed06d5fd99d4435b910428d592294b91033f4dcc13ac2f8e6b"
+    },
+    {
+      "path": "frontend-dimabug/src/app/core/ocr-compartido/pruebas/casos.ts",
+      "sha256": "7f334d9d9e4802bbc599ef87b2285821c8832413e449565fa21bba7a65183863"
+    },
+    {
+      "path": "frontend-dimabug/src/app/core/ocr-compartido/pruebas/imagenes.ts",
+      "sha256": "f0aac0bd37ef8c648ae130f982ed32fdff0f2f89241e8a0a643200ba5a3bcbfa"
+    },
+    {
+      "path": "frontend-dimabug/src/app/core/ocr-compartido/texto.ts",
+      "sha256": "08d2aab4b17e4ac4039b66e40c7ee23c2b4307a2a724b866d3478d43f71e3f7b"
+    },
+    {
+      "path": "frontend-dimabug/tools/ocr-node/README.md",
+      "sha256": "13da25742ffcad590043cf5b21fb70d6ecd7b27b88750b50f3534ebd8d38057a"
+    },
+    {
+      "path": "frontend-dimabug/tools/ocr-node/build.cjs",
+      "sha256": "0ef980d4cb07e3459af43e4eac07fe914299afa5912ec55668d9cb2cc8db196a"
+    },
+    {
+      "path": "frontend-dimabug/tools/ocr-node/package-lock.json",
+      "sha256": "cb491c7187d9d0850a6f4c340a954179e4bc0e32ea93a5e9ac81c32ac43b43ae"
+    },
+    {
+      "path": "frontend-dimabug/tools/ocr-node/package.json",
+      "sha256": "4ba721314b92c88b10435dac7bb228092af138927ab59c6aa287e3f8ac42ca3a"
+    },
+    {
+      "path": "frontend-dimabug/tools/ocr-node/run.ps1",
+      "sha256": "732c70a15a9464e0e6cc0d35a3b4576cf2537da62810fd8c0dd86a4d466dd812"
+    },
+    {
+      "path": "frontend-dimabug/tools/ocr-node/src/adapter.ts",
+      "sha256": "7beccffce20c37aa4293743038128ee5308758f2ad543b32d1f7ba449f4b9dd9"
+    },
+    {
+      "path": "frontend-dimabug/tools/ocr-node/src/cli.ts",
+      "sha256": "d5652ecb03d252d361c744c3789bc3c6fa3abb207c395edb74590b878c92040c"
+    },
+    {
+      "path": "frontend-dimabug/tools/ocr-node/src/fixtures.ts",
+      "sha256": "1bb2d6a5ac5929f05b6540a8906ed2559a6d3feaec9880a793cac44c3980f5f5"
+    },
+    {
+      "path": "frontend-dimabug/tools/ocr-node/src/sin-red.ts",
+      "sha256": "5f4a6c45a7fe3d5884e4d59b0f36e42755a585fdadcc5a30f7ef2adb4b3a9c98"
+    },
+    {
+      "path": "frontend-dimabug/tools/ocr-node/src/worker.ts",
+      "sha256": "bc163930645160b782704ec1d9e4c99d48391da8111cd3bdfe103ea549650fec"
+    },
+    {
+      "path": "frontend-dimabug/tools/ocr-node/test/ocr.test.cjs",
+      "sha256": "bc57e313a5f7d8939c745d5770c2a199a76ee0b1c08291d77544aede3b7f1969"
+    },
+    {
+      "path": "frontend-dimabug/tools/ocr-node/test/run.cjs",
+      "sha256": "3d9cd2bec7029c722b40c93366bfa1041de9e4e7acc33edddb13500751235d55"
+    }
+  ],
+  "preservation": {
+    "all_other_existing_candidate_files_unchanged": true,
+    "frontend_package_lock_and_angular_config_unchanged_from_start": true,
+    "no_mysql_spring_whatsapp_deploy_or_commits": true
+  },
+  "limits": [
+    "synthetic fixtures only",
+    "other frontend modules and other OS not tested",
+    "no load or manual functional QA",
+    "pixel preprocessing parity not universal",
+    "MockTimers experimental warning only"
+  ]
+}

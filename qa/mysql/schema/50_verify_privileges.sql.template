@@ -1,0 +1,26 @@
+-- PROPUESTO NO EJECUTADO. No mostrar secretos. Ejecutar mediante root local para auditoria.
+SHOW GRANTS FOR 'dimabug_qa_schema'@'localhost';
+SHOW GRANTS FOR 'dimabug_qa_app'@{{QA_PROXY_HOST_SQL_LITERAL}};
+SELECT GRANTEE, PRIVILEGE_TYPE, IS_GRANTABLE
+FROM information_schema.USER_PRIVILEGES
+WHERE GRANTEE LIKE '''dimabug_qa_schema''@%' OR GRANTEE LIKE '''dimabug_qa_app''@%';
+-- Esperado: ninguna concesion global funcional (USAGE no concede acceso a tablas).
+SELECT GRANTEE, TABLE_SCHEMA, PRIVILEGE_TYPE, IS_GRANTABLE
+FROM information_schema.SCHEMA_PRIVILEGES
+WHERE GRANTEE LIKE '''dimabug_qa_schema''@%' OR GRANTEE LIKE '''dimabug_qa_app''@%';
+-- Esperado: cero filas: se usan grants por TABLA exacta, no patrones de esquema con '_'.
+SELECT GRANTEE, TABLE_SCHEMA, TABLE_NAME, PRIVILEGE_TYPE, IS_GRANTABLE
+FROM information_schema.TABLE_PRIVILEGES
+WHERE GRANTEE LIKE '''dimabug_qa_schema''@%' OR GRANTEE LIKE '''dimabug_qa_app''@%'
+ORDER BY GRANTEE,TABLE_SCHEMA,TABLE_NAME,PRIVILEGE_TYPE;
+-- Comparar con privileges.json: solo dima_bug_qa_mvp, IS_GRANTABLE=NO y allowlist exacta.
+SELECT FROM_USER, FROM_HOST, TO_USER, TO_HOST FROM mysql.role_edges
+WHERE TO_USER IN ('dimabug_qa_schema','dimabug_qa_app');
+-- Esperado cero roles; revisar tambien mandatory_roles y derechos PROXY mediante root.
+SELECT @@global.mandatory_roles AS mandatory_roles;
+SELECT User,Host,Proxied_user,Proxied_host,With_grant FROM mysql.proxies_priv
+WHERE User IN ('dimabug_qa_schema','dimabug_qa_app');
+-- Esperado cero PROXY. Verificar ausencia de grants de columnas y rutinas adicionales.
+SELECT GRANTEE,TABLE_SCHEMA,TABLE_NAME,COLUMN_NAME,PRIVILEGE_TYPE
+FROM information_schema.COLUMN_PRIVILEGES
+WHERE GRANTEE LIKE '''dimabug_qa_schema''@%' OR GRANTEE LIKE '''dimabug_qa_app''@%';

@@ -1,0 +1,10 @@
+{
+  "status": "FAIL",
+  "captures": [],
+  "events_sent": 0,
+  "available_min_mib": 14876.41796875,
+  "error_code": "SYNTHETIC_ATTACH_FAILURE",
+  "qa_account_locked": true,
+  "qa_stopped": true,
+  "existing_services_unchanged": true
+}
