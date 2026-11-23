@@ -14,7 +14,23 @@ import static org.mockito.Mockito.*;
 
 class CambiarPrioridadTicketServiceTest {
     private final EscenarioTickets e = new EscenarioTickets();
-    private final CambiarPrioridadTicketService service = new CambiarPrioridadTicketService(e.tickets, e.contexto);
+    private final cl.casol.backend.tickets.application.port.out.AvisoTicketCriticoPort aviso =
+            org.mockito.Mockito.mock(cl.casol.backend.tickets.application.port.out.AvisoTicketCriticoPort.class);
+    private final CambiarPrioridadTicketService service = new CambiarPrioridadTicketService(e.tickets, e.contexto, aviso);
+
+    @Test void subirACriticoAvisaPorCorreo() {
+        var ticket = e.ticket(EstadoTicket.EN_PROGRESO, SOPORTE.id());
+        service.cambiarPrioridad(100L, PrioridadTicket.CRITICA, "Afecta a toda la sucursal", EMAIL_SOPORTE);
+        org.mockito.Mockito.verify(aviso).avisar(ticket, SOPORTE.id());
+    }
+
+    @Test void bajarDeCriticoNoAvisa() {
+        var ticket = e.ticket(EstadoTicket.EN_PROGRESO, SOPORTE.id());
+        service.cambiarPrioridad(100L, PrioridadTicket.CRITICA, "Sube", EMAIL_SOPORTE);
+        org.mockito.Mockito.clearInvocations(aviso);
+        service.cambiarPrioridad(100L, PrioridadTicket.ALTA, "Baja", EMAIL_SOPORTE);
+        org.mockito.Mockito.verifyNoInteractions(aviso);
+    }
 
     @Test void soporteSubeLaPrioridadYQuedaEnElHistorial() {
         var ticket = e.ticket(EstadoTicket.EN_PROGRESO, SOPORTE.id());

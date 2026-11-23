@@ -2,12 +2,15 @@ package cl.casol.backend.tickets.application.service;
 
 import cl.casol.backend.tickets.application.port.in.CrearTicketUseCase;
 import cl.casol.backend.tickets.application.port.in.TicketVista;
+import cl.casol.backend.tickets.application.port.out.AvisoTicketCriticoPort;
 import cl.casol.backend.tickets.application.port.out.CatalogoConsultaPort;
 import cl.casol.backend.tickets.application.port.out.TicketRepositoryPort;
 import cl.casol.backend.tickets.domain.ActorTicket;
+import cl.casol.backend.tickets.domain.PrioridadTicket;
 import cl.casol.backend.tickets.domain.Ticket;
 import cl.casol.backend.tickets.domain.exception.AccesoTicketDenegadoException;
 import cl.casol.backend.tickets.domain.exception.TicketInvalidoException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,12 +26,21 @@ public class CrearTicketService implements CrearTicketUseCase {
     private final TicketRepositoryPort tickets;
     private final CatalogoConsultaPort catalogo;
     private final ContextoTicketService contexto;
+    private final AvisoTicketCriticoPort avisoCritico;
 
+    /** Sin aviso por correo (se usa en pruebas que no revisan el correo). */
     public CrearTicketService(TicketRepositoryPort tickets, CatalogoConsultaPort catalogo,
             ContextoTicketService contexto) {
+        this(tickets, catalogo, contexto, AvisoTicketCriticoPort.NINGUNO);
+    }
+
+    @Autowired
+    public CrearTicketService(TicketRepositoryPort tickets, CatalogoConsultaPort catalogo,
+            ContextoTicketService contexto, AvisoTicketCriticoPort avisoCritico) {
         this.tickets = tickets;
         this.catalogo = catalogo;
         this.contexto = contexto;
+        this.avisoCritico = avisoCritico;
     }
 
     // Crea con los datos recibidos.
@@ -58,7 +70,13 @@ public class CrearTicketService implements CrearTicketUseCase {
         Ticket nuevo = Ticket.crear(codigo, comando.titulo(), comando.descripcion(), actor.accesoBasico() ? cl.casol.backend.tickets.domain.PrioridadTicket.MEDIA : comando.prioridad(),
                 actor.id(), comando.hardwareId(), comando.sistemaId(), comando.moduloId(), ahora);
         nuevo.registrarDatosSolicitante(comando.datosSolicitante());
-        // Lo guarda (por el puerto del repositorio) y devuelve el detalle
-        return contexto.detalle(tickets.guardar(nuevo), actor);
+        // Lo guarda (por el puerto del repositorio)
+        Ticket guardado = tickets.guardar(nuevo);
+
+        // Si nace con prioridad crítica, se avisa por correo a Soporte y al administrador
+        if (guardado.getPrioridad() == PrioridadTicket.CRITICA) {
+            avisoCritico.avisar(guardado, actor.id());
+        }
+        return contexto.detalle(guardado, actor);
     }
 }

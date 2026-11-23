@@ -16,11 +16,29 @@ import java.util.Optional;
 import static cl.casol.backend.tickets.application.service.EscenarioTickets.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 class CrearTicketServiceTest {
     private final EscenarioTickets e = new EscenarioTickets();
-    private final CrearTicketService service = new CrearTicketService(e.tickets, e.catalogo, e.contexto);
+    private final cl.casol.backend.tickets.application.port.out.AvisoTicketCriticoPort aviso =
+            mock(cl.casol.backend.tickets.application.port.out.AvisoTicketCriticoPort.class);
+    private final CrearTicketService service = new CrearTicketService(e.tickets, e.catalogo, e.contexto, aviso);
+
+    @Test void ticketCriticoAvisaPorCorreoASoporte() {
+        when(e.tickets.siguienteCorrelativo(anyInt())).thenReturn(1);
+        service.crear(new CrearTicketUseCase.Comando("Caja caída", "No vende", PrioridadTicket.CRITICA,
+                null, null, null), EMAIL_USUARIO);
+        verify(aviso).avisar(any(Ticket.class), eq(USUARIO.id()));
+    }
+
+    @Test void ticketNoCriticoNoEnviaAviso() {
+        when(e.tickets.siguienteCorrelativo(anyInt())).thenReturn(1);
+        service.crear(new CrearTicketUseCase.Comando("Mouse", "No funciona", PrioridadTicket.BAJA,
+                null, null, null), EMAIL_USUARIO);
+        verifyNoInteractions(aviso);
+    }
 
     @Test void creaTicketAbiertoConCodigoCorrelativoYSolicitanteAutenticado() {
         int anio = Year.now().getValue();

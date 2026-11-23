@@ -2,10 +2,12 @@ package cl.casol.backend.tickets.application.service;
 
 import cl.casol.backend.tickets.application.port.in.CambiarPrioridadTicketUseCase;
 import cl.casol.backend.tickets.application.port.in.TicketVista;
+import cl.casol.backend.tickets.application.port.out.AvisoTicketCriticoPort;
 import cl.casol.backend.tickets.application.port.out.TicketRepositoryPort;
 import cl.casol.backend.tickets.domain.ActorTicket;
 import cl.casol.backend.tickets.domain.PrioridadTicket;
 import cl.casol.backend.tickets.domain.Ticket;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,9 +23,19 @@ public class CambiarPrioridadTicketService implements CambiarPrioridadTicketUseC
     private final TicketRepositoryPort tickets;
     private final ContextoTicketService contexto;
 
+    private final AvisoTicketCriticoPort avisoCritico;
+
+    /** Sin aviso por correo (se usa en pruebas que no revisan el correo). */
     public CambiarPrioridadTicketService(TicketRepositoryPort tickets, ContextoTicketService contexto) {
+        this(tickets, contexto, AvisoTicketCriticoPort.NINGUNO);
+    }
+
+    @Autowired
+    public CambiarPrioridadTicketService(TicketRepositoryPort tickets, ContextoTicketService contexto,
+            AvisoTicketCriticoPort avisoCritico) {
         this.tickets = tickets;
         this.contexto = contexto;
+        this.avisoCritico = avisoCritico;
     }
 
     // Cambia prioridad.
@@ -32,7 +44,14 @@ public class CambiarPrioridadTicketService implements CambiarPrioridadTicketUseC
         ActorTicket actor = contexto.actor(emailAutenticado);
         contexto.exigirStaff(actor, "cambiar la prioridad");
         Ticket ticket = contexto.ticketVisible(ticketId, actor);
+        boolean eraCritico = ticket.getPrioridad() == PrioridadTicket.CRITICA;
         ticket.cambiarPrioridad(prioridad, actor.id(), motivo, LocalDateTime.now());
-        return contexto.detalle(tickets.guardar(ticket), actor);
+        Ticket guardado = tickets.guardar(ticket);
+
+        // Si recién pasó a crítico, se avisa por correo a Soporte y al administrador
+        if (!eraCritico && guardado.getPrioridad() == PrioridadTicket.CRITICA) {
+            avisoCritico.avisar(guardado, actor.id());
+        }
+        return contexto.detalle(guardado, actor);
     }
 }
