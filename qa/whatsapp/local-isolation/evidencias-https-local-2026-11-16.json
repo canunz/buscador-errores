@@ -1,0 +1,86 @@
+{
+  "fecha_cliente": "2026-11-16",
+  "alcance": "HTTPS Nginx real local; no Ubuntu ni Meta",
+  "evidencia_runtime": "qa\\runtime\\wa-nginx-5c2e3cfe87",
+  "jar_sha256": "f7242bdb10b846fddca4c934a52a36a5cb4941db30da1ce946f75980fa504523",
+  "mysql_image": "sha256:62fb722c78b24245ddff1796a0fcee4a49cc5b87e0aaaf20c92d1da9e0a2497b",
+  "java_image": "eclipse-temurin@sha256:dff6eb46527bd293a3c06bbbe9e64e8c9f91f01905b5abbdad31761c03059d2c",
+  "nginx_image": "nginx@sha256:f6daac2445b0ce70e64d77442ccf62839f3f1b4c24bf6746a857eff014e798c8",
+  "https": {
+    "https": true,
+    "untrusted_rejected": true,
+    "hostname_mismatch_rejected": true,
+    "challenge_exact": true,
+    "cold_post_ms": 2841,
+    "signed_body_bytes": 82255,
+    "tampered_body_status": 403,
+    "tampered_signature_status": 403,
+    "missing_signature_status": 403,
+    "internal_routes_blocked": true,
+    "concurrent_accepted": 1,
+    "concurrent_duplicates": 3
+  },
+  "mysql_fault": {
+    "status": 503,
+    "controlled_body": true,
+    "elapsed_ms": 5287
+  },
+  "mysql_fault_no_commit": true,
+  "mysql_retry": {
+    "retry_accepted": 1,
+    "repeat_duplicate": 1,
+    "elapsed_ms": 2609
+  },
+  "log_privacy": {
+    "sensitive_matches": 0,
+    "streams_scanned_bytes": {
+      "-mysql": 7098,
+      "-spring": 6411,
+      "-probe-d5557": 15,
+      "-nginx-test": 118,
+      "-nginx": 912,
+      "-tls-cases": 315,
+      "-tls-fault": 56,
+      "-tls-retry": 60
+    },
+    "spring_startup_seconds": 62.083,
+    "scope": "stdout y stderr de todos los componentes del ensayo; Nginx global y vhost configurados aqui"
+  },
+  "eventos_esperados": 3,
+  "eventos_persistidos": 3,
+  "functional": "PASS",
+  "final_states": {
+    "wa-nginx-5c2e3cfe87-tls-retry": "exited",
+    "wa-nginx-5c2e3cfe87-tls-fault": "exited",
+    "wa-nginx-5c2e3cfe87-tls-cases": "exited",
+    "wa-nginx-5c2e3cfe87-nginx": "exited",
+    "wa-nginx-5c2e3cfe87-nginx-test": "exited",
+    "wa-nginx-5c2e3cfe87-probe-d5557": "exited",
+    "wa-nginx-5c2e3cfe87-spring": "exited",
+    "wa-nginx-5c2e3cfe87-mysql": "exited"
+  },
+  "nginx_status_counts": {
+    "200": 8,
+    "403": 8,
+    "503": 1,
+    "429": 0,
+    "502": 0,
+    "504": 0
+  },
+  "sql_technical_error_signals": 4,
+  "source_sha256": {
+    "qa\\whatsapp\\local-isolation\\build.py": "d78154380af2939a585e8e69edb58d424482c8871bc675d92b70f02ca0a0fab1",
+    "qa\\whatsapp\\local-isolation\\HttpsProbe.java": "0fe7b913da327c03113cbb1d015ffb4dbb315e7c918140403961194052cec719",
+    "qa\\whatsapp\\local-isolation\\LoadProbe.java": "abe1c1f1bdb0b02058d33175e25480aef3b1ad129d568f1264bc115a904b74b5",
+    "qa\\whatsapp\\local-isolation\\nginx_https.py": "89e5e6fb586ce41b72eddeba27e9cb4fe4775a1fdaf2e426a1eefde3def9f484",
+    "qa\\whatsapp\\local-isolation\\RecepcionQa.java": "59fc6b54b2c5651f1da00d6e879e68970f02056b05b6286ba6155f2d65f0a49c",
+    "qa\\whatsapp\\local-isolation\\resources_linux.py": "c5a37c659ad9d345cc991254ec0bbf7d47ac46c0a1181c19527cde6c1802481c",
+    "qa\\whatsapp\\local-isolation\\summarize_resources.py": "9d54618b7146189fdaddf39cdca9cf6f5690d94ddf157f485f4e3f11f42df4ef",
+    "qa\\whatsapp\\local-isolation\\validate.py": "bfbc8f7a5cdb9f4781666a74d6642925b4e9aca0c6a54630e0ec2474d007b803"
+  },
+  "probe_class_sha256": {
+    "HttpsProbe$Result.class": "12a77512db873f86575134f58b8fc3e434e89e39cee4db795f18ca9c12eced47",
+    "HttpsProbe.class": "8f67487002929836cac9e471f5e3645252cfce3876785d9a972fc2188ebf311d",
+    "LoadProbe.class": "a10cd0eb2c96ee3e2b13da1098184f138c2eaddf40f912e0786a820b57e85681"
+  }
+}

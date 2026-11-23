@@ -1,0 +1,31 @@
+{
+  "object": "whatsapp_business_account",
+  "entry": [
+    {
+      "id": "qa-cuenta-a",
+      "changes": [
+        {
+          "field": "messages",
+          "value": {
+            "messaging_product": "whatsapp",
+            "metadata": {
+              "phone_number_id": "qa-canal-a"
+            },
+            "messages": [
+              {
+                "id": "wamid.qa-imagen",
+                "from": "qa-usuario-a",
+                "timestamp": "1794560400",
+                "type": "image",
+                "image": {
+                  "id": "qa-media-legible",
+                  "mime_type": "image/png"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

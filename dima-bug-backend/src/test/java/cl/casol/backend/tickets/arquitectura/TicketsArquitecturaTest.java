@@ -70,7 +70,9 @@ class TicketsArquitecturaTest {
     void ningunModuloDependeDelInteriorDeTickets() {
         noClasses().that().resideOutsideOfPackage(BASE + ".tickets..")
                 .and().resideOutsideOfPackage(BASE + ".shared..")
-                .should().dependOnClassesThat().resideInAPackage(BASE + ".tickets..")
+                 .should().dependOnClassesThat().resideInAnyPackage(
+                        BASE + ".tickets.domain..", BASE + ".tickets.application..", BASE + ".tickets.infrastructure..")
+                .because("otros módulos solo acceden a tickets mediante su API pública; nunca a sus interiores")
                 .check(clases);
     }
 }

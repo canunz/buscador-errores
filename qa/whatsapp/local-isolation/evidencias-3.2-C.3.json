@@ -1,0 +1,480 @@
+{
+  "etapa": "3.2-C.3",
+  "fecha_local": "2026-11-15",
+  "ubuntu_modificado": false,
+  "meta": false,
+  "resultados": [
+    {
+      "evidencia": "qa\\runtime\\wa-c3-a2f5ce853e",
+      "variant": "baseline",
+      "mysql_version": "8.0.46",
+      "functional": "PASS",
+      "error": null,
+      "metrics": [
+        {
+          "phase": "initialization",
+          "service": "mysql",
+          "current_mib": 488.8,
+          "peak_mib": 512.0,
+          "anon_mib": 346.5,
+          "file_mib": 134.5,
+          "kernel_mib": 6.9,
+          "max_events": 384,
+          "oom": 0,
+          "oom_kill": 0,
+          "cpu": {
+            "usage_usec": 13056808,
+            "user_usec": 7280402,
+            "system_usec": 5776406,
+            "nr_periods": 368,
+            "nr_throttled": 180,
+            "throttled_usec": 25424810,
+            "nr_bursts": 0,
+            "burst_usec": 0
+          }
+        },
+        {
+          "phase": "schema_ready",
+          "service": "mysql",
+          "current_mib": 496.3,
+          "peak_mib": 512.0,
+          "anon_mib": 353.1,
+          "file_mib": 134.7,
+          "kernel_mib": 6.8,
+          "max_events": 387,
+          "oom": 0,
+          "oom_kill": 0,
+          "cpu": {
+            "usage_usec": 13590176,
+            "user_usec": 7534311,
+            "system_usec": 6055864,
+            "nr_periods": 390,
+            "nr_throttled": 181,
+            "throttled_usec": 25438627,
+            "nr_bursts": 0,
+            "burst_usec": 0
+          }
+        },
+        {
+          "phase": "normal_start",
+          "service": "mysql",
+          "current_mib": 362.6,
+          "peak_mib": 375.7,
+          "anon_mib": 344.1,
+          "file_mib": 14.9,
+          "kernel_mib": 3.2,
+          "max_events": 0,
+          "oom": 0,
+          "oom_kill": 0,
+          "cpu": {
+            "usage_usec": 1628318,
+            "user_usec": 700694,
+            "system_usec": 927624,
+            "nr_periods": 41,
+            "nr_throttled": 23,
+            "throttled_usec": 1878639,
+            "nr_bursts": 0,
+            "burst_usec": 0
+          }
+        },
+        {
+          "phase": "spring_ready",
+          "service": "spring",
+          "current_mib": 276.6,
+          "peak_mib": 280.8,
+          "anon_mib": 228.0,
+          "file_mib": 45.8,
+          "kernel_mib": 2.5,
+          "max_events": 0,
+          "oom": 0,
+          "oom_kill": 0,
+          "cpu": {
+            "usage_usec": 31266584,
+            "user_usec": 28904458,
+            "system_usec": 2362125,
+            "nr_periods": 640,
+            "nr_throttled": 590,
+            "throttled_usec": 66254037,
+            "nr_bursts": 0,
+            "burst_usec": 0
+          }
+        },
+        {
+          "phase": "spring_ready",
+          "service": "mysql",
+          "current_mib": 365.9,
+          "peak_mib": 375.7,
+          "anon_mib": 347.0,
+          "file_mib": 15.0,
+          "kernel_mib": 3.2,
+          "max_events": 0,
+          "oom": 0,
+          "oom_kill": 0,
+          "cpu": {
+            "usage_usec": 2581007,
+            "user_usec": 1169097,
+            "system_usec": 1411910,
+            "nr_periods": 687,
+            "nr_throttled": 23,
+            "throttled_usec": 1883812,
+            "nr_bursts": 0,
+            "burst_usec": 0
+          }
+        },
+        {
+          "phase": "warmup",
+          "service": "spring",
+          "current_mib": 297.8,
+          "peak_mib": 301.7,
+          "anon_mib": 248.2,
+          "file_mib": 45.9,
+          "kernel_mib": 2.5,
+          "max_events": 0,
+          "oom": 0,
+          "oom_kill": 0,
+          "cpu": {
+            "usage_usec": 34434858,
+            "user_usec": 31720156,
+            "system_usec": 2714701,
+            "nr_periods": 731,
+            "nr_throttled": 640,
+            "throttled_usec": 70473588,
+            "nr_bursts": 0,
+            "burst_usec": 0
+          }
+        },
+        {
+          "phase": "warmup",
+          "service": "mysql",
+          "current_mib": 375.3,
+          "peak_mib": 380.0,
+          "anon_mib": 356.8,
+          "file_mib": 15.0,
+          "kernel_mib": 3.2,
+          "max_events": 0,
+          "oom": 0,
+          "oom_kill": 0,
+          "cpu": {
+            "usage_usec": 3252858,
+            "user_usec": 1542732,
+            "system_usec": 1710125,
+            "nr_periods": 796,
+            "nr_throttled": 23,
+            "throttled_usec": 1883812,
+            "nr_bursts": 0,
+            "burst_usec": 0
+          }
+        },
+        {
+          "phase": "load",
+          "service": "spring",
+          "current_mib": 302.7,
+          "peak_mib": 306.8,
+          "anon_mib": 253.3,
+          "file_mib": 45.9,
+          "kernel_mib": 2.7,
+          "max_events": 0,
+          "oom": 0,
+          "oom_kill": 0,
+          "cpu": {
+            "usage_usec": 41274167,
+            "user_usec": 38007922,
+            "system_usec": 3266245,
+            "nr_periods": 1182,
+            "nr_throttled": 695,
+            "throttled_usec": 73447768,
+            "nr_bursts": 0,
+            "burst_usec": 0
+          }
+        },
+        {
+          "phase": "load",
+          "service": "mysql",
+          "current_mib": 378.8,
+          "peak_mib": 383.3,
+          "anon_mib": 359.1,
+          "file_mib": 15.7,
+          "kernel_mib": 3.3,
+          "max_events": 0,
+          "oom": 0,
+          "oom_kill": 0,
+          "cpu": {
+            "usage_usec": 5967834,
+            "user_usec": 2953203,
+            "system_usec": 3014630,
+            "nr_periods": 1440,
+            "nr_throttled": 23,
+            "throttled_usec": 1883812,
+            "nr_bursts": 0,
+            "burst_usec": 0
+          }
+        }
+      ],
+      "warmup": {
+        "requests": 24,
+        "unique_events": 21,
+        "errors": 0,
+        "p95_ms": 444,
+        "p99_ms": 3692,
+        "max_ms": 3692
+      },
+      "load": {
+        "requests": 124,
+        "unique_events": 121,
+        "errors": 0,
+        "p95_ms": 126,
+        "p99_ms": 409,
+        "max_ms": 600
+      },
+      "gates": {
+        "peak_under_90_percent_all_phases": false,
+        "endpoint_samples_under_high": true,
+        "no_oom": true,
+        "load_latency": true,
+        "warmup_latency": false
+      },
+      "baseline_24h": false,
+      "ubuntu_capacity_approved": false
+    },
+    {
+      "evidencia": "qa\\runtime\\wa-c3-46a05cbe17",
+      "variant": "optimized",
+      "mysql_version": "8.0.46",
+      "functional": "PASS",
+      "error": null,
+      "metrics": [
+        {
+          "phase": "initialization",
+          "service": "mysql",
+          "current_mib": 226.4,
+          "peak_mib": 272.8,
+          "anon_mib": 117.4,
+          "file_mib": 100.9,
+          "kernel_mib": 7.3,
+          "max_events": 0,
+          "oom": 0,
+          "oom_kill": 0,
+          "cpu": {
+            "usage_usec": 28670641,
+            "user_usec": 20781289,
+            "system_usec": 7889351,
+            "nr_periods": 657,
+            "nr_throttled": 485,
+            "throttled_usec": 77487188,
+            "nr_bursts": 0,
+            "burst_usec": 0
+          }
+        },
+        {
+          "phase": "schema_ready",
+          "service": "mysql",
+          "current_mib": 234.2,
+          "peak_mib": 272.8,
+          "anon_mib": 123.8,
+          "file_mib": 101.7,
+          "kernel_mib": 7.3,
+          "max_events": 0,
+          "oom": 0,
+          "oom_kill": 0,
+          "cpu": {
+            "usage_usec": 29283596,
+            "user_usec": 21118802,
+            "system_usec": 8164794,
+            "nr_periods": 683,
+            "nr_throttled": 487,
+            "throttled_usec": 77844892,
+            "nr_bursts": 0,
+            "burst_usec": 0
+          }
+        },
+        {
+          "phase": "normal_start",
+          "service": "mysql",
+          "current_mib": 131.5,
+          "peak_mib": 144.6,
+          "anon_mib": 115.4,
+          "file_mib": 12.5,
+          "kernel_mib": 2.8,
+          "max_events": 0,
+          "oom": 0,
+          "oom_kill": 0,
+          "cpu": {
+            "usage_usec": 1719031,
+            "user_usec": 811649,
+            "system_usec": 907382,
+            "nr_periods": 44,
+            "nr_throttled": 26,
+            "throttled_usec": 2366482,
+            "nr_bursts": 0,
+            "burst_usec": 0
+          }
+        },
+        {
+          "phase": "spring_ready",
+          "service": "spring",
+          "current_mib": 233.5,
+          "peak_mib": 237.5,
+          "anon_mib": 230.4,
+          "file_mib": 0.0,
+          "kernel_mib": 2.4,
+          "max_events": 0,
+          "oom": 0,
+          "oom_kill": 0,
+          "cpu": {
+            "usage_usec": 28612467,
+            "user_usec": 26535431,
+            "system_usec": 2077035,
+            "nr_periods": 597,
+            "nr_throttled": 532,
+            "throttled_usec": 60932613,
+            "nr_bursts": 0,
+            "burst_usec": 0
+          }
+        },
+        {
+          "phase": "spring_ready",
+          "service": "mysql",
+          "current_mib": 134.1,
+          "peak_mib": 144.6,
+          "anon_mib": 118.1,
+          "file_mib": 12.5,
+          "kernel_mib": 2.8,
+          "max_events": 0,
+          "oom": 0,
+          "oom_kill": 0,
+          "cpu": {
+            "usage_usec": 2620301,
+            "user_usec": 1305679,
+            "system_usec": 1314622,
+            "nr_periods": 648,
+            "nr_throttled": 27,
+            "throttled_usec": 2513944,
+            "nr_bursts": 0,
+            "burst_usec": 0
+          }
+        },
+        {
+          "phase": "warmup",
+          "service": "spring",
+          "current_mib": 254.2,
+          "peak_mib": 257.9,
+          "anon_mib": 250.7,
+          "file_mib": 0.0,
+          "kernel_mib": 2.5,
+          "max_events": 0,
+          "oom": 0,
+          "oom_kill": 0,
+          "cpu": {
+            "usage_usec": 31634938,
+            "user_usec": 29218492,
+            "system_usec": 2416446,
+            "nr_periods": 677,
+            "nr_throttled": 583,
+            "throttled_usec": 65400408,
+            "nr_bursts": 0,
+            "burst_usec": 0
+          }
+        },
+        {
+          "phase": "warmup",
+          "service": "mysql",
+          "current_mib": 135.5,
+          "peak_mib": 144.6,
+          "anon_mib": 119.5,
+          "file_mib": 12.5,
+          "kernel_mib": 2.7,
+          "max_events": 0,
+          "oom": 0,
+          "oom_kill": 0,
+          "cpu": {
+            "usage_usec": 3250819,
+            "user_usec": 1717240,
+            "system_usec": 1533578,
+            "nr_periods": 743,
+            "nr_throttled": 27,
+            "throttled_usec": 2513944,
+            "nr_bursts": 0,
+            "burst_usec": 0
+          }
+        },
+        {
+          "phase": "load",
+          "service": "spring",
+          "current_mib": 259.5,
+          "peak_mib": 263.3,
+          "anon_mib": 256.0,
+          "file_mib": 0.0,
+          "kernel_mib": 2.4,
+          "max_events": 0,
+          "oom": 0,
+          "oom_kill": 0,
+          "cpu": {
+            "usage_usec": 37807542,
+            "user_usec": 34798428,
+            "system_usec": 3009114,
+            "nr_periods": 1126,
+            "nr_throttled": 627,
+            "throttled_usec": 68138567,
+            "nr_bursts": 0,
+            "burst_usec": 0
+          }
+        },
+        {
+          "phase": "load",
+          "service": "mysql",
+          "current_mib": 142.9,
+          "peak_mib": 146.4,
+          "anon_mib": 125.8,
+          "file_mib": 13.1,
+          "kernel_mib": 2.9,
+          "max_events": 0,
+          "oom": 0,
+          "oom_kill": 0,
+          "cpu": {
+            "usage_usec": 5995501,
+            "user_usec": 3155782,
+            "system_usec": 2839718,
+            "nr_periods": 1385,
+            "nr_throttled": 27,
+            "throttled_usec": 2513944,
+            "nr_bursts": 0,
+            "burst_usec": 0
+          }
+        }
+      ],
+      "warmup": {
+        "requests": 24,
+        "unique_events": 21,
+        "errors": 0,
+        "p95_ms": 545,
+        "p99_ms": 3311,
+        "max_ms": 3311
+      },
+      "load": {
+        "requests": 124,
+        "unique_events": 121,
+        "errors": 0,
+        "p95_ms": 116,
+        "p99_ms": 339,
+        "max_ms": 605
+      },
+      "gates": {
+        "peak_under_90_percent_all_phases": true,
+        "endpoint_samples_under_high": true,
+        "no_oom": true,
+        "load_latency": true,
+        "warmup_latency": false
+      },
+      "baseline_24h": false,
+      "ubuntu_capacity_approved": false
+    }
+  ],
+  "herramientas_sha256": {
+    "qa\\whatsapp\\local-isolation\\build.py": "d78154380af2939a585e8e69edb58d424482c8871bc675d92b70f02ca0a0fab1",
+    "qa\\whatsapp\\local-isolation\\LoadProbe.java": "cdf12c8d3a1d477cf360004171af0dee5e76f1dc6d9dd659ba4099bb05d167b2",
+    "qa\\whatsapp\\local-isolation\\RecepcionQa.java": "59fc6b54b2c5651f1da00d6e879e68970f02056b05b6286ba6155f2d65f0a49c",
+    "qa\\whatsapp\\local-isolation\\resources_linux.py": "cebc0bc0592ab50a82c732ef0f94b158fbad97c364d517e71356b0fb0a6d1ddb",
+    "qa\\whatsapp\\local-isolation\\summarize_resources.py": "9d54618b7146189fdaddf39cdca9cf6f5690d94ddf157f485f4e3f11f42df4ef",
+    "qa\\whatsapp\\local-isolation\\validate.py": "bfbc8f7a5cdb9f4781666a74d6642925b4e9aca0c6a54630e0ec2474d007b803"
+  }
+}

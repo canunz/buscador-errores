@@ -1,9 +1,9 @@
 import { DatePipe, NgTemplateOutlet } from '@angular/common';
-import { Component, OnDestroy, OnInit, inject } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, ViewChild, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { Subscription } from 'rxjs';
-import { CatalogoRef, Conocimiento, ResultadoBusquedaConocimiento } from '../../core/models/conocimiento.model';
+import { CatalogoRef, Conocimiento, ResultadoBusquedaConocimiento, Solucion } from '../../core/models/conocimiento.model';
 import { AuthService } from '../../core/services/auth.service';
 import { ClasificacionService } from '../../core/services/clasificacion.service';
 import { ConocimientoService } from '../../core/services/conocimiento.service';
@@ -31,6 +31,56 @@ export class ConocimientoComponent implements OnInit, OnDestroy {
   private querySub?: Subscription;
   private busquedaSub?: Subscription;
   private listaSub?: Subscription;
+  private solucionesSub?: Subscription;
+  @ViewChild('solucionesModal') solucionesModal?: ElementRef<HTMLDialogElement>;
+  conocimientoSoluciones: { id: number; titulo: string } | null = null;
+  solucionesModalItems: Solucion[] = [];
+  cargandoSolucionesModal = false;
+  errorSolucionesModal = '';
+
+  abrirSoluciones(item: { id: number; titulo: string }): void {
+    this.solucionesSub?.unsubscribe();
+    this.conocimientoSoluciones = item;
+    this.solucionesModalItems = [];
+    this.errorSolucionesModal = '';
+    this.cargandoSolucionesModal = true;
+    if (!this.solucionesModal?.nativeElement.open) this.solucionesModal?.nativeElement.showModal();
+    this.solucionesSub = this.conocimientosApi.listarSoluciones(item.id, true).subscribe({
+      next: soluciones => {
+        if (this.conocimientoSoluciones !== item) return;
+        this.solucionesModalItems = soluciones.filter(s => s.activo && Number.isSafeInteger(s.id) && s.id > 0);
+        this.cargandoSolucionesModal = false;
+      },
+      error: () => {
+        if (this.conocimientoSoluciones !== item) return;
+        this.errorSolucionesModal = 'No fue posible cargar las soluciones. Intenta nuevamente.';
+        this.cargandoSolucionesModal = false;
+      },
+    });
+  }
+
+  cerrarSoluciones(): void {
+    this.solucionesModal?.nativeElement.close();
+    this.limpiarSolucionesModal();
+  }
+
+  limpiarSolucionesModal(): void {
+    // Un evento close pendiente no debe limpiar un diálogo que ya se volvió a abrir.
+    if (this.solucionesModal?.nativeElement.open) return;
+    this.solucionesSub?.unsubscribe();
+    this.conocimientoSoluciones = null;
+    this.solucionesModalItems = [];
+    this.cargandoSolucionesModal = false;
+    this.errorSolucionesModal = '';
+  }
+
+  verSolucion(solucion: Solucion): void {
+    const conocimiento = this.conocimientoSoluciones;
+    if (!conocimiento || !this.solucionesModalItems.some(s => s.id === solucion.id)) return;
+    void this.router.navigate(['/conocimiento', conocimiento.id], { queryParams: { solucion: solucion.id } })
+      .then(navegado => { if (navegado) this.cerrarSoluciones(); });
+  }
+
 
   readonly esAdministrador = this.auth.isAdmin;
   readonly puedeGestionar = this.auth.isStaff;
@@ -80,6 +130,7 @@ export class ConocimientoComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.solucionesSub?.unsubscribe();
     this.querySub?.unsubscribe();
     this.busquedaSub?.unsubscribe();
     this.listaSub?.unsubscribe();

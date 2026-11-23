@@ -9,7 +9,7 @@
 } @else if (item) {
   @let kb = item;
   <article class="detail" [class.embebido]="embebido">
-    @if (!embebido) {
+    @if (!embebido && !soloSolucion) {
     <p class="crumb">
       <a routerLink="/conocimiento">Conocimiento</a>
       <span>/</span>
@@ -135,6 +135,18 @@
       }
     }
 
+    @if (soloSolucion) {
+      <header class="hero">
+        <div class="hero-main">
+          <p class="crumb"><a [routerLink]="['/conocimiento', kb.id]">{{ kb.titulo }}</a></p>
+          <h1>{{ solucionesVisibles.at(0)?.titulo || 'Detalle de solución' }}</h1>
+          <a [routerLink]="['/conocimiento', kb.id]">Ver conocimiento completo</a>
+        </div>
+      </header>
+      @if (sectionError) { <p class="alert error" role="alert">{{ sectionError }}</p> }
+      @if (sectionSuccess) { <p class="alert success">{{ sectionSuccess }}</p> }
+    }
+    @if (!soloSolucion) {
     <nav class="pasos" aria-label="Pasos de la guía">
       @for (p of pasosGuia; track p.id) {
         <button
@@ -153,6 +165,7 @@
         </button>
       }
     </nav>
+    }
 
     <div class="guia-unica">
       @if (paso === 1) {
@@ -314,12 +327,12 @@
           }
 
           @if (puedeGestionar() && formAbierto.pruebas) {
-            <div class="form-modal">
+            <div class="form-modal prueba-modal">
               <div class="form-modal-fondo"></div>
               <div class="form-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="modal-prueba-titulo">
                 <h2 id="modal-prueba-titulo">{{ modoPrueba === 'crear' ? 'Crear y asociar prueba' : 'Buscar prueba existente' }}</h2>
-                <div class="flujo-acciones"><button type="button" (click)="abrirBuscarPrueba()" [disabled]="saving === 'pruebas'">Buscar prueba</button>
-                @if (esAdministrador()) { <button type="button" (click)="abrirNuevaPrueba()" [disabled]="saving === 'pruebas'">Crear prueba</button> }</div>
+                <div class="flujo-acciones"><button type="button" class="ghost-mini" (click)="abrirBuscarPrueba()" [disabled]="saving === 'pruebas'">Buscar prueba</button>
+                @if (esAdministrador()) { <button type="button" class="ghost-mini" (click)="abrirNuevaPrueba()" [disabled]="saving === 'pruebas'">Crear prueba</button> }</div>
                 @if (sectionError) { <p class="alert" role="alert">{{ sectionError }}</p> }
                 @if (modoPrueba === 'buscar') {
                   <label>Buscar por descripción o resultado esperado<input type="search" [formControl]="pruebaBusqueda" maxlength="300" /></label>
@@ -330,7 +343,7 @@
                     </select></label>
                     @if (pruebaSeleccionada; as p) { <section class="full flujo-preview"><h3>{{ p.descripcion }}</h3><p>Resultado esperado: {{ p.resultadoEsperado || 'No indicado' }}</p><p>Estado: activa</p></section> }
                     <div class="editor-actions"><button type="submit" [disabled]="saving === 'pruebas' || cargandoPruebasCatalogo">{{ saving === 'pruebas' ? 'Asociando…' : 'Asociar prueba' }}</button>
-                      <button type="button" (click)="cerrarFormulario('pruebas')" [disabled]="saving === 'pruebas'">Cancelar</button></div>
+                      <button type="button" class="ghost-mini" (click)="cerrarFormulario('pruebas')" [disabled]="saving === 'pruebas'">Cancelar</button></div>
                     <small>No se crea una copia; se asocia el ID existente.</small>
                   </form>
                 } @else if (esAdministrador()) {
@@ -339,10 +352,10 @@
                     <label class="full">Resultado esperado<textarea formControlName="resultadoEsperado" maxlength="500" [readOnly]="!!pruebaCreada || creacionPruebaIncierta || saving === 'pruebas'"></textarea></label>
                     <p class="full">Estado inicial: activa. El contrato de creación no permite otro estado; una prueba inactiva no puede asociarse.</p>
                     @if (pruebaCreada) { <p class="full" role="status">Prueba creada: ID {{ pruebaCreada.id }}. No se volverá a crear.</p> }
-                    @if (creacionPruebaIncierta) { <button type="button" (click)="recuperarPruebaPendiente()" [disabled]="saving === 'pruebas'">Buscar prueba creada</button> }
+                    @if (creacionPruebaIncierta) { <button type="button" class="ghost-mini" (click)="recuperarPruebaPendiente()" [disabled]="saving === 'pruebas'">Buscar prueba creada</button> }
                     <div class="editor-actions"><button type="submit" [disabled]="saving === 'pruebas' || creacionPruebaIncierta">{{ saving === 'pruebas' ? 'Procesando…' : pruebaCreada ? 'Reintentar solo asociación' : 'Guardar y asociar' }}</button>
-                      @if (pruebaCreada) { <button type="button" (click)="comprobarAsociacionPendiente()" [disabled]="saving === 'pruebas'">Comprobar asociación</button> }
-                      <button type="button" (click)="cerrarFormulario('pruebas')" [disabled]="saving === 'pruebas'">Cancelar</button></div>
+                      @if (pruebaCreada) { <button type="button" class="ghost-mini" (click)="comprobarAsociacionPendiente()" [disabled]="saving === 'pruebas'">Comprobar asociación</button> }
+                      <button type="button" class="ghost-mini" (click)="cerrarFormulario('pruebas')" [disabled]="saving === 'pruebas'">Cancelar</button></div>
                   </form>
                 }
               </div>
@@ -359,7 +372,7 @@
               <h2>Solución</h2>
               <p class="hint">Siga estos pasos o derive al área indicada.</p>
             </div>
-            @if (puedeGestionar()) {
+            @if (puedeGestionar() && !soloSolucion) {
               <button type="button" class="add-btn" (click)="abrirFormulario('soluciones')">+ Solución</button>
               @if (esAdministrador()) { <button type="button" class="add-btn" (click)="abrirReutilizarSolucion()" [disabled]="copiandoSolucion">Reutilizar solución</button> }
             }
@@ -367,8 +380,8 @@
 
           @if (loadingSoluciones) {
             <div class="skeleton-stack"><div class="sk tall"></div><div class="sk"></div></div>
-          } @else if (soluciones.length) {
-            @for (s of soluciones; track s.id) {
+          } @else if (solucionesVisibles.length) {
+            @for (s of solucionesVisibles; track s.id) {
               <article class="solution">
                 <div class="solution-top">
                   <span class="num">{{ s.orden }}</span>
@@ -479,7 +492,7 @@
             }
           } @else {
             <p class="empty-state">
-              {{ puedeGestionar() ? 'Sin soluciones. Agregue el procedimiento o la derivación recomendada.' : 'Sin solución registrada para este caso.' }}
+              {{ soloSolucion ? 'La solución seleccionada no está disponible para este conocimiento.' : puedeGestionar() ? 'Sin soluciones. Agregue el procedimiento o la derivación recomendada.' : 'Sin solución registrada para este caso.' }}
             </p>
           }
 
@@ -656,6 +669,7 @@
         </section>
       }
 
+      @if (!soloSolucion) {
       <footer class="paso-controles">
         <button type="button" class="paso-mover" (click)="irPaso(paso - 1)" [disabled]="paso === 1">Anterior</button>
         <span>Paso {{ paso }} de {{ pasosGuia.length }}</span>
@@ -663,6 +677,7 @@
           Siguiente
         </button>
       </footer>
+      }
     </div>
   </article>
 }

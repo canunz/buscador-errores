@@ -1,0 +1,14 @@
+{
+  "name": "dimabug-ocr-node-prototipo",
+  "version": "0.0.0",
+  "private": true,
+  "type": "commonjs",
+  "engines": { "node": ">=22.0.0 <23" },
+  "scripts": {
+    "build": "node build.cjs",
+    "test": "node test/run.cjs",
+    "fixture": "node dist/tools/ocr-node/src/cli.js"
+  },
+  "dependencies": { "sharp": "0.35.5", "tesseract.js": "7.0.0" },
+  "overrides": { "wasm-feature-detect": "1.8.0", "tesseract.js-core": "7.0.0" }
+}
