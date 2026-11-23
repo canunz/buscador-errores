@@ -50,7 +50,7 @@ public class AdjuntoTicketController {
                 .header(HttpHeaders.CONTENT_DISPOSITION, ContentDisposition.inline()
                         .filename(archivo.nombre(), StandardCharsets.UTF_8).build().toString())
                 .header("X-Content-Type-Options", "nosniff")
-                .header(HttpHeaders.CACHE_CONTROL, "private, max-age=3600")
+                .header(HttpHeaders.CACHE_CONTROL, "private, no-store")
                 .body(archivo.contenido());
     }
 }

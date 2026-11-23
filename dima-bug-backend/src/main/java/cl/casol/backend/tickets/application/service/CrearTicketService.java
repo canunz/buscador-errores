@@ -33,6 +33,10 @@ public class CrearTicketService implements CrearTicketUseCase {
         if (actor.esAdministrador()) {
             throw new AccesoTicketDenegadoException("El administrador supervisa los tickets, pero no los crea");
         }
+        if (actor.accesoBasico() && comando.datosSolicitante()==null)
+            throw new TicketInvalidoException("Completa los datos del solicitante en el portal de solicitudes");
+        if (actor.accesoBasico() && (comando.hardwareId()!=null || comando.sistemaId()!=null || comando.moduloId()!=null))
+            throw new AccesoTicketDenegadoException("Clasificación interna no disponible");
         if (comando.hardwareId() != null || comando.sistemaId() != null || comando.moduloId() != null) {
             catalogo.validarClasificacion(comando.hardwareId(), comando.sistemaId(), comando.moduloId())
                     .ifPresent(motivo -> { throw new TicketInvalidoException(motivo); });
@@ -40,8 +44,9 @@ public class CrearTicketService implements CrearTicketUseCase {
         LocalDateTime ahora = LocalDateTime.now();
         int anio = ahora.getYear();
         String codigo = Ticket.generarCodigo(anio, tickets.siguienteCorrelativo(anio));
-        Ticket nuevo = Ticket.crear(codigo, comando.titulo(), comando.descripcion(), comando.prioridad(),
+        Ticket nuevo = Ticket.crear(codigo, comando.titulo(), comando.descripcion(), actor.accesoBasico() ? cl.casol.backend.tickets.domain.PrioridadTicket.MEDIA : comando.prioridad(),
                 actor.id(), comando.hardwareId(), comando.sistemaId(), comando.moduloId(), ahora);
+        nuevo.registrarDatosSolicitante(comando.datosSolicitante());
         return contexto.detalle(tickets.guardar(nuevo), actor);
     }
 }

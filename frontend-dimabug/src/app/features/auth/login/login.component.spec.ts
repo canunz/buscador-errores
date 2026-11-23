@@ -7,7 +7,8 @@ import {AuthService} from '../../../core/services/auth.service';
 describe('Integración del ingreso por código y autoservicio',()=>{
  let auth:jasmine.SpyObj<AuthService>;
  beforeEach(()=>{
-  auth=jasmine.createSpyObj('AuthService',['solicitarCodigoAcceso','verificarCodigoAcceso']);
+  auth=jasmine.createSpyObj('AuthService',['solicitarCodigoAcceso','verificarCodigoAcceso','accesoBasico']);
+  (auth.accesoBasico as jasmine.Spy).and.returnValue(false);
   auth.solicitarCodigoAcceso.and.returnValue(of({message:'Enviado',segundosVigencia:300,segundosReenvio:60}));
   auth.verificarCodigoAcceso.and.returnValue(of({token:"token-sintetico",usuario:{usuarioId:1,usuarioNombre:"QA",usuarioEmail:"qa@example.invalid",usuarioEstado:true}}));
   TestBed.configureTestingModule({imports:[LoginComponent],providers:[provideRouter([]),{provide:AuthService,useValue:auth}]});
@@ -16,7 +17,7 @@ describe('Integración del ingreso por código y autoservicio',()=>{
   const f=TestBed.createComponent(LoginComponent);f.detectChanges();
   expect(f.nativeElement.querySelector('a[href="/autoservicio"]')).not.toBeNull();
   expect(f.nativeElement.querySelector('input[type=password]')).toBeNull();
-  expect(f.nativeElement.textContent).toContain('Enviar código de acceso');
+  expect(f.nativeElement.textContent).toContain('Continuar');
  });
  it('solicita un código, muestra su campo y verifica antes de navegar',fakeAsync(()=>{
   const f=TestBed.createComponent(LoginComponent);const c=f.componentInstance;
@@ -35,4 +36,12 @@ describe('Integración del ingreso por código y autoservicio',()=>{
   expect(f.nativeElement.querySelector('[role=alert]').textContent).toContain('No disponible');
   expect(f.componentInstance.loading).toBeFalse();expect(auth.verificarCodigoAcceso).not.toHaveBeenCalled();
  });
+ it('redirige el autorregistro confirmado al portal básico',fakeAsync(()=>{
+  (auth.accesoBasico as jasmine.Spy).and.returnValue(true);
+  const f=TestBed.createComponent(LoginComponent);const c=f.componentInstance;
+  const navegar=spyOn(TestBed.inject(Router),'navigateByUrl').and.resolveTo(true);
+  c.form.setValue({email:'qa@example.invalid'});c.enviarCodigo();tick();
+  c.codigoForm.setValue({codigo:'123456'});c.verificar();
+  expect(navegar).toHaveBeenCalledOnceWith('/solicitudes');f.destroy();tick();
+ }));
 });

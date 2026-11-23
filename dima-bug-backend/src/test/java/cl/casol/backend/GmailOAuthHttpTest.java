@@ -42,7 +42,7 @@ class GmailOAuthHttpTest {
         try(var c=jdbc.getDataSource().getConnection()){assertTrue(c.getMetaData().getURL().startsWith("jdbc:h2:mem:gmail_oauth"));}
         jdbc.update("insert into u_rol(rol_id,rol_nombre,rol_estado,rol_fecha_creacion,rol_fecha_actualizacion) values(1,'ADMINISTRADOR',true,CURRENT_TIMESTAMP,CURRENT_TIMESTAMP)");
         jdbc.update("insert into u_usuario(usuario_id,rol_id,usuario_nombre,usuario_email,usuario_password_hash,usuario_estado,usuario_fecha_creacion,usuario_fecha_actualizacion) values(1,1,'Gmail QA','qa-gmail@example.invalid',?,true,CURRENT_TIMESTAMP,CURRENT_TIMESTAMP)",encoder.encode("SoloPruebas123!"));
-        token=LoginCodigoTestSupport.autenticar(mvc,envioCodigo,"qa-gmail@example.invalid",jdbc);
+        token=LoginCodigoTestSupport.autenticar(mvc,envioCodigo,"qa-gmail@example.invalid",jdbc,"SoloPruebas123!");
     }
     @BeforeEach void aislado(){
         reset(google);for(String tabla:List.of("gm_prueba_evento","gm_prueba_correo","gm_estado_oauth","gm_auditoria_oauth","gm_cuenta_oauth"))jdbc.update("delete from "+tabla);

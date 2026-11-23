@@ -26,7 +26,7 @@ import static org.mockito.Mockito.when;
 
 class AdministrarUsuariosServiceTest {
 
-    private final UsuarioRepository usuarioRepository = mock(UsuarioRepository.class);
+    private final UsuarioRepository usuarioRepository = mock(UsuarioRepository.class, org.mockito.Answers.CALLS_REAL_METHODS);
     private final RolRepository rolRepository = mock(RolRepository.class);
     private final PasswordEncoderPort passwordEncoder = mock(PasswordEncoderPort.class);
     private final AdministrarUsuariosService service =
@@ -54,10 +54,10 @@ class AdministrarUsuariosServiceTest {
         assertFalse(service.cambiarEstado(1,false,"otro@x.cl").isActivo());
     }
     @Test
-    void creaUsuarioActivoConPasswordCodificada() {
+    void creaUsuarioSinPasswordConHashDeCompatibilidad() {
         Rol rol = rol(2, "TECNICO", true);
         when(rolRepository.buscarPorId(2)).thenReturn(Optional.of(rol));
-        when(passwordEncoder.codificar("ClaveInicialSegura")).thenReturn("$2a$10$hash");
+        when(passwordEncoder.codificar(org.mockito.ArgumentMatchers.anyString())).thenReturn("$2a$10$hash");
         when(usuarioRepository.guardar(org.mockito.ArgumentMatchers.any())).thenAnswer(i -> i.getArgument(0));
 
         Usuario creado = service.crear("Nuevo", "nuevo@dimarsa.cl", "ClaveInicialSegura", 2);
@@ -65,7 +65,7 @@ class AdministrarUsuariosServiceTest {
         assertTrue(creado.isActivo());
         assertEquals("$2a$10$hash", creado.getPasswordHash());
         assertEquals(2, creado.getRol().getId());
-        verify(passwordEncoder).codificar("ClaveInicialSegura");
+        verify(passwordEncoder).codificar(org.mockito.ArgumentMatchers.argThat(v -> !"ClaveInicialSegura".equals(v) && v.length() >= 32));
     }
 
     @Test

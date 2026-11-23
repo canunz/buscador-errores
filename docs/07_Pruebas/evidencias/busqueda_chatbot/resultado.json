@@ -1,0 +1,22 @@
+{
+  "entorno": "QA local; muestras sinteticas",
+  "firmaConsulta": "error escribir archivo dim tbk voucher venta original txt",
+  "firmaRegistro": "error escribir archivo dim tbk voucher venta original txt",
+  "mismaFirma": true,
+  "puntuacionIdentico": 1226.0,
+  "puntuacionFechaVariable": 826.0,
+  "puntuacionOtroMensaje": 0.0,
+  "puntuacionCodigoDiferente": 0.0,
+  "validacion": {
+    "backend": {
+      "tests": 1173,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "suitesBackend": 112,
+    "pruebasAngular": 502,
+    "h2Aislado": true,
+    "despliegue": false
+  }
+}

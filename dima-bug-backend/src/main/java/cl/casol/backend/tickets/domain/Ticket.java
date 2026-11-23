@@ -19,6 +19,10 @@ public class Ticket {
     public static final int MAX_TITULO = 150;
     private static final String PREFIJO_CODIGO = "TK-";
 
+    private DatosSolicitante datosSolicitante;
+    public DatosSolicitante getDatosSolicitante() { return datosSolicitante; }
+    public void registrarDatosSolicitante(DatosSolicitante datos) { this.datosSolicitante = datos; }
+
     private final Long id;
     private final String codigo;
     private final String titulo;

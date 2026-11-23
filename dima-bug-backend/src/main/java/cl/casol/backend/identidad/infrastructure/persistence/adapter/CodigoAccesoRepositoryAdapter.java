@@ -11,6 +11,23 @@ import java.util.Optional;
 @Repository
 public class CodigoAccesoRepositoryAdapter implements CodigoAccesoRepository {
 
+    @jakarta.persistence.PersistenceContext
+    private jakarta.persistence.EntityManager em;
+
+    public void bloquearUsuario(Integer usuarioId) {
+        em.find(cl.casol.backend.identidad.infrastructure.persistence.entity.UsuarioEntity.class,
+                usuarioId, jakarta.persistence.LockModeType.PESSIMISTIC_WRITE);
+    }
+
+    public long contarDesde(Integer usuarioId, java.time.LocalDateTime desde) {
+        return repository.findByUsuarioIdAndCreadoEnGreaterThanEqual(usuarioId, desde).size();
+    }
+
+    public boolean vigente(Long codigoId, java.time.LocalDateTime ahora) {
+        return repository.findById(codigoId).map(this::toDomain)
+                .filter(c -> c.disponible(ahora, 5)).isPresent();
+    }
+
     private final CodigoAccesoJpaRepository repository;
 
     public CodigoAccesoRepositoryAdapter(CodigoAccesoJpaRepository repository) {

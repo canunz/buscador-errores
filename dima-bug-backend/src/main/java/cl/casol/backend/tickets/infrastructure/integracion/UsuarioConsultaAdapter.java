@@ -50,6 +50,6 @@ public class UsuarioConsultaAdapter implements UsuarioConsultaPort {
     }
 
     private static UsuarioTicket traducir(UsuarioPublico usuario) {
-        return new UsuarioTicket(usuario.id(), usuario.nombre(), usuario.email(), rol(usuario.rol()), usuario.activo());
+        return new UsuarioTicket(usuario.id(), usuario.nombre(), usuario.email(), rol(usuario.rol()), usuario.activo(), usuario.accesoBasico());
     }
 }

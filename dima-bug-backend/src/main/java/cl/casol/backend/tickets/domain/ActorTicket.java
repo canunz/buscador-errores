@@ -1,7 +1,8 @@
 package cl.casol.backend.tickets.domain;
 
 /** Persona autenticada que ejecuta una acción sobre un ticket. */
-public record ActorTicket(Integer id, String nombre, RolTicket rol) {
+public record ActorTicket(Integer id, String nombre, RolTicket rol, boolean accesoBasico) {
+    public ActorTicket(Integer id, String nombre, RolTicket rol) { this(id,nombre,rol,false); }
 
     public boolean esAdministrador() { return rol == RolTicket.ADMINISTRADOR; }
 

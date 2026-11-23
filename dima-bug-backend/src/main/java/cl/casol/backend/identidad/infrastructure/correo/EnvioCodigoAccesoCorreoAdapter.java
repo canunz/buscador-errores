@@ -1,18 +1,10 @@
 package cl.casol.backend.identidad.infrastructure.correo;
 
-import cl.casol.backend.correo.application.service.GmailOAuthService;
-import cl.casol.backend.correo.infrastructure.gmail.GmailConfig;
 import cl.casol.backend.identidad.application.port.out.EnvioCodigoAccesoPort;
-import cl.casol.backend.identidad.domain.exception.EnvioCodigoAccesoException;
 import jakarta.mail.Session;
 import jakarta.mail.internet.MimeMessage;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.DisposableBean;
-import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.HtmlUtils;
@@ -22,119 +14,58 @@ import java.util.Base64;
 import java.util.Date;
 import java.util.Properties;
 import java.util.UUID;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
-/** Envía el código de acceso por Gmail API (HTTPS) o, si no está conectada, por SMTP. */
+/** Construye el MIME y lo guarda cifrado en la transacción de emisión. Solo Gmail API. */
 @Component
-public class EnvioCodigoAccesoCorreoAdapter implements EnvioCodigoAccesoPort, DisposableBean {
-
-    private static final Logger log = LoggerFactory.getLogger(EnvioCodigoAccesoCorreoAdapter.class);
-
-    /** Imagen de cabecera del correo, incrustada en el mensaje (no depende de internet). */
+public class EnvioCodigoAccesoCorreoAdapter implements EnvioCodigoAccesoPort {
     private static final String BANNER = "correo/banner-codigo-acceso.jpg";
     private static final String BANNER_CID = "bannerDimaBug";
-
-    private final ObjectProvider<JavaMailSender> mailSender;
-    private final GmailOAuthService gmail;
-    private final GmailConfig gmailConfig;
-    private final String remitente;
+    private final cl.casol.backend.correo.application.port.out.CorreoTransportePort transporte;
+    private final cl.casol.backend.correo.application.port.out.CifradoGmailPort cifrado;
+    private final cl.casol.backend.identidad.application.port.out.CorreoCodigoStore store;
     private final String nombreRemitente;
-    private final boolean mostrarEnLog;
-    private final boolean exigirGmailApi;
-
-    /**
-     * Gmail tarda varios segundos en aceptar un correo. El envío se hace en segundo plano para que
-     * la pantalla avance de inmediato; si falla, queda en el log y el usuario puede reenviar.
-     */
-    private final ExecutorService envios = Executors.newFixedThreadPool(2, r -> {
-        Thread t = new Thread(r, "envio-codigo-acceso");
-        t.setDaemon(true);
-        return t;
-    });
+    private final boolean habilitado;
 
     public EnvioCodigoAccesoCorreoAdapter(
-            ObjectProvider<JavaMailSender> mailSender,
-            GmailOAuthService gmail,
-            GmailConfig gmailConfig,
-            @Value("${spring.mail.username:}") String remitente,
+            cl.casol.backend.correo.application.port.out.CorreoTransportePort transporte,
+            cl.casol.backend.correo.application.port.out.CifradoGmailPort cifrado,
+            cl.casol.backend.identidad.application.port.out.CorreoCodigoStore store,
             @Value("${dimabug.auth.codigo.remitente-nombre:DimaBug}") String nombreRemitente,
-            @Value("${dimabug.auth.codigo.mostrar-en-log:false}") boolean mostrarEnLog,
-            @Value("${dimabug.auth.codigo.usar-gmail-api:false}") boolean exigirGmailApi
-    ) {
-        this.mailSender = mailSender;
-        this.gmail = gmail;
-        this.gmailConfig = gmailConfig;
-        this.remitente = remitente == null ? "" : remitente.trim();
+            @Value("${dimabug.auth.correo.habilitado:true}") boolean habilitado) {
+        this.transporte = transporte; this.cifrado = cifrado; this.store = store;
         this.nombreRemitente = nombreRemitente;
-        this.mostrarEnLog = mostrarEnLog;
-        this.exigirGmailApi = exigirGmailApi;
+        this.habilitado = habilitado;
+    }
+
+    @Override
+    public void encolar(cl.casol.backend.identidad.domain.CodigoAcceso registro,
+                        String email, String nombre, String codigo, int minutosVigencia) {
+        if (!habilitado) return;
+        String id = UUID.randomUUID().toString();
+        String contenido = null;
+        var estado = cl.casol.backend.identidad.application.port.out.CorreoCodigoStore.Estado.PENDIENTE;
+        try {
+            if (!cifrado.disponible()) throw new IllegalStateException();
+            MimeMessage mensaje = new MimeMessage(Session.getInstance(new Properties()));
+            completarMensaje(mensaje, transporte.remitente(), email, nombre, codigo, minutosVigencia, false);
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            mensaje.writeTo(out);
+            contenido = cifrado.cifrar(Base64.getUrlEncoder().withoutPadding().encodeToString(out.toByteArray()), "auth:correo:" + id);
+        } catch (Exception ex) {
+            // No se propaga MIME, código, destinatario ni respuestas de proveedores a logs/API.
+            estado = cl.casol.backend.identidad.application.port.out.CorreoCodigoStore.Estado.NO_CONFIGURADO;
+        }
+        store.guardar(id, registro.id(), contenido, registro.expiraEn(), estado);
     }
 
     @Override
     public void enviar(String email, String nombre, String codigo, int minutosVigencia) {
-        despachar(email, nombre, codigo, minutosVigencia, false);
+        throw new IllegalStateException("El envío de códigos requiere un registro persistido");
     }
 
     @Override
     public void enviarRecuperacion(String email, String nombre, String codigo, int minutosVigencia) {
-        despachar(email, nombre, codigo, minutosVigencia, true);
-    }
-
-    private void despachar(String email, String nombre, String codigo, int minutosVigencia, boolean recuperacion) {
-        if (gmailApiLista()) {
-            envios.execute(() -> enviarPorGmailApi(email, nombre, codigo, minutosVigencia, recuperacion));
-            return;
-        }
-        if (exigirGmailApi) {
-            throw new EnvioCodigoAccesoException(new IllegalStateException(
-                    "Gmail API no está conectada. Un administrador debe autorizar la cuenta en Administración > Gmail."));
-        }
-        JavaMailSender sender = mailSender.getIfAvailable();
-        if (sender == null || remitente.isEmpty()) {
-            if (mostrarEnLog) {
-                log.warn("Correo no configurado. Código {} para {}: {}", recuperacion ? "de recuperación" : "de acceso", email, codigo);
-                return;
-            }
-            throw new EnvioCodigoAccesoException(new IllegalStateException("spring.mail no configurado"));
-        }
-        envios.execute(() -> enviarAhora(sender, email, nombre, codigo, minutosVigencia, recuperacion));
-    }
-
-    private boolean gmailApiLista() {
-        try {
-            return gmail.disponible();
-        } catch (RuntimeException ex) {
-            log.warn("Gmail API no disponible; se envía por SMTP. {}", ex.getMessage());
-            return false;
-        }
-    }
-
-    private void enviarPorGmailApi(String email, String nombre, String codigo, int minutosVigencia, boolean recuperacion) {
-        try {
-            String from = gmailConfig.remitente() == null || gmailConfig.remitente().isBlank()
-                    ? remitente
-                    : gmailConfig.remitente().strip();
-            MimeMessage mensaje = new MimeMessage(Session.getInstance(new Properties()));
-            completarMensaje(mensaje, from, email, nombre, codigo, minutosVigencia, recuperacion);
-            ByteArrayOutputStream out = new ByteArrayOutputStream();
-            mensaje.writeTo(out);
-            gmail.enviar(Base64.getUrlEncoder().withoutPadding().encodeToString(out.toByteArray()));
-            log.info("Código {} enviado a {} vía Gmail API", recuperacion ? "de recuperación" : "de acceso", email);
-        } catch (Exception e) {
-            log.error("No se pudo enviar el código a {}", email, e);
-        }
-    }
-
-    private void enviarAhora(JavaMailSender sender, String email, String nombre, String codigo, int minutosVigencia, boolean recuperacion) {
-        try {
-            MimeMessage mensaje = sender.createMimeMessage();
-            completarMensaje(mensaje, remitente, email, nombre, codigo, minutosVigencia, recuperacion);
-            sender.send(mensaje);
-            log.info("Código {} enviado a {}", recuperacion ? "de recuperación" : "de acceso", email);
-        } catch (Exception e) {
-            log.error("No se pudo enviar el código a {}", email, e);
-        }
+        throw new IllegalStateException("La recuperación se realiza mediante inicio de sesión con código");
     }
 
     private void completarMensaje(MimeMessage mensaje, String from, String email, String nombre, String codigo, int minutosVigencia, boolean recuperacion) throws Exception {
@@ -153,11 +84,6 @@ public class EnvioCodigoAccesoCorreoAdapter implements EnvioCodigoAccesoPort, Di
         }
         mensaje.setHeader("X-Entity-Ref-ID", UUID.randomUUID().toString());
         mensaje.setHeader("Auto-Submitted", "auto-generated");
-    }
-
-    @Override
-    public void destroy() {
-        envios.shutdown();
     }
 
     private String texto(String nombre, String codigo, int minutos, boolean recuperacion) {

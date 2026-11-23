@@ -9,6 +9,9 @@ import java.util.Optional;
 import java.util.List;
 
 public interface UsuarioRepository {
+    default java.util.Optional<Usuario> buscarFresco(String email) { return buscarPorEmail(email); }
+    default java.util.Optional<Usuario> buscarPorIdBloqueado(Integer id) { return buscarPorId(id); }
+
 
     Optional<Usuario> buscarPorEmail(String email);
 

@@ -1,0 +1,212 @@
+{
+  "scope": "WHATSAPP_SIMULADO_ETAPA_1",
+  "date_local": "2026-11-13",
+  "timezone": "America/Santiago",
+  "java_tests": {
+    "total": 86,
+    "failed": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suites": [
+      {
+        "class": "cl.casol.backend.AutoservicioPublicoHttpTest",
+        "tests": 9,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "xml": "dima-bug-backend/target/surefire-reports/TEST-cl.casol.backend.AutoservicioPublicoHttpTest.xml",
+        "sha256": "144e2651722daedeb124d0628dbf692dfc96f4cf36054e507904b589f143fe9e"
+      },
+      {
+        "class": "cl.casol.backend.ChatbotBusquedaErroresHttpTest",
+        "tests": 20,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "xml": "dima-bug-backend/target/surefire-reports/TEST-cl.casol.backend.ChatbotBusquedaErroresHttpTest.xml",
+        "sha256": "abbf658d139f54e5bd9d1ba12fad8d1218ebd762773a7e987f1f48ceb844059a"
+      },
+      {
+        "class": "cl.casol.backend.ChatbotSecurityIntegrationTest",
+        "tests": 8,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "xml": "dima-bug-backend/target/surefire-reports/TEST-cl.casol.backend.ChatbotSecurityIntegrationTest.xml",
+        "sha256": "e629775d67eb32132a36724b415748b0829db166e456b2812c91fcd35344335c"
+      },
+      {
+        "class": "cl.casol.backend.conocimiento.application.service.ConsultarChatbotServiceTest",
+        "tests": 4,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "xml": "dima-bug-backend/target/surefire-reports/TEST-cl.casol.backend.conocimiento.application.service.ConsultarChatbotServiceTest.xml",
+        "sha256": "51353b2eb45abae6d7d9bdcc36afbb342b362839a27d30f1e6dc086b22546a8d"
+      },
+      {
+        "class": "cl.casol.backend.conocimiento.infrastructure.persistence.adapter.BusquedaAutoservicioTest",
+        "tests": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "xml": "dima-bug-backend/target/surefire-reports/TEST-cl.casol.backend.conocimiento.infrastructure.persistence.adapter.BusquedaAutoservicioTest.xml",
+        "sha256": "8a8c1b88bdd5a93584d9271ebc65dc571236228235f65adb0733c213a368e4d4"
+      },
+      {
+        "class": "cl.casol.backend.whatsapp.BusquedaPublicaCanalTest",
+        "tests": 7,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "xml": "dima-bug-backend/target/surefire-reports/TEST-cl.casol.backend.whatsapp.BusquedaPublicaCanalTest.xml",
+        "sha256": "65116be731859c32767f2ae7112eaeaba79cfbd1e2e895def00dd61c1c2b7a19"
+      },
+      {
+        "class": "cl.casol.backend.whatsapp.OcrNodeProcesoTest",
+        "tests": 5,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "xml": "dima-bug-backend/target/surefire-reports/TEST-cl.casol.backend.whatsapp.OcrNodeProcesoTest.xml",
+        "sha256": "b239f8cc9d4ae54493caaf3a0e995c26154761cfefd9bc611df4c7c1968bf36f"
+      },
+      {
+        "class": "cl.casol.backend.whatsapp.WebhookSimuladoTest",
+        "tests": 28,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "xml": "dima-bug-backend/target/surefire-reports/TEST-cl.casol.backend.whatsapp.WebhookSimuladoTest.xml",
+        "sha256": "9c54aadcc1f6f7d387094c8485f6a80a8ccec64c1a2995efd17d356989cafea3"
+      },
+      {
+        "class": "cl.casol.backend.whatsapp.WhatsAppArquitecturaTest",
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "xml": "dima-bug-backend/target/surefire-reports/TEST-cl.casol.backend.whatsapp.WhatsAppArquitecturaTest.xml",
+        "sha256": "856cd90a164e9ab49c02e26d4ba57403b33246a72cfe62af5475b003a6e4a8e6"
+      }
+    ]
+  },
+  "node_regression": {
+    "command": "./frontend-dimabug/tools/ocr-node/run.ps1 -Mode Test",
+    "tests": 31,
+    "passed": 31,
+    "failed": 0,
+    "skipped": 0,
+    "evidence": "Salida TAP de ejecución en esta sesión; comando reproducible, no se guardó un log nuevo de Node."
+  },
+  "maven_log": {
+    "path": "qa/runtime/whatsapp-simulado/maven-test.log",
+    "sha256": "b40fec974667ddd75a00a4cae29e724345f90fd36dbf90a2d7775a4575305b31"
+  },
+  "created_files": [
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/whatsapp/application/port/out/BuscarSolucionesCanalPort.java",
+      "sha256": "ac3ec85b667ad00a05e3df557eb3101a54a12f452e08b55614f7cfd20a22528b"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/whatsapp/application/port/out/ReconocerImagenPort.java",
+      "sha256": "9568f812126f7dfedc72851e29da993a5e025c7a3344b987b6606808e6fb95be"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/whatsapp/application/service/ProcesarMensajeService.java",
+      "sha256": "f7d9751f4ee5caad43c9cd9dabea7d40783d1ac78d56b66c66607b3bec300882"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/whatsapp/domain/MensajeCanal.java",
+      "sha256": "95e504067a5f4ca0bb49e6bc594fce3f803749183570300283e796dfadf14c82"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/whatsapp/domain/RespuestaCanal.java",
+      "sha256": "686821eecebd30162e5b75e2e735cbd18ec26327d53f7bbc1f0bced772b14b26"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/whatsapp/infrastructure/busqueda/BusquedaPublicaCanalAdapter.java",
+      "sha256": "440736125dcfc4a5e4969fcce0df98c3816784b1e2b3dda88e4331488ba42ed9"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/whatsapp/infrastructure/ocr/OcrNodeProcesoAdapter.java",
+      "sha256": "28c880c4acb88c733a851956db1153b57b6a19eda3e3d12ff2999d83ee6bb289"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/whatsapp/infrastructure/simulado/SalidaSimuladaAdapter.java",
+      "sha256": "84b9a5d28a46357729000b044a0d411a0bd1e2361a7d49c78741028cf3fd1daa"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/whatsapp/infrastructure/simulado/WebhookSimuladoAdapter.java",
+      "sha256": "65f1c45c7ff7f24bd4177f1bd11e5338553ed1c9e66abdb205546b9d65d7e7b4"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/whatsapp/infrastructure/simulado/WhatsAppQaConfig.java",
+      "sha256": "7bf0ef4e6a1504e9d559e2de2b942e8e029fee21673f49ac4724940469aca017"
+    },
+    {
+      "path": "dima-bug-backend/src/test/java/cl/casol/backend/whatsapp/BusquedaPublicaCanalTest.java",
+      "sha256": "923ba43300fb62649f362018bbdffc2d1b59e036cc4dbcb03c3c40e108820f38"
+    },
+    {
+      "path": "dima-bug-backend/src/test/java/cl/casol/backend/whatsapp/OcrNodeProcesoTest.java",
+      "sha256": "ed22871a0cd4abea48d0ef59b62ee8f241ef3f6ed4344d33499d0322a35ee0f1"
+    },
+    {
+      "path": "dima-bug-backend/src/test/java/cl/casol/backend/whatsapp/WebhookSimuladoTest.java",
+      "sha256": "8ebefcde994c57e8dad7ee289e34a92dcdc444ae9f7c4f645d2217811016c375"
+    },
+    {
+      "path": "dima-bug-backend/src/test/java/cl/casol/backend/whatsapp/WhatsAppArquitecturaTest.java",
+      "sha256": "c26292d2fa6d0e2f2ad10f90da5c632fb6ebc1d946f7da0c5235536f97dbb2b7"
+    },
+    {
+      "path": "qa/whatsapp/fixtures/imagen.json",
+      "sha256": "b276472f42ebf375f633a2f25a842bb9549251c2ab9487d2c03b83ce5cd386c3"
+    },
+    {
+      "path": "qa/whatsapp/fixtures/incompleto.json",
+      "sha256": "d32e319c85a8d453e2678f9c23f8deb9381418521d6429f3436ee70ff38b68cd"
+    },
+    {
+      "path": "qa/whatsapp/fixtures/no-compatible.json",
+      "sha256": "c5d355a42e97980e461f2952c6fbcfd33ecd79da892b7fcda3c41c0f135db36d"
+    },
+    {
+      "path": "qa/whatsapp/fixtures/texto.json",
+      "sha256": "80a85e9f6491b1e1cc7c0f49878c29f63681358acaebfcdf12686fe952bad579"
+    },
+    {
+      "path": "qa/whatsapp/ocr-bridge.cjs",
+      "sha256": "e162eb35e46c0373de44166d85ae549742f3524d08db9330aafc28df671a70ab"
+    },
+    {
+      "path": "qa/whatsapp/Run-Pruebas.ps1",
+      "sha256": "374760ec2297f12b882f4c749f43c3f1461ef894e6a7d0449f6efaf360df5a94"
+    },
+    {
+      "path": "docs/implementacion/WhatsApp_simulado_etapa1.md",
+      "sha256": "04c38eaa9b6e499ccc84ab6b2b0f18e7929a686eb5f57936a17907d2046ac287"
+    }
+  ],
+  "reused_ocr_sources_match_stage1_evidence": true,
+  "existing_source_files_modified": [],
+  "new_dependencies": [],
+  "restrictions": {
+    "meta_connected": false,
+    "real_messages": false,
+    "mysql_modified": false,
+    "angular_modified": false,
+    "auth_modified": false,
+    "http_endpoints_added": false,
+    "deployment": false,
+    "commits": false
+  },
+  "limitations": [
+    "QA fixtures only",
+    "In-memory state, 15 minute logical expiry with lazy cleanup",
+    "Dedupe limited to one instance and one hour; lost on restart",
+    "No OS memory/CPU quota or load testing",
+    "Windows only; real provider integration remains unauthorized"
+  ]
+}

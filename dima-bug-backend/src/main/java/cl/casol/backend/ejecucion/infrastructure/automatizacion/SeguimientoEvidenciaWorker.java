@@ -3,6 +3,7 @@ import cl.casol.backend.ejecucion.application.service.AutomatizarEvidenciaServic
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 @Component
+@org.springframework.boot.autoconfigure.condition.ConditionalOnProperty(name="dimabug.automatizacion.seguimiento-habilitado",havingValue="true",matchIfMissing=true)
 public class SeguimientoEvidenciaWorker {
     private final AutomatizarEvidenciaService service;
     private static final org.slf4j.Logger LOG=org.slf4j.LoggerFactory.getLogger(SeguimientoEvidenciaWorker.class);

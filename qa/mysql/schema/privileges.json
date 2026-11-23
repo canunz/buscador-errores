@@ -1,0 +1,231 @@
+{
+  "status": "PROPOSED_NOT_EXECUTED",
+  "admin": {
+    "user": "dimabug_qa_schema",
+    "host": "localhost",
+    "per_table": [
+      "SELECT",
+      "INSERT",
+      "UPDATE",
+      "DELETE",
+      "CREATE",
+      "ALTER",
+      "INDEX",
+      "REFERENCES"
+    ]
+  },
+  "app": {
+    "user": "dimabug_qa_app",
+    "host": "EXACT_PROXY_INTERNAL_IPV4_REVALIDATED",
+    "per_table": {
+      "cl_frecuencia": [
+        "SELECT",
+        "INSERT",
+        "UPDATE"
+      ],
+      "cl_hardware": [
+        "SELECT",
+        "INSERT",
+        "UPDATE"
+      ],
+      "cl_hardware_sistema": [
+        "SELECT",
+        "INSERT",
+        "DELETE"
+      ],
+      "cl_modulo": [
+        "SELECT",
+        "INSERT",
+        "UPDATE"
+      ],
+      "cl_sistema": [
+        "SELECT",
+        "INSERT",
+        "UPDATE"
+      ],
+      "co_causa": [
+        "SELECT",
+        "INSERT",
+        "UPDATE"
+      ],
+      "co_conocimiento": [
+        "SELECT",
+        "INSERT",
+        "UPDATE"
+      ],
+      "co_conocimiento_busqueda": [
+        "SELECT",
+        "INSERT",
+        "UPDATE",
+        "DELETE"
+      ],
+      "co_conocimiento_prueba": [
+        "SELECT",
+        "INSERT",
+        "UPDATE"
+      ],
+      "co_material_apoyo": [
+        "SELECT",
+        "INSERT",
+        "UPDATE",
+        "DELETE"
+      ],
+      "co_material_solucion": [
+        "SELECT",
+        "INSERT",
+        "UPDATE",
+        "DELETE"
+      ],
+      "co_prueba": [
+        "SELECT",
+        "INSERT",
+        "UPDATE"
+      ],
+      "co_sintoma": [
+        "SELECT",
+        "INSERT",
+        "UPDATE"
+      ],
+      "co_solucion": [
+        "SELECT",
+        "INSERT",
+        "UPDATE"
+      ],
+      "co_solucion_asignacion": [
+        "SELECT",
+        "INSERT",
+        "UPDATE"
+      ],
+      "gm_auditoria_oauth": [
+        "SELECT"
+      ],
+      "gm_cuenta_oauth": [
+        "SELECT"
+      ],
+      "gm_estado_oauth": [
+        "SELECT"
+      ],
+      "gm_prueba_correo": [
+        "SELECT"
+      ],
+      "gm_prueba_evento": [
+        "SELECT"
+      ],
+      "pr_auditoria_procedimiento": [
+        "SELECT",
+        "INSERT"
+      ],
+      "pr_paso": [
+        "SELECT",
+        "INSERT",
+        "UPDATE",
+        "DELETE"
+      ],
+      "pr_procedimiento": [
+        "SELECT",
+        "INSERT",
+        "UPDATE"
+      ],
+      "se_ejecucion": [
+        "SELECT",
+        "INSERT",
+        "UPDATE"
+      ],
+      "se_ejecucion_paso": [
+        "SELECT",
+        "INSERT",
+        "UPDATE"
+      ],
+      "se_evento_ejecucion": [
+        "SELECT",
+        "INSERT"
+      ],
+      "se_evidencia": [
+        "SELECT",
+        "INSERT"
+      ],
+      "se_resultado": [
+        "SELECT",
+        "INSERT"
+      ],
+      "se_solicitud_evidencia": [
+        "SELECT",
+        "INSERT",
+        "UPDATE"
+      ],
+      "ticket": [
+        "SELECT",
+        "INSERT",
+        "UPDATE"
+      ],
+      "ticket_adjunto": [
+        "SELECT",
+        "INSERT",
+        "UPDATE"
+      ],
+      "ticket_comentario": [
+        "SELECT",
+        "INSERT"
+      ],
+      "ticket_etiqueta": [
+        "SELECT",
+        "INSERT",
+        "UPDATE"
+      ],
+      "ticket_historial_estado": [
+        "SELECT",
+        "INSERT"
+      ],
+      "ticket_ticket_etiqueta": [
+        "SELECT",
+        "INSERT",
+        "DELETE"
+      ],
+      "u_codigo_acceso": [
+        "SELECT",
+        "INSERT",
+        "UPDATE"
+      ],
+      "u_correo_codigo": [
+        "SELECT",
+        "INSERT",
+        "UPDATE"
+      ],
+      "u_departamento": [
+        "SELECT",
+        "INSERT",
+        "UPDATE"
+      ],
+      "u_departamento_contacto": [
+        "SELECT",
+        "INSERT",
+        "UPDATE"
+      ],
+      "u_organizacion_control": [
+        "SELECT"
+      ],
+      "u_responsable": [
+        "SELECT",
+        "INSERT",
+        "UPDATE"
+      ],
+      "u_rol": [
+        "SELECT"
+      ],
+      "u_sucursal": [
+        "SELECT",
+        "INSERT",
+        "UPDATE"
+      ],
+      "u_usuario": [
+        "SELECT",
+        "INSERT",
+        "UPDATE"
+      ]
+    }
+  },
+  "gmail_write_grants_included": false,
+  "global_privileges": [],
+  "grant_option": false,
+  "drop_included": false
+}

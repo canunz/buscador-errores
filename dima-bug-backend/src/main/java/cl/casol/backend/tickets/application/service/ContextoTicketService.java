@@ -57,7 +57,7 @@ public class ContextoTicketService {
         UsuarioTicket usuario = usuarios.buscarPorEmail(emailAutenticado)
                 .filter(UsuarioTicket::activo)
                 .orElseThrow(() -> new AccesoTicketDenegadoException("Tu usuario no está activo"));
-        return new ActorTicket(usuario.id(), usuario.nombre(), usuario.rol());
+        return new ActorTicket(usuario.id(), usuario.nombre(), usuario.rol(), usuario.accesoBasico());
     }
 
     /** Autoriza ver el ticket con una sola columna, sin comentarios ni historial. */
@@ -113,6 +113,10 @@ public class ContextoTicketService {
 
 
     public TicketVista detalle(Ticket ticket, ActorTicket actor) {
+        if (actor.accesoBasico()) return new TicketVista(ticket,List.of(),Map.of(),
+            ClasificacionTicket.VACIA,null,List.of(),ticket.getId()==null ? List.of() : adjuntos.listarPorTicket(ticket.getId()).stream()
+                .filter(a -> a.comentarioId()==null && Objects.equals(a.autorId(),actor.id()) && a.mime().matches("image/(jpeg|png|webp)"))
+                .toList()).paraBasico();
         List<ComentarioTicket> comentarios = ticket.comentariosVisiblesPara(actor);
         List<AdjuntoTicket> archivos = ticket.getId() == null ? List.of()
                 : adjuntos.listarPorTicket(ticket.getId()).stream().filter(a -> a.visiblePara(actor, ticket)).toList();

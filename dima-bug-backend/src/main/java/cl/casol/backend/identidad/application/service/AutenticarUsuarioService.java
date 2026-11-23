@@ -7,12 +7,7 @@ import cl.casol.backend.identidad.application.port.out.UsuarioRepository;
 import cl.casol.backend.identidad.domain.CodigoAcceso;
 import cl.casol.backend.identidad.domain.Usuario;
 import cl.casol.backend.identidad.domain.exception.CodigoAccesoInvalidoException;
-import cl.casol.backend.identidad.domain.exception.CorreoNoRegistradoException;
 import cl.casol.backend.identidad.domain.exception.CredencialesInvalidasException;
-import cl.casol.backend.identidad.domain.exception.ReenvioCodigoAnticipadoException;
-import cl.casol.backend.identidad.domain.exception.UsuarioInactivoException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -25,14 +20,13 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 
 /**
- * Ingreso: Administrador y Soporte con contraseña; el resto con código de 6 dígitos al correo.
+ * Ingreso con código de un solo uso para todas las cuentas activas autorizadas.
  */
 @Service
 public class AutenticarUsuarioService {
 
     public static final int MAX_INTENTOS = 5;
 
-    private static final Logger log = LoggerFactory.getLogger(AutenticarUsuarioService.class);
 
     private final UsuarioRepository usuarioRepository;
     private final CodigoAccesoRepository codigoRepository;
@@ -41,6 +35,12 @@ public class AutenticarUsuarioService {
     private final Clock clock;
     private final int minutosVigencia;
     private final int segundosReenvio;
+    @Value("${dimabug.auth.codigo.maximo-15-minutos:5}")
+    private int maximoQuinceMinutos = 5;
+    @Value("${dimabug.auth.codigo.maximo-dia:20}")
+    private int maximoDia = 20;
+    @Autowired(required=false)
+    private cl.casol.backend.identidad.application.port.out.RegistroUniversalPort registroUniversal;
     private final SecureRandom random = new SecureRandom();
 
     @Autowired
@@ -50,7 +50,7 @@ public class AutenticarUsuarioService {
             EnvioCodigoAccesoPort envioCodigo,
             PasswordEncoderPort encoder,
             @Value("${dimabug.auth.codigo.minutos-vigencia:5}") int minutosVigencia,
-            @Value("${dimabug.auth.codigo.segundos-reenvio:4}") int segundosReenvio
+            @Value("${dimabug.auth.codigo.segundos-reenvio:60}") int segundosReenvio
     ) {
         this(usuarioRepository, codigoRepository, envioCodigo, encoder, Clock.systemDefaultZone(),
                 minutosVigencia, segundosReenvio);
@@ -74,158 +74,78 @@ public class AutenticarUsuarioService {
         this.segundosReenvio = Math.max(0, segundosReenvio);
     }
 
-    /**
-     * Valida que el correo pertenezca a un usuario activo y le envía un código nuevo.
-     * Si el correo no está registrado o la cuenta está inactiva, no se envía nada.
-     */
-    @Transactional
+    /** Respuesta pública uniforme; solo las cuentas activas y con rol activo reciben correo. */
+    @Transactional(isolation=org.springframework.transaction.annotation.Isolation.READ_COMMITTED)
     public SolicitudCodigo solicitarCodigo(String correo) {
-        Optional<Usuario> encontrado = buscar(correo);
-        if (encontrado.isEmpty()) {
-            log.info("Código de acceso rechazado: el correo '{}' no está registrado", correo);
-            throw new CorreoNoRegistradoException();
-        }
+        String codigo = String.format(java.util.Locale.ROOT, "%06d", random.nextInt(1_000_000));
+        String hash = encoder.codificar(codigo); // Mismo trabajo costoso para cuentas desconocidas.
+        SolicitudCodigo respuesta = new SolicitudCodigo(minutosVigencia * 60, segundosReenvio);
+        Optional<Usuario> encontrado = (registroUniversal == null ? buscar(correo)
+            : registroUniversal.resolver(correo, true, encoder.codificar(java.util.UUID.randomUUID().toString())))
+            .filter(Usuario::puedeRecibirCodigo);
+        if (encontrado.isEmpty()) return respuesta;
         Usuario usuario = encontrado.get();
-        if (!usuario.isActivo()) {
-            log.info("Código de acceso rechazado: la cuenta '{}' está inactiva", usuario.getEmail());
-            throw new UsuarioInactivoException();
-        }
-        if (ingresaConPassword(usuario)) {
-            return SolicitudCodigo.password();
-        }
-        return emitirCodigo(usuario, false);
+        codigoRepository.bloquearUsuario(usuario.getId());
+        LocalDateTime ahora = LocalDateTime.now(clock);
+        boolean reciente = codigoRepository.buscarUltimo(usuario.getId())
+                .map(c -> Duration.between(c.creadoEn(), ahora).getSeconds() < segundosReenvio).orElse(false);
+        if (reciente || codigoRepository.contarDesde(usuario.getId(), ahora.minusMinutes(15)) >= maximoQuinceMinutos
+                || codigoRepository.contarDesde(usuario.getId(), ahora.minusDays(1)) >= maximoDia) return respuesta;
+        codigoRepository.invalidarPendientes(usuario.getId());
+        CodigoAcceso registro = codigoRepository.guardar(new CodigoAcceso(null, usuario.getId(), hash,
+                ahora, ahora.plusMinutes(minutosVigencia), 0, false));
+        envioCodigo.encolar(registro, usuario.getEmail(), usuario.getNombre(), codigo, minutosVigencia);
+        return respuesta;
     }
 
-    /** Código al correo para definir una contraseña nueva. */
+    private boolean autorizado(Usuario u) {
+        return u.puedeRecibirCodigo();
+    }
+
+    /** Compatibilidad binaria durante la transición; ya no modifica contraseñas. */
+    @Deprecated
     @Transactional
-    public SolicitudCodigo solicitarRecuperacion(String correo) {
-        Usuario usuario = exigirCuentaActiva(correo);
-        return emitirCodigo(usuario, true);
-    }
-
-    /** Comprueba el código de recuperación sin consumirlo. */
-    @Transactional(noRollbackFor = CodigoAccesoInvalidoException.class)
-    public void validarRecuperacion(String identificador, String codigoIngresado) {
-        Usuario usuario = exigirCuentaActiva(identificador);
-        coincidirCodigoPendiente(usuario, codigoIngresado, false);
-    }
-
-    /** Consume el código y guarda la contraseña nueva. */
-    @Transactional(noRollbackFor = CodigoAccesoInvalidoException.class)
-    public void completarRecuperacion(String identificador, String codigoIngresado, String passwordNueva) {
-        if (passwordNueva == null || passwordNueva.trim().length() < 6) {
-            throw new IllegalArgumentException("La contraseña debe tener al menos 6 caracteres");
-        }
-        Usuario usuario = exigirCuentaActiva(identificador);
-        coincidirCodigoPendiente(usuario, codigoIngresado, true);
-        Usuario actualizado = new Usuario(
-                usuario.getId(), usuario.getRol(), usuario.getNombre(), usuario.getEmail(),
-                encoder.codificar(passwordNueva.trim()), usuario.isActivo(),
-                usuario.getFechaCreacion(), LocalDateTime.now(clock)
-        );
-        usuarioRepository.guardar(actualizado);
-        log.info("Contraseña restablecida para '{}'", usuario.getEmail());
-    }
+    public SolicitudCodigo solicitarRecuperacion(String correo) { return solicitarCodigo(correo); }
+    @Deprecated
+    public void validarRecuperacion(String correo, String codigo) { throw new CredencialesInvalidasException(); }
+    @Deprecated
+    public void completarRecuperacion(String correo, String codigo, String password) { throw new CredencialesInvalidasException(); }
 
     /** Valida el código ingresado y, si es correcto, lo consume y devuelve el usuario autenticado. */
-    @Transactional(noRollbackFor = CodigoAccesoInvalidoException.class)
+    @Transactional(isolation=org.springframework.transaction.annotation.Isolation.READ_COMMITTED, noRollbackFor = CodigoAccesoInvalidoException.class)
     public Usuario verificarCodigo(String identificador, String codigoIngresado) {
-        Usuario usuario = buscar(identificador).orElseThrow(CodigoAccesoInvalidoException::new);
-        if (!usuario.isActivo()) {
-            throw new UsuarioInactivoException();
-        }
-        if (ingresaConPassword(usuario)) {
-            throw new CredencialesInvalidasException();
-        }
-
+        Usuario usuario = (registroUniversal == null ? buscar(identificador)
+            : registroUniversal.resolver(identificador, false, null)).orElseThrow(CodigoAccesoInvalidoException::new);
+        if (!autorizado(usuario)) throw new CodigoAccesoInvalidoException();
+        codigoRepository.bloquearUsuario(usuario.getId());
         coincidirCodigoPendiente(usuario, codigoIngresado, true);
+        if (usuario.getEstadoRegistro() == cl.casol.backend.identidad.domain.EstadoRegistro.AUTO_PENDIENTE)
+            usuario = usuarioRepository.guardar(usuario.confirmarRegistro());
         usuarioRepository.registrarIngreso(usuario.getId(), LocalDateTime.now(clock));
         return usuario;
     }
 
-    /** Administrador y Soporte ingresan con contraseña. */
-    @Transactional
-    public Usuario autenticar(String identificador, String password) {
-        Usuario usuario = buscar(identificador).orElseThrow(CredencialesInvalidasException::new);
-        if (!usuario.isActivo()) {
-            throw new UsuarioInactivoException();
-        }
-        if (!ingresaConPassword(usuario) || !encoder.coincide(password, usuario.getPasswordHash())) {
-            throw new CredencialesInvalidasException();
-        }
-        usuarioRepository.registrarIngreso(usuario.getId(), LocalDateTime.now(clock));
-        return usuario;
-    }
-
-    static boolean ingresaConPassword(Usuario usuario) {
-        if (usuario == null || usuario.getRol() == null || usuario.getRol().getNombre() == null) {
-            return false;
-        }
-        String rol = usuario.getRol().getNombre().trim().toUpperCase();
-        return "ADMINISTRADOR".equals(rol)
-                || "SOPORTE".equals(rol)
-                || "SOPORTE TI".equals(rol)
-                || "TECNICO".equals(rol)
-                || "TÉCNICO".equals(rol)
-                || "TI".equals(rol);
-    }
-
-    private SolicitudCodigo emitirCodigo(Usuario usuario, boolean recuperacion) {
-        LocalDateTime ahora = LocalDateTime.now(clock);
-        codigoRepository.buscarUltimo(usuario.getId()).ifPresent(ultimo -> {
-            long transcurridos = Duration.between(ultimo.creadoEn(), ahora).getSeconds();
-            if (transcurridos < segundosReenvio) {
-                throw new ReenvioCodigoAnticipadoException(segundosReenvio - transcurridos);
-            }
-        });
-
-        String codigo = String.format("%06d", random.nextInt(1_000_000));
-        codigoRepository.invalidarPendientes(usuario.getId());
-        codigoRepository.guardar(new CodigoAcceso(
-                null, usuario.getId(), encoder.codificar(codigo), ahora,
-                ahora.plusMinutes(minutosVigencia), 0, false));
-
-        log.info("Código {} generado para el usuario registrado '{}'", recuperacion ? "de recuperación" : "de acceso", usuario.getEmail());
-        if (recuperacion) {
-            envioCodigo.enviarRecuperacion(usuario.getEmail(), usuario.getNombre(), codigo, minutosVigencia);
-        } else {
-            envioCodigo.enviar(usuario.getEmail(), usuario.getNombre(), codigo, minutosVigencia);
-        }
-        return new SolicitudCodigo(minutosVigencia * 60, segundosReenvio);
-    }
-
-    private Usuario exigirCuentaActiva(String correo) {
-        Usuario usuario = buscar(correo).orElseThrow(CorreoNoRegistradoException::new);
-        if (!usuario.isActivo()) {
-            throw new UsuarioInactivoException();
-        }
-        return usuario;
-    }
+    /** El login público por contraseña está retirado; no se borran hashes existentes. */
+    @Deprecated
+    public Usuario autenticar(String identificador, String password) { throw new CredencialesInvalidasException(); }
 
     private CodigoAcceso coincidirCodigoPendiente(Usuario usuario, String codigoIngresado, boolean consumir) {
         LocalDateTime ahora = LocalDateTime.now(clock);
         CodigoAcceso pendiente = codigoRepository.buscarPendiente(usuario.getId())
                 .filter(c -> c.disponible(ahora, MAX_INTENTOS))
                 .orElseThrow(CodigoAccesoInvalidoException::new);
-
         String codigo = codigoIngresado == null ? "" : codigoIngresado.replaceAll("\\s", "");
         if (!codigo.matches("\\d{6}") || !encoder.coincide(codigo, pendiente.codigoHash())) {
             codigoRepository.guardar(pendiente.conIntentoFallido());
             throw new CodigoAccesoInvalidoException();
         }
-        if (consumir) {
-            pendiente = pendiente.marcarUsado();
-            codigoRepository.guardar(pendiente);
-        }
+        if (consumir) codigoRepository.guardar(pendiente.marcarUsado());
         return pendiente;
     }
 
-    /** Solo se ingresa con el correo completo (no con el nombre de usuario). */
     private Optional<Usuario> buscar(String correo) {
-        String valor = correo == null ? "" : correo.trim();
-        if (!valor.contains("@")) {
-            return Optional.empty();
-        }
+        String valor = correo == null ? "" : correo.trim().toLowerCase(java.util.Locale.ROOT);
+        if (!valor.contains("@")) return Optional.empty();
         return usuarioRepository.buscarPorEmail(valor)
                 .filter(u -> u.getEmail() != null && u.getEmail().trim().equalsIgnoreCase(valor));
     }

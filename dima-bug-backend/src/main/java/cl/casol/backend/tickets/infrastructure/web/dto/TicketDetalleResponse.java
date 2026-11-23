@@ -16,7 +16,8 @@ public record TicketDetalleResponse(Long id, String codigo, String titulo, Strin
         ConocimientoVinculadoResponse conocimiento, String solucion,
         LocalDateTime fechaCreacion, LocalDateTime fechaActualizacion, LocalDateTime fechaResolucion,
         LocalDateTime fechaCierre, List<EtiquetaResponse> etiquetas, List<ComentarioResponse> comentarios,
-        List<HistorialResponse> historial, List<AdjuntoResponse> adjuntos) {
+        List<HistorialResponse> historial, List<AdjuntoResponse> adjuntos,
+        cl.casol.backend.tickets.domain.DatosSolicitante datosSolicitante) {
 
     public static TicketDetalleResponse from(TicketVista vista) {
         Ticket t = vista.ticket();
@@ -40,7 +41,7 @@ public record TicketDetalleResponse(Long id, String codigo, String titulo, Strin
                         h.fecha())).toList(),
                 vista.adjuntos().stream().map(a -> new AdjuntoResponse(a.id(), a.nombre(), a.mime(),
                         a.tipo().name(), a.tamano(), a.comentarioId(),
-                        ReferenciaResponse.usuario(a.autorId(), vista.usuario(a.autorId())), a.fecha())).toList());
+                        ReferenciaResponse.usuario(a.autorId(), vista.usuario(a.autorId())), a.fecha())).toList(), t.getDatosSolicitante());
     }
 
     public record AdjuntoResponse(Long id, String nombre, String mime, String tipo, long tamano, Long comentarioId,

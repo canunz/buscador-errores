@@ -1,0 +1,188 @@
+{
+  "status": "CAPTURED",
+  "captures": [
+    {
+      "number": 1,
+      "elapsed_seconds": 2.0,
+      "threads": [
+        {
+          "main": true,
+          "state": "WAITING",
+          "frames": [
+            "java.lang.Object.wait0(java.base@21.0.13.1/Native Method)",
+            "java.lang.Object.wait(java.base@21.0.13.1/Object.java:366)",
+            "java.lang.Object.wait(java.base@21.0.13.1/Object.java:339)",
+            "Hold.main(Hold.java:6)"
+          ]
+        },
+        {
+          "main": false,
+          "state": "RUNNABLE",
+          "frames": [
+            "java.lang.ref.Reference.waitForReferencePendingList(java.base@21.0.13.1/Native Method)",
+            "java.lang.ref.Reference.processPendingReferences(java.base@21.0.13.1/Reference.java:246)",
+            "java.lang.ref.Reference$ReferenceHandler.run(java.base@21.0.13.1/Reference.java:208)"
+          ]
+        },
+        {
+          "main": false,
+          "state": "WAITING",
+          "frames": [
+            "java.lang.Object.wait0(java.base@21.0.13.1/Native Method)",
+            "java.lang.Object.wait(java.base@21.0.13.1/Object.java:366)",
+            "java.lang.Object.wait(java.base@21.0.13.1/Object.java:339)",
+            "java.lang.ref.NativeReferenceQueue.await(java.base@21.0.13.1/NativeReferenceQueue.java:48)",
+            "java.lang.ref.ReferenceQueue.remove0(java.base@21.0.13.1/ReferenceQueue.java:158)",
+            "java.lang.ref.NativeReferenceQueue.remove(java.base@21.0.13.1/NativeReferenceQueue.java:89)",
+            "java.lang.ref.Finalizer$FinalizerThread.run(java.base@21.0.13.1/Finalizer.java:173)"
+          ]
+        },
+        {
+          "main": false,
+          "state": "RUNNABLE",
+          "frames": []
+        },
+        {
+          "main": false,
+          "state": "RUNNABLE",
+          "frames": []
+        },
+        {
+          "main": false,
+          "state": "RUNNABLE",
+          "frames": []
+        },
+        {
+          "main": false,
+          "state": "RUNNABLE",
+          "frames": []
+        },
+        {
+          "main": false,
+          "state": "RUNNABLE",
+          "frames": []
+        },
+        {
+          "main": false,
+          "state": "RUNNABLE",
+          "frames": []
+        },
+        {
+          "main": false,
+          "state": "TIMED_WAITING",
+          "frames": [
+            "jdk.internal.misc.Unsafe.park(java.base@21.0.13.1/Native Method)",
+            "java.util.concurrent.locks.LockSupport.parkNanos(java.base@21.0.13.1/LockSupport.java:269)",
+            "java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(java.base@21.0.13.1/AbstractQueuedSynchronizer.java:1886)",
+            "java.lang.ref.ReferenceQueue.await(java.base@21.0.13.1/ReferenceQueue.java:71)",
+            "java.lang.ref.ReferenceQueue.remove0(java.base@21.0.13.1/ReferenceQueue.java:143)",
+            "java.lang.ref.ReferenceQueue.remove(java.base@21.0.13.1/ReferenceQueue.java:218)",
+            "jdk.internal.ref.CleanerImpl.run(java.base@21.0.13.1/CleanerImpl.java:140)",
+            "java.lang.Thread.runWith(java.base@21.0.13.1/Thread.java:1596)",
+            "java.lang.Thread.run(java.base@21.0.13.1/Thread.java:1583)",
+            "jdk.internal.misc.InnocuousThread.run(java.base@21.0.13.1/InnocuousThread.java:186)"
+          ]
+        },
+        {
+          "main": false,
+          "state": "RUNNABLE",
+          "frames": []
+        }
+      ]
+    },
+    {
+      "number": 2,
+      "elapsed_seconds": 17.01,
+      "threads": [
+        {
+          "main": true,
+          "state": "WAITING",
+          "frames": [
+            "java.lang.Object.wait0(java.base@21.0.13.1/Native Method)",
+            "java.lang.Object.wait(java.base@21.0.13.1/Object.java:366)",
+            "java.lang.Object.wait(java.base@21.0.13.1/Object.java:339)",
+            "Hold.main(Hold.java:6)"
+          ]
+        },
+        {
+          "main": false,
+          "state": "RUNNABLE",
+          "frames": [
+            "java.lang.ref.Reference.waitForReferencePendingList(java.base@21.0.13.1/Native Method)",
+            "java.lang.ref.Reference.processPendingReferences(java.base@21.0.13.1/Reference.java:246)",
+            "java.lang.ref.Reference$ReferenceHandler.run(java.base@21.0.13.1/Reference.java:208)"
+          ]
+        },
+        {
+          "main": false,
+          "state": "WAITING",
+          "frames": [
+            "java.lang.Object.wait0(java.base@21.0.13.1/Native Method)",
+            "java.lang.Object.wait(java.base@21.0.13.1/Object.java:366)",
+            "java.lang.Object.wait(java.base@21.0.13.1/Object.java:339)",
+            "java.lang.ref.NativeReferenceQueue.await(java.base@21.0.13.1/NativeReferenceQueue.java:48)",
+            "java.lang.ref.ReferenceQueue.remove0(java.base@21.0.13.1/ReferenceQueue.java:158)",
+            "java.lang.ref.NativeReferenceQueue.remove(java.base@21.0.13.1/NativeReferenceQueue.java:89)",
+            "java.lang.ref.Finalizer$FinalizerThread.run(java.base@21.0.13.1/Finalizer.java:173)"
+          ]
+        },
+        {
+          "main": false,
+          "state": "RUNNABLE",
+          "frames": []
+        },
+        {
+          "main": false,
+          "state": "RUNNABLE",
+          "frames": []
+        },
+        {
+          "main": false,
+          "state": "RUNNABLE",
+          "frames": []
+        },
+        {
+          "main": false,
+          "state": "RUNNABLE",
+          "frames": []
+        },
+        {
+          "main": false,
+          "state": "RUNNABLE",
+          "frames": []
+        },
+        {
+          "main": false,
+          "state": "RUNNABLE",
+          "frames": []
+        },
+        {
+          "main": false,
+          "state": "TIMED_WAITING",
+          "frames": [
+            "jdk.internal.misc.Unsafe.park(java.base@21.0.13.1/Native Method)",
+            "java.util.concurrent.locks.LockSupport.parkNanos(java.base@21.0.13.1/LockSupport.java:269)",
+            "java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(java.base@21.0.13.1/AbstractQueuedSynchronizer.java:1886)",
+            "java.lang.ref.ReferenceQueue.await(java.base@21.0.13.1/ReferenceQueue.java:71)",
+            "java.lang.ref.ReferenceQueue.remove0(java.base@21.0.13.1/ReferenceQueue.java:143)",
+            "java.lang.ref.ReferenceQueue.remove(java.base@21.0.13.1/ReferenceQueue.java:218)",
+            "jdk.internal.ref.CleanerImpl.run(java.base@21.0.13.1/CleanerImpl.java:140)",
+            "java.lang.Thread.runWith(java.base@21.0.13.1/Thread.java:1596)",
+            "java.lang.Thread.run(java.base@21.0.13.1/Thread.java:1583)",
+            "jdk.internal.misc.InnocuousThread.run(java.base@21.0.13.1/InnocuousThread.java:186)"
+          ]
+        },
+        {
+          "main": false,
+          "state": "RUNNABLE",
+          "frames": []
+        }
+      ]
+    }
+  ],
+  "events_sent": 0,
+  "available_min_mib": 14877.046875,
+  "qa_account_locked": true,
+  "qa_stopped": true,
+  "existing_services_unchanged": true
+}

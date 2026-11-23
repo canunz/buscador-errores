@@ -1,0 +1,9 @@
+test_nonroot_exits_before_any_command (__main__.ReadOnlyProbeChecks.test_nonroot_exits_before_any_command) ... ok
+test_status_output_uses_explicit_allowlist (__main__.ReadOnlyProbeChecks.test_status_output_uses_explicit_allowlist) ... ok
+test_stopped_process_never_reads_proc_or_claims_a_cause (__main__.ReadOnlyProbeChecks.test_stopped_process_never_reads_proc_or_claims_a_cause) ... ok
+test_unit_lookup_is_only_systemctl_show (__main__.ReadOnlyProbeChecks.test_unit_lookup_is_only_systemctl_show) ... ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.010s
+
+OK

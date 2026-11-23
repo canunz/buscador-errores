@@ -8,10 +8,10 @@ import jakarta.mail.internet.MimeMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
-import org.springframework.beans.factory.ObjectProvider;
+import cl.casol.backend.correo.application.port.out.CorreoTransportePort;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.mail.javamail.JavaMailSender;
+
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.support.TransactionSynchronization;
@@ -37,9 +37,9 @@ public class AvisoTicketCriticoCorreoAdapter implements AvisoTicketCriticoPort, 
     private static final String BANNER = "correo/banner-codigo-acceso.jpg";
     private static final String BANNER_CID = "bannerDimaBug";
 
-    private final ObjectProvider<JavaMailSender> mailSender;
+    private final CorreoTransportePort transporte;
+    private final boolean habilitado;
     private final IdentidadFachada identidad;
-    private final String remitente;
     private final String nombreRemitente;
     private final String urlAplicacion;
 
@@ -51,23 +51,23 @@ public class AvisoTicketCriticoCorreoAdapter implements AvisoTicketCriticoPort, 
     });
 
     public AvisoTicketCriticoCorreoAdapter(
-            ObjectProvider<JavaMailSender> mailSender,
+            CorreoTransportePort transporte,
             IdentidadFachada identidad,
-            @Value("${spring.mail.username:}") String remitente,
             @Value("${dimabug.auth.codigo.remitente-nombre:DimaBug}") String nombreRemitente,
-            @Value("${dimabug.app.url:http://localhost:4200}") String urlAplicacion
+            @Value("${dimabug.app.url:http://localhost:4200}") String urlAplicacion,
+            @Value("${dimabug.correo.ticket-critico.habilitado:false}") boolean habilitado
     ) {
-        this.mailSender = mailSender;
+        this.transporte = transporte;
+        this.habilitado = habilitado;
         this.identidad = identidad;
-        this.remitente = remitente == null ? "" : remitente.trim();
         this.nombreRemitente = nombreRemitente;
         this.urlAplicacion = urlAplicacion == null ? "" : urlAplicacion.trim().replaceAll("/+$", "");
     }
 
     @Override
     public void avisar(Ticket ticket, Integer actorId) {
-        JavaMailSender sender = mailSender.getIfAvailable();
-        if (sender == null || remitente.isEmpty()) {
+        if (!habilitado) return;
+        if (!transporte.disponible()) {
             log.warn("Correo no configurado: no se envió el aviso del ticket crítico {}", ticket.getCodigo());
             return;
         }
@@ -75,7 +75,7 @@ public class AvisoTicketCriticoCorreoAdapter implements AvisoTicketCriticoPort, 
         String codigo = ticket.getCodigo();
         String titulo = ticket.getTitulo();
         Integer solicitanteId = ticket.getSolicitanteId();
-        Runnable envio = () -> enviarATodos(sender, id, codigo, titulo, solicitanteId, actorId);
+        Runnable envio = () -> enviarATodos(id, codigo, titulo, solicitanteId, actorId);
 
         // Se envía solo cuando el ticket ya quedó guardado en la base de datos.
         if (TransactionSynchronizationManager.isSynchronizationActive()) {
@@ -90,7 +90,7 @@ public class AvisoTicketCriticoCorreoAdapter implements AvisoTicketCriticoPort, 
         }
     }
 
-    private void enviarATodos(JavaMailSender sender, Long id, String codigo, String titulo,
+    private void enviarATodos(Long id, String codigo, String titulo,
                               Integer solicitanteId, Integer actorId) {
         try {
             String solicitante = identidad.buscarPorId(solicitanteId)
@@ -105,23 +105,23 @@ public class AvisoTicketCriticoCorreoAdapter implements AvisoTicketCriticoPort, 
                 return;
             }
             for (UsuarioPublico destino : destinatarios) {
-                enviarA(sender, destino, id, codigo, titulo, solicitante);
+                enviarA(destino, id, codigo, titulo, solicitante);
             }
         } catch (Exception e) {
-            log.error("No se pudo preparar el aviso del ticket crítico {}", codigo, e);
+            log.warn("No se pudo preparar el aviso del ticket crítico {}; tipo={}", codigo, e.getClass().getSimpleName());
         }
     }
 
-    private void enviarA(JavaMailSender sender, UsuarioPublico destino, Long id, String codigo,
+    private void enviarA(UsuarioPublico destino, Long id, String codigo,
                          String titulo, String solicitante) {
         try {
             ClassPathResource banner = new ClassPathResource(BANNER);
             boolean conBanner = banner.exists();
             String enlace = urlAplicacion + "/tickets/" + id;
 
-            MimeMessage mensaje = sender.createMimeMessage();
+            MimeMessage mensaje = new MimeMessage(jakarta.mail.Session.getInstance(new java.util.Properties()));
             MimeMessageHelper helper = new MimeMessageHelper(mensaje, true, "UTF-8");
-            helper.setFrom(remitente, nombreRemitente);
+            helper.setFrom(transporte.remitente(), nombreRemitente);
             helper.setTo(destino.email());
             helper.setSubject("Ticket crítico " + codigo + ": " + titulo);
             helper.setSentDate(new Date());
@@ -132,10 +132,12 @@ public class AvisoTicketCriticoCorreoAdapter implements AvisoTicketCriticoPort, 
             }
             mensaje.setHeader("X-Entity-Ref-ID", UUID.randomUUID().toString());
             mensaje.setHeader("Auto-Submitted", "auto-generated");
-            sender.send(mensaje);
+            var bytes = new java.io.ByteArrayOutputStream();
+            mensaje.writeTo(bytes);
+            transporte.enviarAutenticacion(java.util.Base64.getUrlEncoder().withoutPadding().encodeToString(bytes.toByteArray()));
             log.info("Aviso de ticket crítico {} enviado a {}", codigo, destino.email());
         } catch (Exception e) {
-            log.error("No se pudo enviar el aviso del ticket crítico {} a {}", codigo, destino.email(), e);
+            log.warn("No se pudo enviar el aviso del ticket crítico {}; tipo={}", codigo, e.getClass().getSimpleName());
         }
     }
 

@@ -34,7 +34,7 @@ public class BCryptPasswordEncoderAdapter implements PasswordEncoderPort {
                 return false;
             }
         }
-        return hash.equals(plano);
+        return false;
     }
 
     @Override

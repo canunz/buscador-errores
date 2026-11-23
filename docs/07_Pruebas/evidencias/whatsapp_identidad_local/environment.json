@@ -1,0 +1,10 @@
+{
+  "kernel": "6.6.87.2-microsoft-standard-WSL2",
+  "python": "3.10.12",
+  "java": "openjdk version \"21.0.13.1\" 2026-11-17 LTS\nOpenJDK Runtime Environment Temurin-21.0.13.1+2 (build 21.0.13.1+2-LTS)\nOpenJDK 64-Bit Server VM Temurin-21.0.13.1+2 (build 21.0.13.1+2-LTS, mixed mode, sharing)",
+  "source_sha256": {
+    "thread_check.py": "cb943aa1db479427cb2af529aae6de7d4beb550c234a6c9a61f0683b1cffda28",
+    "test_thread_identity.py": "d1177f3c6897a1df499793fc5682cc87df67e78d9bf52c64ed822aa2dac0fb50",
+    "integration.py": "90dfea2eec9052e1bede7502c04d9c286beb8e72b8ff7e0e27a0a496f4e9dd84"
+  }
+}

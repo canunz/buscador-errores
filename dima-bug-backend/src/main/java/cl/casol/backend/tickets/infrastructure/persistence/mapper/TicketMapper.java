@@ -15,19 +15,23 @@ public final class TicketMapper {
     private TicketMapper() { }
 
     public static TicketEntity toEntity(Ticket t) {
-        return new TicketEntity(t.getId(), t.getCodigo(), t.getTitulo(), t.getDescripcion(), t.getEstado(),
+        TicketEntity entity = new TicketEntity(t.getId(), t.getCodigo(), t.getTitulo(), t.getDescripcion(), t.getEstado(),
                 t.getPrioridad(), t.getSolicitanteId(), t.getAsignadoId(), t.getHardwareId(), t.getSistemaId(),
                 t.getModuloId(), t.getConocimientoId(), t.getSolucion(), t.getFechaCreacion(),
                 t.getFechaActualizacion(), t.getFechaResolucion(), t.getFechaCierre(), t.getEtiquetaIds());
+        entity.datosSolicitante(t.getDatosSolicitante());
+        return entity;
     }
 
     public static Ticket toDomain(TicketEntity e, List<ComentarioTicket> comentarios,
             List<HistorialEstadoTicket> historial) {
-        return new Ticket(e.getId(), e.getCodigo(), e.getTitulo(), e.getDescripcion(), e.getEstado(),
+        Ticket ticket = new Ticket(e.getId(), e.getCodigo(), e.getTitulo(), e.getDescripcion(), e.getEstado(),
                 e.getPrioridad(), e.getSolicitanteId(), e.getAsignadoId(), e.getHardwareId(), e.getSistemaId(),
                 e.getModuloId(), e.getConocimientoId(), e.getSolucion(), e.getFechaCreacion(),
                 e.getFechaActualizacion(), e.getFechaResolucion(), e.getFechaCierre(), e.getEtiquetaIds(),
                 comentarios, historial);
+        ticket.registrarDatosSolicitante(e.datosSolicitante());
+        return ticket;
     }
 
     public static ComentarioTicket toDomain(ComentarioTicketEntity e) {

@@ -1,3 +1,4 @@
+import { DatosSolicitante } from './datos-solicitante.model';
 export type EstadoTicket = 'ABIERTO' | 'EN_PROGRESO' | 'EN_ESPERA' | 'RESUELTO' | 'CERRADO' | 'CANCELADO';
 export type PrioridadTicket = 'BAJA' | 'MEDIA' | 'ALTA' | 'CRITICA';
 
@@ -53,6 +54,7 @@ export interface ConocimientoVinculado {
 }
 
 export interface TicketDetalle extends TicketResumen {
+  datosSolicitante?: DatosSolicitante | null;
   descripcion: string;
   hardware: Referencia | null;
   sistema: Referencia | null;

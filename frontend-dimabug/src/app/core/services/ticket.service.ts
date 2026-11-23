@@ -1,3 +1,4 @@
+import { CatalogosSolicitud, DatosSolicitanteFormulario } from '../models/datos-solicitante.model';
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
 import { Observable, catchError, concat, finalize, forkJoin, map, of, shareReplay, switchMap, tap, throwError } from 'rxjs';
@@ -61,7 +62,7 @@ export class TicketService {
   private readonly enVuelo = new Map<string, Observable<unknown>>();
 
   private clave(resto: string): string {
-    return `${this.auth.usuario()?.usuarioId ?? 0}|${resto}`;
+    return `${this.auth.usuario()?.usuarioId ?? 0}|${this.auth.usuario()?.accesoBasico === true ? 'basico' : 'administrado'}|${resto}`;
   }
 
   private compartida<T>(clave: string, crear: () => Observable<T>): Observable<T> {
@@ -192,6 +193,36 @@ export class TicketService {
     return this.detalle(this.http.post<TicketDetalle>(this.base, request), 'No fue posible crear el ticket.');
   }
 
+  limitesSolicitud(): Observable<{cantidad:number;bytes:number}> {
+    return this.http.get<{cantidad:number;bytes:number}>(`${this.base}/solicitudes/limites`);
+  }
+
+  catalogosSolicitud(): Observable<CatalogosSolicitud> {
+    return this.http.get<CatalogosSolicitud>(`${this.base}/solicitudes/catalogos`);
+  }
+
+  crearSolicitud(titulo:string, descripcion:string, fotos:File[], solicitante:DatosSolicitanteFormulario): Observable<TicketDetalle> {
+    const datos=new FormData(); datos.append('titulo',titulo); datos.append('descripcion',descripcion);
+    fotos.forEach(f=>datos.append('fotos',f,f.name));
+    // Explicit allowlist: never serialize account ids, roles, priority or catalog labels.
+    datos.append('nombreCompleto',solicitante.nombreCompleto.trim());
+    datos.append('sucursalId',String(solicitante.sucursalId));
+    datos.append('departamentoId',String(solicitante.departamentoId));
+    datos.append('contacto',solicitante.contacto.trim());
+    datos.append('equipo',solicitante.equipo.trim());
+    datos.append('codigoUsuario',solicitante.codigoUsuario.trim());
+    return this.http.post<TicketDetalle>(`${this.base}/solicitudes`,datos).pipe(
+      map(t=>this.normalizarDetalle(t)),
+      tap(t=>this.recordarDetalle(t)),
+      catchError((err:HttpErrorResponse)=> {
+        const mensaje=typeof err.error?.message==='string' ? err.error.message : '';
+        const seguro=err.status===400 && mensaje.length<=160 && /fotograf|formato|título|descripción|nombre|teléfono|anexo|sucursal|departamento|IP|AnyDesk|datos del solicitante|código de usuario/i.test(mensaje);
+        return throwError(()=>new Error(err.status===413 ? 'Las fotografías superan el límite de carga permitido.'
+          : seguro ? mensaje : 'No pudimos confirmar el envío. Actualiza el historial antes de volver a enviar para evitar duplicados.'));
+      })
+    );
+  }
+
   asignar(id: number, asignadoId: number): Observable<TicketDetalle> {
     return this.detalle(
       this.http.patch<TicketDetalle>(`${this.base}/${id}/asignacion`, { asignadoId }),
@@ -286,7 +317,7 @@ export class TicketService {
 
   /** Descarga el archivo (con la sesión) para mostrarlo en pantalla. Se guarda en memoria. */
   archivo(ticketId: number, adjuntoId: number): Observable<Blob> {
-    const clave = `${ticketId}/${adjuntoId}`;
+    const clave = this.clave(`archivo/${ticketId}/${adjuntoId}`);
     let peticion = this.archivos.get(clave);
     if (!peticion) {
       peticion = this.http.get(`${this.base}/${ticketId}/adjuntos/${adjuntoId}`, { responseType: 'blob' }).pipe(
@@ -360,7 +391,10 @@ export class TicketService {
   }
 
   private escribirSesion(clave: string, valor: unknown): void {
-    const texto = JSON.stringify(valor);
+    // Contact and remote-access identifiers remain in memory, never in persistent ticket caches.
+    const cacheable = valor && typeof valor === 'object' && 'datosSolicitante' in valor
+      ? { ...valor, datosSolicitante: null } : valor;
+    const texto = JSON.stringify(cacheable);
     try {
       sessionStorage.setItem(`dimabug.tk.${clave}`, texto);
     } catch {

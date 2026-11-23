@@ -81,7 +81,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String email;
         try {
             email = tokenService.obtenerEmail(token);
-            log.debug("JWT: email extraido={}", email);
+            log.debug("JWT: identidad extraída");
         } catch (RuntimeException exception) {
             log.debug("JWT: no fue posible extraer el email; tipo={}",
                     exception.getClass().getSimpleName());
@@ -89,15 +89,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
 
-        Usuario usuario = usuariosAutenticados.obtener(email).orElse(null);
-        if (usuario == null) {
-            usuario = usuarioRepository
-                    .buscarPorEmail(email)
-                    .orElse(null);
-            if (usuario != null) {
-                usuariosAutenticados.guardar(email, usuario);
-            }
-        }
+        Usuario usuario = usuarioRepository.buscarPorEmail(email).orElse(null);
 
         log.debug("JWT: usuario encontrado={}", usuario != null);
 
@@ -105,7 +97,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             log.debug("JWT: usuario activo={}", usuario.isActivo());
         }
 
-        if (usuario != null && usuario.isActivo()) {
+        if (usuario != null && usuario.puedeIngresar()) {
             String rolNombre = usuario.getRol().getNombre();
             log.debug("JWT: nombre exacto del rol={}", rolNombre);
 
@@ -121,7 +113,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     new UsernamePasswordAuthenticationToken(
                             usuario.getEmail(),
                             null,
-                            List.of(authority)
+                            usuario.isAccesoBasico() ? List.of(authority, new SimpleGrantedAuthority("SCOPE_TICKETS_PROPIOS")) : List.of(authority)
                     );
             //Parte clave es:
             SecurityContextHolder

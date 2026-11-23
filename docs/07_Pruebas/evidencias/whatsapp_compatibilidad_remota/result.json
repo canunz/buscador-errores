@@ -1,0 +1,64 @@
+{
+  "recorded_utc": "2026-11-21T02:46:23.921579+00:00",
+  "scope": "Authorized read-only SSH inspection",
+  "decision": "NO_GO_CURRENT_REMOTE_SCRIPT_OUTDATED",
+  "remote_script_sha256": "6271a877742a049a83b2ebff533ffcd25028a317b97379cf61077dc520e8536f",
+  "local_validated_script_sha256": "cb943aa1db479427cb2af529aae6de7d4beb550c234a6c9a61f0683b1cffda28",
+  "qa": {
+    "before": "inactive",
+    "after": "inactive",
+    "mainpid": 0,
+    "restarts": 0
+  },
+  "gateway": {
+    "before": "inactive",
+    "after": "inactive",
+    "mainpid": 0,
+    "restarts": 0
+  },
+  "protected_services": {
+    "staging": {
+      "before_pid": 686044,
+      "after_pid": 686044,
+      "restarts": 0,
+      "active": true
+    },
+    "mysql": {
+      "before_pid": 604206,
+      "after_pid": 604206,
+      "restarts": 0,
+      "active": true
+    },
+    "nginx": {
+      "before_pid": 686503,
+      "after_pid": 686503,
+      "restarts": 0,
+      "active": true
+    }
+  },
+  "compatibility": {
+    "unit_type": "simple",
+    "service_user_matches": true,
+    "java_execstart_matches": true,
+    "jar_execstart_matches": true,
+    "cgroup_v2_present": true,
+    "private_tmp": true,
+    "protect_home": true,
+    "dropins_present": false,
+    "memory_max_bytes": 536870912,
+    "memory_high_bytes": 402653184,
+    "swap_max": 0,
+    "cpu_quota": "500ms",
+    "tasks_max": 96,
+    "start_timeout_seconds": 180,
+    "stop_timeout_seconds": 45,
+    "jcmd_exists": true,
+    "jcmd_readable": true,
+    "jcmd_executable": true
+  },
+  "sudo_noninteractive": false,
+  "current_mysql_account_lock": "NOT_VERIFIED",
+  "active_process_identity": "NOT_OBSERVABLE_QA_STOPPED",
+  "attach": "NOT_EXECUTED",
+  "server_modified": false
+}

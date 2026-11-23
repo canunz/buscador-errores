@@ -13,6 +13,37 @@ import java.util.Set;
 @Entity
 @Table(name = "ticket")
 public class TicketEntity {
+    @Column(name="sol_nombre_completo", length=150)
+    private String solNombreCompleto;
+    @Column(name="sol_sucursal_id")
+    private Integer solSucursalId;
+    @Column(name="sol_sucursal_nombre", length=100)
+    private String solSucursalNombre;
+    @Column(name="sol_departamento_id")
+    private Integer solDepartamentoId;
+    @Column(name="sol_departamento_nombre", length=100)
+    private String solDepartamentoNombre;
+    @Column(name="sol_contacto", length=50)
+    private String solContacto;
+    @Column(name="sol_equipo", length=100)
+    private String solEquipo;
+    @Column(name="sol_codigo_usuario", length=80)
+    private String solCodigoUsuario;
+    public void datosSolicitante(cl.casol.backend.tickets.domain.DatosSolicitante d) {
+        solNombreCompleto = d == null ? null : d.nombreCompleto();
+        solSucursalId = d == null ? null : d.sucursalId();
+        solSucursalNombre = d == null ? null : d.sucursalNombre();
+        solDepartamentoId = d == null ? null : d.departamentoId();
+        solDepartamentoNombre = d == null ? null : d.departamentoNombre();
+        solContacto = d == null ? null : d.contacto();
+        solEquipo = d == null ? null : d.equipo();
+        solCodigoUsuario = d == null ? null : d.codigoUsuario();
+    }
+    public cl.casol.backend.tickets.domain.DatosSolicitante datosSolicitante() {
+        if (solNombreCompleto==null) return null;
+        return new cl.casol.backend.tickets.domain.DatosSolicitante(solNombreCompleto,solSucursalId,solSucursalNombre,solDepartamentoId,solDepartamentoNombre,solContacto,solEquipo,solCodigoUsuario);
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")

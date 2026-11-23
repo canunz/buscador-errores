@@ -1,3 +1,6 @@
+@if (accesoBasico()) {
+  <router-outlet />
+} @else {
 <div class="app-shell" [class.tema-oscuro]="temaOscuro" [class.menu-abierto]="menuOpen">
   <aside class="sidebar">
     <div class="brand-panel">
@@ -240,3 +243,5 @@
     </div>
   </div>
 </div>
+
+}

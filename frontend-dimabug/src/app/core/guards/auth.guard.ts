@@ -1,6 +1,10 @@
 import { inject } from '@angular/core';
-import { CanActivateFn, Router } from '@angular/router';
+import { CanActivateFn, CanActivateChildFn, Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
+
+export const alcanceBasicoGuard: CanActivateChildFn = (_route, state) =>
+  !inject(AuthService).accesoBasico() || state.url.split('?')[0] === '/solicitudes'
+    || inject(Router).createUrlTree(['/solicitudes']);
 
 export const authGuard: CanActivateFn = () => {
   const auth = inject(AuthService);
@@ -20,7 +24,7 @@ export const adminGuard: CanActivateFn = () => {
   if (!auth.isAuthenticated()) {
     return router.createUrlTree(['/login']);
   }
-  return router.createUrlTree(['/inicio']);
+  return router.createUrlTree([auth.accesoBasico() ? '/solicitudes' : '/inicio']);
 };
 
 export const staffGuard: CanActivateFn = () => {
@@ -32,7 +36,7 @@ export const staffGuard: CanActivateFn = () => {
   if (auth.isStaff()) {
     return true;
   }
-  return router.createUrlTree(['/inicio']);
+  return router.createUrlTree([auth.accesoBasico() ? '/solicitudes' : '/inicio']);
 };
 
 export const guestGuard: CanActivateFn = () => {
@@ -41,5 +45,5 @@ export const guestGuard: CanActivateFn = () => {
   if (!auth.isAuthenticated()) {
     return true;
   }
-  return router.createUrlTree(['/inicio']);
+  return router.createUrlTree([auth.accesoBasico() ? '/solicitudes' : '/inicio']);
 };

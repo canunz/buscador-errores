@@ -53,8 +53,8 @@ export class UsuariosComponent implements OnInit {
       nombre: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(80)]],
       email: ['', [Validators.required, Validators.email, Validators.maxLength(120)]],
       rolId: [0, [Validators.required, Validators.min(1)]],
-      password1: ['', [Validators.required, Validators.minLength(6), Validators.maxLength(72)]],
-      password2: ['', [Validators.required, Validators.maxLength(72)]],
+      password1: [''],
+      password2: [''],
       activo: [true],
     },
     { validators: (grupo) => this.clavesIguales(grupo) },
@@ -175,14 +175,6 @@ export class UsuariosComponent implements OnInit {
       return;
     }
     const raw = this.form.getRawValue();
-    const password = (raw.password1 || '').trim();
-    const password2 = (raw.password2 || '').trim();
-    if (!password || password !== password2) {
-      this.form.markAllAsTouched();
-      this.error = 'Completa los campos obligatorios.';
-      return;
-    }
-
     const original = this.editOriginal;
     const correo = (original?.email || raw.email).trim();
     const emailCambio =
@@ -199,7 +191,7 @@ export class UsuariosComponent implements OnInit {
       usuarioEmail: emailCambio && !editandoActual ? raw.email.trim() : correo,
       rolId: Number(raw.rolId),
       usuarioEstado: !!raw.activo,
-      usuarioPassword: password || undefined,
+      usuarioPassword: undefined,
     };
 
     if (this.editId && original) {
@@ -343,8 +335,8 @@ export class UsuariosComponent implements OnInit {
   }
 
   private exigirClaves(): void {
-    this.form.controls.password1.setValidators([Validators.required, Validators.minLength(6), Validators.maxLength(72)]);
-    this.form.controls.password2.setValidators([Validators.required, Validators.maxLength(72)]);
+    this.form.controls.password1.clearValidators();
+    this.form.controls.password2.clearValidators();
     this.form.controls.password1.updateValueAndValidity();
     this.form.controls.password2.updateValueAndValidity();
   }

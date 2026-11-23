@@ -28,7 +28,7 @@ public final class UsuarioMapper {
                 entity.getPasswordHash(),
                 entity.isActivo(),
                 entity.getFechaCreacion(),
-                entity.getFechaActualizacion()
+                entity.getFechaActualizacion(), entity.getEstadoRegistro()
         );
     }
 
@@ -58,7 +58,7 @@ public final class UsuarioMapper {
         return new UsuarioEntity(
                 usuario.getId(), rolEntity, usuario.getNombre(), usuario.getEmail(),
                 usuario.getPasswordHash(), usuario.isActivo(), usuario.getFechaCreacion(),
-                usuario.getFechaActualizacion()
+                usuario.getFechaActualizacion(), usuario.getEstadoRegistro()
         );
     }
 

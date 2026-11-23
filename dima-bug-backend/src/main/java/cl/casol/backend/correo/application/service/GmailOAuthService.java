@@ -42,20 +42,27 @@ public class GmailOAuthService {
     }
     private void validar(GoogleGmailPort.Tokens t,boolean renovar){if(t.acceso==null || t.acceso.isBlank() || t.expira==null || !t.expira.isAfter(reloj.instant().plusSeconds(30)) || !(t.scopes.equals(Set.of(SCOPE)) || renovar && t.scopes.isEmpty()))throw new GmailException(AUTORIZACION);}
     public boolean disponible(){
-        try{return configurado() && config.envioHabilitado() && store.cuenta().filter(c->"ACTIVA".equals(c.estado())).isPresent();}
+        try{return config.configuradoParaEnvio() && cifrado.disponible() && config.envioHabilitado() && store.cuenta().filter(c->"ACTIVA".equals(c.estado())).isPresent();}
         catch(RuntimeException ex){return false;}
     }
     private static final class Acceso {final String token;final long version;Acceso(String token,long version){this.token=token;this.version=version;}}
-    private synchronized Acceso acceso(){
-        exigir();var c=store.cuenta().filter(v->"ACTIVA".equals(v.estado())).orElseThrow(()->new GmailException(AUTORIZACION));
+    private synchronized Acceso acceso(boolean invalidarAutorizacion){
+        if(!config.configuradoParaEnvio() || !cifrado.disponible())throw new GmailException(CONFIGURACION);
+        var c=store.cuenta().filter(v->"ACTIVA".equals(v.estado())).orElseThrow(()->new GmailException(AUTORIZACION));
         if(c.expira()!=null && c.expira().isAfter(reloj.instant().plusSeconds(60)))return new Acceso(cifrado.descifrar(c.accesoCifrado(),"gmail:access"),c.version());
         try{var tokens=google.renovar(cifrado.descifrar(c.refrescoCifrado(),"gmail:refresh"));validar(tokens,true);
             var actualizada=store.renovar(c.version(),cifrado.cifrar(tokens.acceso,"gmail:access"),tokens.refresco==null || tokens.refresco.isBlank()?c.refrescoCifrado():cifrado.cifrar(tokens.refresco,"gmail:refresh"),tokens.expira);return new Acceso(tokens.acceso,actualizada.version());
-        }catch(GmailException ex){if(ex.tipo==AUTORIZACION)store.invalidar(c.version());throw ex;}
+        }catch(GmailException ex){if(invalidarAutorizacion && ex.tipo==AUTORIZACION)store.invalidar(c.version());throw ex;}
     }
     public String enviar(String raw){
+        return enviar(raw,true);
+    }
+    public String enviarAutenticacion(String raw){
+        return enviar(raw,false);
+    }
+    private String enviar(String raw,boolean invalidarAutorizacion){
         if(!disponible())throw new GmailException(CONFIGURACION);
-        var acceso=acceso();try{return google.enviar(acceso.token,raw);}catch(GmailException ex){if(ex.tipo==AUTORIZACION)store.invalidar(acceso.version);throw ex;}
+        var acceso=acceso(invalidarAutorizacion);try{return google.enviar(acceso.token,raw);}catch(GmailException ex){if(invalidarAutorizacion && ex.tipo==AUTORIZACION)store.invalidar(acceso.version);throw ex;}
     }
     public Estado revocar(String email){
         Integer actor=admin(email);exigir();var c=store.revocarLocal(actor);

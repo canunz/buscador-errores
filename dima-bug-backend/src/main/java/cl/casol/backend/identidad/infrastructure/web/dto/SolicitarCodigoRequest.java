@@ -7,6 +7,7 @@ import jakarta.validation.constraints.NotBlank;
 public record SolicitarCodigoRequest(
         @NotBlank(message = "El correo es obligatorio")
         @Email(message = "Ingrese un correo válido")
+        @jakarta.validation.constraints.Size(max = 120)
         @JsonAlias({"correo"})
         String email
 ) {

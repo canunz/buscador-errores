@@ -64,6 +64,8 @@ public class AdjuntarArchivoTicketService implements AdjuntarArchivoTicketUseCas
         AdjuntoTicket adjunto = adjuntos.buscar(ticketId, adjuntoId)
                 .filter(a -> !contexto.comentarioOculto(ticketId, a.comentarioId(), actor))
                 .orElseThrow(() -> new AdjuntoNoEncontradoException(adjuntoId));
+        if (actor.accesoBasico() && (adjunto.comentarioId()!=null || !Objects.equals(adjunto.autorId(),actor.id())
+                || !adjunto.mime().matches("image/(jpeg|png|webp)"))) throw new AdjuntoNoEncontradoException(adjuntoId);
         return new ArchivoAdjunto(adjunto.nombre(), adjunto.mime(), almacen.leer(adjunto.referencia()));
     }
 }

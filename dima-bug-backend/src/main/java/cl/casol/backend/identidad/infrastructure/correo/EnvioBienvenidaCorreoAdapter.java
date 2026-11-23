@@ -5,10 +5,10 @@ import jakarta.mail.internet.MimeMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
-import org.springframework.beans.factory.ObjectProvider;
+import cl.casol.backend.correo.application.port.out.CorreoTransportePort;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.mail.javamail.JavaMailSender;
+
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.support.TransactionSynchronization;
@@ -29,8 +29,8 @@ public class EnvioBienvenidaCorreoAdapter implements BienvenidaUsuarioPort, Disp
     private static final String BANNER = "correo/banner-codigo-acceso.jpg";
     private static final String BANNER_CID = "bannerDimaBug";
 
-    private final ObjectProvider<JavaMailSender> mailSender;
-    private final String remitente;
+    private final CorreoTransportePort transporte;
+    private final boolean habilitado;
     private final String nombreRemitente;
     private final String urlAplicacion;
 
@@ -42,25 +42,25 @@ public class EnvioBienvenidaCorreoAdapter implements BienvenidaUsuarioPort, Disp
     });
 
     public EnvioBienvenidaCorreoAdapter(
-            ObjectProvider<JavaMailSender> mailSender,
-            @Value("${spring.mail.username:}") String remitente,
+            CorreoTransportePort transporte,
             @Value("${dimabug.auth.codigo.remitente-nombre:DimaBug}") String nombreRemitente,
-            @Value("${dimabug.app.url:http://localhost:4200}") String urlAplicacion
+            @Value("${dimabug.app.url:http://localhost:4200}") String urlAplicacion,
+            @Value("${dimabug.correo.bienvenida.habilitado:false}") boolean habilitado
     ) {
-        this.mailSender = mailSender;
-        this.remitente = remitente == null ? "" : remitente.trim();
+        this.transporte = transporte;
+        this.habilitado = habilitado;
         this.nombreRemitente = nombreRemitente;
         this.urlAplicacion = urlAplicacion == null ? "" : urlAplicacion.trim().replaceAll("/+$", "");
     }
 
     @Override
     public void enviar(String email, String nombre, String rol) {
-        JavaMailSender sender = mailSender.getIfAvailable();
-        if (sender == null || remitente.isEmpty()) {
+        if (!habilitado) return;
+        if (!transporte.disponible()) {
             log.warn("Correo no configurado: no se envió la bienvenida a {}", email);
             return;
         }
-        Runnable envio = () -> enviarAhora(sender, email, nombre, rol);
+        Runnable envio = () -> enviarAhora(email, nombre, rol);
         // Se envía solo cuando la cuenta ya quedó guardada en la base de datos.
         if (TransactionSynchronizationManager.isSynchronizationActive()) {
             TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
@@ -74,15 +74,15 @@ public class EnvioBienvenidaCorreoAdapter implements BienvenidaUsuarioPort, Disp
         }
     }
 
-    private void enviarAhora(JavaMailSender sender, String email, String nombre, String rol) {
+    private void enviarAhora(String email, String nombre, String rol) {
         try {
             ClassPathResource banner = new ClassPathResource(BANNER);
             boolean conBanner = banner.exists();
             String enlace = urlAplicacion + "/login";
 
-            MimeMessage mensaje = sender.createMimeMessage();
+            MimeMessage mensaje = new MimeMessage(jakarta.mail.Session.getInstance(new java.util.Properties()));
             MimeMessageHelper helper = new MimeMessageHelper(mensaje, true, "UTF-8");
-            helper.setFrom(remitente, nombreRemitente);
+            helper.setFrom(transporte.remitente(), nombreRemitente);
             helper.setTo(email);
             helper.setSubject("Tu cuenta en DimaBug ya está lista");
             helper.setSentDate(new Date());
@@ -92,10 +92,12 @@ public class EnvioBienvenidaCorreoAdapter implements BienvenidaUsuarioPort, Disp
             }
             mensaje.setHeader("X-Entity-Ref-ID", UUID.randomUUID().toString());
             mensaje.setHeader("Auto-Submitted", "auto-generated");
-            sender.send(mensaje);
+            var bytes = new java.io.ByteArrayOutputStream();
+            mensaje.writeTo(bytes);
+            transporte.enviarAutenticacion(java.util.Base64.getUrlEncoder().withoutPadding().encodeToString(bytes.toByteArray()));
             log.info("Correo de bienvenida enviado a {}", email);
         } catch (Exception e) {
-            log.error("No se pudo enviar el correo de bienvenida a {}", email, e);
+            log.warn("No se pudo enviar la bienvenida; tipo={}", e.getClass().getSimpleName());
         }
     }
 

@@ -41,7 +41,7 @@ class EdicionProcedimientoAdminHttpTest {
         jdbc.update("insert into u_usuario(usuario_id,rol_id,usuario_nombre,usuario_email,usuario_password_hash,usuario_estado,usuario_fecha_creacion,usuario_fecha_actualizacion) values(1,1,'Admin QA','qa-editor@example.invalid',?,true,CURRENT_TIMESTAMP,CURRENT_TIMESTAMP)",encoder.encode("SoloPrueba123!"));
         jdbc.update("insert into cl_sistema(sistema_id,sistema_nombre,sistema_estado) values(1,'Sistema QA',true)");
         jdbc.update("insert into cl_modulo(modulo_id,sistema_id,modulo_nombre,modulo_estado) values(1,1,'Módulo QA',true)");
-        token=LoginCodigoTestSupport.autenticar(mvc,envioCodigo,"qa-editor@example.invalid",jdbc);
+        token=LoginCodigoTestSupport.autenticar(mvc,envioCodigo,"qa-editor@example.invalid",jdbc,"SoloPrueba123!");
     }
     @ParameterizedTest @ValueSource(strings={"TECNICO","SOPORTE","USUARIO"}) void noAdministradoresNoModifican(String rol)throws Exception {
         for(var req:List.of(post("/api/procedimientos"),put("/api/procedimientos/1"),post("/api/procedimientos/1/edicion"),post("/api/procedimientos/1/pasos"),put("/api/procedimientos/1/pasos/1"),delete("/api/procedimientos/1/pasos/1"),patch("/api/procedimientos/1/pasos/1/orden"),put("/api/procedimientos/1/pasos/1/configuracion"),post("/api/procedimientos/1/pasos/1/materiales"),patch("/api/procedimientos/1/estado")))mvc.perform(req.with(user("qa").roles(rol)).contentType(MediaType.APPLICATION_JSON).content("{}")).andExpect(status().isForbidden());

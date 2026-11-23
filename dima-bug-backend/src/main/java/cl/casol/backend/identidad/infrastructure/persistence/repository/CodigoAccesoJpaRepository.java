@@ -10,8 +10,14 @@ import java.util.Optional;
 
 public interface CodigoAccesoJpaRepository extends JpaRepository<CodigoAccesoEntity, Long> {
 
+    // Lecturas actuales, no snapshots anteriores al bloqueo del usuario en MySQL REPEATABLE READ.
+    @org.springframework.data.jpa.repository.Lock(jakarta.persistence.LockModeType.PESSIMISTIC_WRITE)
+    java.util.List<CodigoAccesoEntity> findByUsuarioIdAndCreadoEnGreaterThanEqual(Integer usuarioId, java.time.LocalDateTime desde);
+
+    @org.springframework.data.jpa.repository.Lock(jakarta.persistence.LockModeType.PESSIMISTIC_WRITE)
     Optional<CodigoAccesoEntity> findFirstByUsuarioIdOrderByIdDesc(Integer usuarioId);
 
+    @org.springframework.data.jpa.repository.Lock(jakarta.persistence.LockModeType.PESSIMISTIC_WRITE)
     Optional<CodigoAccesoEntity> findFirstByUsuarioIdAndUsadoFalseOrderByIdDesc(Integer usuarioId);
 
     @Modifying(flushAutomatically = true, clearAutomatically = true)

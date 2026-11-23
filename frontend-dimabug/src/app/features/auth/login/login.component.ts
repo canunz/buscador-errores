@@ -3,12 +3,12 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService, CodigoAccesoError, SolicitudCodigoAcceso } from '../../../core/services/auth.service';
 
-type Paso = 'identificar' | 'codigo' | 'password';
+type Paso = 'identificar' | 'codigo';
 
 /**
  * 1) el usuario escribe su correo;
- * 2) Administrador y Soporte ingresan con contraseña;
- * 3) el resto recibe un código de 6 dígitos al correo.
+ * 2) una cuenta habilitada recibe un código;
+ * 3) todos los roles verifican el código antes de iniciar sesión.
  */
 @Component({
   selector: 'app-login',
@@ -25,7 +25,6 @@ export class LoginComponent implements OnDestroy {
   paso: Paso = 'identificar';
   loading = false;
   reenviando = false;
-  mostrarClave = false;
   error = '';
   aviso = '';
   identificador = '';
@@ -42,10 +41,6 @@ export class LoginComponent implements OnDestroy {
 
   codigoForm = this.fb.nonNullable.group({
     codigo: ['', [Validators.required, Validators.pattern(/^\d{6}$/)]],
-  });
-
-  passwordForm = this.fb.nonNullable.group({
-    password: ['', [Validators.required, Validators.minLength(6), Validators.maxLength(72)]],
   });
 
   get segundosParaVencer(): number {
@@ -87,15 +82,9 @@ export class LoginComponent implements OnDestroy {
         this.loading = false;
         this.identificador = valor;
         this.form.controls.email.disable();
-        if (res.modo === 'PASSWORD') {
-          this.paso = 'password';
-          this.aviso = '';
-          setTimeout(() => document.getElementById('password')?.focus(), 0);
-          return;
-        }
         this.iniciarContadores(res);
         this.paso = 'codigo';
-        this.aviso = 'Enviamos un código de 6 dígitos a su correo. Revise también la carpeta de spam.';
+        this.aviso = 'Si la cuenta está habilitada, recibirá un código. Revise también spam.';
         setTimeout(() => document.getElementById('codigo')?.focus(), 0);
       },
       error: (err: CodigoAccesoError) => {
@@ -110,7 +99,7 @@ export class LoginComponent implements OnDestroy {
             this.venceEn = Date.now() + 5 * 60 * 1000;
           }
           this.arrancarReloj();
-          this.aviso = 'Ya le enviamos un código hace poco. Ingréselo o espere para pedir otro.';
+          this.aviso = 'Espere antes de pedir otro código.';
           return;
         }
         this.error = err.message;
@@ -130,7 +119,7 @@ export class LoginComponent implements OnDestroy {
         this.reenviando = false;
         this.codigoForm.reset({ codigo: '' });
         this.iniciarContadores(res);
-        this.aviso = 'Le enviamos un código nuevo. El anterior ya no sirve.';
+        this.aviso = 'Solicitud recibida. Si corresponde emitir otro código, el anterior dejará de servir.';
       },
       error: (err: CodigoAccesoError) => {
         this.reenviando = false;
@@ -138,26 +127,6 @@ export class LoginComponent implements OnDestroy {
           this.reenvioDesde = Date.now() + err.segundosRestantes * 1000;
         }
         this.error = err.message;
-      },
-    });
-  }
-
-  ingresarConPassword(): void {
-    this.error = '';
-    const password = this.passwordForm.controls.password.value;
-    if (this.passwordForm.invalid || !password) {
-      this.passwordForm.markAllAsTouched();
-      this.error = 'Ingrese su contraseña.';
-      return;
-    }
-    this.loading = true;
-    this.auth.login(this.identificador, password).subscribe({
-      next: () => {
-        this.router.navigateByUrl('/inicio');
-      },
-      error: (err: Error) => {
-        this.loading = false;
-        this.error = err.message || 'Correo o contraseña incorrectos.';
       },
     });
   }
@@ -180,7 +149,7 @@ export class LoginComponent implements OnDestroy {
     this.auth.verificarCodigoAcceso(this.identificador, codigo).subscribe({
       next: () => {
         this.detenerReloj();
-        this.router.navigateByUrl('/inicio');
+        this.router.navigateByUrl(this.auth.accesoBasico() ? '/solicitudes' : '/inicio');
       },
       error: (err: Error) => {
         this.loading = false;
@@ -210,9 +179,7 @@ export class LoginComponent implements OnDestroy {
     this.aviso = '';
     this.venceEn = 0;
     this.reenvioDesde = 0;
-    this.mostrarClave = false;
     this.codigoForm.reset({ codigo: '' });
-    this.passwordForm.reset({ password: '' });
   }
 
   ngOnDestroy(): void {
@@ -222,7 +189,7 @@ export class LoginComponent implements OnDestroy {
   private iniciarContadores(res: SolicitudCodigoAcceso): void {
     const ahora = Date.now();
     this.venceEn = ahora + (res.segundosVigencia || 300) * 1000;
-    this.reenvioDesde = ahora + (res.segundosReenvio || 4) * 1000;
+    this.reenvioDesde = ahora + (res.segundosReenvio || 60) * 1000;
     this.arrancarReloj();
   }
 

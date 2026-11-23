@@ -5,27 +5,40 @@ import { ChatbotService } from '../../core/services/chatbot.service';
 import { ChatbotSolucion } from '../../core/models/chatbot.model';
 
 import { MaterialesPublicosComponent } from '../../shared/ui/materiales-publicos.component';
+import { ChatbotImagenComponent } from './chatbot-imagen.component';
+import { RouterLink } from '@angular/router';
+import { AuthService } from '../../core/services/auth.service';
 
 interface Mensaje {
   autor: 'usuario' | 'asistente';
   texto: string;
   soluciones?: ChatbotSolucion[];
+  reintentar?: string;
 }
 
 @Component({
   selector: 'app-chatbot',
   standalone: true,
-  imports: [ReactiveFormsModule, MaterialesPublicosComponent],
+  imports: [ReactiveFormsModule, MaterialesPublicosComponent, ChatbotImagenComponent, RouterLink],
   templateUrl: './chatbot.component.html',
   styleUrl: './chatbot.component.css',
 })
 export class ChatbotComponent {
   private readonly fb = inject(FormBuilder);
   private readonly api = inject(ChatbotService);
+  readonly auth = inject(AuthService);
+  @ViewChild(ChatbotImagenComponent) imagen?: ChatbotImagenComponent;
   @ViewChild('conversacion') conversacion?: ElementRef<HTMLElement>;
   enviando = false;
   mensajes: Mensaje[] = [{ autor: 'asistente', texto: 'Hola. Describe brevemente el problema y buscaré una solución de autoservicio autorizada.' }];
   readonly form = this.fb.nonNullable.group({ consulta: ['', [Validators.required, Validators.maxLength(300)]] });
+
+  buscarDesdeImagen(texto: string): void {
+    if (this.enviando || !texto.trim() || texto.trim().length > 300) return;
+    this.imagen?.cerrar();
+    this.form.controls.consulta.setValue(texto.trim());
+    this.enviar();
+  }
 
   enviar(): void {
     const consulta = this.form.controls.consulta.value.trim();
@@ -42,8 +55,15 @@ export class ChatbotComponent {
       this.moverAlFinal();
     })).subscribe({
       next: respuesta => this.mensajes.push({ autor: 'asistente', texto: respuesta.mensaje, soluciones: respuesta.soluciones }),
-      error: (error: Error) => this.mensajes.push({ autor: 'asistente', texto: error.message }),
+      error: (error: Error) => this.mensajes.push({ autor: 'asistente', texto: error.message, reintentar: consulta }),
     });
+  }
+
+  reintentar(mensaje: Mensaje): void {
+    if (this.enviando || !mensaje.reintentar) return;
+    this.form.controls.consulta.setValue(mensaje.reintentar);
+    mensaje.reintentar = undefined;
+    this.enviar();
   }
 
   private moverAlFinal(): void {

@@ -56,28 +56,28 @@ class Hu01SecurityIntegrationTest {
     private UsuarioRepository usuarioRepository;
 
     @Test
-    void solicitarCodigoResponde200ConTiempos() throws Exception {
+    void solicitarCodigoResponde202ConTiempos() throws Exception {
         when(autenticarUsuarioService.solicitarCodigo("user@example.com"))
                 .thenReturn(new SolicitudCodigo(300, 60));
 
         mockMvc.perform(post("/api/auth/codigo")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"email\":\"user@example.com\"}"))
-                .andExpect(status().isOk())
+                .andExpect(status().isAccepted())
                 .andExpect(jsonPath("$.segundosVigencia").value(300))
                 .andExpect(jsonPath("$.segundosReenvio").value(60));
     }
 
     @Test
-    void correoNoRegistradoResponde404() throws Exception {
+    void correoNoRegistradoRecibeRespuestaUniforme() throws Exception {
         when(autenticarUsuarioService.solicitarCodigo(anyString()))
-                .thenThrow(new CorreoNoRegistradoException());
+                .thenReturn(new SolicitudCodigo(300,60));
 
         mockMvc.perform(post("/api/auth/codigo")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"email\":\"nadie@example.com\"}"))
-                .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.message").value("Este correo no está registrado en DimaBug. Inténtelo con un correo que exista."));
+                .andExpect(status().isAccepted())
+                .andExpect(jsonPath("$.message").value("Si la cuenta está habilitada, recibirá un código. Revise también spam."));
     }
 
     @Test
@@ -89,15 +89,15 @@ class Hu01SecurityIntegrationTest {
     }
 
     @Test
-    void reenviarAntesDeTiempoResponde429() throws Exception {
+    void reenvioRecibeRespuestaUniforme() throws Exception {
         when(autenticarUsuarioService.solicitarCodigo(anyString()))
-                .thenThrow(new ReenvioCodigoAnticipadoException(40));
+                .thenReturn(new SolicitudCodigo(300,60));
 
         mockMvc.perform(post("/api/auth/codigo")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"email\":\"user@example.com\"}"))
-                .andExpect(status().isTooManyRequests())
-                .andExpect(jsonPath("$.segundosRestantes").value(40));
+                .andExpect(status().isAccepted())
+                .andExpect(jsonPath("$.segundosReenvio").value(60));
     }
 
     @Test
@@ -126,14 +126,14 @@ class Hu01SecurityIntegrationTest {
     }
 
     @Test
-    void usuarioInactivoResponde403() throws Exception {
+    void usuarioInactivoNoRevelaEstado() throws Exception {
         when(autenticarUsuarioService.verificarCodigo(anyString(), anyString()))
-                .thenThrow(new UsuarioInactivoException());
+                .thenThrow(new CodigoAccesoInvalidoException());
 
         mockMvc.perform(post("/api/auth/codigo/verificar")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"email\":\"user@example.com\",\"codigo\":\"123456\"}"))
-                .andExpect(status().isForbidden());
+                .andExpect(status().isUnauthorized());
     }
 
     @Test
@@ -146,7 +146,7 @@ class Hu01SecurityIntegrationTest {
     }
 
     @Test
-    void loginStaffConContrasenaEntregaJwt() throws Exception {
+    void loginConPasswordEstaRetirado() throws Exception {
         Rol rol = new Rol(2, "ADMINISTRADOR", null, true, null, null);
         Usuario admin = new Usuario(2, rol, "Admin", "admin@example.com", "hash-bcrypt", true, null, null);
         when(autenticarUsuarioService.autenticar("admin@example.com", "password")).thenReturn(admin);
@@ -155,44 +155,42 @@ class Hu01SecurityIntegrationTest {
         mockMvc.perform(post("/api/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"email\":\"admin@example.com\",\"password\":\"password\"}"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.token").value("jwt-admin"))
-                .andExpect(jsonPath("$.rol").value("ADMINISTRADOR"));
+                .andExpect(status().isGone());
     }
 
     @Test
-    void loginContrasenaIncorrectaResponde401() throws Exception {
+    void passwordRetiradaNoRevelaCuenta() throws Exception {
         when(autenticarUsuarioService.autenticar(anyString(), anyString()))
                 .thenThrow(new CredencialesInvalidasException());
 
         mockMvc.perform(post("/api/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"email\":\"user@example.com\",\"password\":\"password\"}"))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isGone());
     }
 
     @Test
     void recuperarPasswordEsPublico() throws Exception {
-        when(autenticarUsuarioService.solicitarRecuperacion("admin@example.com"))
+        when(autenticarUsuarioService.solicitarCodigo("admin@example.com"))
                 .thenReturn(new SolicitudCodigo(300, 4));
 
         mockMvc.perform(post("/api/auth/recuperar/email")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"email\":\"admin@example.com\"}"))
-                .andExpect(status().isOk())
+                .andExpect(status().isAccepted())
                 .andExpect(jsonPath("$.segundosVigencia").value(300));
     }
 
     @Test
-    void administradorRecibeModoPasswordSinEnviarCodigo() throws Exception {
+    void administradorRecibeModoCodigo() throws Exception {
         when(autenticarUsuarioService.solicitarCodigo("admin@example.com"))
-                .thenReturn(SolicitudCodigo.password());
+                .thenReturn(new SolicitudCodigo(300,60));
 
         mockMvc.perform(post("/api/auth/codigo")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"email\":\"admin@example.com\"}"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.modo").value("PASSWORD"));
+                .andExpect(status().isAccepted())
+                .andExpect(jsonPath("$.modo").value("CODIGO"));
     }
 
     @Test

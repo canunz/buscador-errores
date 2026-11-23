@@ -1,0 +1,28 @@
+{
+  "recorded_utc": "2026-11-21T02:42:06.234047+00:00",
+  "scope": "Local only; no SSH/server execution",
+  "unit_tests": 31,
+  "readonly_probe_checks": 4,
+  "integration": {
+    "actual_uids_match_service": true,
+    "uid_source": "proc_status",
+    "private_tmp_namespace": true,
+    "status": "PASS",
+    "real_thread_dumps": 2,
+    "separation_seconds": 15.01,
+    "java_stopped": true,
+    "simulated_account_locked": true,
+    "main_waiting_in": "Hold.main",
+    "orchestration": "systemd_and_mysql_test_doubles",
+    "real_foreign_jvms_rejected": 3,
+    "cleanup_after_attach_failure": true
+  },
+  "container_exit_code": 0,
+  "container_removed": true,
+  "docker_limits": {
+    "memory_bytes": 536870912,
+    "nanocpus": 500000000,
+    "network": "none"
+  },
+  "historical_uid_rejection_cause": "INDETERMINATE_NO_CONTEMPORANEOUS_SNAPSHOT"
+}

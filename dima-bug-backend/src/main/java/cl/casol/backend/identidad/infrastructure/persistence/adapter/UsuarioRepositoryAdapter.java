@@ -27,31 +27,32 @@ public class UsuarioRepositoryAdapter implements UsuarioRepository {
     }
 
     @Override
+    public Optional<Usuario> buscarFresco(String email) {
+        return usuarioJpaRepository.findByEmailIgnoreCase(email).map(UsuarioMapper::toDomain);
+    }
+    @Override
     public Optional<Usuario> buscarPorEmail(String email) {
         String valor = email == null ? "" : email.trim();
         if (valor.isEmpty()) {
             return Optional.empty();
         }
 
-        Optional<Usuario> cacheado = usuariosAutenticados.obtener(valor);
-        if (cacheado.isPresent()) {
-            return cacheado;
-        }
-
+        // Security-sensitive status/origin reads must not reuse the five-minute identity cache.
         return usuarioJpaRepository
                 .findByEmailIgnoreCase(valor)
                 .or(() -> usuarioJpaRepository.findByEmail(valor))
                 .or(() -> valor.contains("@") ? Optional.empty() : usuarioJpaRepository.findByIdentificador(valor))
-                .map(UsuarioMapper::toDomain)
-                .map(usuario -> {
-                    usuariosAutenticados.guardar(valor, usuario);
-                    return usuario;
-                });
+                .map(UsuarioMapper::toDomain);
     }
 
     @Override
     public Optional<Usuario> buscarPorId(Integer id) {
         return usuarioJpaRepository.findById(id).map(UsuarioMapper::toDomain);
+    }
+
+    @Override
+    public Optional<Usuario> buscarPorIdBloqueado(Integer id) {
+        return usuarioJpaRepository.buscarBloqueado(id).map(UsuarioMapper::toDomain);
     }
 
     @Override

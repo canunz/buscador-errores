@@ -18,9 +18,12 @@ public class GmailConfig implements cl.casol.backend.correo.application.port.out
         oauthHabilitado=oauth;envioHabilitado=envio;clientId=id;clientSecret=secreto;this.callback=callback;this.remitente=remitente;claveCifrado=clave;this.frontend=frontend;
     }
     public boolean configurado(){
-        try{return oauthHabilitado && !clientId.isBlank() && !clientSecret.isBlank() &&
-            remitenteValido() && uriSegura(callback,"/login/oauth2/code/google") && uriSegura(frontend,"/admin/gmail");}
+        try{return configuradoParaEnvio() && uriSegura(callback,"/login/oauth2/code/google") && uriSegura(frontend,"/admin/gmail");}
         catch(RuntimeException ex){return false;}
+    }
+    public boolean configuradoParaEnvio(){
+        return oauthHabilitado && clientId != null && !clientId.isBlank()
+            && clientSecret != null && !clientSecret.isBlank() && remitenteValido();
     }
     /** Remitente de la API: Gmail personal o @dimarsa.cl. No usa DestinatarioPaso (solo sucursales). */
     boolean remitenteValido(){

@@ -4,6 +4,7 @@ export interface Rol {
 }
 
 export interface Usuario {
+  accesoBasico?: boolean;
   usuarioId: number;
   usuarioNombre: string;
   usuarioEmail: string;

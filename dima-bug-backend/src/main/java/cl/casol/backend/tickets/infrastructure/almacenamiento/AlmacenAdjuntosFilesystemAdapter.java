@@ -30,11 +30,23 @@ public class AlmacenAdjuntosFilesystemAdapter implements AlmacenAdjuntosPort {
     @Override
     public String guardar(byte[] contenido) {
         String clave = UUID.randomUUID().toString();
+        boolean creado = false;
         try {
             Files.createDirectories(directorio);
-            Files.write(resolver(clave), contenido, StandardOpenOption.CREATE_NEW, StandardOpenOption.WRITE);
+            Path archivo = resolver(clave);
+            var atributos = Files.getFileStore(directorio).supportsFileAttributeView("posix")
+                    ? new java.nio.file.attribute.FileAttribute<?>[]{java.nio.file.attribute.PosixFilePermissions.asFileAttribute(
+                        java.nio.file.attribute.PosixFilePermissions.fromString("rw-------"))}
+                    : new java.nio.file.attribute.FileAttribute<?>[0];
+            try (var canal = Files.newByteChannel(archivo,
+                    java.util.Set.of(StandardOpenOption.CREATE_NEW, StandardOpenOption.WRITE), atributos)) {
+                creado = true;
+                var buffer = java.nio.ByteBuffer.wrap(contenido);
+                while (buffer.hasRemaining()) canal.write(buffer);
+            }
             return clave;
         } catch (IOException ex) {
+            if (creado) try { Files.deleteIfExists(resolver(clave)); } catch (IOException cleanup) { ex.addSuppressed(cleanup); }
             throw new UncheckedIOException("No fue posible guardar el archivo", ex);
         }
     }

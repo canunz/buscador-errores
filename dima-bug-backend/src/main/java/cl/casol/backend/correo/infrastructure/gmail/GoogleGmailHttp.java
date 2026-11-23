@@ -36,10 +36,16 @@ public class GoogleGmailHttp implements GoogleGmailPort {
     }
     private static RestClient.Builder conTimeout(){var cliente=HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(5)).followRedirects(HttpClient.Redirect.NEVER).build();var factory=new JdkClientHttpRequestFactory(cliente);factory.setReadTimeout(Duration.ofSeconds(8));return RestClient.builder().requestFactory(factory);}
     private ClientRegistration registro(){
-        if(!config.configurado())throw new GmailException(CONFIGURACION);
-        return ClientRegistration.withRegistrationId("google").clientId(config.clientId).clientSecret(config.clientSecret)
-            .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_POST).authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
-            .authorizationUri(AUTH).tokenUri(TOKEN).redirectUri(config.callback).scope(GmailConfig.SCOPE).build();
+        return registro(true);
+    }
+    private ClientRegistration registro(boolean autorizar){
+        if(!(autorizar ? config.configurado() : config.configuradoParaEnvio()))throw new GmailException(CONFIGURACION);
+        var builder=ClientRegistration.withRegistrationId("google").clientId(config.clientId).clientSecret(config.clientSecret)
+            .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_POST)
+            .authorizationGrantType(autorizar?AuthorizationGrantType.AUTHORIZATION_CODE:AuthorizationGrantType.REFRESH_TOKEN)
+            .authorizationUri(AUTH).tokenUri(TOKEN).scope(GmailConfig.SCOPE);
+        if(autorizar)builder.redirectUri(config.callback);
+        return builder.build();
     }
     private OAuth2AuthorizationRequest solicitud(String estado,String verificador){
         var r=registro();return OAuth2AuthorizationRequest.authorizationCode().authorizationUri(AUTH).clientId(r.getClientId()).redirectUri(r.getRedirectUri()).scopes(Set.of(GmailConfig.SCOPE)).state(estado)
@@ -62,7 +68,7 @@ public class GoogleGmailHttp implements GoogleGmailPort {
         catch(OAuth2AuthorizationException ex){throw errorToken(ex);}catch(RestClientException ex){throw new GmailException(CONEXION);}
     }
     public Tokens renovar(String refresco){
-        try{var acceso=new OAuth2AccessToken(OAuth2AccessToken.TokenType.BEARER,"no-utilizado-para-refrescar",reloj.instant().minusSeconds(3600),reloj.instant().minusSeconds(1),Set.of(GmailConfig.SCOPE));return tokens(refrescos.getTokenResponse(new OAuth2RefreshTokenGrantRequest(registro(),acceso,new OAuth2RefreshToken(refresco,reloj.instant()),Set.of(GmailConfig.SCOPE))));}
+        try{var acceso=new OAuth2AccessToken(OAuth2AccessToken.TokenType.BEARER,"no-utilizado-para-refrescar",reloj.instant().minusSeconds(3600),reloj.instant().minusSeconds(1),Set.of(GmailConfig.SCOPE));return tokens(refrescos.getTokenResponse(new OAuth2RefreshTokenGrantRequest(registro(false),acceso,new OAuth2RefreshToken(refresco,reloj.instant()),Set.of(GmailConfig.SCOPE))));}
         catch(OAuth2AuthorizationException ex){throw errorToken(ex);}catch(RestClientException ex){throw new GmailException(CONEXION);}
     }
     public void revocar(String token){

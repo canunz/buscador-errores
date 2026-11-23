@@ -23,6 +23,10 @@ public interface UsuarioJpaRepository
 
     Optional<UsuarioEntity> findByEmail(String email);
 
+    @org.springframework.data.jpa.repository.Lock(jakarta.persistence.LockModeType.PESSIMISTIC_WRITE)
+    @Query("select u from UsuarioEntity u join fetch u.rol where u.id = :id")
+    Optional<UsuarioEntity> buscarBloqueado(@Param("id") Integer id);
+
     Optional<UsuarioEntity> findByEmailIgnoreCase(String email);
 
     @Query(value = """

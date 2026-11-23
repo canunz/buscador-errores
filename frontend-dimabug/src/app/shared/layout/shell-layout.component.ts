@@ -32,6 +32,7 @@ export class ShellLayoutComponent {
   private readonly usuariosApi = inject(UsuarioService);
   private readonly inicio = inject(InicioService);
 
+  readonly accesoBasico = this.auth.accesoBasico;
   readonly usuario = this.auth.usuario;
   readonly isAdmin = computed(() => esAdministrador(this.usuario()));
   readonly isStaff = this.auth.isStaff;
@@ -145,6 +146,7 @@ export class ShellLayoutComponent {
   }
 
   private precargarEnSegundoPlano(): void {
+    if (this.accesoBasico()) return;
     const enTickets = this.router.url.includes('/tickets');
     const tareas: Observable<unknown>[] = [
       this.procedimientos.listar(),
@@ -164,6 +166,7 @@ export class ShellLayoutComponent {
   }
 
   private cargarConteo(): void {
+    if (this.accesoBasico()) return;
     this.ultimaRevision = Date.now();
     const id = this.usuario()?.usuarioId ?? 0;
     let leidas = new Set<string>();

@@ -1,0 +1,23 @@
+{
+  "scope": "TLS_NEGOTIATION_ONLY_NO_AUTH_NO_SQL",
+  "date_local": "2026-11-12",
+  "timezone": "America/Santiago",
+  "endpoint": "127.0.0.1:13318",
+  "mysql_proxy_internal_origin": "172.21.0.3",
+  "tls": "TLSv1.3",
+  "cipher": "TLS_AES_256_GCM_SHA384",
+  "ca_chain_verified": true,
+  "leaf_matches_mysql_public_certificate": true,
+  "leaf_sha256": "afee3b9f5f0b8ad162198bfe96b3b5f5be45499afa7f69acb1d89a9a812d7b9e",
+  "certificate_not_before_utc": "2026-11-12T13:06:58Z",
+  "certificate_not_after_utc": "2036-11-09T13:06:58Z",
+  "subject_alt_names_present": false,
+  "hostname_127_0_0_1_verified": false,
+  "hostname_verification_error_code": 64,
+  "credentials_sent": false,
+  "sql_executed": false,
+  "accounts_unlocked": false,
+  "private_keys_read": false,
+  "client_package_installed": false,
+  "functional_privilege_tests_executed": false
+}

@@ -16,4 +16,11 @@ public interface CodigoAccesoRepository {
     void invalidarPendientes(Integer usuarioId);
 
     CodigoAcceso guardar(CodigoAcceso codigo);
+
+    /** Serializa emisión, reenvío y consumo incluso cuando todavía no hay códigos. */
+    void bloquearUsuario(Integer usuarioId);
+
+    long contarDesde(Integer usuarioId, java.time.LocalDateTime desde);
+
+    boolean vigente(Long codigoId, java.time.LocalDateTime ahora);
 }

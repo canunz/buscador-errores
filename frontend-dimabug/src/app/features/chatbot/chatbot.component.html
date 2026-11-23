@@ -8,6 +8,14 @@
       @for (mensaje of mensajes; track $index) {
         <article class="mensaje" [class.usuario]="mensaje.autor === 'usuario'">
           <div class="burbuja"><p>{{ mensaje.texto }}</p>
+            @if(mensaje.autor==='asistente'&&mensaje.soluciones?.length===0){
+              <p class="soporte">@if(!auth.isAuthenticated()){
+                <a routerLink="/login">Iniciar sesión para solicitar soporte</a>
+              }@else if(auth.isAdmin()){
+                <a routerLink="/tickets/bandeja">Ver bandeja de soporte</a>
+              }@else{<a routerLink="/tickets/nuevo">Crear un ticket de soporte</a>}</p>
+            }
+            @if(mensaje.reintentar){<button class="reintentar" type="button" [disabled]="enviando" (click)="reintentar(mensaje)">Reintentar búsqueda</button>}
             @for (solucion of mensaje.soluciones ?? []; track $index) {
               <section class="solucion"><small>{{ solucion.conocimiento }}</small>
                 @if (solucion.titulo) { <h2>{{ solucion.titulo }}</h2> }
@@ -20,11 +28,14 @@
       }
       @if (enviando) { <article class="mensaje"><div class="burbuja escribiendo" aria-label="Buscando soluciones"><span></span><span></span><span></span></div></article> }
     </div>
+    <div class="entrada-chat">
+    <app-chatbot-imagen [buscando]="enviando" (buscar)="buscarDesdeImagen($event)" />
     <form class="composer" [formGroup]="form" (ngSubmit)="enviar()">
       <label for="consulta-chatbot" class="sr-only">Describe tu problema</label>
       <textarea id="consulta-chatbot" formControlName="consulta" maxlength="300" rows="2" placeholder="Describe el problema…" (keydown.enter)="$event.preventDefault(); enviar()"></textarea>
       <button type="submit" aria-label="Enviar consulta" [disabled]="enviando || form.invalid">➜</button>
       <span class="contador">{{ form.controls.consulta.value.length }}/300</span>
     </form>
+    </div>
   </section>
 </main>

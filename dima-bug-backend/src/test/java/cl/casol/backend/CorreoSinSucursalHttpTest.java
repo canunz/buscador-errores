@@ -39,7 +39,7 @@ class CorreoSinSucursalHttpTest {
         try(var c=jdbc.getDataSource().getConnection()){assertTrue(c.getMetaData().getURL().startsWith("jdbc:h2:mem:correo_sin_sucursal"));}
         jdbc.update("insert into u_rol(rol_id,rol_nombre,rol_estado,rol_fecha_creacion,rol_fecha_actualizacion) values(1,'ADMINISTRADOR',true,CURRENT_TIMESTAMP,CURRENT_TIMESTAMP)");
         jdbc.update("insert into u_usuario(usuario_id,rol_id,usuario_nombre,usuario_email,usuario_password_hash,usuario_estado,usuario_fecha_creacion,usuario_fecha_actualizacion) values(1,1,'Correo QA','qa-correo@example.invalid',?,true,CURRENT_TIMESTAMP,CURRENT_TIMESTAMP)",encoder.encode("SoloPruebas123!"));
-        token=LoginCodigoTestSupport.autenticar(mvc,envioCodigo,"qa-correo@example.invalid",jdbc);
+        token=LoginCodigoTestSupport.autenticar(mvc,envioCodigo,"qa-correo@example.invalid",jdbc,"SoloPruebas123!");
     }
     @BeforeEach void smtpAislado(){
         reset(smtp);jdbc.update("delete from se_evento_ejecucion where tipo in ('SMTP_INICIADO','RECORDATORIO_SMTP_INICIADO')");

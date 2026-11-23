@@ -64,7 +64,8 @@ public class DetalleTicketJdbcAdapter implements DetalleTicketConsultaPort {
                           'fecha', DATE_FORMAT(a.fecha, '%Y-%m-%dT%H:%i:%s')))
                       FROM ticket_adjunto a
                       LEFT JOIN u_usuario aa ON aa.usuario_id = a.autor_id
-                     WHERE a.ticket_id = t.id)
+                     WHERE a.ticket_id = t.id),
+                   t.sol_nombre_completo, t.sol_sucursal_id, t.sol_sucursal_nombre, t.sol_departamento_id, t.sol_departamento_nombre, t.sol_contacto, t.sol_equipo, t.sol_codigo_usuario
               FROM ticket t
               LEFT JOIN u_usuario sol ON sol.usuario_id = t.solicitante_id
               LEFT JOIN u_usuario asig ON asig.usuario_id = t.asignado_id
@@ -122,6 +123,7 @@ public class DetalleTicketJdbcAdapter implements DetalleTicketConsultaPort {
                 conocimiento == null ? null : conocimientoId, fila.getString(20),
                 fecha(fila, 21), fecha(fila, 22), fecha(fila, 23), fecha(fila, 24),
                 etiquetaIds, comentarios, historial);
+        if (fila.getString(29)!=null) ticket.registrarDatosSolicitante(new cl.casol.backend.tickets.domain.DatosSolicitante(fila.getString(29),entero(fila, 30),fila.getString(31),entero(fila, 32),fila.getString(33),fila.getString(34),fila.getString(35),fila.getString(36)));
         return new DetalleTicketPlano(ticket, etiquetas, usuarios,
                 new ClasificacionTicket(fila.getString(12), fila.getString(14), fila.getString(16)),
                 conocimiento, adjuntos);

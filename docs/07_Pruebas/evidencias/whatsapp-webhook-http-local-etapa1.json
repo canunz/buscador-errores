@@ -1,0 +1,219 @@
+{
+  "scope": "WHATSAPP_HTTP_LOCAL_STAGE_1_ONLY",
+  "date_local": "2026-11-14",
+  "timezone": "America/Santiago",
+  "branch": "integracion-final-uat",
+  "results": {
+    "tests": 124,
+    "new_tests": 38,
+    "regression_tests": 86,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "build": "SUCCESS",
+    "suites": [
+      {
+        "class": "cl.casol.backend.AutoservicioPublicoHttpTest",
+        "tests": 9,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "xml": "dima-bug-backend/target/surefire-reports/TEST-cl.casol.backend.AutoservicioPublicoHttpTest.xml",
+        "sha256": "115ac3fc5a72afca39527d06a726f5f4eaade0c9d7e4e1708ad543df6c73ab96"
+      },
+      {
+        "class": "cl.casol.backend.ChatbotBusquedaErroresHttpTest",
+        "tests": 20,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "xml": "dima-bug-backend/target/surefire-reports/TEST-cl.casol.backend.ChatbotBusquedaErroresHttpTest.xml",
+        "sha256": "f828d62549c7d7a1c38bd627657bc77ac3973132c3b0f3af0adddeb0ca988292"
+      },
+      {
+        "class": "cl.casol.backend.ChatbotSecurityIntegrationTest",
+        "tests": 8,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "xml": "dima-bug-backend/target/surefire-reports/TEST-cl.casol.backend.ChatbotSecurityIntegrationTest.xml",
+        "sha256": "24f90b8d390bc2028737b99eed1521a1d3fb11574909d8092458dbd10349181e"
+      },
+      {
+        "class": "cl.casol.backend.conocimiento.application.service.ConsultarChatbotServiceTest",
+        "tests": 4,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "xml": "dima-bug-backend/target/surefire-reports/TEST-cl.casol.backend.conocimiento.application.service.ConsultarChatbotServiceTest.xml",
+        "sha256": "0b6bfb164d45bfbebe44efead50b23fe085572ee807a531581f6bb6487d82793"
+      },
+      {
+        "class": "cl.casol.backend.conocimiento.infrastructure.persistence.adapter.BusquedaAutoservicioTest",
+        "tests": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "xml": "dima-bug-backend/target/surefire-reports/TEST-cl.casol.backend.conocimiento.infrastructure.persistence.adapter.BusquedaAutoservicioTest.xml",
+        "sha256": "ecb1de48c65e3040a3458b137a9f0b2ec37641a85d8b0505c16d09c7a5f4026a"
+      },
+      {
+        "class": "cl.casol.backend.whatsapp.BusquedaPublicaCanalTest",
+        "tests": 7,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "xml": "dima-bug-backend/target/surefire-reports/TEST-cl.casol.backend.whatsapp.BusquedaPublicaCanalTest.xml",
+        "sha256": "abaa1e9f8877f98cfd17e6ee8c904b949a2f3c688dc0ccb41f2b12b91e3f9171"
+      },
+      {
+        "class": "cl.casol.backend.whatsapp.OcrNodeProcesoTest",
+        "tests": 5,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "xml": "dima-bug-backend/target/surefire-reports/TEST-cl.casol.backend.whatsapp.OcrNodeProcesoTest.xml",
+        "sha256": "22b45ba2fc547c94c73778ee90ac70397b153d517eb9a60a640e911a3d095813"
+      },
+      {
+        "class": "cl.casol.backend.whatsapp.ValidacionWebhookLocalTest",
+        "tests": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "xml": "dima-bug-backend/target/surefire-reports/TEST-cl.casol.backend.whatsapp.ValidacionWebhookLocalTest.xml",
+        "sha256": "b1b51014741daf5c16550cf7e1436c9d3714a3cb80fea457b419a3aa3881288d"
+      },
+      {
+        "class": "cl.casol.backend.whatsapp.WebhookHttpLocalTest",
+        "tests": 33,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "xml": "dima-bug-backend/target/surefire-reports/TEST-cl.casol.backend.whatsapp.WebhookHttpLocalTest.xml",
+        "sha256": "91867101395cfb69725ad3bdfe6f6291f3d61bb695f815acde0f1f5516467570"
+      },
+      {
+        "class": "cl.casol.backend.whatsapp.WebhookHttpPerfilTest",
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "xml": "dima-bug-backend/target/surefire-reports/TEST-cl.casol.backend.whatsapp.WebhookHttpPerfilTest.xml",
+        "sha256": "a7410ecf27ec5f3dcdf37528364bdceda6cb398becb958c8bb900fdbe24574a7"
+      },
+      {
+        "class": "cl.casol.backend.whatsapp.WebhookSimuladoTest",
+        "tests": 28,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "xml": "dima-bug-backend/target/surefire-reports/TEST-cl.casol.backend.whatsapp.WebhookSimuladoTest.xml",
+        "sha256": "1de8bd45b007a3df42345f784b4f9d1aa130b3aeb9b367a29cd74f7fbdb4cef5"
+      },
+      {
+        "class": "cl.casol.backend.whatsapp.WhatsAppArquitecturaTest",
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "xml": "dima-bug-backend/target/surefire-reports/TEST-cl.casol.backend.whatsapp.WhatsAppArquitecturaTest.xml",
+        "sha256": "e1c66fc8a876220d4bebab752a76fdb9ed57bc5c9b922624607388d3eeac7fc3"
+      }
+    ]
+  },
+  "log": {
+    "path": "qa/runtime/whatsapp-http-local/maven-test.log",
+    "sha256": "7e0db7d71a0e892dfca528faaa279d786122941350925239e9718b9229138600"
+  },
+  "command": "./qa/whatsapp/Run-PruebasHttpLocal.ps1",
+  "created_files": [
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/whatsapp/infrastructure/http/EntradaWebhookHttpAdapter.java",
+      "sha256": "4ec21a016125c134c16a2bf00f0d65df84464930b1f741e782cdb5870d49d447"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/whatsapp/infrastructure/http/ValidacionWebhookLocal.java",
+      "sha256": "df5e373c6c8ae4b1d0dfab4cd4686cc75464c2732285665d25c1a3db5b833e6c"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/whatsapp/infrastructure/http/WebhookHttpLocalConfig.java",
+      "sha256": "3a0957d37c46daaec9ec09f3f57b229420e8b75c7929acf7d31f037b0343ec10"
+    },
+    {
+      "path": "dima-bug-backend/src/main/java/cl/casol/backend/whatsapp/infrastructure/http/WebhookWhatsAppController.java",
+      "sha256": "3887523d7d03930bb73198bae4e801c434e6b463f35e5e3cae5d50b5910fb255"
+    },
+    {
+      "path": "dima-bug-backend/src/test/java/cl/casol/backend/whatsapp/ValidacionWebhookLocalTest.java",
+      "sha256": "766b0efca2c1af01cb2c78366c857cb953bd7db39fedfe99bdd9a895c6291e40"
+    },
+    {
+      "path": "dima-bug-backend/src/test/java/cl/casol/backend/whatsapp/WebhookHttpLocalTest.java",
+      "sha256": "a455d84927726e36d020c4853b4126bc923cfb3630d3e48427bdfc08c48796fe"
+    },
+    {
+      "path": "dima-bug-backend/src/test/java/cl/casol/backend/whatsapp/WebhookHttpPerfilTest.java",
+      "sha256": "c40c08eb2dc803d213806c135a9064b31226f9c5dbbce65b62612fff1b7b57c2"
+    },
+    {
+      "path": "qa/whatsapp/Run-PruebasHttpLocal.ps1",
+      "sha256": "d73d1726b0578c16ed742e80119bfa116b82c3232a9e1c3af2ed6a7edf775852"
+    },
+    {
+      "path": "docs/implementacion/WhatsApp_webhook_http_local_etapa1.md",
+      "sha256": "c1691657a49d67f59950951c99f4c8fe7e919a8e3ccd814063538f9cf99d39ef"
+    }
+  ],
+  "modified_existing_files": [],
+  "baseline": {
+    "path": "qa/runtime/whatsapp-http-local/baseline.json",
+    "files": 1366,
+    "sha256": "be72f01c86c61a50fb595310e608a253069b64d030eb5e75d44878f2fd34adff"
+  },
+  "git_final": {
+    "modified_entries": 55,
+    "untracked_grouped_entries": 70,
+    "status_path": "qa/runtime/whatsapp-http-local/git-after.txt"
+  },
+  "security": {
+    "route": "/webhooks/whatsapp",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "profile": "qa-whatsapp-http-local",
+    "loopback_only": true,
+    "hmac_sha256_original_bytes": true,
+    "constant_time_comparison": true,
+    "body_limit_bytes": 16384,
+    "csrf_filter_present_in_new_chain": true,
+    "csrf_exception": "POST exact route only in new chain",
+    "general_security_config_unchanged": true,
+    "log_redaction_test": "PASS with DispatcherServlet DEBUG and real GET query string; no request-details enabled"
+  },
+  "restrictions": {
+    "meta_connected": false,
+    "real_credentials_used": false,
+    "images_downloaded": false,
+    "real_messages_sent": false,
+    "http_server_started": false,
+    "public_endpoint_published": false,
+    "durable_reception_added": false,
+    "async_processing_added": false,
+    "mysql_modified": false,
+    "migrations": false,
+    "angular_modified": false,
+    "ocr_core_modified": false,
+    "new_dependencies": false,
+    "commits": false,
+    "deployment": false
+  },
+  "limitations": [
+    "QA local only; not production ready",
+    "Synchronous processing and in-memory dedupe unchanged",
+    "No restart recovery or durable acceptance",
+    "No real TCP/TLS/proxy/load test",
+    "No complete Angular or unrelated backend suite executed"
+  ]
+}

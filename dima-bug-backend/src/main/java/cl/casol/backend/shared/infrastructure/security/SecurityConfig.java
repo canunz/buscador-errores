@@ -107,7 +107,9 @@ public class SecurityConfig {
                         jwtAuthenticationFilter,
                         org.springframework.security.web.authentication
                                 .UsernamePasswordAuthenticationFilter.class
-                );
+                )
+                .addFilterAfter(new cl.casol.backend.identidad.infrastructure.security.AlcanceBasicoFilter(),
+                        cl.casol.backend.identidad.infrastructure.security.JwtAuthenticationFilter.class);
 
         return http.build();
     }

@@ -30,6 +30,8 @@
         <java.version>21</java.version>
     </properties>
     <dependencies>
+        <!-- Full WEBP decoding for private portal photographs through standard ImageIO. -->
+        <dependency><groupId>com.twelvemonkeys.imageio</groupId><artifactId>imageio-webp</artifactId><version>3.15.0</version></dependency>
         <dependency><groupId>org.springframework.security</groupId><artifactId>spring-security-oauth2-client</artifactId></dependency>
         <dependency><groupId>org.springframework.boot</groupId><artifactId>spring-boot-starter-mail</artifactId></dependency>
         <!-- Solo pruebas: verifica bloqueo/transacciones reales sin conectar a MySQL. -->

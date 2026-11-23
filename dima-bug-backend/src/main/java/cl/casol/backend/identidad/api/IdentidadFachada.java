@@ -44,6 +44,6 @@ public class IdentidadFachada {
 
     private static UsuarioPublico publico(Usuario usuario) {
         String rol = usuario.getRol() == null ? null : usuario.getRol().getNombre();
-        return new UsuarioPublico(usuario.getId(), usuario.getNombre(), usuario.getEmail(), rol, usuario.isActivo());
+        return new UsuarioPublico(usuario.getId(), usuario.getNombre(), usuario.getEmail(), rol, usuario.puedeIngresar(), usuario.isAccesoBasico());
     }
 }

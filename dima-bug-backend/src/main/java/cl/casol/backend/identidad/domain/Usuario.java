@@ -15,6 +15,31 @@ public class Usuario {
     private LocalDateTime fechaCreacion;
     private LocalDateTime fechaActualizacion;
 
+    private EstadoRegistro estadoRegistro = EstadoRegistro.ADMINISTRADO;
+
+    public Usuario(Integer id, Rol rol, String nombre, String email, String passwordHash,
+            boolean activo, LocalDateTime creada, LocalDateTime actualizada, EstadoRegistro estado) {
+        this(id, rol, nombre, email, passwordHash, activo, creada, actualizada);
+        this.estadoRegistro = java.util.Objects.requireNonNull(estado);
+    }
+    public EstadoRegistro getEstadoRegistro() { return estadoRegistro; }
+    public boolean isAccesoBasico() { return estadoRegistro != EstadoRegistro.ADMINISTRADO; }
+    public boolean puedeIngresar() {
+        return activo && rol != null && rol.isActivo()
+            && (estadoRegistro == EstadoRegistro.ADMINISTRADO
+                || estadoRegistro == EstadoRegistro.AUTO_CONFIRMADO && "USUARIO".equals(rol.getNombre()));
+    }
+    public boolean puedeRecibirCodigo() {
+        return puedeIngresar() || !activo && estadoRegistro == EstadoRegistro.AUTO_PENDIENTE
+            && rol != null && rol.isActivo() && "USUARIO".equals(rol.getNombre());
+    }
+    public Usuario confirmarRegistro() {
+        if (estadoRegistro != EstadoRegistro.AUTO_PENDIENTE || !puedeRecibirCodigo())
+            throw new IllegalStateException("REGISTRO_NO_CONFIRMABLE");
+        return new Usuario(id, rol, nombre, email, passwordHash, true, fechaCreacion,
+            LocalDateTime.now(), EstadoRegistro.AUTO_CONFIRMADO);
+    }
+
     public Usuario(
             Integer id,
             Rol rol,

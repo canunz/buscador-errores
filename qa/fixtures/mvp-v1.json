@@ -1,0 +1,702 @@
+{
+  "format": "dimabug-qa-fixtures-v1",
+  "version": "mvp-qa-v1",
+  "database": "dima_bug_qa_mvp",
+  "host": "127.0.0.1",
+  "port": 13318,
+  "table_order": [
+    "u_rol",
+    "u_usuario",
+    "u_departamento",
+    "u_departamento_contacto",
+    "u_responsable",
+    "u_organizacion_control",
+    "cl_sistema",
+    "cl_hardware",
+    "cl_hardware_sistema",
+    "cl_modulo",
+    "cl_frecuencia",
+    "co_conocimiento",
+    "co_sintoma",
+    "co_causa",
+    "co_prueba",
+    "co_conocimiento_prueba",
+    "co_solucion",
+    "co_solucion_asignacion",
+    "pr_procedimiento",
+    "pr_paso",
+    "co_material_apoyo",
+    "se_ejecucion",
+    "se_ejecucion_paso",
+    "se_resultado",
+    "co_conocimiento_busqueda",
+    "u_sucursal",
+    "se_solicitud_evidencia",
+    "se_evidencia",
+    "se_evento_ejecucion",
+    "pr_auditoria_procedimiento",
+    "gm_cuenta_oauth",
+    "gm_estado_oauth",
+    "gm_auditoria_oauth",
+    "gm_prueba_correo",
+    "gm_prueba_evento",
+    "co_material_solucion",
+    "ticket",
+    "ticket_etiqueta",
+    "ticket_ticket_etiqueta",
+    "ticket_comentario",
+    "ticket_historial_estado",
+    "ticket_adjunto",
+    "u_codigo_acceso",
+    "u_correo_codigo"
+  ],
+  "rows": {
+    "u_rol": [
+      {
+        "rol_id": 1001,
+        "rol_nombre": "ADMINISTRADOR",
+        "rol_descripcion": "Rol sintÃ©tico QA",
+        "rol_estado": true,
+        "rol_fecha_creacion": "2026-11-13 00:00:00",
+        "rol_fecha_actualizacion": "2026-11-13 00:00:00"
+      },
+      {
+        "rol_id": 1002,
+        "rol_nombre": "TECNICO",
+        "rol_descripcion": "Rol sintÃ©tico QA",
+        "rol_estado": true,
+        "rol_fecha_creacion": "2026-11-13 00:00:00",
+        "rol_fecha_actualizacion": "2026-11-13 00:00:00"
+      },
+      {
+        "rol_id": 1003,
+        "rol_nombre": "SOPORTE",
+        "rol_descripcion": "Rol sintÃ©tico QA",
+        "rol_estado": true,
+        "rol_fecha_creacion": "2026-11-13 00:00:00",
+        "rol_fecha_actualizacion": "2026-11-13 00:00:00"
+      },
+      {
+        "rol_id": 1004,
+        "rol_nombre": "USUARIO",
+        "rol_descripcion": "Rol sintÃ©tico QA",
+        "rol_estado": true,
+        "rol_fecha_creacion": "2026-11-13 00:00:00",
+        "rol_fecha_actualizacion": "2026-11-13 00:00:00"
+      }
+    ],
+    "u_usuario": [
+      {
+        "usuario_id": 1001,
+        "rol_id": 1001,
+        "usuario_nombre": "QA admin",
+        "usuario_email": "admin@qa.dimabug.test",
+        "usuario_password_hash": "@RUNTIME_BCRYPT:admin",
+        "usuario_estado": true,
+        "usuario_fecha_creacion": "2026-11-13 00:00:00",
+        "usuario_fecha_actualizacion": "2026-11-13 00:00:00",
+        "usuario_ultimo_ingreso": null
+      },
+      {
+        "usuario_id": 1002,
+        "rol_id": 1002,
+        "usuario_nombre": "QA tecnico",
+        "usuario_email": "tecnico@qa.dimabug.test",
+        "usuario_password_hash": "@RUNTIME_BCRYPT:tecnico",
+        "usuario_estado": true,
+        "usuario_fecha_creacion": "2026-11-13 00:00:00",
+        "usuario_fecha_actualizacion": "2026-11-13 00:00:00",
+        "usuario_ultimo_ingreso": null
+      },
+      {
+        "usuario_id": 1003,
+        "rol_id": 1003,
+        "usuario_nombre": "QA soporte",
+        "usuario_email": "soporte@qa.dimabug.test",
+        "usuario_password_hash": "@RUNTIME_BCRYPT:soporte",
+        "usuario_estado": true,
+        "usuario_fecha_creacion": "2026-11-13 00:00:00",
+        "usuario_fecha_actualizacion": "2026-11-13 00:00:00",
+        "usuario_ultimo_ingreso": null
+      },
+      {
+        "usuario_id": 1004,
+        "rol_id": 1004,
+        "usuario_nombre": "QA usuario",
+        "usuario_email": "usuario@qa.dimabug.test",
+        "usuario_password_hash": "@RUNTIME_BCRYPT:usuario",
+        "usuario_estado": true,
+        "usuario_fecha_creacion": "2026-11-13 00:00:00",
+        "usuario_fecha_actualizacion": "2026-11-13 00:00:00",
+        "usuario_ultimo_ingreso": null
+      },
+      {
+        "usuario_id": 1005,
+        "rol_id": 1004,
+        "usuario_nombre": "QA usuario-otro",
+        "usuario_email": "usuario-otro@qa.dimabug.test",
+        "usuario_password_hash": "@RUNTIME_BCRYPT:usuario-otro",
+        "usuario_estado": true,
+        "usuario_fecha_creacion": "2026-11-13 00:00:00",
+        "usuario_fecha_actualizacion": "2026-11-13 00:00:00",
+        "usuario_ultimo_ingreso": null
+      },
+      {
+        "usuario_id": 1006,
+        "rol_id": 1002,
+        "usuario_nombre": "QA tecnico-otro",
+        "usuario_email": "tecnico-otro@qa.dimabug.test",
+        "usuario_password_hash": "@RUNTIME_BCRYPT:tecnico-otro",
+        "usuario_estado": true,
+        "usuario_fecha_creacion": "2026-11-13 00:00:00",
+        "usuario_fecha_actualizacion": "2026-11-13 00:00:00",
+        "usuario_ultimo_ingreso": null
+      },
+      {
+        "usuario_id": 1007,
+        "rol_id": 1001,
+        "usuario_nombre": "QA admin-respaldo",
+        "usuario_email": "admin-respaldo@qa.dimabug.test",
+        "usuario_password_hash": "@RUNTIME_BCRYPT:admin-respaldo",
+        "usuario_estado": true,
+        "usuario_fecha_creacion": "2026-11-13 00:00:00",
+        "usuario_fecha_actualizacion": "2026-11-13 00:00:00",
+        "usuario_ultimo_ingreso": null
+      },
+      {
+        "usuario_id": 1008,
+        "rol_id": 1004,
+        "usuario_nombre": "QA usuario-inactivo",
+        "usuario_email": "usuario-inactivo@qa.dimabug.test",
+        "usuario_password_hash": "@RUNTIME_BCRYPT:usuario-inactivo",
+        "usuario_estado": false,
+        "usuario_fecha_creacion": "2026-11-13 00:00:00",
+        "usuario_fecha_actualizacion": "2026-11-13 00:00:00",
+        "usuario_ultimo_ingreso": null
+      }
+    ],
+    "u_departamento": [
+      {
+        "departamento_id": 1001,
+        "departamento_nombre": "QA AtenciÃ³n",
+        "departamento_estado": true,
+        "departamento_version": 0
+      },
+      {
+        "departamento_id": 1002,
+        "departamento_nombre": "QA Operaciones",
+        "departamento_estado": true,
+        "departamento_version": 0
+      }
+    ],
+    "u_departamento_contacto": [
+      {
+        "contacto_id": 1001,
+        "departamento_id": 1001,
+        "contacto_tipo": "INTERNO",
+        "contacto_valor": "QA extensiÃ³n 1001",
+        "contacto_estado": true,
+        "contacto_version": 0
+      },
+      {
+        "contacto_id": 1002,
+        "departamento_id": 1002,
+        "contacto_tipo": "INTERNO",
+        "contacto_valor": "QA extensiÃ³n 1002",
+        "contacto_estado": true,
+        "contacto_version": 0
+      }
+    ],
+    "u_responsable": [
+      {
+        "responsable_id": 1001,
+        "departamento_id": 1001,
+        "responsable_nombre": "QA Responsable 1001",
+        "responsable_cargo": "Contacto ficticio",
+        "responsable_contacto": "ExtensiÃ³n QA 1001",
+        "responsable_estado": true
+      },
+      {
+        "responsable_id": 1002,
+        "departamento_id": 1002,
+        "responsable_nombre": "QA Responsable 1002",
+        "responsable_cargo": "Contacto ficticio",
+        "responsable_contacto": "ExtensiÃ³n QA 1002",
+        "responsable_estado": true
+      }
+    ],
+    "u_organizacion_control": [
+      {
+        "control_id": 1
+      }
+    ],
+    "cl_sistema": [
+      {
+        "sistema_id": 1001,
+        "sistema_nombre": "QA Cajas",
+        "sistema_descripcion": "Sistema ficticio",
+        "sistema_estado": true
+      },
+      {
+        "sistema_id": 1002,
+        "sistema_nombre": "QA Inventario",
+        "sistema_descripcion": "Sistema ficticio",
+        "sistema_estado": true
+      }
+    ],
+    "cl_hardware": [
+      {
+        "hardware_id": 1001,
+        "hardware_nombre": "QA Equipo 1001",
+        "hardware_sistema_operativo": "QA sintÃ©tico",
+        "hardware_estado": true
+      },
+      {
+        "hardware_id": 1002,
+        "hardware_nombre": "QA Equipo 1002",
+        "hardware_sistema_operativo": "QA sintÃ©tico",
+        "hardware_estado": true
+      }
+    ],
+    "cl_hardware_sistema": [
+      {
+        "hardware_id": 1001,
+        "sistema_id": 1001
+      },
+      {
+        "hardware_id": 1002,
+        "sistema_id": 1002
+      }
+    ],
+    "cl_modulo": [
+      {
+        "modulo_id": 1001,
+        "sistema_id": 1001,
+        "modulo_nombre": "QA MÃ³dulo 1001",
+        "modulo_estado": true
+      },
+      {
+        "modulo_id": 1002,
+        "sistema_id": 1002,
+        "modulo_nombre": "QA MÃ³dulo 1002",
+        "modulo_estado": true
+      }
+    ],
+    "cl_frecuencia": [
+      {
+        "frecuencia_id": 1001,
+        "frecuencia_nombre": "QA Frecuencia 1001",
+        "frecuencia_orden": 1,
+        "frecuencia_estado": true
+      },
+      {
+        "frecuencia_id": 1002,
+        "frecuencia_nombre": "QA Frecuencia 1002",
+        "frecuencia_orden": 2,
+        "frecuencia_estado": true
+      }
+    ],
+    "co_conocimiento": [
+      {
+        "conocimiento_id": 1001,
+        "conocimiento_titulo": "QA-MVP PUBLICADO",
+        "conocimiento_descripcion": "DiagnÃ³stico sintÃ©tico de terminal sin conexiÃ³n",
+        "conocimiento_estado": "PUBLICADO",
+        "hardware_id": 1001,
+        "sistema_id": 1001,
+        "modulo_id": 1001,
+        "frecuencia_id": 1001,
+        "conocimiento_comentario": "Fixture QA v1",
+        "creado_por": 1001,
+        "fecha_creacion": "2026-11-13 00:00:00",
+        "modificado_por": null,
+        "fecha_modificacion": null
+      },
+      {
+        "conocimiento_id": 1002,
+        "conocimiento_titulo": "QA-MVP BORRADOR",
+        "conocimiento_descripcion": "DiagnÃ³stico sintÃ©tico de terminal sin conexiÃ³n",
+        "conocimiento_estado": "BORRADOR",
+        "hardware_id": 1002,
+        "sistema_id": 1002,
+        "modulo_id": 1002,
+        "frecuencia_id": 1002,
+        "conocimiento_comentario": "Fixture QA v1",
+        "creado_por": 1001,
+        "fecha_creacion": "2026-11-13 00:00:00",
+        "modificado_por": null,
+        "fecha_modificacion": null
+      },
+      {
+        "conocimiento_id": 1003,
+        "conocimiento_titulo": "QA-MVP ELIMINADO",
+        "conocimiento_descripcion": "DiagnÃ³stico sintÃ©tico de terminal sin conexiÃ³n",
+        "conocimiento_estado": "ELIMINADO",
+        "hardware_id": 1001,
+        "sistema_id": 1001,
+        "modulo_id": 1001,
+        "frecuencia_id": 1001,
+        "conocimiento_comentario": "Fixture QA v1",
+        "creado_por": 1001,
+        "fecha_creacion": "2026-11-13 00:00:00",
+        "modificado_por": null,
+        "fecha_modificacion": null
+      }
+    ],
+    "co_sintoma": [
+      {
+        "sintoma_id": 1001,
+        "conocimiento_id": 1001,
+        "sintoma_descripcion": "QA terminal muestra desconexiÃ³n",
+        "sintoma_orden": 1
+      },
+      {
+        "sintoma_id": 1002,
+        "conocimiento_id": 1002,
+        "sintoma_descripcion": "QA terminal muestra desconexiÃ³n",
+        "sintoma_orden": 1
+      },
+      {
+        "sintoma_id": 1003,
+        "conocimiento_id": 1003,
+        "sintoma_descripcion": "QA terminal muestra desconexiÃ³n",
+        "sintoma_orden": 1
+      }
+    ],
+    "co_causa": [
+      {
+        "causa_id": 1001,
+        "conocimiento_id": 1001,
+        "causa_descripcion": "QA conexiÃ³n simulada",
+        "causa_orden": 1
+      },
+      {
+        "causa_id": 1002,
+        "conocimiento_id": 1002,
+        "causa_descripcion": "QA conexiÃ³n simulada",
+        "causa_orden": 1
+      },
+      {
+        "causa_id": 1003,
+        "conocimiento_id": 1003,
+        "causa_descripcion": "QA conexiÃ³n simulada",
+        "causa_orden": 1
+      }
+    ],
+    "co_prueba": [
+      {
+        "prueba_id": 1001,
+        "prueba_descripcion": "QA comprobar indicador simulado",
+        "prueba_resultado_esperado": "Indicador QA visible",
+        "prueba_estado": true
+      }
+    ],
+    "co_conocimiento_prueba": [
+      {
+        "conocimiento_id": 1001,
+        "prueba_id": 1001,
+        "prueba_orden": 1
+      }
+    ],
+    "co_solucion": [
+      {
+        "solucion_id": 1001,
+        "conocimiento_id": 1001,
+        "solucion_descripcion": "QA revisar conexiÃ³n ficticia y confirmar indicador",
+        "solucion_tipo": "PASOS",
+        "solucion_orden": 1,
+        "solucion_titulo": "QA revisiÃ³n",
+        "solucion_estado": true,
+        "solucion_autoservicio": true
+      },
+      {
+        "solucion_id": 1002,
+        "conocimiento_id": 1001,
+        "solucion_descripcion": "QA derivar al directorio ficticio",
+        "solucion_tipo": "DERIVACION",
+        "solucion_orden": 2,
+        "solucion_titulo": "QA derivaciÃ³n",
+        "solucion_estado": true,
+        "solucion_autoservicio": false
+      }
+    ],
+    "co_solucion_asignacion": [
+      {
+        "asignacion_id": 1001,
+        "solucion_id": 1002,
+        "responsable_id": 1001,
+        "departamento_id": 1001,
+        "asignacion_principal": true
+      }
+    ],
+    "pr_procedimiento": [
+      {
+        "procedimiento_id": 1001,
+        "procedimiento_nombre": "QA-MVP Procedimiento PUBLICADO",
+        "procedimiento_descripcion": "Procedimiento completamente manual y sintÃ©tico",
+        "procedimiento_estado": "PUBLICADO",
+        "creado_por": 1001,
+        "fecha_creacion": "2026-11-13 00:00:00",
+        "modificado_por": null,
+        "fecha_modificacion": null,
+        "datos_editoriales_json": null,
+        "hardware_id": 1001
+      },
+      {
+        "procedimiento_id": 1002,
+        "procedimiento_nombre": "QA-MVP Procedimiento BORRADOR",
+        "procedimiento_descripcion": "Procedimiento completamente manual y sintÃ©tico",
+        "procedimiento_estado": "BORRADOR",
+        "creado_por": 1001,
+        "fecha_creacion": "2026-11-13 00:00:00",
+        "modificado_por": null,
+        "fecha_modificacion": null,
+        "datos_editoriales_json": null,
+        "hardware_id": 1001
+      }
+    ],
+    "pr_paso": [
+      {
+        "paso_id": 1001,
+        "procedimiento_id": 1001,
+        "paso_orden": 1,
+        "paso_instruccion": "QA paso manual 1",
+        "paso_es_critico": false,
+        "paso_modo_ejecucion": "MANUAL",
+        "paso_mensaje_evidencia": null,
+        "paso_configuracion_json": null,
+        "paso_config_historial": null
+      },
+      {
+        "paso_id": 1002,
+        "procedimiento_id": 1001,
+        "paso_orden": 2,
+        "paso_instruccion": "QA paso manual 2",
+        "paso_es_critico": true,
+        "paso_modo_ejecucion": "MANUAL",
+        "paso_mensaje_evidencia": null,
+        "paso_configuracion_json": null,
+        "paso_config_historial": null
+      },
+      {
+        "paso_id": 1003,
+        "procedimiento_id": 1001,
+        "paso_orden": 3,
+        "paso_instruccion": "QA paso manual 3",
+        "paso_es_critico": false,
+        "paso_modo_ejecucion": "MANUAL",
+        "paso_mensaje_evidencia": null,
+        "paso_configuracion_json": null,
+        "paso_config_historial": null
+      },
+      {
+        "paso_id": 1004,
+        "procedimiento_id": 1002,
+        "paso_orden": 1,
+        "paso_instruccion": "QA paso manual 4",
+        "paso_es_critico": false,
+        "paso_modo_ejecucion": "MANUAL",
+        "paso_mensaje_evidencia": null,
+        "paso_configuracion_json": null,
+        "paso_config_historial": null
+      }
+    ],
+    "co_material_apoyo": [],
+    "se_ejecucion": [],
+    "se_ejecucion_paso": [],
+    "se_resultado": [],
+    "co_conocimiento_busqueda": [
+      {
+        "conocimiento_id": 1001,
+        "contenido_busqueda": "QA terminal desconexiÃ³n conexiÃ³n sintÃ©tica PUBLICADO"
+      },
+      {
+        "conocimiento_id": 1002,
+        "contenido_busqueda": "QA terminal desconexiÃ³n conexiÃ³n sintÃ©tica BORRADOR"
+      },
+      {
+        "conocimiento_id": 1003,
+        "contenido_busqueda": "QA terminal desconexiÃ³n conexiÃ³n sintÃ©tica ELIMINADO"
+      }
+    ],
+    "u_sucursal": [],
+    "se_solicitud_evidencia": [],
+    "se_evidencia": [],
+    "se_evento_ejecucion": [],
+    "pr_auditoria_procedimiento": [],
+    "gm_cuenta_oauth": [],
+    "gm_estado_oauth": [],
+    "gm_auditoria_oauth": [],
+    "gm_prueba_correo": [],
+    "gm_prueba_evento": [],
+    "co_material_solucion": [],
+    "ticket": [
+      {
+        "id": 1001,
+        "codigo": "QA-MVP-1001",
+        "titulo": "QA ticket ABIERTO",
+        "descripcion": "Incidente completamente sintÃ©tico",
+        "estado": "ABIERTO",
+        "prioridad": "MEDIA",
+        "solicitante_id": 1004,
+        "asignado_id": null,
+        "hardware_id": 1001,
+        "sistema_id": 1001,
+        "modulo_id": 1001,
+        "conocimiento_id": null,
+        "solucion": null,
+        "fecha_creacion": "2026-11-13 00:00:00",
+        "fecha_actualizacion": "2026-11-13 00:00:00",
+        "fecha_resolucion": null,
+        "fecha_cierre": null
+      },
+      {
+        "id": 1002,
+        "codigo": "QA-MVP-1002",
+        "titulo": "QA ticket EN_PROGRESO",
+        "descripcion": "Incidente completamente sintÃ©tico",
+        "estado": "EN_PROGRESO",
+        "prioridad": "ALTA",
+        "solicitante_id": 1005,
+        "asignado_id": 1002,
+        "hardware_id": 1001,
+        "sistema_id": 1001,
+        "modulo_id": 1001,
+        "conocimiento_id": null,
+        "solucion": null,
+        "fecha_creacion": "2026-11-13 00:00:00",
+        "fecha_actualizacion": "2026-11-13 00:00:00",
+        "fecha_resolucion": null,
+        "fecha_cierre": null
+      },
+      {
+        "id": 1003,
+        "codigo": "QA-MVP-1003",
+        "titulo": "QA ticket RESUELTO",
+        "descripcion": "Incidente completamente sintÃ©tico",
+        "estado": "RESUELTO",
+        "prioridad": "MEDIA",
+        "solicitante_id": 1004,
+        "asignado_id": 1002,
+        "hardware_id": 1001,
+        "sistema_id": 1001,
+        "modulo_id": 1001,
+        "conocimiento_id": 1001,
+        "solucion": "QA resultado ficticio",
+        "fecha_creacion": "2026-11-13 00:00:00",
+        "fecha_actualizacion": "2026-11-13 00:00:00",
+        "fecha_resolucion": "2026-11-13 00:00:00",
+        "fecha_cierre": null
+      }
+    ],
+    "ticket_etiqueta": [
+      {
+        "id": 1001,
+        "nombre": "QA conexiÃ³n",
+        "color": "#336699",
+        "activa": true,
+        "nivel": "NORMAL"
+      },
+      {
+        "id": 1002,
+        "nombre": "QA terminal",
+        "color": "#993366",
+        "activa": true,
+        "nivel": "NORMAL"
+      }
+    ],
+    "ticket_ticket_etiqueta": [
+      {
+        "ticket_id": 1002,
+        "etiqueta_id": 1001
+      },
+      {
+        "ticket_id": 1003,
+        "etiqueta_id": 1002
+      }
+    ],
+    "ticket_comentario": [
+      {
+        "id": 1001,
+        "ticket_id": 1002,
+        "autor_id": 1005,
+        "texto": "QA comentario pÃºblico",
+        "interno": false,
+        "fecha": "2026-11-13 00:00:00"
+      },
+      {
+        "id": 1002,
+        "ticket_id": 1002,
+        "autor_id": 1002,
+        "texto": "QA nota interna de soporte",
+        "interno": true,
+        "fecha": "2026-11-13 00:00:00"
+      }
+    ],
+    "ticket_historial_estado": [
+      {
+        "id": 1001,
+        "ticket_id": 1001,
+        "estado_anterior": null,
+        "estado_nuevo": "ABIERTO",
+        "usuario_id": 1004,
+        "motivo": "Fixture QA v1",
+        "fecha": "2026-11-13 00:00:00"
+      },
+      {
+        "id": 1002,
+        "ticket_id": 1002,
+        "estado_anterior": null,
+        "estado_nuevo": "ABIERTO",
+        "usuario_id": 1005,
+        "motivo": "Fixture QA v1",
+        "fecha": "2026-11-13 00:00:00"
+      },
+      {
+        "id": 1003,
+        "ticket_id": 1002,
+        "estado_anterior": "ABIERTO",
+        "estado_nuevo": "EN_PROGRESO",
+        "usuario_id": 1002,
+        "motivo": "Fixture QA v1",
+        "fecha": "2026-11-13 00:00:00"
+      },
+      {
+        "id": 1004,
+        "ticket_id": 1003,
+        "estado_anterior": null,
+        "estado_nuevo": "ABIERTO",
+        "usuario_id": 1004,
+        "motivo": "Fixture QA v1",
+        "fecha": "2026-11-13 00:00:00"
+      },
+      {
+        "id": 1005,
+        "ticket_id": 1003,
+        "estado_anterior": "ABIERTO",
+        "estado_nuevo": "EN_PROGRESO",
+        "usuario_id": 1002,
+        "motivo": "Fixture QA v1",
+        "fecha": "2026-11-13 00:00:00"
+      },
+      {
+        "id": 1006,
+        "ticket_id": 1003,
+        "estado_anterior": "EN_PROGRESO",
+        "estado_nuevo": "RESUELTO",
+        "usuario_id": 1002,
+        "motivo": "Fixture QA v1",
+        "fecha": "2026-11-13 00:00:00"
+      }
+    ],
+    "ticket_adjunto": [],
+    "u_codigo_acceso": [],
+    "u_correo_codigo": []
+  },
+  "excluded_features": [
+    "sucursales_corporate_domain",
+    "gmail",
+    "automated_evidence"
+  ],
+  "passwords": "RUNTIME_BCRYPT_PLACEHOLDERS_ONLY"
+}
