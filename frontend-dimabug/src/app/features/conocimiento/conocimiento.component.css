@@ -806,15 +806,6 @@ td strong {
   transform: rotate(-6deg) scale(1.06);
 }
 
-.tarjeta:hover .btn-ver {
-  background: #1e4fd6;
-  border-color: #1e4fd6;
-  color: #fff;
-}
-
-.tarjeta:hover .btn-ver svg {
-  transform: translateX(3px);
-}
 
 .icono {
   width: 64px;
@@ -990,9 +981,15 @@ td strong {
   transition: transform 0.2s ease;
 }
 
+/* Solo se resalta el botón que tiene el mouse encima, no todos los de la tarjeta. */
 .btn-ver:hover {
-  background: #eef3ff;
+  background: #1e4fd6;
   border-color: #1e4fd6;
+  color: #fff;
+}
+
+.btn-ver:hover svg {
+  transform: translateX(3px);
 }
 
 .vacio-tarjetas {
